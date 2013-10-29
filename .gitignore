@@ -3,3 +3,5 @@
 eagle.epf
 # Eagle Temp Files
 *.s#*
+*.b#*
+*.l#*
