@@ -13,10 +13,10 @@ Item {
     Grid {
 
         x: 10; y: 10
-        rows: designLayout.lines; columns: designLayout.stopNeedle-designLayout.startNeedle; spacing: 1
+        rows: designLayout.lines; columns: designLayout.stopNeedle-designLayout.startNeedle+1; spacing: 1
         Repeater {
             id: rectangleRepeater
-            model: (designLayout.stopNeedle-designLayout.startNeedle)*lines
+            model: (designLayout.stopNeedle-designLayout.startNeedle+1)*lines
             Rectangle {
                 id: pixel
                 width: 4

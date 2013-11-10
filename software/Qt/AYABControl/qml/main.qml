@@ -21,10 +21,12 @@ ApplicationWindow {
     property int designerNumberOfLines: 1
     property int designerStartNeedle: 1
     property int designerStopNeedle: 100
+    property string designerProjectName: "none"
 
     property alias newStartNeedle: startNeedleSpinBox.value
     property alias newStopNeedle: stopNeedleSpinBox.value
     property alias newNumberOfLines: numberOfLinesSpinbox.value
+    property alias newProjectName: projectNameTextField.text
 
     signal cutTriggered()
     signal copyTriggered()
@@ -131,6 +133,10 @@ ApplicationWindow {
             anchors.bottom: parent.bottom
             anchors.left: parent.left
             width: 200
+            propertyProjectName: idAYABControl.designerProjectName
+            propertyStartNeedle: idAYABControl.designerStartNeedle
+            propertyStopNeedle: idAYABControl.designerStopNeedle
+            propertyNumberOfLines: idAYABControl.designerNumberOfLines
         }
 
         TabView {
