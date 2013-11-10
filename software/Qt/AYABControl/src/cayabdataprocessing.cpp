@@ -21,13 +21,14 @@ cAYABDataProcessing::~cAYABDataProcessing()
 
 // Set Properties ////////////////////////////////////////////////////////////
 
-void cAYABDataProcessing::setDataProperties(qint32 startNeedle, qint32 stopNeedle, qint32 numberOfLines, QColor mainYarnColor, QColor contrastYarnColor)
+void cAYABDataProcessing::setDataProperties(qint32 startNeedle, qint32 stopNeedle, qint32 numberOfLines, QColor mainYarnColor, QColor contrastYarnColor, QString projectName)
 {
     mStartNeedle = startNeedle;
     mStopNeedle = stopNeedle;
     mNumberOfLines = numberOfLines;
     mMainYarnColor = mainYarnColor;
     mContrastYarnColor = contrastYarnColor;
+    mProjectName = projectName;
 
     mKnitData->clear();
     mKnitData = new QVector<QBitArray*>(mNumberOfLines, new QBitArray(200));
@@ -60,6 +61,11 @@ QColor cAYABDataProcessing::getMainYarnColor()
 QColor cAYABDataProcessing::getContrastYarnColor()
 {
     return mContrastYarnColor;
+}
+
+QString cAYABDataProcessing::getProjectName()
+{
+    return mProjectName;
 }
 
 QBitArray *cAYABDataProcessing::getLine(qint32 line)

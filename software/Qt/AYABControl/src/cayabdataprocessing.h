@@ -16,12 +16,13 @@ class cAYABDataProcessing : public QObject
 public:
     explicit cAYABDataProcessing(QObject *parent = 0);
     ~cAYABDataProcessing();
-    void setDataProperties(qint32 startNeedle, qint32 stopNeedle, qint32 numberOfLines, QColor mainYarnColor, QColor contrastYarnColor);
+    void setDataProperties(qint32 startNeedle, qint32 stopNeedle, qint32 numberOfLines, QColor mainYarnColor, QColor contrastYarnColor, QString projectName);
     qint32 getStartNeedle();
     qint32 getStopNeedle();
     qint32 getNumberOfLines();
     QColor getMainYarnColor();
     QColor getContrastYarnColor();
+    QString getProjectName();
     QBitArray *getLine(qint32 line);
     void setPixel(qint32 needle, qint32 line, bool pixel);
     bool getPixel(qint32 needle, qint32 line);
@@ -37,6 +38,7 @@ private:
     qint32 mNumberOfLines;
     QColor mMainYarnColor;
     QColor mContrastYarnColor;
+    QString mProjectName;
     
 };
 

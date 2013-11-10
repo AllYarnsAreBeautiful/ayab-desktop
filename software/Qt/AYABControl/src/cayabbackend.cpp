@@ -79,10 +79,12 @@ void cAYABBackend::slotNewBoxOKTriggered()
                     mWindow->property("newStopNeedle").toInt(),
                     mWindow->property("newNumberOfLines").toInt(),
                     QColor::fromRgb(255,255,255),
-                    QColor::fromRgb(0,0,0) );
+                    QColor::fromRgb(0,0,0),
+                    mWindow->property("newProjectName").toString());
         mWindow->setProperty("designerStartNeedle", AYABDataProcessing->getStartNeedle());
         mWindow->setProperty("designerStopNeedle", AYABDataProcessing->getStopNeedle());
         mWindow->setProperty("designerNumberOfLines", AYABDataProcessing->getNumberOfLines());
+        mWindow->setProperty("designerProjectName", AYABDataProcessing->getProjectName());
     }
 }
 
