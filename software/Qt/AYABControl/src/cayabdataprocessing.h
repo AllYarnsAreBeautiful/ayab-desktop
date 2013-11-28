@@ -27,6 +27,9 @@ public:
     void setPixel(qint32 needle, qint32 line, bool pixel);
     bool getPixel(qint32 needle, qint32 line);
 
+    ///DEBUG
+    void setTestPattern();
+
 signals:
     
 public slots:

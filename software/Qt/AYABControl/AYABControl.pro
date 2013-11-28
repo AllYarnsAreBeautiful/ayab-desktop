@@ -10,11 +10,13 @@ QT += serialport
 HEADERS += \
     src/cayabcommunication.h \
     src/cayabbackend.h \
-    src/cayabdataprocessing.h
+    src/cayabdataprocessing.h \
+    src/cayabimageprocessing.h
 SOURCES += src/main.cpp \
     src/cayabcommunication.cpp \
     src/cayabbackend.cpp \
-    src/cayabdataprocessing.cpp
+    src/cayabdataprocessing.cpp \
+    src/cayabimageprocessing.cpp
 OTHER_FILES += qml/main.qml \
     qml/content/DebugTab.qml \
     qml/content/LeftLayout.qml \

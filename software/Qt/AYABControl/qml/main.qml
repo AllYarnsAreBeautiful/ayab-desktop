@@ -28,6 +28,8 @@ ApplicationWindow {
     property alias newNumberOfLines: numberOfLinesSpinbox.value
     property alias newProjectName: projectNameTextField.text
 
+    property variant debugTestImage
+
     signal cutTriggered()
     signal copyTriggered()
     signal pasteTriggered()
@@ -155,6 +157,7 @@ ApplicationWindow {
                 title: "Debug"
                 DebugTab {
                     id: debugLayoutID
+                    debugImage: debugTestImage
                 }
             }
             Tab {
@@ -230,7 +233,7 @@ ApplicationWindow {
                     wrapMode: Text.WordWrap
 
                     text: "<b>AYABControl</b>" +
-                          "<p>This is AYABControl Application</p>"
+                          "<p>This is the AYABControl Application</p>"
                 }
             }
 

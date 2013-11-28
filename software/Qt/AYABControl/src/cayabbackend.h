@@ -5,6 +5,7 @@
 #include <QObject>
 #include "cayabcommunication.h"
 #include "cayabdataprocessing.h"
+#include "cayabimageprocessing.h"
 class QQuickWindow;
 
 class cAYABBackend : public QObject
@@ -24,10 +25,12 @@ public slots:
     void slotSettingsBoxOKTriggered();
     void newDialog();
     void slotNewBoxOKTriggered();
+    void slotAboutTriggered();
 private:
     QQuickWindow *mWindow;
     cAYABCommunication *AYABCommunication;
     cAYABDataProcessing *AYABDataProcessing;
+    cAYABImageProcessing *AYABImageProcessing;
     
 };
 

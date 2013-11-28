@@ -13,7 +13,8 @@ Item {
     anchors.bottom: parent.bottom
     anchors.left: parent.left
     GridLayout {
-        y: 50
+        x: 10
+        y: 30
         columnSpacing: 10
         rowSpacing: 10
         id: newGrid
