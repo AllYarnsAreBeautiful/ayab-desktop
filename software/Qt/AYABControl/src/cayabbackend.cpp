@@ -4,6 +4,7 @@
 #include <QClipboard>
 #include <QDebug>
 #include <QQuickWindow>
+#include <QVariant>
 
 #include "cayabbackend.h"
 
@@ -14,6 +15,7 @@ cAYABBackend::cAYABBackend(QObject *parent) :
 {
     AYABCommunication = new cAYABCommunication(this);
     AYABDataProcessing = new cAYABDataProcessing(this);
+    AYABImageProcessing = new cAYABImageProcessing(this);
 
 }
 
@@ -35,7 +37,6 @@ void cAYABBackend::setWindow(QQuickWindow *window)
     //if (mWindow != 0) mWindow->disconnect(this);
 
     mWindow = window;
-    AYABCommunication->setWindow(mWindow);
     if (mWindow) {
         //mWindow->setIcon(QIcon(":/accessories-calculator.png"));
 
@@ -44,6 +45,7 @@ void cAYABBackend::setWindow(QQuickWindow *window)
         connect(mWindow, SIGNAL(settingsOKTriggered()), this, SLOT(slotSettingsBoxOKTriggered()));
         connect(mWindow, SIGNAL(newTriggered()), this, SLOT(newDialog()));
         connect(mWindow, SIGNAL(newOKTriggered()), this, SLOT(slotNewBoxOKTriggered()));
+        connect(mWindow, SIGNAL(aboutTriggered()), this, SLOT(slotAboutTriggered()));
         // set initial state
         //clearAll();
     }
@@ -65,6 +67,12 @@ void cAYABBackend::slotSettingsBoxOKTriggered()
     if (mWindow) AYABCommunication->setSerialPort(mWindow->property("settingsSerialPortComboboxText").toString());
 }
 
+void cAYABBackend::slotAboutTriggered()
+{
+    if (mWindow) QMetaObject::invokeMethod(mWindow, "showAboutDialog");
+}
+
+
 void cAYABBackend::newDialog()
 {
     //if (mWindow) mWindow->setProperty("serialPortComboboxModel", AYABCommunication->getAvailablePorts());
@@ -85,6 +93,7 @@ void cAYABBackend::slotNewBoxOKTriggered()
         mWindow->setProperty("designerStopNeedle", AYABDataProcessing->getStopNeedle());
         mWindow->setProperty("designerNumberOfLines", AYABDataProcessing->getNumberOfLines());
         mWindow->setProperty("designerProjectName", AYABDataProcessing->getProjectName());
+        mWindow->setProperty("debugTestImage", QVariant::fromValue(*AYABImageProcessing->getPreviewImage()));
     }
 }
 

@@ -11,6 +11,9 @@ cAYABDataProcessing::cAYABDataProcessing(QObject *parent) :
     mNumberOfLines = 1;
     mMainYarnColor = QColor::fromRgb(255,255,255);
     mContrastYarnColor = QColor::fromRgb(0,0,0);
+
+    /// DEBUG ///
+    setTestPattern();
 }
 
 // Destructor ////////////////////////////////////////////////////////////////
@@ -21,7 +24,9 @@ cAYABDataProcessing::~cAYABDataProcessing()
 
 // Set Properties ////////////////////////////////////////////////////////////
 
-void cAYABDataProcessing::setDataProperties(qint32 startNeedle, qint32 stopNeedle, qint32 numberOfLines, QColor mainYarnColor, QColor contrastYarnColor, QString projectName)
+void cAYABDataProcessing::setDataProperties(qint32 startNeedle, qint32 stopNeedle,
+                                            qint32 numberOfLines, QColor mainYarnColor,
+                                            QColor contrastYarnColor, QString projectName)
 {
     mStartNeedle = startNeedle;
     mStopNeedle = stopNeedle;
@@ -30,10 +35,10 @@ void cAYABDataProcessing::setDataProperties(qint32 startNeedle, qint32 stopNeedl
     mContrastYarnColor = contrastYarnColor;
     mProjectName = projectName;
 
-    mKnitData->clear();
-    mKnitData = new QVector<QBitArray*>(mNumberOfLines, new QBitArray(200));
-
-    //Hier die qml Sachen rein
+    mKnitData->~QVector();
+    mKnitData = new QVector<QBitArray*>(0);
+    for(int i = 0; i < mNumberOfLines; i++)
+        mKnitData->append(new QBitArray(200));
 }
 
 // Get Properties ////////////////////////////////////////////////////////////
@@ -90,4 +95,22 @@ bool cAYABDataProcessing::getPixel(qint32 needle, qint32 line)
         return mKnitData->at(line)->at(needle);
     else
         return false;
+}
+
+//// zum Debuggen ////
+
+void cAYABDataProcessing::setTestPattern()
+{
+    setDataProperties(1, 200, 16, QColor::fromRgb(255,255,255),QColor::fromRgb(0,0,0), "Test Pattern");
+    for(int i = 0; i < mNumberOfLines; i++)
+    {
+        for(int j = 0; j<200; j++)
+        {
+            if(((j % 16)-i) == 0)
+                setPixel(j,i,true);
+            else
+                setPixel(j,i,false);
+        }
+    }
+
 }

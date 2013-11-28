@@ -17,23 +17,27 @@ class cAYABCommunication : public QObject
 public:
     explicit cAYABCommunication(QObject *parent = 0);
     ~cAYABCommunication();
-    void setWindow(QQuickWindow *window);
     void setSerialPort(QString port);
     QString getSerialPort();
     QStringList getAvailablePorts();
     //bool writeLineToAYAB(QBitArray *line, qint16 lineNumber);
 
 public slots:
-
+    void processData();
+    void sendLine(quint8 lineNumber);
 
     
 signals:
     void serialPortChanged();
+
+    void sInitRequestAnswer(quint8 value);
+    void sStartRequestAnswer(quint8 value);
+    void sLineRequest(quint8 value);
+    void sStopRequestAnswer(quint8 value);
+    void sInfoRequestAnswer(quint8 value);
     
-public slots:
     
 private:
-    QQuickWindow *mWindow;
     QString mSerialPortName;
     QSerialPortInfo *mSerialPortInfo;
     QSerialPort *mSerialPort;

@@ -7,9 +7,9 @@ import QtQuick.Controls.Styles 1.0
 Item {
 
     id: debugLayout
-    Rectangle {
-        width: 100
-        height: 62
+    property variant debugImage
+    Image {
+        source: debugImage
     }
 }
 
