@@ -16,7 +16,8 @@ cAYABBackend::cAYABBackend(QObject *parent) :
     AYABCommunication = new cAYABCommunication(this);
     AYABDataProcessing = new cAYABDataProcessing(this);
     AYABImageProcessing = new cAYABImageProcessing(this);
-
+    connect(AYABDataProcessing, SIGNAL(sKnitDataCreated(QVector<QBitArray*>*,qint32,qint32,qint32)),
+            AYABCommunication, SLOT(getKnitData(QVector<QBitArray*>*,qint32,qint32,qint32)));
 }
 
 // Destructor ////////////////////////////////////////////////////////////////
@@ -46,6 +47,9 @@ void cAYABBackend::setWindow(QQuickWindow *window)
         connect(mWindow, SIGNAL(newTriggered()), this, SLOT(newDialog()));
         connect(mWindow, SIGNAL(newOKTriggered()), this, SLOT(slotNewBoxOKTriggered()));
         connect(mWindow, SIGNAL(aboutTriggered()), this, SLOT(slotAboutTriggered()));
+        connect(mWindow, SIGNAL(sendStartTriggered()), AYABCommunication, SLOT(sendStart()));
+        connect(mWindow, SIGNAL(setPixelFromDesigner(int, int, bool)), AYABDataProcessing, SLOT(setPixel(qint32,qint32,bool)));
+        connect(mWindow, SIGNAL(getVersionTriggered()),AYABCommunication, SLOT(getVersionData()));
         // set initial state
         //clearAll();
     }
