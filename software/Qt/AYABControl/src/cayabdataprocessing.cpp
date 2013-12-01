@@ -39,6 +39,7 @@ void cAYABDataProcessing::setDataProperties(qint32 startNeedle, qint32 stopNeedl
     mKnitData = new QVector<QBitArray*>(0);
     for(int i = 0; i < mNumberOfLines; i++)
         mKnitData->append(new QBitArray(200));
+    emit sKnitDataCreated(mKnitData, mStartNeedle, mStopNeedle, mNumberOfLines);
 }
 
 // Get Properties ////////////////////////////////////////////////////////////
@@ -86,6 +87,7 @@ void cAYABDataProcessing::setPixel(qint32 needle, qint32 line, bool pixel)
     if(mKnitData->at(line) != 0 && needle < 200)
     {
         mKnitData->at(line)->setBit(needle, pixel);
+        qDebug() << "Set Line: " << line << "Set Needle: " << needle << "Set Value " << pixel;
     }
 }
 
@@ -101,6 +103,9 @@ bool cAYABDataProcessing::getPixel(qint32 needle, qint32 line)
 
 void cAYABDataProcessing::setTestPattern()
 {
+    mStartNeedle = 1;
+    mStopNeedle = 200;
+    mNumberOfLines = 16;
     setDataProperties(1, 200, 16, QColor::fromRgb(255,255,255),QColor::fromRgb(0,0,0), "Test Pattern");
     for(int i = 0; i < mNumberOfLines; i++)
     {

@@ -83,8 +83,7 @@ def checkSerial( printMode ):
     time.sleep(1)
     out = ''
     while ser.inWaiting() > 0:
-        line = ser.readline()
-        #print line[:-2] #drop crlf
+        line = ser.readline()        
 
         msgId = ord(line[0])            
         if msgId == 0xC1:    # cnfStart
@@ -101,12 +100,14 @@ def checkSerial( printMode ):
             print msg
 
         elif msgId == 0x82: #reqLine            
+            
+            msg = "> reqLine: "
+            msg += str(ord(line[1]))
+            print msg
             if printMode:
                 sendLine(ord(line[1]))
-            else:
-                msg = "> reqLine: "
-                msg += str(ord(line[1]))
-                print msg
+        else:
+            print line[:-2] #drop crlf
 
 
 def no_such_action():

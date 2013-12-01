@@ -40,6 +40,22 @@ ApplicationWindow {
     signal newOKTriggered()
     signal settingsTriggered()
     signal settingsOKTriggered()
+    signal sendStartTriggered()
+    signal getVersionTriggered()
+    signal setPixelFromDesigner(int needle, int line, bool value)
+
+    Connections {
+        target: leftLayoutID
+        onSendButtonTriggered: idAYABControl.sendStartTriggered()
+    }
+
+
+    Connections {
+        target: leftLayoutID
+        onGetVersionButtonTriggered: idAYABControl.getVersionTriggered()
+    }
+
+
     // actions ///////////////////////////////////////////////////////////////
 
     Action {
@@ -168,6 +184,10 @@ ApplicationWindow {
                     lines: idAYABControl.designerNumberOfLines
                     startNeedle: idAYABControl.designerStartNeedle
                     stopNeedle: idAYABControl.designerStopNeedle
+                    Connections {
+                        target: designerLayoutID
+                        onSignalSetPixel: idAYABControl.setPixelFromDesigner(designerLayoutID.needleToSet, designerLayoutID.lineToSet, designerLayoutID.valueToSet)
+                    }
                 }
             }
         }
@@ -197,6 +217,9 @@ ApplicationWindow {
         idAYABControl.newOKTriggered()
         newBox.close()
     }
+
+
+
     // dialogs ///////////////////////////////////////////////////////////////
 
     ApplicationWindow {

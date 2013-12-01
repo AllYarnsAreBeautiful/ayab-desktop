@@ -3,12 +3,16 @@ import QtQuick.Controls 1.0
 import QtQuick.Layouts 1.0
 
 import QtQuick.Dialogs 1.0
+
+
 Item {
+    id: leftLayout
     property string propertyProjectName: "none"
     property int propertyStartNeedle: 1
     property int propertyStopNeedle: 10
     property int propertyNumberOfLines: 1
-    id: leftLayout
+    signal sendButtonTriggered()
+    signal getVersionButtonTriggered()
     anchors.top: parent.top
     anchors.bottom: parent.bottom
     anchors.left: parent.left
@@ -50,6 +54,25 @@ Item {
         Text {
             text: leftLayout.propertyNumberOfLines
             width: 200
+        }
+        Button {
+            id: sendButton
+            text: "Start"
+            width: 92
+            tooltip:"Start Knitting"
+            onClicked: sendButtonTriggered()
+
+        }
+        Text{
+
+        }
+        Button {
+            id: getVersionButton
+            text: "Get Version"
+            width: 92
+            tooltip:"Ger AYAB Version"
+            onClicked: getVersionButtonTriggered()
+
         }
     }
 }

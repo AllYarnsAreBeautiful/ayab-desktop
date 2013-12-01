@@ -38,6 +38,16 @@ void cAYABImageProcessing::setImageProperties(qint32 startNeedle, qint32 stopNee
     drawFrame();
 }
 
+// get Knit Data ///////////////////////////////////////////////////////////
+void cAYABImageProcessing::getKnitData(QVector<QBitArray*>* knitData, qint32 startNeedle,
+                                     qint32 stopNeedle, qint32 numberOfLines)
+{
+    //mKnitData = knitData;
+    mStartNeedle = startNeedle;
+    mStopNeedle = stopNeedle;
+    mNumberOfLines = numberOfLines;
+}
+
 // Draw Frame ////////////////////////////////////////////////////////////////
 void cAYABImageProcessing::drawFrame()
 {

@@ -21,6 +21,8 @@ public:
 signals:
     
 public slots:
+    void getKnitData(QVector<QBitArray*>* knitData, qint32 startNeedle, qint32 stopNeedle,
+                     qint32 numberOfLines);
 
 private:
     qint32 mStartNeedle;
