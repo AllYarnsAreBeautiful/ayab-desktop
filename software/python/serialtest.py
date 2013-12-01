@@ -3,12 +3,26 @@ import serial
 import sys
 import Image
 
+#
+# HELPER FUNCTIONS
+#
+def setBit(int_type, offset):
+    mask = 1 << offset
+    return(int_type | mask)
 
+def setPixel(bytearray,pixel):
+    _numByte = int(pixel/8)
+    bytearray[_numByte] = setBit(int(bytearray[_numByte]),pixel-(8*_numByte))
+    return
+
+#
+# ACTIONS
+#
 def a_reqInfo():
     print "< reqInfo"
     ser.write(chr(0x03) + '\n\r')
 
-def a_reqStart():
+def a_reqStart( ):
     startNeedle = raw_input("Start Needle: ")
     stopNeedle  = raw_input("Stop Needle : ")
 
@@ -30,11 +44,16 @@ def a_cnfLine():
     lastLine   = raw_input("Last Line (0/1): ")
     flags      = int(lastLine)
     crc8 = 0x00
-
+    print type(lineData)
     cnfLine(lineNumber, lineData, flags, crc8)
 
 
 def a_printImage():
+    msg = chr(0x01)       #msg id
+    msg += chr(int(0))
+    msg += chr(int(199))
+    print "< reqStart"
+    ser.write(msg + '\n\r')
     while True:
         checkSerial( True )
 
@@ -52,12 +71,14 @@ def a_showImage():
 
 
 def sendLine(lineNumber):
+    bytes = bytearray(25)
     if lineNumber < imageH:
         msg = ''
         for x in range(0, imageW):
             pxl = image.getpixel((x, lineNumber))            
             if pxl == 255:
                 msg += "#"
+                setPixel(bytes,x)
             else:
                 msg += '-'
         print msg + str(lineNumber)
@@ -66,7 +87,8 @@ def sendLine(lineNumber):
             lastLine = 0x01
         else:
             lastLine = 0x00
-        #cnfLine(lineNumber, lineData, lastLine, 0x00)
+        
+        cnfLine(lineNumber, lineData.decode("utf-8"), lastLine, 0x00)
 
 
 def cnfLine(lineNumber, lineData, flags, crc8):
@@ -158,8 +180,15 @@ if filename != '':
     img = Image.open(filename)
     image = img.convert('1')
     imageW = image.size[0]
-    imageH = image.size[1]   
+    imageH = image.size[1]
+    maxWidth = 200 
+    if imageW > maxWidth:
+        wpercent = (maxWidth/float(imageW))
+        hsize = int((float(imageH)*float(wpercent)))
+        image = image.resize((maxWidth,hsize), Image.ANTIALIAS)
+        imageW = image.size[0]
+        imageH = image.size[1]
 
-ser = serial.Serial('/dev/ttyACM1', 115200)
+ser = serial.Serial('/dev/ttyACM0', 115200)
 
 mainFunction()
