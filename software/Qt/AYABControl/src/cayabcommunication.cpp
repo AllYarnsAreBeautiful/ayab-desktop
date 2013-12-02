@@ -1,5 +1,5 @@
 #include <QQuickWindow>
-
+#include <QTest>
 #include "cayabcommunication.h"
 
 // Constructor ///////////////////////////////////////////////////////////////
@@ -71,34 +71,36 @@ QStringList cAYABCommunication::getAvailablePorts()
 
 void cAYABCommunication::processData()
 {
-    mSerialPort->read(message, 1);
+    mSerialPort->waitForReadyRead(100);
+    mSerialPort->read(message, 50);
+    qDebug() << (int)(message[1]);
     quint8 messageID = message[0];
-    if(1 /*mSerialPort->waitForReadyRead(50)*/)
+    if(1)
     {
         switch( messageID )
         {
         case 0xC1:
             // Start Request Answer
             qDebug("Start Request Answer");
-            mSerialPort->read(message, 1);
-            emit sStartRequestAnswer(message[0]);
+            //mSerialPort->read(message, 1);
+            emit sStartRequestAnswer(message[1]);
             break;
         case 0x82:
             // Line Request
             qDebug("Line Request");
-            mSerialPort->read(message, 1);
-            emit sLineRequest(message[0]);
+            //mSerialPort->read(message, 1);
+            emit sLineRequest((quint8)message[1]);
             break;
         case 0xC3:
             // Info Request Answer
             qDebug("Info Request Answer");
-            mSerialPort->read(message, 1);
-            emit sInfoRequestAnswer(message[0]);
+            //mSerialPort->read(message, 1);
+            emit sInfoRequestAnswer(message[1]);
             break;
         case 0xFF:
             // Debug Message
-            mSerialPort->readLine(message, 50);
-            qDebug() << "Debug Message: " << message;
+            //mSerialPort->readLine(message, 50);
+            qDebug() << "Debug Message: " << (int)message[1];
             break;
         default:
             break;
@@ -110,24 +112,31 @@ void cAYABCommunication::processData()
 
 void cAYABCommunication::sendLine(quint8 lineNumber)
 {
+    qDebug() << "Input: " << lineNumber;
     if(lineNumber == 0 && mLastLine == 255)
         mBlockCount++;
     mLastLine = lineNumber;
     qint32 actLine = (mBlockCount*256) + lineNumber;
     if(actLine < mNumberOfLines)
     {
+        QTest::qWait(100);
         //Line is Part of Array --> Send Line
         char serialBuffer[2];
         serialBuffer[0] = (0x42); // check if signed
-        serialBuffer[1] = lineNumber;
+        serialBuffer[1] = (char)lineNumber;
         mSerialPort->write(serialBuffer, 2);
         // Convert from QBitArray to QByteArray
-
+        qDebug() << "Request Answer: " << (int)serialBuffer[0] << (int)serialBuffer [1];
         mSerialPort->write(bitsToBytes(*mKnitData->at(actLine)));
         if(actLine == mNumberOfLines - 1)
+        {
             serialBuffer[0] = 1;
+        }
         else
+        {
             serialBuffer[0] = 0;
+        }
+        qDebug() << "sending lastline " << (int)serialBuffer[0];
         serialBuffer[1] = 0;
         mSerialPort->write(serialBuffer, 2);
         qDebug() << "Line " << lineNumber << " written...";
@@ -175,10 +184,17 @@ void cAYABCommunication::processStartRequestAnswer(quint8 value)
 
 QByteArray cAYABCommunication::bitsToBytes(QBitArray bits) {
     QByteArray bytes;
-    bytes.resize(bits.count()/8+1);
+    bytes.resize(bits.count()/8);
     bytes.fill(0);
     // Convert from QBitArray to QByteArray
     for(int b=0; b<bits.count(); ++b)
+    {
         bytes[b/8] = ( bytes.at(b/8) | ((bits[b]?1:0)<<(b%8)));
-    return bytes;
+        if( 7 == b%8 )
+        {
+            qDebug() << (int)bytes[b/8];
+        }
+    }
+
+        return bytes;
 }

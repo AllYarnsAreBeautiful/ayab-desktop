@@ -26,8 +26,8 @@ Item {
             Rectangle {
                 property bool set: false
                 id: pixel
-                width: 4
-                height: 4
+                width: 8
+                height: 8
                 color: "lightgreen"
                 MouseArea {
                     id: mouseArea
