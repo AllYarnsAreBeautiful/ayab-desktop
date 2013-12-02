@@ -7,6 +7,7 @@ TEMPLATE = app
 TARGET = qmlc++
 QT += qml quick widgets
 QT += serialport
+QT += testlib
 HEADERS += \
     src/cayabcommunication.h \
     src/cayabbackend.h \

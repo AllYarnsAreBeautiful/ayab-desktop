@@ -87,8 +87,8 @@ def sendLine(lineNumber):
             lastLine = 0x01
         else:
             lastLine = 0x00
-        
-        cnfLine(lineNumber, lineData.decode("utf-8"), lastLine, 0x00)
+
+        cnfLine(lineNumber, bytes, lastLine, 0x00)
 
 
 def cnfLine(lineNumber, lineData, flags, crc8):
