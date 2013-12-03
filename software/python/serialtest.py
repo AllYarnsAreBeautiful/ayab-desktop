@@ -138,7 +138,7 @@ def no_such_action():
 
 def print_menu():
     print "==================="
-    print "=   AYAB CONTROL  ="
+    print "=    AYAB TEST    ="
     print "==================="    
     print "= andz & chris007 ="
     print "=       v1        ="
