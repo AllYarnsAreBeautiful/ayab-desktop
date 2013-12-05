@@ -1,4 +1,5 @@
-import os,sys   # std lib
+import os,sys,time   # std lib
+import serial
 import Image # for image operations
 from optparse import OptionParser # argument parsing
 
@@ -46,19 +47,16 @@ def checkSerial( curState ):
                 msg += "failed"
             print msg
 
-            # reqInfo showed the right version, proceed to next state
+            # reqStart was successful, proceed to next state
             if curState == 's_start' and ord(line[1]) == 1:
                 curState = 's_operate'
             else:
                 curState = 's_abort'
 
         elif msgId == 0xC3: # cnfInfo
-            msg = "> cnfInfo: Version="
-            msg += str(ord(line[1]))
-            print msg
-
-            # reqStart was successful, proceed to next state
-            if curState == 's_init' and ord(line[1]) == 1:
+            print "> cnfInfo: Version=" + str(ord(line[1]))
+            # reqInfo showed the right version, proceed to next state            
+            if curState == 's_init' and ord(line[1]) == 0x01:
                 curState = 's_start'
             else:
                 curState = 's_abort'
@@ -73,7 +71,8 @@ def checkSerial( curState ):
         else:
             print "unknown message: "
             print line[:-2] #drop crlf
-    return
+            curState = 's_abort'
+    return curState
 
 
 def serial_reqInfo():
@@ -81,12 +80,9 @@ def serial_reqInfo():
     ser.write(chr(0x03) + '\n\r')
 
 def serial_reqStart():
-    startNeedle = raw_input("Start Needle: ")
-    stopNeedle  = raw_input("Stop Needle : ")
-
     msg = chr(0x01)                     #msg id
-    msg += chr(int(startNeedle))
-    msg += chr(int(stopNeedle))
+    msg += chr(int(StartNeedle))
+    msg += chr(int(StopNeedle))
     print "< reqStart"
     ser.write(msg + '\n\r')
 
@@ -109,16 +105,29 @@ def setPixel(bytearray,pixel):
     bytearray[_numByte] = setBit(int(bytearray[_numByte]),pixel-(8*_numByte))
     return
 
-def cnfLine(lineNumber):
-    # TODO take care of pictures with > 255 lines height
+def cnfLine(lineNumber):    
+    #initialize bytearray to 0x00
     bytes = bytearray(25)
+    for x in range(0,25):
+        bytes[x] = 0x00
+
     if lineNumber < imageH:
+        # if the last requested line number was 255, wrap to next block of lines 
+        if LastRequest == 255 and lineNumber == 0:
+            LineBlock += 1
+        # store requested line number for next request
+        LastRequest = lineNumber
+        # adjust actual line number according to current block
+        lineNumber  += LineBlock*255
+
+        # build output message and screen output
         msg = ''
         for x in range(0, imageW):
             pxl = image.getpixel((x, lineNumber))            
             if pxl == 255:
+                # take the image offset into account
+                setPixel(bytes,x+StartNeedle)
                 msg += "#"
-                setPixel(bytes,x)
             else:
                 msg += '-'
         print msg + str(lineNumber)
@@ -132,6 +141,8 @@ def cnfLine(lineNumber):
         crc8 = 0x00
 
         cnfLine(lineNumber, bytes, lastLine, crc8)
+    else:
+        print "requested lineNumber out of range"
 
 
 #
@@ -225,11 +236,11 @@ def a_showImagePosition():
     for i in range(0,200):
         if i >= StartNeedle and i <= StopNeedle:
             if i >= ImgStartNeedle and i <= ImgStopNeedle:
-                msg += '$'
-            else:          
                 msg += 'x'
+            else:          
+                msg += '-'
         else:
-            msg += '-'
+            msg += '_'
     msg += '|'
     print msg
 
@@ -255,7 +266,7 @@ def a_knitImage():
     _reqSent  = 0
 
     while True:
-        checkSerial(_curState)
+        _curState = checkSerial(_curState)
 
         if _oldState != _curState:
             _reqSent = 0
@@ -364,11 +375,14 @@ if __name__ == "__main__":
           knit_img_width  = knit_img.size[0]
           knit_img_height = knit_img.size[1]
 
-          StartNeedle = 79
-          StopNeedle  = 119
+          StartNeedle = 80
+          StopNeedle  = 120
           ImgPosition = 'center'
           ImgStartNeedle = 0
           ImgStopNeedle  = 0
+          # Helper variables for images with height > 255
+          LineBlock      = 0
+          LastRequest    = 0
 
           ser = serial.Serial('/dev/ttyACM0', 115200)
 
