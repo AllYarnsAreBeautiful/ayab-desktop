@@ -10,9 +10,9 @@ def calc_imgStartStopNeedles():
     global ImgPosition    
 
     if ImgPosition == 'center':
-        _needleWidth = StopNeedle - StartNeedle
+        _needleWidth = (StopNeedle - StartNeedle) +1
         ImgStartNeedle = (StartNeedle + _needleWidth/2) - knit_img_width/2
-        ImgStopNeedle  = ImgStartNeedle + knit_img_width      
+        ImgStopNeedle  = ImgStartNeedle + knit_img_width -1      
 
     elif ImgPosition == 'alignLeft':
         ImgStartNeedle = StartNeedle
@@ -33,15 +33,17 @@ def calc_imgStartStopNeedles():
 
 
 def checkSerial( curState ):
-    time.sleep(1) #TODO optimize delay
-    out = ''
+    time.sleep(0.5) #TODO if problems in communication, tweak here
+    line = ''
     while ser.inWaiting() > 0:
-        line = ser.readline()        
+        line += ser.read(1)
+        #line = ser.readline()    
 
+    if line != '':
         msgId = ord(line[0])            
         if msgId == 0xC1:    # cnfStart
             msg = "> cnfStart: "
-            if(ord(line[1])):
+            if ord(line[1]) == 1:
                 msg += "success"
             else:
                 msg += "failed"
@@ -50,6 +52,7 @@ def checkSerial( curState ):
             # reqStart was successful, proceed to next state
             if curState == 's_start' and ord(line[1]) == 1:
                 curState = 's_operate'
+                print "-----Ready to operate-----"
             else:
                 curState = 's_abort'
 
@@ -67,11 +70,14 @@ def checkSerial( curState ):
             print msg
             
             if curState == 's_operate':
-                cnfLine(ord(line[1]))
+                _imgFinished = cnfLine(ord(line[1]))
+                if _imgFinished:
+                    curState = 's_finished'
         else:
             print "unknown message: "
-            print line[:-2] #drop crlf
+            print line[:] #drop crlf
             curState = 's_abort'
+
     return curState
 
 
@@ -105,13 +111,16 @@ def setPixel(bytearray,pixel):
     bytearray[_numByte] = setBit(int(bytearray[_numByte]),pixel-(8*_numByte))
     return
 
-def cnfLine(lineNumber):    
+def cnfLine(lineNumber):  
+    #TODO optimize performance
+    global LastRequest  
+    global LineBlock
     #initialize bytearray to 0x00
     bytes = bytearray(25)
     for x in range(0,25):
         bytes[x] = 0x00
 
-    if lineNumber < imageH:
+    if lineNumber < knit_img_height:
         # if the last requested line number was 255, wrap to next block of lines 
         if LastRequest == 255 and lineNumber == 0:
             LineBlock += 1
@@ -122,17 +131,17 @@ def cnfLine(lineNumber):
 
         # build output message and screen output
         msg = ''
-        for x in range(0, imageW):
-            pxl = image.getpixel((x, lineNumber))            
+        for x in range(0, knit_img_width):
+            pxl = knit_img.getpixel((x, lineNumber))            
             if pxl == 255:
                 # take the image offset into account
-                setPixel(bytes,x+StartNeedle)
+                setPixel(bytes,x+ImgStartNeedle)
                 msg += "#"
             else:
                 msg += '-'
         print msg + str(lineNumber)
 
-        if lineNumber == imageH-1:
+        if lineNumber == knit_img_height-1:
             lastLine = 0x01
         else:
             lastLine = 0x00
@@ -140,9 +149,14 @@ def cnfLine(lineNumber):
         # TODO implement CRC8
         crc8 = 0x00
 
-        cnfLine(lineNumber, bytes, lastLine, crc8)
+        serial_cnfLine(lineNumber, bytes, lastLine, crc8)
     else:
         print "requested lineNumber out of range"
+
+    if lineNumber == knit_img_height-1:
+        return 1 # image finished 
+    else:
+        return 0
 
 
 #
@@ -180,9 +194,13 @@ def a_invertImage():
 def a_rotateImage():
     """rotate the image 90 degrees clockwise"""
     global knit_img
+    global knit_img_width
+    global knit_img_height
 
     print "rotating image 90 degrees..."
     knit_img = knit_img.rotate(-90)
+    knit_img_width  = knit_img.size[0]
+    knit_img_height = knit_img.size[1]
 
 
 def a_resizeImage():
@@ -194,10 +212,12 @@ def a_resizeImage():
     newWidth = int(raw_input("New Width (pixel): "))
     wpercent = (newWidth/float(knit_img_width))
     hsize = int((float(knit_img_height)*float(wpercent)))
-    knit_img = knit_img.resize((newWidth,hsize), Image.ANTIALIAS)
+    knit_img = orig_img.resize((newWidth,hsize), Image.ANTIALIAS)
     
     knit_img_width  = knit_img.size[0]
     knit_img_height = knit_img.size[1]
+
+    a_showImagePosition()
 
 
 def a_setNeedles():
@@ -205,8 +225,8 @@ def a_setNeedles():
     global StartNeedle
     global StopNeedle
     
-    StartNeedle = int(raw_input("Start Needle (0 <= x <  199): "))
-    StopNeedle  = int(raw_input("Stop Needle  (1 <  x <= 199): "))
+    StartNeedle = int(raw_input("Start Needle (0 <= x <= 198): "))
+    StopNeedle  = int(raw_input("Stop Needle  (1 <= x <= 199): "))
 
 
 def a_setImagePosition():
@@ -271,25 +291,23 @@ def a_knitImage():
         if _oldState != _curState:
             _reqSent = 0
         elif _curState == 's_abort':
+            raw_input("press Enter")
             return
 
         if _curState == 's_init':
-            print "s_init"
             if _reqSent == 0:
                 serial_reqInfo()
                 _reqSent = 1
 
         elif _curState == 's_start':
-            print "s_start"
             if _reqSent == 0:
                 serial_reqStart()
                 _reqSent = 1     
 
-        elif _curState == 's_operate':
-            print "s_operate"
-
+        #elif _curState == 's_operate':
+        #    print "s_operate"
         elif _curState == 's_finished':
-            print "s_finished"
+            print "Image finished"
             raw_input("press Enter")
             return
 
@@ -371,7 +389,8 @@ if __name__ == "__main__":
       filename = sys.argv[1]
       if filename != '':
           orig_img = Image.open(filename)
-          knit_img = orig_img.convert('1')
+          orig_img = orig_img.convert('1')
+          knit_img = orig_img
           knit_img_width  = knit_img.size[0]
           knit_img_height = knit_img.size[1]
 
