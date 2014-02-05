@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #This file is part of AYAB.
 #
 #    AYAB is free software: you can redistribute it and/or modify
@@ -78,7 +79,7 @@ def checkSerial( curState ):
         elif msgId == 0xC3: # cnfInfo
             print "> cnfInfo: Version=" + str(ord(line[1]))
             # reqInfo showed the right version, proceed to next state            
-            if curState == 's_init' and ord(line[1]) == 0x01:
+            if curState == 's_init' and ord(line[1]) == API_VERSION:
                 curState = 's_start'
             else:
                 curState = 's_abort'
@@ -108,6 +109,7 @@ def serial_reqStart():
     msg = chr(0x01)                     #msg id
     msg += chr(int(StartNeedle))
     msg += chr(int(StopNeedle))
+    msg += chr(int(StartLine))
     print "< reqStart"
     ser.write(msg + '\n\r')
 
@@ -139,28 +141,34 @@ def cnfLine(lineNumber):
     for x in range(0,25):
         bytes[x] = 0x00
 
-    if lineNumber < knit_img_height:
+    if lineNumber < 256:
+        #TODO some better algorithm for block wrapping
         # if the last requested line number was 255, wrap to next block of lines 
         if LastRequest == 255 and lineNumber == 0:
             LineBlock += 1
         # store requested line number for next request
         LastRequest = lineNumber
         # adjust actual line number according to current block
-        lineNumber  += LineBlock*255
+        imgLineNumber = lineNumber
+        imgLineNumber += LineBlock*256
 
         # build output message and screen output
         msg = ''
         for x in range(0, knit_img_width):
-            pxl = knit_img.getpixel((x, lineNumber))            
-            if pxl == 255:
+            pxl = knit_img.getpixel((x, imgLineNumber))            
+            if pxl == 255: # contrast color
                 # take the image offset into account
                 setPixel(bytes,x+ImgStartNeedle)
                 msg += "#"
             else:
                 msg += '-'
-        print msg + str(lineNumber)
+        msg += str(imgLineNumber)
+        msg += ' '
+        msg += str(lineNumber)
+        msg += ' '
+        print msg + str(LineBlock)
 
-        if lineNumber == knit_img_height-1:
+        if imgLineNumber == knit_img_height-1:
             lastLine = 0x01
         else:
             lastLine = 0x00
@@ -220,6 +228,8 @@ def a_rotateImage():
     knit_img_width  = knit_img.size[0]
     knit_img_height = knit_img.size[1]
 
+    calc_imgStartStopNeedles()
+
 
 def a_resizeImage():
     """resize the image to a given width, keeping the aspect ratio"""
@@ -258,6 +268,21 @@ def a_setImagePosition():
     print "<position from left>"
     print ""
     ImgPosition = raw_input("Image Position: ")
+    return
+
+def a_setStartLine():
+    global StartLine
+    global LineBlock
+
+    StartLine = int(raw_input("Start Line: "))
+    #Check if StartLine is in valid range (picture height)
+    if StartLine >= knit_img_height:
+        StartLine = 0
+        return
+        
+    #Modify Block Counter and fix StartLine if >255
+    LineBlock = int(StartLine/256)
+    StartLine %= 256
     return
 
 def a_showImagePosition():
@@ -349,8 +374,8 @@ def print_main_menu():
     print "KNITTING"
     print " 5 - set start and stop needle"
     print " 6 - set image position"
-    print " 7 - show image position"
-    print ""
+    print " 7 - set start line"
+    print " 8 - show image position"
     print " 9 - knit image with current settings"
     print ""
     print " 0 - Exit"
@@ -362,6 +387,7 @@ def print_main_menu():
     print ""
     print "Start Needle  : ", StartNeedle
     print "Stop Needle   : ", StopNeedle
+    print "Start Line    : ", StartLine+LineBlock*256, "- Line ", StartLine, " Block ", LineBlock
     print "Image position: ", ImgPosition
 
 
@@ -378,8 +404,9 @@ def mainFunction():
                 "3": a_resizeImage, 
                 "4": a_rotateImage, 
                 "5": a_setNeedles, 
-                "6": a_setImagePosition, 
-                "7": a_showImagePosition,
+                "6": a_setImagePosition,
+                "7": a_setStartLine, 
+                "8": a_showImagePosition,
                 "9": a_knitImage}    
     while True:
         os.system('cls' if os.name=='nt' else 'clear')
@@ -414,7 +441,8 @@ if __name__ == "__main__":
           knit_img_height = knit_img.size[1]
 
           StartNeedle = 80
-          StopNeedle  = 120
+          StopNeedle  = 119
+          StartLine   = 0
           ImgPosition = 'center'
           ImgStartNeedle = 0
           ImgStopNeedle  = 0
@@ -423,6 +451,8 @@ if __name__ == "__main__":
           LastRequest    = 0
 
           ser = serial.Serial('/dev/ttyACM0', 115200)
+
+          API_VERSION = 0x02
 
           mainFunction()
       else:
