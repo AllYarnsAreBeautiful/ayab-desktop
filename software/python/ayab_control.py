@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #This file is part of AYAB.
 #
 #    AYAB is free software: you can redistribute it and/or modify
@@ -78,7 +79,7 @@ def checkSerial( curState ):
         elif msgId == 0xC3: # cnfInfo
             print "> cnfInfo: Version=" + str(ord(line[1]))
             # reqInfo showed the right version, proceed to next state            
-            if curState == 's_init' and ord(line[1]) == 0x01:
+            if curState == 's_init' and ord(line[1]) == API_VERSION:
                 curState = 's_start'
             else:
                 curState = 's_abort'
@@ -148,7 +149,8 @@ def cnfLine(lineNumber):
         # store requested line number for next request
         LastRequest = lineNumber
         # adjust actual line number according to current block
-        imgLineNumber  += LineBlock*255
+        imgLineNumber = lineNumber
+        imgLineNumber += LineBlock*256
 
         # build output message and screen output
         msg = ''
@@ -162,7 +164,9 @@ def cnfLine(lineNumber):
                 msg += '-'
         msg += str(imgLineNumber)
         msg += ' '
-        print msg + str(lineNumber)
+        msg += str(lineNumber)
+        msg += ' '
+        print msg + str(LineBlock)
 
         if imgLineNumber == knit_img_height-1:
             lastLine = 0x01
@@ -224,6 +228,8 @@ def a_rotateImage():
     knit_img_width  = knit_img.size[0]
     knit_img_height = knit_img.size[1]
 
+    calc_imgStartStopNeedles()
+
 
 def a_resizeImage():
     """resize the image to a given width, keeping the aspect ratio"""
@@ -266,6 +272,7 @@ def a_setImagePosition():
 
 def a_setStartLine():
     global StartLine
+    global LineBlock
 
     StartLine = int(raw_input("Start Line: "))
     #Check if StartLine is in valid range (picture height)
@@ -274,11 +281,8 @@ def a_setStartLine():
         return
         
     #Modify Block Counter and fix StartLine if >255
-    LineBlock = int(StartLine/255)
-    StartLine %= 255
-    #DEBUG OUTPUT
-    print LineBlock
-    print StartLine
+    LineBlock = int(StartLine/256)
+    StartLine %= 256
     return
 
 def a_showImagePosition():
@@ -383,7 +387,7 @@ def print_main_menu():
     print ""
     print "Start Needle  : ", StartNeedle
     print "Stop Needle   : ", StopNeedle
-    print "Start Line    : ", StartLine
+    print "Start Line    : ", StartLine+LineBlock*256, "- Line ", StartLine, " Block ", LineBlock
     print "Image position: ", ImgPosition
 
 
@@ -437,7 +441,7 @@ if __name__ == "__main__":
           knit_img_height = knit_img.size[1]
 
           StartNeedle = 80
-          StopNeedle  = 120
+          StopNeedle  = 119
           StartLine   = 0
           ImgPosition = 'center'
           ImgStartNeedle = 0
@@ -447,6 +451,8 @@ if __name__ == "__main__":
           LastRequest    = 0
 
           ser = serial.Serial('/dev/ttyACM0', 115200)
+
+          API_VERSION = 0x02
 
           mainFunction()
       else:
