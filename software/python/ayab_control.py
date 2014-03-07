@@ -1,59 +1,37 @@
 # -*- coding: utf-8 -*-
 
 import ayab_communication
+import time
 
 class ayabControl(object):
-    def __init__(self):
-        self.__ayabCom = ayab_communication.ayabCommunication()
+    def __init__(self, options):
+        self.__API_VERSION  = 0x02
+        self.__ayabCom = ayab_communication.ayabCommunication(options.portname)
 
 
-    # def __checkSerial( curState ):
-    #     time.sleep(0.5) #TODO if problems in communication, tweak here
-    #     line = ''
-    #     while ser.inWaiting() > 0:
-    #         line += ser.read(1)
-    #         #line = ser.readline()    
+    def __checkSerial(self):
+        time.sleep(0.5) #TODO if problems in communication, tweak here
 
-    #     if line != '':
-    #         msgId = ord(line[0])            
-    #         if msgId == 0xC1:    # cnfStart
-    #             msg = "> cnfStart: "
-    #             if ord(line[1]) == 1:
-    #                 msg += "success"
-    #             else:
-    #                 msg += "failed"
-    #             print msg
+        line = self.__ayabCom.readLine()
 
-    #             # reqStart was successful, proceed to next state
-    #             if curState == 's_start' and ord(line[1]) == 1:
-    #                 curState = 's_operate'
-    #                 print "-----Ready to operate-----"
-    #             else:
-    #                 curState = 's_abort'
+        if line != '':
+            msgId = ord(line[0])            
+            if msgId == 0xC1:    # cnfStart
+                print "> cnfStart: " + str(ord(line[1]))
+                return ("cnfStart", ord(line[1]))            
 
-    #         elif msgId == 0xC3: # cnfInfo
-    #             print "> cnfInfo: Version=" + str(ord(line[1]))
-    #             # reqInfo showed the right version, proceed to next state            
-    #             if curState == 's_init' and ord(line[1]) == API_VERSION:
-    #                 curState = 's_start'
-    #             else:
-    #                 curState = 's_abort'
+            elif msgId == 0xC3: # cnfInfo
+                print "> cnfInfo: Version=" + str(ord(line[1]))
+                return ("cnfInfo", ord(line[1]))
 
-    #         elif msgId == 0x82: #reqLine            
-    #             msg = "> reqLine: "
-    #             msg += str(ord(line[1]))
-    #             print msg
+            elif msgId == 0x82: #reqLine            
+                print "> reqLine: " + str(ord(line[1]))
+                return ("reqLine", ord(line[1]))
                 
-    #             if curState == 's_operate':
-    #                 _imgFinished = cnfLine(ord(line[1]))
-    #                 if _imgFinished:
-    #                     curState = 's_finished'
-    #         else:
-    #             print "unknown message: "
-    #             print line[:] #drop crlf
-    #             curState = 's_abort'
-
-    #     return curState
+            else:
+                print "> unknown message: " + line[:] #drop crlf
+                return ("unknown", 0)
+        return("none", 0)
 
 
     # def __cnfLine(lineNumber):  
@@ -111,39 +89,52 @@ class ayabControl(object):
 
 
     def knitImage(self, pImage):
-        _curState = 's_init'
-        _oldState = _curState
-        _reqSent  = 0
+        curState = 's_init'
+        oldState = 'none'
+        reqSent  = 0
 
-        self.__ayabCom.openSerial()
+        if self.__ayabCom.openSerial() == False:
+            return
 
-        # while True:
-        #     _curState = checkSerial(_curState)
+        while True:
+            # TODO catch keyboard interrupts
+            rcvMsg, rcvParam = self.__checkSerial()
 
-        #     if _oldState != _curState:
-        #         _reqSent = 0
-        #     elif _curState == 's_abort':
-        #         raw_input("press Enter")
-        #         return
+            if curState == 's_init':
+                if oldState != curState:
+                    self.__ayabCom.reqInfo()
 
-        #     if _curState == 's_init':
-        #         if _reqSent == 0:
-        #             serial_reqInfo()
-        #             _reqSent = 1
+                if rcvMsg == 'cnfInfo':
+                    if rcvParam == API_VERSION:
+                        curState == 's_start' 
+                    else:
+                        print "E: wrong API version: " + str(rcvParam) + (" (expected: )") + str(API_VERSION)
+                        return
 
-        #     elif _curState == 's_start':
-        #         if _reqSent == 0:
-        #             serial_reqStart()
-        #             _reqSent = 1     
+            if curState == 's_start':
+                if oldState != curState:
+                    self.__ayabCom.reqStart()
 
-        #     #elif _curState == 's_operate':
-        #     #    print "s_operate"
-        #     elif _curState == 's_finished':
-        #         print "Image finished"
-        #         raw_input("press Enter")
-        #         return
+                if rcvMsg == 'cnfStart':
+                    if rcvParam == 1:
+                        curState = 's_operate'
+                    else:
+                        print "E: device not ready"
+                        return
 
-        #     _oldState = _curState
+            if curState == 's_operate':
+                if rcvMsg == 'reqLine':
+                    imageFinished = self.__cnfLine(rcvParam)
+                    if imageFinished:
+                        curState = 's_finished'
+
+
+            if curState == 's_finished':
+                print "Image finished"
+                raw_input("press Enter")
+                return
+
+            oldState = curState
         
         return  
 
