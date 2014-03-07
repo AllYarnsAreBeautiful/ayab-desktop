@@ -4,144 +4,137 @@ import Image
 
 class ayabImage(object):
   def __init__(self, pFilename):
+    self.__imgPosition    = 'center'
+    self.__imgStartNeedle = '0'
+    self.__imgStopNeedle  = '0'
+
+    self.__knitStartNeedle = 80
+    self.__knitStopNeedle  = 119
+
+    self.__startLine  = 0
+    self.__startBlock = 0
+
     self.__origImage = Image.open(pFilename)
     self.__filename  = pFilename
 
-    # knitImage: Internal Dataformat
+    # TODO knitImage: convert to internal Dataformat
     self.__knitImage = self.__origImage
     self.__knitImage = self.__knitImage.convert('1') # convert to 1 bit depth
+    self.__calcImgStartStopNeedles()
+
+  def filename(self):
+    return self.__filename
+
+  def knitImage(self):
+    return self.__knitImage
+
+  def knitStartNeedle(self):
+    return self.__knitStartNeedle
+
+  def knitStopNeedle(self):
+    return self.__knitStopNeedle
+
+  def imgStartNeedle(self):
+    return self.__imgStartNeedle
+
+  def imgStopNeedle(self):
+    return self.__imgStopNeedle
+
+  def imgPosition(self):
+    return self.__imgPosition
+
+  def startLine(self):
+    return self.__startLine
+
+  def startBlock(self):
+    return self.__startBlock
+
+  def __calcImgStartStopNeedles(self):
+    if self.__imgPosition == 'center':
+        needleWidth = (self.__knitStopNeedle - self.__knitStartNeedle) +1
+        self.__imgStartNeedle = (self.__knitStartNeedle + needleWidth/2) - self.__knitImage.size[0]/2
+        self.__imgStopNeedle  = self.__imgStartNeedle + self.__knitImage.size[0] -1      
+
+    elif self.__imgPosition == 'left':
+        self.__imgStartNeedle = self.__knitStartNeedle
+        self.__imgStopNeedle  = self.__imgStartNeedle + self.__knitImage.size[0]
+
+    elif self.__imgPosition == 'right':
+        self.__imgStopNeedle = self.__knitStopNeedle
+        self.__imgStartNeedle = self.__imgStopNeedle - self.__knitImage.size[0]
+
+    elif int(self.__imgPosition) > 0 and int(self.__imgPosition) < 200:
+        self.__imgStartNeedle = int(self.__imgPosition)
+        self.__imgStopNeedle  = self.__imgStartNeedle + self.__knitImage.size[0]
+
+    else:
+        print "unknown alignment"
+        return False
+    return True
 
 
-  def showImage(self):
-    """
-    show the image in ASCII
-    """
-    for y in range(0, self.__knitImage.size[1]): #height
-        msg = ''
-        for x in range(0, self.__knitImage.size[0]): #width
-            pxl = self.__knitImage.getpixel((x, y))
-            if pxl == 255:
-                msg += "#"
-            else:
-                msg += '-'
-        print msg
-
-
-  # def invertImage():
-  #     """invert the pixels of the image"""
-  #     global knit_img
-
-  #     for y in range(0, knit_img_height):
-  #       for x in range(0, knit_img_width):
-  #         pxl = knit_img.getpixel((x, y))
-  #         if pxl == 255:
-  #           knit_img.putpixel((x,y),0)
-  #         else:
-  #           knit_img.putpixel((x,y),255)
-
-
-  # def rotateImage():
-  #     """rotate the image 90 degrees clockwise"""
-  #     global knit_img
-  #     global knit_img_width
-  #     global knit_img_height
-
-  #     print "rotating image 90 degrees..."
-  #     knit_img = knit_img.rotate(-90)
-  #     knit_img_width  = knit_img.size[0]
-  #     knit_img_height = knit_img.size[1]
-
-  #     calc_imgStartStopNeedles()
-
-
-  # def resizeImage():
-  #     """resize the image to a given width, keeping the aspect ratio"""
-  #     global knit_img
-  #     global knit_img_width
-  #     global knit_img_height
-
-  #     newWidth = int(raw_input("New Width (pixel): "))
-  #     wpercent = (newWidth/float(knit_img_width))
-  #     hsize = int((float(knit_img_height)*float(wpercent)))
-  #     knit_img = orig_img.resize((newWidth,hsize), Image.ANTIALIAS)
+  def invertImage(self):
+      """
+      invert the pixels of the image
+      """
+      for y in range(0, self.__knitImage.size[1]):
+        for x in range(0, self.__knitImage.size[0]):
+          pxl = self.__knitImage.getpixel((x, y))
+          if pxl == 255:
+            self.__knitImage.putpixel((x,y),0)
+          else:
+            self.__knitImage.putpixel((x,y),255)
       
-  #     knit_img_width  = knit_img.size[0]
-  #     knit_img_height = knit_img.size[1]
 
-  #     a_showImagePosition()
+  def rotateImage(self):
+      """
+      rotate the image 90 degrees clockwise
+      """
+      print "rotating image 90 degrees..."
+      self.__knitImage = self.__knitImage.rotate(-90)
 
-
-  # def setNeedles():
-  #     """set the start and stop needle"""
-  #     global StartNeedle
-  #     global StopNeedle
-      
-  #     StartNeedle = int(raw_input("Start Needle (0 <= x <= 198): "))
-  #     StopNeedle  = int(raw_input("Stop Needle  (1 <= x <= 199): "))
+      self.__calcImgStartStopNeedles()
 
 
-  # def setImagePosition():
-  #     global ImgPosition
+  def resizeImage(self, pNewWidth):
+      """
+      resize the image to a given width, keeping the aspect ratio
+      """
+      wpercent = (pNewWidth/float(self.__knitImage.size[0]))
+      hsize = int((float(self.__knitImage.size[1])*float(wpercent)))
+      self.__knitImage = self.__knitImage.resize((pNewWidth,hsize), Image.ANTIALIAS)
 
-  #     print "Allowed options:"
-  #     print ""
-  #     print "center"
-  #     print "alignLeft"
-  #     print "alignRight"
-  #     print "<position from left>"
-  #     print ""
-  #     ImgPosition = raw_input("Image Position: ")
-  #     return
+      self.__calcImgStartStopNeedles()
 
-  # def setStartLine():
-  #     global StartLine
-  #     global LineBlock
 
-  #     StartLine = int(raw_input("Start Line: "))
-  #     #Check if StartLine is in valid range (picture height)
-  #     if StartLine >= knit_img_height:
-  #         StartLine = 0
-  #         return
-          
-  #     #Modify Block Counter and fix StartLine if >255
-  #     LineBlock = int(StartLine/256)
-  #     StartLine %= 256
-  #     return
+  def setKnitNeedles(self, pKnitStart, pKnitStop):
+      """
+      set the start and stop needle
+      """      
+      self.__knitStartNeedle = pKnitStart
+      self.__knitStopNeedle  = pKnitStop
 
-  # def showImagePosition():
-  #     """show the current positioning of the image"""
 
-  #     calc_imgStartStopNeedles()
-      
-  #     print "Image Start: ", ImgStartNeedle
-  #     print "Image Stop : ", ImgStopNeedle  
-  #     print ""
+  def setImagePosition(self, pImgPosition):
+      """
+      set the position of the pattern
+      """
+      self.__imgPosition = pImgPosition
+      self.__calcImgStartStopNeedles()
+      return
 
-  #     # print markers for active area and knitted image
-  #     msg = '|'
-  #     for i in range(0,200):
-  #         if i >= StartNeedle and i <= StopNeedle:
-  #             if i >= ImgStartNeedle and i <= ImgStopNeedle:
-  #                 msg += 'x'
-  #             else:          
-  #                 msg += '-'
-  #         else:
-  #             msg += '_'
-  #     msg += '|'
-  #     print msg
+  def setStartLine(self, pStartLine):
+      """
+      set the line where to start knitting
+      """
+      #Check if StartLine is in valid range (picture height)
+      if pStartLine >= self.__knitImage.size[1]:
+          return
 
-  #     # print markers at multiples of 10
-  #     msg = '|'
-  #     for i in range(0,200):
-  #         if i == 100:
-  #             msg += '|'
-  #         else:
-  #             if (i % 10) == 0:
-  #                 msg += '^'
-  #             else:
-  #                 msg += ' '
-  #     msg += '|'
-  #     print msg
+      self.__startLine = pStartLine    
 
-  #     raw_input("press Enter")
-  #         
+      #Modify Block Counter and fix StartLine if >255
+      self.__startBlock = int(self.__startLine/256)
+      self.__startLine %= 256
+      return
+       

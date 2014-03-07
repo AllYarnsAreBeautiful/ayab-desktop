@@ -108,7 +108,8 @@ class ayabControl(object):
                     if rcvParam == API_VERSION:
                         curState == 's_start' 
                     else:
-                        print "E: wrong API version: " + str(rcvParam) + (" (expected: )") + str(API_VERSION)
+                        print "E: wrong API version: " + str(rcvParam) \
+                            + (" (expected: )") + str(API_VERSION)
                         return
 
             if curState == 's_start':
