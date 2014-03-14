@@ -43,6 +43,7 @@ def showImage(image):
             else:
                 msg += '-'
         print msg
+    image.imageToIntern()
     raw_input("press any key")
 
 
@@ -182,9 +183,6 @@ if __name__ == '__main__':
     # Parse command line options
     parser = OptionParser("%prog [filename] [options]", \
         description = "AYAB Control Commandline Version")
-    parser.add_option("-f", "--file", \
-        dest = "filename", \
-        help = "Filename of the image to knit")
     parser.add_option("-p", "--port", \
         dest = "portname", \
         metavar= "PORT", \
