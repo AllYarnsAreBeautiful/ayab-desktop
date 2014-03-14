@@ -49,6 +49,51 @@ class ayabImage(object):
   def startBlock(self):
     return self.__startBlock
 
+  def imageToIntern(self):    
+    self.__knitData4Color = \
+      [[0 for i in range(self.__knitImage.size[0])] \
+      for j in range(self.__knitImage.size[1])]
+
+    # Distill image to 4 colors
+    for y in range(0, self.__knitImage.size[1]):
+      msg = ''
+      for x in range(0, self.__knitImage.size[0]):
+        pxl = self.__knitImage.getpixel((x, y))
+        if pxl >= 0 and pxl < 64: # color A
+          msg += '-'
+          self.__knitData4Color[y][x] = 0
+        elif pxl >= 64 and pxl < 128:
+          msg += ':'
+          self.__knitData4Color[y][x] = 1
+        elif pxl >= 128 and pxl < 192:
+          msg += '#'
+          self.__knitData4Color[y][x] = 2
+        elif pxl >= 192 and pxl < 256:
+          msg += '+'
+          self.__knitData4Color[y][x] = 3
+      print msg
+
+    print(self.__knitData4Color)
+
+    print len(self.__knitData4Color) #row
+    print len(self.__knitData4Color[0]) #col
+    self.__knitDataExpanded = \
+      [[0 for i in range(len(self.__knitData4Color[0]))] \
+      for j in range(4*len(self.__knitData4Color))]
+
+    print len(self.__knitDataExpanded) #row
+    print len(self.__knitDataExpanded[0]) #col
+      # Expand knitData to a line per color
+    for y in range(len(self.__knitData4Color)):
+      msg = ''
+      # Extract colors from each line
+      # TODO implement
+      for x in range(len(self.__knitData4Color[0])):
+        # Set pixels in current color-line
+        # TODO implement
+        msg += str(self.__knitDataExpanded[y][x])
+      print msg
+
   def __calcImgStartStopNeedles(self):
     if self.__imgPosition == 'center':
         needleWidth = (self.__knitStopNeedle - self.__knitStartNeedle) +1
