@@ -34,16 +34,15 @@ def showImage(image):
     """
     show the image in ASCII
     """
-    for y in range(0, image.knitImage().size[1]): #height
+    for y in range(0, image.image().size[1]): #height
         msg = ''
-        for x in range(0, image.knitImage().size[0]): #width
-            pxl = image.knitImage().getpixel((x, y))
+        for x in range(0, image.image().size[0]): #width
+            pxl = image.image().getpixel((x, y))
             if pxl == 255:
                 msg += "#"
             else:
                 msg += '-'
         print msg
-    image.imageToIntern()
     raw_input("press any key")
 
 
@@ -134,9 +133,9 @@ def print_main_menu(image):
     print " 0 - Exit"
     print ""
     print "INFORMATION"
+    print "Machine Type  : ", options.machine_type
+    print "Colors        : ", options.num_colors
     print "Filename      : ", image.filename()
-    # print "Original Image: ", orig_img.size, orig_img.mode
-    # print "Knitting Image: ", knit_img.size, "black/white" #knit_img.mode
     print ""
     print "Start Needle  : ", image.knitStartNeedle()
     print "Stop Needle   : ", image.knitStopNeedle()
@@ -184,16 +183,27 @@ if __name__ == '__main__':
     parser = OptionParser("%prog [filename] [options]", \
         description = "AYAB Control Commandline Version")
     parser.add_option("-p", "--port", \
-        dest = "portname", \
-        metavar= "PORT", \
+        dest    = "portname", \
+        metavar = "PORT", \
         default = "/dev/ttyACM0", \
-        help = "Serial Port used for communication" \
+        help    = "Serial Port used for communication" \
         " with the machine [default: %default]")
+    parser.add_option("-c", "--colors", \
+        dest    = "num_colors", \
+        metavar = "COLORS", \
+        type    = "int", \
+        default = 2, \
+        help    = "Number of Colors of your image [default: %default]")
+    parser.add_option("-t", "--type", \
+        dest    = "machine_type", \
+        metavar = "TYPE", \
+        default = "single", \
+        help    = "Set the type of the machine (single/double bed) [%default]")
     parser.add_option("-l", "--list", \
-        dest = "list", \
-        action="store_true", \
+        dest    = "list", \
+        action  ="store_true", \
         default = False, \
-        help = "List all available serial ports and exit [default: %default]")
+        help    = "List all available serial ports and exit [default: %default]")
 
     (options, args) = parser.parse_args()
 
@@ -202,7 +212,10 @@ if __name__ == '__main__':
       sys.exit(0)
 
     if len(args):
-      m_image = ayab_image.ayabImage(args[0])
+      # TODO Validation of options.num_colors parameter
+      # TODO Validation of options.machine_type parameter
+      m_image = ayab_image.ayabImage(args[0], \
+                                      options.num_colors)
     
       m_ayabControl = ayab_control.ayabControl(options)
 
