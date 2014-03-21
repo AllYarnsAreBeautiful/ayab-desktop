@@ -3,10 +3,24 @@
 import ayab_communication
 import time
 
+# TODO insert logging
+
 class ayabControl(object):
     def __init__(self, options):
         self.__API_VERSION  = 0x02
         self.__ayabCom = ayab_communication.ayabCommunication(options.portname)
+
+        self.__formerRequest = 0
+        self.__lineBlock     = 0
+
+    # TODO decision: callback vs. python logger
+    # http://stackoverflow.com/questions/1904351/python-observer-pattern-examples-tips
+    # vs.
+    # http://docs.python.org/2/library/logging.html
+    #     self.callbacks = []
+
+    # def subscribe(self, callback):
+    #     self.callbacks.append(callback)
 
 
     def __checkSerial(self):
@@ -34,70 +48,77 @@ class ayabControl(object):
         return("none", 0)
 
 
-    # def __cnfLine(lineNumber):  
-    #     #TODO optimize performance
-    #     global LastRequest  
-    #     global LineBlock
-    #     #initialize bytearray to 0x00
-    #     bytes = bytearray(25)
-    #     for x in range(0,25):
-    #         bytes[x] = 0x00
+    def __cnfLine(self, lineNumber):  
+        imgHeight = self.__image.imgHeight()
+        #TODO optimize performance
+        #initialize bytearray to 0x00
+        bytes = bytearray(25)
+        for x in range(0,25):
+            bytes[x] = 0x00
 
-    #     if lineNumber < 256:
-    #         #TODO some better algorithm for block wrapping
-    #         # if the last requested line number was 255, wrap to next block of lines 
-    #         if LastRequest == 255 and lineNumber == 0:
-    #             LineBlock += 1
-    #         # store requested line number for next request
-    #         LastRequest = lineNumber
-    #         # adjust actual line number according to current block
-    #         imgLineNumber = lineNumber
-    #         imgLineNumber += LineBlock*256
+        if lineNumber < 256:
+            #TODO some better algorithm for block wrapping
+            # if the last requested line number was 255, wrap to next block of lines 
+            if self.__formerRequest == 255 and lineNumber == 0:
+                self.__lineBlock += 1
+            # store requested line number for next request
+            self.__formerRequest = lineNumber
 
-    #         # build output message and screen output
-    #         msg = ''
-    #         for x in range(0, knit_img_width):
-    #             pxl = knit_img.getpixel((x, imgLineNumber))            
-    #             if pxl == 255: # contrast color
-    #                 # take the image offset into account
-    #                 setPixel(bytes,x+ImgStartNeedle)
-    #                 msg += "#"
-    #             else:
-    #                 msg += '-'
-    #         msg += str(imgLineNumber)
-    #         msg += ' '
-    #         msg += str(lineNumber)
-    #         msg += ' '
-    #         print msg + str(LineBlock)
+            # TODO decide which line to send according to machine type and amount of colors
+            #
+            #
 
-    #         if imgLineNumber == knit_img_height-1:
-    #             lastLine = 0x01
-    #         else:
-    #             lastLine = 0x00
+            # adjust actual line number according to current block
+            imgLineNumber = lineNumber
+            imgLineNumber += self.__lineBlock*256
 
-    #         # TODO implement CRC8
-    #         crc8 = 0x00
+            # build output message and screen output
+            msg = ''
+            for col in range(0, self.__image.imgWidth()):
+                pxl = (self.__image.imageIntern())[imgLineNumber][col] 
+                
+                # take the image offset into account
+                #setPixel(bytes,x+ImgStartNeedle)
+                msg += str(pxl)
 
-    #         serial_cnfLine(lineNumber, bytes, lastLine, crc8)
-    #     else:
-    #         print "requested lineNumber out of range"
+            msg += str(imgLineNumber)
+            msg += ' '
+            msg += str(lineNumber)
+            msg += ' '
+            print msg + str(self.__lineBlock)
 
-    #     if lineNumber == knit_img_height-1:
-    #         return 1 # image finished 
-    #     else:
-    #         return 0
+            if imgLineNumber == imgHeight-1:
+                lastLine = 0x01
+            else:
+                lastLine = 0x00
+
+            # TODO implement CRC8
+            crc8 = 0x00
+
+            self.__ayabCom.cnfLine(lineNumber, bytes, lastLine, crc8)
+        else:
+            print "requested lineNumber out of range"
+
+        if lineNumber == imgHeight-1:
+            return 1 # image finished 
+        else:
+            return 0
 
 
     def knitImage(self, pImage):
+        self.__formerRequest = 0
+        self.__image         = pImage
+        self.__lineBlock     = pImage.startBlock()
+        
+        API_VERSION = self.__API_VERSION
         curState = 's_init'
         oldState = 'none'
-        reqSent  = 0
 
         if self.__ayabCom.openSerial() == False:
             return
 
         while True:
-            # TODO catch keyboard interrupts
+            # TODO catch keyboard interrupts to abort knitting
             rcvMsg, rcvParam = self.__checkSerial()
 
             if curState == 's_init':
@@ -110,17 +131,21 @@ class ayabControl(object):
                     else:
                         print "E: wrong API version: " + str(rcvParam) \
                             + (" (expected: )") + str(API_VERSION)
+                        raw_input("press Enter")
                         return
 
             if curState == 's_start':
                 if oldState != curState:
-                    self.__ayabCom.reqStart()
+                    self.__ayabCom.reqStart(self.__image.knitStartNeedle(), \
+                        self.__image.knitStopNeedle() ,
+                        self.__image.startLine() )
 
                 if rcvMsg == 'cnfStart':
                     if rcvParam == 1:
                         curState = 's_operate'
                     else:
                         print "E: device not ready"
+                        raw_input("press Enter")
                         return
 
             if curState == 's_operate':

@@ -3,11 +3,10 @@ import os
 import sys
 import serial
 
+from optparse import OptionParser
+
 import ayab_image
 import ayab_control
-
-# Commandline Parameter Parsing
-from optparse import OptionParser
 
 VERSION = "1.1"
 
@@ -34,16 +33,14 @@ def showImage(image):
     """
     show the image in ASCII
     """
-    for y in range(0, image.image().size[1]): #height
+    for row in range(0, image.imgHeight()):
         msg = ''
-        for x in range(0, image.image().size[0]): #width
-            pxl = image.image().getpixel((x, y))
-            if pxl == 255:
-                msg += "#"
-            else:
-                msg += '-'
+        for col in range(0, image.imgWidth()):
+            # TODO Mapping of color numbers to
+            # fancy ascii representation
+            msg += str((image.imageIntern())[row][col])
         print msg
-    raw_input("press any key")
+    raw_input("press Enter")
 
 
 def showImagePosition(image):
@@ -84,13 +81,14 @@ def showImagePosition(image):
                   msg += ' '
       msg += '|'
       print msg
-      raw_input("press any key")
+      raw_input("press Enter")
 
 
 def resizeImage(image):
   image.resizeImage(int(raw_input("New Width (pixel): ")))
 
 def setKnitNeedles(image):
+  # TODO Change to Green/Orange 100-0-100 range
   startNeedle = int(raw_input("Start Needle (0 <= x <= 198): "))
   stopNeedle  = int(raw_input("Stop Needle  (1 <= x <= 199): "))
   image.setKnitNeedles(startNeedle,stopNeedle)
@@ -140,7 +138,7 @@ def print_main_menu(image):
     print "Start Needle  : ", image.knitStartNeedle()
     print "Stop Needle   : ", image.knitStopNeedle()
     print "Start Line    : ", image.startLine()+image.startBlock()*256, \
-      "- Line ", image.startLine(), " Block ", image.startBlock()
+      "(Block: ", image.startBlock(), ", Line: ", image.startLine(), ")"
     print "Image position: ", image.imgPosition()
   
 
@@ -148,8 +146,15 @@ def no_such_action():
     print "Please make a valid selection"
 
 
-def mainFunction(image):
+def mainFunction(filename, options):
     """main"""
+    # TODO Validation of options.num_colors parameter
+    # TODO Validation of options.machine_type parameter
+    image = ayab_image.ayabImage(filename, \
+                                    options.num_colors)
+    
+    ayabControl = ayab_control.ayabControl(options)
+    
 
     actions = {"1": "showImage(image)", 
                 "2": "image.invertImage()",
@@ -158,8 +163,8 @@ def mainFunction(image):
                 "5": "setKnitNeedles(image)", 
                 "6": "setImagePosition(image)",
                 "7": "setStartLine(image)", 
-                "8": "showImagePosition(image)"
-                #"9": a_knitImage
+                "8": "showImagePosition(image)",
+                "9": "ayabControl.knitImage(image)"
                 }    
     while True:
         os.system('cls' if os.name=='nt' else 'clear')
@@ -212,13 +217,6 @@ if __name__ == '__main__':
       sys.exit(0)
 
     if len(args):
-      # TODO Validation of options.num_colors parameter
-      # TODO Validation of options.machine_type parameter
-      m_image = ayab_image.ayabImage(args[0], \
-                                      options.num_colors)
-    
-      m_ayabControl = ayab_control.ayabControl(options)
-
-      mainFunction(m_image)
+      mainFunction(args[0],options)
 
     sys.exit(0)
