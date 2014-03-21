@@ -22,11 +22,18 @@ class ayabImage(object):
     self.__image = self.__image.convert('L') # convert to 1 byte depth
     self.__updateImageData()
 
+
   def filename(self):
     return self.__filename
 
-  def image(self):
-    return self.__image
+  def imageIntern(self):
+    return self.__imageIntern
+
+  def imgWidth(self):
+    return self.__imgWidth
+
+  def imgHeight(self):
+    return self.__imgHeight
 
   def knitStartNeedle(self):
     return self.__knitStartNeedle
@@ -49,12 +56,14 @@ class ayabImage(object):
   def startBlock(self):
     return self.__startBlock
 
+
   def __updateImageData(self):
     self.__imgWidth   = self.__image.size[0]
     self.__imgHeight  = self.__image.size[1]      
 
     self.__convertImgToIntern()
     self.__calcImgStartStopNeedles()
+
 
   def __convertImgToIntern(self): 
     num_colors = self.__numColors
@@ -95,6 +104,7 @@ class ayabImage(object):
 
 
   def __calcImgStartStopNeedles(self):
+    # TODO improve error handling in case of invalid values
     if self.__imgPosition == 'center':
         needleWidth = (self.__knitStopNeedle - self.__knitStartNeedle) +1
         self.__imgStartNeedle = (self.__knitStartNeedle + needleWidth/2) - self.__image.size[0]/2
@@ -113,7 +123,6 @@ class ayabImage(object):
         self.__imgStopNeedle  = self.__imgStartNeedle + self.__image.size[0]
 
     else:
-        # print "unknown alignment"
         return False
     return True
 
@@ -183,4 +192,3 @@ class ayabImage(object):
       self.__startBlock = int(self.__startLine/256)
       self.__startLine %= 256
       return
-       

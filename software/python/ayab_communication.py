@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import serial
-from serial.tools import list_ports
-
 
 class ayabCommunication(object):
    def __init__(self, pPortname):
@@ -14,8 +12,9 @@ class ayabCommunication(object):
    def openSerial(self):
       try:
         self.__ser = serial.Serial(self.__portname, 115200)
-      except serial.SerialException:
+      except:
         print "E: could not open serial port " + self.__portname
+        raw_input("press Enter")
         return False
       return True
 
@@ -34,11 +33,11 @@ class ayabCommunication(object):
       return line
 
 
-   def reqStart(self):
+   def reqStart(self, startNeedle, stopNeedle, startLine):
       msg = chr(0x01)                     #msg id
-      msg += chr(int(StartNeedle))
-      msg += chr(int(StopNeedle))
-      msg += chr(int(StartLine))
+      msg += chr(int(startNeedle))
+      msg += chr(int(stopNeedle))
+      msg += chr(int(startLine))
       print "< reqStart"
       self.__ser.write(msg + '\n\r')
    
