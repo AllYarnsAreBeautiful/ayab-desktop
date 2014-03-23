@@ -29,6 +29,9 @@ class ayabImage(object):
   def imageIntern(self):
     return self.__imageIntern
 
+  def imageExpanded(self):
+    return self.__imageExpanded
+
   def imgWidth(self):
     return self.__imgWidth
 

@@ -126,6 +126,7 @@ def print_main_menu(image):
     print " 6 - set image position"
     print " 7 - set start line"
     print " 8 - show image position"
+    print ""
     print " 9 - knit image with current settings"
     print ""
     print " 0 - Exit"
@@ -148,8 +149,15 @@ def no_such_action():
 
 def mainFunction(filename, options):
     """main"""
-    # TODO Validation of options.num_colors parameter
-    # TODO Validation of options.machine_type parameter
+    if options.machine_type != 'single' \
+      and options.machine_type != 'double':
+      return "E: invalid machine type"
+    if options.machine_type == 'single' \
+      and options.num_colors != 2:
+      print "E: singlebed only supports 2 color knitting"
+      return 
+
+
     image = ayab_image.ayabImage(filename, \
                                     options.num_colors)
     
@@ -164,7 +172,7 @@ def mainFunction(filename, options):
                 "6": "setImagePosition(image)",
                 "7": "setStartLine(image)", 
                 "8": "showImagePosition(image)",
-                "9": "ayabControl.knitImage(image)"
+                "9": "ayabControl.knitImage(image, options)"
                 }    
     while True:
         os.system('cls' if os.name=='nt' else 'clear')
