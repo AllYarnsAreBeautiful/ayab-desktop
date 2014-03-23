@@ -2,6 +2,8 @@
 
 import serial
 
+#TODO implement logging
+
 class ayabCommunication(object):
    def __init__(self, pPortname):
       self.__portname = pPortname
