@@ -37,7 +37,7 @@ def showImage(image):
         msg = ''
         for col in range(0, image.imgWidth()):
             # TODO Mapping of color numbers to
-            # fancy ascii representation
+            #      fancy ascii representation
             msg += str((image.imageIntern())[row][col])
         print msg
     raw_input("press Enter")
@@ -138,8 +138,7 @@ def print_main_menu(image):
     print ""
     print "Start Needle  : ", image.knitStartNeedle()
     print "Stop Needle   : ", image.knitStopNeedle()
-    print "Start Line    : ", image.startLine()+image.startBlock()*256, \
-      "(Block: ", image.startBlock(), ", Line: ", image.startLine(), ")"
+    print "Start Line    : ", image.startLine()
     print "Image position: ", image.imgPosition()
   
 
@@ -150,10 +149,10 @@ def no_such_action():
 def mainFunction(filename, options):
     """main"""
     if options.machine_type != 'single' \
-      and options.machine_type != 'double':
+          and options.machine_type != 'double':
       return "E: invalid machine type"
     if options.machine_type == 'single' \
-      and options.num_colors != 2:
+          and options.num_colors != 2:
       print "E: singlebed only supports 2 color knitting"
       return 
 

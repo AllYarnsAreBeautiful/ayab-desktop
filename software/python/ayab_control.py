@@ -54,30 +54,34 @@ class ayabControl(object):
 
     def __cnfLine(self, lineNumber):  
         imgHeight = self.__image.imgHeight()
-        #TODO optimize performance
-        #initialize bytearray to 0x00
+
+        sendBlankLine = False
+
+        # TODO optimize performance
+        # initialize bytearray to 0x00
         bytes = bytearray(25)
         for x in range(0,25):
             bytes[x] = 0x00
 
         if lineNumber < 256:
-            #TODO some better algorithm for block wrapping
+            # TODO some better algorithm for block wrapping
             # if the last requested line number was 255, wrap to next block of lines 
             if self.__formerRequest == 255 and lineNumber == 0:
                 self.__lineBlock += 1
+
+            # adjust actual line number according to current block
+            imgLineNumber = lineNumber \
+                            + (self.__lineBlock*256) \
+                            + self.__startLine
+
             # store requested line number for next request
             self.__formerRequest = lineNumber
 
-            # adjust actual line number according to current block
-            imgLineNumber = lineNumber
-            imgLineNumber += self.__lineBlock*256
-
-
             #########################
-            # TODO decide which line to send according to machine type and amount of colors
+            # decide which line to send according to machine type and amount of colors
             # singlebed, 2 color
             if self.__machineType == 'single' \
-                and self.__numColors == 2:
+                    and self.__numColors == 2:
                 # 0   1   2   3   4 .. (imgLineNumber)
                 # |   |   |   |   | 
                 # 0 1 2 3 4 5 6 7 8 .. (imageExpanded)
@@ -85,7 +89,7 @@ class ayabControl(object):
 
             # doublebed, 2 color
             elif self.__machineType == 'double' \
-                and self.__numColors == 2:                
+                    and self.__numColors == 2:                
                 # 0 1 2 3 4 5 6 7 8 9 .. (imgLineNumber)
                 # | |  X  | |  X  | |
                 # 0 1 3 2 4 5 7 6 8 9 .. (imageExpanded)
@@ -98,28 +102,24 @@ class ayabControl(object):
             
             # doublebed, multicolor    
             elif self.__machineType == 'double' \
-                and self.__numColors > 2:                
-                # TODO adjust variable names
+                    and self.__numColors > 2:
+
                 if imgLineNumber % 2 == 0:
                     color = (imgLineNumber/2) % self.__numColors
                     block = imgLineNumber/(self.__numColors*2)
                     lineToSend = (block * self.__numColors) + color
                 else:
-                    # Send blank line
-                    # TODO implement
-                    pass
+                    sendBlankLine = True
             #########################
 
             # build output message and screen output
-            msg = ''
             for col in range(0, self.__image.imgWidth()):
                 pxl = (self.__image.imageExpanded())[lineToSend][col]                
                 # take the image offset into account
-                if pxl:
+                if pxl == True and sendBlankLine == False:
                     bytes = self.__setPixel(bytes,col+self.__image.imgStartNeedle())
 
-                msg += str(pxl)
-
+                msg  = str(pxl)
                 msg += str(imgLineNumber)
                 msg += ' '
                 msg += str(lineNumber)
@@ -139,7 +139,7 @@ class ayabControl(object):
         else:
             print "E: requested lineNumber out of range"
 
-        if lineNumber == imgHeight-1:
+        if lastLine:
             return 1 # image finished 
         else:
             return 0 # keep knitting
@@ -148,7 +148,7 @@ class ayabControl(object):
     def knitImage(self, pImage, pOptions):
         self.__formerRequest = 0
         self.__image         = pImage
-        self.__lineBlock     = pImage.startBlock()
+        self.__startLine     = pImage.startLine()
 
         self.__numColors     = pOptions.num_colors
         self.__machineType   = pOptions.machine_type
@@ -180,8 +180,10 @@ class ayabControl(object):
             if curState == 's_start':
                 if oldState != curState:
                     self.__ayabCom.reqStart(self.__image.knitStartNeedle(), \
-                        self.__image.knitStopNeedle() ,
-                        self.__image.startLine() )
+                        self.__image.knitStopNeedle() , \
+                        # TODO remove startLine from machine API
+                        #self.__image.startLine() )
+                        0 )
 
                 if rcvMsg == 'cnfStart':
                     if rcvParam == 1:

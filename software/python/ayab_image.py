@@ -14,7 +14,6 @@ class ayabImage(object):
     self.__knitStopNeedle  = 119
 
     self.__startLine  = 0
-    self.__startBlock = 0
 
     self.__image = Image.open(pFilename)
     self.__filename  = pFilename
@@ -55,9 +54,6 @@ class ayabImage(object):
 
   def startLine(self):
     return self.__startLine
-
-  def startBlock(self):
-    return self.__startBlock
 
 
   def __updateImageData(self):
@@ -107,7 +103,6 @@ class ayabImage(object):
 
 
   def __calcImgStartStopNeedles(self):
-    # TODO improve error handling in case of invalid values
     if self.__imgPosition == 'center':
         needleWidth = (self.__knitStopNeedle - self.__knitStartNeedle) +1
         self.__imgStartNeedle = (self.__knitStartNeedle + needleWidth/2) - self.__image.size[0]/2
@@ -137,11 +132,9 @@ class ayabImage(object):
       for y in range(0, self.__image.size[1]):
         for x in range(0, self.__image.size[0]):
           pxl = self.__image.getpixel((x, y))
-          if pxl == 255:
-            self.__image.putpixel((x,y),0)
-          else:
-            self.__image.putpixel((x,y),255)
+          self.__image.putpixel((x,y),255-pxl)
       self.__updateImageData()
+      return
       
 
   def rotateImage(self):
@@ -152,6 +145,7 @@ class ayabImage(object):
       self.__image = self.__image.rotate(-90)
 
       self.__updateImageData()
+      return
 
 
   def resizeImage(self, pNewWidth):
@@ -163,22 +157,36 @@ class ayabImage(object):
       self.__image = self.__image.resize((pNewWidth,hsize), Image.ANTIALIAS)
 
       self.__updateImageData()
+      return
 
 
   def setKnitNeedles(self, pKnitStart, pKnitStop):
       """
       set the start and stop needle
       """      
-      self.__knitStartNeedle = pKnitStart
-      self.__knitStopNeedle  = pKnitStop
+      if (pKnitStart < pKnitStop) \
+          and pKnitStart >= 0 \
+          and pKnitStop < 200:
+        self.__knitStartNeedle = pKnitStart
+        self.__knitStopNeedle  = pKnitStop
+      return
 
 
   def setImagePosition(self, pImgPosition):
       """
       set the position of the pattern
       """
-      self.__imgPosition = pImgPosition
-      self.__calcImgStartStopNeedles()
+      ok = False
+      if pImgPosition == 'left' \
+            or pImgPosition == 'center' \
+            or pImgPosition == 'right':
+        ok = True
+      elif (int(pImgPosition) >= 0 and int(pImgPosition) < 200):
+        ok = True
+
+      if ok:
+        self.__imgPosition = pImgPosition
+        self.__updateImageData()
       return
 
   def setStartLine(self, pStartLine):
@@ -186,12 +194,7 @@ class ayabImage(object):
       set the line where to start knitting
       """
       #Check if StartLine is in valid range (picture height)
-      if pStartLine >= self.__image.size[1]:
-          return
-
-      self.__startLine = pStartLine    
-
-      #Modify Block Counter and fix StartLine if >255
-      self.__startBlock = int(self.__startLine/256)
-      self.__startLine %= 256
+      if pStartLine >= 0 \
+            and pStartLine < self.__image.size[1]:
+        self.__startLine = pStartLine
       return
