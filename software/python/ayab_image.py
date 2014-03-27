@@ -79,7 +79,7 @@ class ayabImage(object):
       for j in range(imgHeight)]
     self.__imageExpanded = \
       [[0 for i in range(imgWidth)] \
-      for j in range(4*imgHeight)]
+      for j in range(num_colors*imgHeight)]
 
     # Distill image to x colors
     for row in range(0, imgHeight):
@@ -95,7 +95,7 @@ class ayabImage(object):
             # amount of bits per color per line
             self.__imageColors[row][color]  += 1
             # colors separated per line
-            self.__imageExpanded[(4*row)+color][col] = 1
+            self.__imageExpanded[(num_colors*row)+color][col] = 1
     
     # print(self.__imageIntern)
     # print(self.__imageColors)

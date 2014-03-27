@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import time
 import serial
 
 #TODO implement logging
@@ -14,6 +15,7 @@ class ayabCommunication(object):
    def openSerial(self):
       try:
         self.__ser = serial.Serial(self.__portname, 115200)
+        time.sleep(1)
       except:
         print "E: could not open serial port " + self.__portname
         raw_input("press Enter")
@@ -40,12 +42,12 @@ class ayabCommunication(object):
       msg += chr(int(startNeedle))
       msg += chr(int(stopNeedle))
       msg += chr(int(startLine))
-      print "< reqStart"
+      #print "< reqStart"
       self.__ser.write(msg + '\n\r')
    
 
    def reqInfo(self):
-      print "< reqInfo"
+      #print "< reqInfo"
       self.__ser.write(chr(0x03) + '\n\r')
       
 
@@ -55,5 +57,5 @@ class ayabCommunication(object):
       msg += lineData                     # line data
       msg += chr(flags)                   # flags
       msg += chr(crc8)                    # crc8
-      print "< cnfLine"
+      #print "< cnfLine"
       self.__ser.write(msg + '\n\r')
