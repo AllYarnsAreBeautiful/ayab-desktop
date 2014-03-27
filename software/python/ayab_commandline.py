@@ -41,6 +41,7 @@ def showImage(image):
             #      fancy ascii representation
             msg += str((image.imageIntern())[row][col])
         print msg
+    print image.imageExpanded()
     raw_input("press Enter")
 
 

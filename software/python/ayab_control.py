@@ -22,9 +22,13 @@ class ayabControl(object):
     # def subscribe(self, callback):
     #     self.callbacks.append(callback)
 
+    def __setBit(self, int_type, offset):
+        mask = 1 << offset
+        return(int_type | mask)
+
     def __setPixel(self, bytearray, pixel):
         numByte = int(pixel/8)
-        bytearray[numByte] = setBit(int(bytearray[numByte]),pixel-(8*numByte))
+        bytearray[numByte] = self.__setBit(int(bytearray[numByte]),pixel-(8*numByte))
         return bytearray
 
     def __checkSerial(self):
@@ -35,15 +39,15 @@ class ayabControl(object):
         if line != '':
             msgId = ord(line[0])            
             if msgId == 0xC1:    # cnfStart
-                print "> cnfStart: " + str(ord(line[1]))
+                #print "> cnfStart: " + str(ord(line[1]))
                 return ("cnfStart", ord(line[1]))            
 
             elif msgId == 0xC3: # cnfInfo
-                print "> cnfInfo: Version=" + str(ord(line[1]))
+                #print "> cnfInfo: Version=" + str(ord(line[1]))
                 return ("cnfInfo", ord(line[1]))
 
             elif msgId == 0x82: #reqLine            
-                print "> reqLine: " + str(ord(line[1]))
+                #print "> reqLine: " + str(ord(line[1]))
                 return ("reqLine", ord(line[1]))
                 
             else:
@@ -104,10 +108,12 @@ class ayabControl(object):
             elif self.__machineType == 'double' \
                     and self.__numColors > 2:
 
+                color = (imgLineNumber/2) % self.__numColors
+                block = imgLineNumber/(self.__numColors*2)
+                lineToSend = (block * self.__numColors) + color
+
                 if imgLineNumber % 2 == 0:
-                    color = (imgLineNumber/2) % self.__numColors
-                    block = imgLineNumber/(self.__numColors*2)
-                    lineToSend = (block * self.__numColors) + color
+                    sendBlankLine = False
                 else:
                     sendBlankLine = True
             #########################
@@ -119,12 +125,12 @@ class ayabControl(object):
                 if pxl == True and sendBlankLine == False:
                     bytes = self.__setPixel(bytes,col+self.__image.imgStartNeedle())
 
-                msg  = str(pxl)
-                msg += str(imgLineNumber)
-                msg += ' '
-                msg += str(lineNumber)
-                msg += ' '
-            print msg + str(self.__lineBlock)
+            msg = str((self.__image.imageExpanded())[lineToSend])
+            msg += ' Image Line: ' + str(imgLineNumber)
+            msg += ' (lineToSend: ' + str(lineToSend)
+            msg += ', internal Line: ' + str(lineNumber)
+            msg += ', Block:' + str(self.__lineBlock) + ')'
+            print msg
 
             # Check if the last line of the image was requested
             if imgLineNumber == imgHeight-1:
@@ -163,14 +169,14 @@ class ayabControl(object):
         while True:
             # TODO catch keyboard interrupts to abort knitting
             rcvMsg, rcvParam = self.__checkSerial()
-
             if curState == 's_init':
                 if oldState != curState:
                     self.__ayabCom.reqInfo()
 
                 if rcvMsg == 'cnfInfo':
                     if rcvParam == API_VERSION:
-                        curState == 's_start' 
+                        curState = 's_start'                        
+                        raw_input(">Please init machine")
                     else:
                         print "E: wrong API version: " + str(rcvParam) \
                             + (" (expected: )") + str(API_VERSION)
@@ -188,6 +194,9 @@ class ayabControl(object):
                 if rcvMsg == 'cnfStart':
                     if rcvParam == 1:
                         curState = 's_operate'
+                        print "================="
+                        print ">Ready to Operate"
+                        print "================="
                     else:
                         print "E: device not ready"
                         raw_input("press Enter")
