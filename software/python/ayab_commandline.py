@@ -2,6 +2,7 @@
 import os
 import sys
 import serial
+import serial.tools.list_ports
 
 from optparse import OptionParser
 
@@ -210,7 +211,7 @@ if __name__ == '__main__':
         dest    = "machine_type", \
         metavar = "TYPE", \
         default = "single", \
-        help    = "Set the type of the machine (single/double bed) [%default]")
+        help    = "Set the type of the machine (single/double bed) [default: %default]")
     parser.add_option("-l", "--list", \
         dest    = "list", \
         action  ="store_true", \
