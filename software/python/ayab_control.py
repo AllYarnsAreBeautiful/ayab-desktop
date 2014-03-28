@@ -59,7 +59,9 @@ class ayabControl(object):
     def __cnfLine(self, lineNumber):  
         imgHeight = self.__image.imgHeight()
 
+        indexToSend   = 0
         sendBlankLine = False
+        lastLine      = 0x00
 
         # TODO optimize performance
         # initialize bytearray to 0x00
@@ -72,76 +74,99 @@ class ayabControl(object):
             # if the last requested line number was 255, wrap to next block of lines 
             if self.__formerRequest == 255 and lineNumber == 0:
                 self.__lineBlock += 1
-
-            # adjust actual line number according to current block
-            imgLineNumber = lineNumber \
-                            + (self.__lineBlock*256) \
-                            + self.__startLine
-
             # store requested line number for next request
             self.__formerRequest = lineNumber
+
+            # adjust lineNumber with current block
+            lineNumber = lineNumber \
+                            + (self.__lineBlock*256)
 
             #########################
             # decide which line to send according to machine type and amount of colors
             # singlebed, 2 color
             if self.__machineType == 'single' \
                     and self.__numColors == 2:
-                # 0   1   2   3   4 .. (imgLineNumber)
+
+                # calculate imgRow
+                imgRow = lineNumber + self.__startLine
+
+                # 0   1   2   3   4 .. (imgRow)
                 # |   |   |   |   | 
                 # 0 1 2 3 4 5 6 7 8 .. (imageExpanded)
-                lineToSend    = imgLineNumber * 2
+                indexToSend = imgRow * 2
+
+                # Check if the last line of the image was requested
+                if imgRow == imgHeight-1:
+                    lastLine = 0x01                    
 
             # doublebed, 2 color
             elif self.__machineType == 'double' \
-                    and self.__numColors == 2:                
-                # 0 1 2 3 4 5 6 7 8 9 .. (imgLineNumber)
+                    and self.__numColors == 2: 
+
+                # calculate imgRow
+                imgRow = int(lineNumber/2) + self.__startLine
+
+                # 0 0 1 1 2 2 3 3 4 4 .. (imgRow)
+                # 0 1 2 3 4 5 6 7 8 9 .. (lineNumber)
                 # | |  X  | |  X  | |
                 # 0 1 3 2 4 5 7 6 8 9 .. (imageExpanded)
-                if (imgLineNumber-2)%4 == 0:
-                    lineToSend = imgLineNumber+1
-                elif (imgLineNumber-2)%4 == 1:
-                    lineToSend = imgLineNumber-1
+                lenImgExpanded = len(self.__image.imageExpanded())
+                indexToSend = self.__startLine*2
+
+                if (lineNumber-2)%4 == 0:
+                    indexToSend += lineNumber+1
+
+                elif (lineNumber-2)%4 == 1:
+                    indexToSend += lineNumber-1
+                    if (imgRow == imgHeight-1) \
+                        and (indexToSend == lenImgExpanded-2):
+                        lastLine = 0x01 
                 else:
-                    lineToSend = imgLineNumber
+                    indexToSend += lineNumber
+                    if (imgRow == imgHeight-1) \
+                        and (indexToSend == lenImgExpanded-1):
+                        lastLine = 0x01 
             
             # doublebed, multicolor    
             elif self.__machineType == 'double' \
                     and self.__numColors > 2:
 
-                color = (imgLineNumber/2) % self.__numColors
-                block = imgLineNumber/(self.__numColors*2)
-                lineToSend = (block * self.__numColors) + color
+                # calculate imgRow
+                imgRow = int(lineNumber/(self.__numColors*2)) + self.__startLine
 
-                if imgLineNumber % 2 == 0:
-                    sendBlankLine = False
+                if (lineNumber % 2) == 0:
+                    color = (lineNumber/2) % self.__numColors
+                    indexToSend = (imgRow * self.__numColors) + color
+                    print "COLOR" + str(color)
                 else:
                     sendBlankLine = True
+
+                # TODO Check assignment
+                if imgRow == imgHeight-1:
+                    lastLine = 0x01 
             #########################
 
-            # build output message and screen output
+            # assign pixeldata
             for col in range(0, self.__image.imgWidth()):
-                pxl = (self.__image.imageExpanded())[lineToSend][col]                
+                pxl = (self.__image.imageExpanded())[indexToSend][col]                
                 # take the image offset into account
                 if pxl == True and sendBlankLine == False:
                     bytes = self.__setPixel(bytes,col+self.__image.imgStartNeedle())
 
-            msg = str((self.__image.imageExpanded())[lineToSend])
-            msg += ' Image Line: ' + str(imgLineNumber)
-            msg += ' (lineToSend: ' + str(lineToSend)
-            msg += ', internal Line: ' + str(lineNumber)
-            msg += ', Block:' + str(self.__lineBlock) + ')'
-            print msg
-
-            # Check if the last line of the image was requested
-            if imgLineNumber == imgHeight-1:
-                lastLine = 0x01
-            else:
-                lastLine = 0x00
 
             # TODO implement CRC8
             crc8 = 0x00
 
+            # send line to machine
             self.__ayabCom.cnfLine(lineNumber, bytes, lastLine, crc8)
+
+            # screen output
+            msg = str((self.__image.imageExpanded())[indexToSend])
+            msg += ' Image Row: ' + str(imgRow)
+            msg += ' (indexToSend: ' + str(indexToSend)
+            msg += ', reqLine: ' + str(lineNumber)
+            msg += ', reqBlock:' + str(self.__lineBlock) + ')'
+            print msg
         else:
             print "E: requested lineNumber out of range"
 
