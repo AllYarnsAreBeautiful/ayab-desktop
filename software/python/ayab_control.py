@@ -7,7 +7,7 @@ import time
 
 class ayabControl(object):
     def __init__(self, options):
-        self.__API_VERSION  = 0x02
+        self.__API_VERSION  = 0x03
         self.__ayabCom = ayab_communication.ayabCommunication(options.portname)
 
         self.__formerRequest = 0
@@ -76,6 +76,7 @@ class ayabControl(object):
                 self.__lineBlock += 1
             # store requested line number for next request
             self.__formerRequest = lineNumber
+            reqestedLine         = lineNumber
 
             # adjust lineNumber with current block
             lineNumber = lineNumber \
@@ -142,7 +143,8 @@ class ayabControl(object):
                     sendBlankLine = True
 
                 # TODO Check assignment
-                if imgRow == imgHeight-1:
+                if imgRow == imgHeight-1 \
+                    and (indexToSend == lenImgExpanded-1):
                     lastLine = 0x01 
             #########################
 
@@ -158,14 +160,15 @@ class ayabControl(object):
             crc8 = 0x00
 
             # send line to machine
-            self.__ayabCom.cnfLine(lineNumber, bytes, lastLine, crc8)
+            self.__ayabCom.cnfLine(reqestedLine, bytes, lastLine, crc8)
 
             # screen output
             msg = str((self.__image.imageExpanded())[indexToSend])
             msg += ' Image Row: ' + str(imgRow)
             msg += ' (indexToSend: ' + str(indexToSend)
-            msg += ', reqLine: ' + str(lineNumber)
-            msg += ', reqBlock:' + str(self.__lineBlock) + ')'
+            msg += ', reqLine: ' + str(reqestedLine)
+            msg += ', lineNumber: ' + str(lineNumber)
+            msg += ', lineBlock:' + str(self.__lineBlock) + ')'
             print msg
         else:
             print "E: requested lineNumber out of range"
@@ -211,10 +214,7 @@ class ayabControl(object):
             if curState == 's_start':
                 if oldState != curState:
                     self.__ayabCom.reqStart(self.__image.knitStartNeedle(), \
-                        self.__image.knitStopNeedle() , \
-                        # TODO remove startLine from machine API
-                        #self.__image.startLine() )
-                        0 )
+                        self.__image.knitStopNeedle() )
 
                 if rcvMsg == 'cnfStart':
                     if rcvParam == 1:

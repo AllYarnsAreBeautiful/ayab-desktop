@@ -37,11 +37,10 @@ class ayabCommunication(object):
       return line
 
 
-   def reqStart(self, startNeedle, stopNeedle, startLine):
+   def reqStart(self, startNeedle, stopNeedle):
       msg = chr(0x01)                     #msg id
       msg += chr(int(startNeedle))
       msg += chr(int(stopNeedle))
-      msg += chr(int(startLine))
       #print "< reqStart"
       self.__ser.write(msg + '\n\r')
    
