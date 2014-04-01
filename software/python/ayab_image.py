@@ -186,6 +186,8 @@ class ayabImage(object):
           and pKnitStop < 200:
         self.__knitStartNeedle = pKnitStart
         self.__knitStopNeedle  = pKnitStop
+        
+      self.__updateImageData()
       return
 
 

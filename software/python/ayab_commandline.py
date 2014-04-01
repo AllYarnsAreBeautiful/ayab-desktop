@@ -59,7 +59,6 @@ def showImage(image):
             #      fancy ascii representation
             msg += str((image.imageIntern())[row][col])
         print msg
-    print image.imageExpanded()
     raw_input("press Enter")
 
 
@@ -155,6 +154,8 @@ def print_main_menu(image):
     print "Machine Type  : ", options.machine_type
     print "Colors        : ", options.num_colors
     print "Filename      : ", image.filename()
+    print "Width         : ", image.imgWidth()
+    print "Height        : ", image.imgHeight()
     print ""
     print "Start Needle  : ", image.knitStartNeedle()
     print "Stop Needle   : ", image.knitStopNeedle()
