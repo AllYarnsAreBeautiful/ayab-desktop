@@ -1,8 +1,0 @@
-<RCC>
-    <qresource prefix="/">
-        <file>qml/main.qml</file>
-        <file>qml/content/DebugTab.qml</file>
-        <file>qml/content/LeftLayout.qml</file>
-        <file>qml/content/DesignerTab.qml</file>
-    </qresource>
-</RCC>
