@@ -18,9 +18,10 @@ class AYABControlGUI(QWidget):
         # LEFT BOX
         ####
         self.imgBox   = QVBoxLayout()
-        self.img = QImage()
-        self.pixmap = QPixmap()
-        self.img.
+        self.imgLabel = QLabel()
+        self.img = QImage("../../patterns/uc3.png")
+        self.imgLabel.setPixmap(QPixmap.fromImage(self.img))
+        self.imgBox.addWidget(self.imgLabel)
 
         self.consoleBox = QVBoxLayout()
         self.consoleField = QTextEdit()
