@@ -75,7 +75,7 @@ class ayabControl(object):
 
     def __cnfLine(self, lineNumber):  
         imgHeight = self.__image.imgHeight()
-
+        color         = 0
         indexToSend   = 0
         sendBlankLine = False
         lastLine      = 0x00
