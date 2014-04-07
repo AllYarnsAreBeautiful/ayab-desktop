@@ -23,21 +23,17 @@ import time
 # TODO insert logging
 
 class ayabControl(object):
-    def __init__(self, options):
+    def __init__(self, pCallback, options):
         self.__API_VERSION  = 0x03
-        self.__ayabCom = ayab_communication.ayabCommunication(options.portname)
+        self.__callback     = pCallback
+        self.__ayabCom      = ayab_communication.ayabCommunication(pCallback, options.portname)
 
         self.__formerRequest = 0
         self.__lineBlock     = 0
 
-    # TODO decision: callback vs. python logger
-    # http://stackoverflow.com/questions/1904351/python-observer-pattern-examples-tips
-    # vs.
-    # http://docs.python.org/2/library/logging.html
-    #     self.callbacks = []
 
-    # def subscribe(self, callback):
-    #     self.callbacks.append(callback)
+    def __printToConsole(self, pString):
+        self.__callback(pString)
 
     def __setBit(self, int_type, offset):
         mask = 1 << offset

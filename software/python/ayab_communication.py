@@ -23,19 +23,22 @@ import serial
 #TODO implement logging
 
 class ayabCommunication(object):
-   def __init__(self, pPortname):
+   def __init__(self, pCallback, pPortname):
+      self.__callback = pCallback
       self.__portname = pPortname
 
    def __del__(self): 
       self.closeSerial()
+
+   def __printToConsole(self, pString):
+      self.__callback(pString)
       
    def openSerial(self):
       try:
         self.__ser = serial.Serial(self.__portname, 115200)
         time.sleep(1)
       except:
-        print "E: could not open serial port " + self.__portname
-        raw_input("press Enter")
+        self.__printToConsole("E: could not open serial port " + self.__portname)
         return False
       return True
 

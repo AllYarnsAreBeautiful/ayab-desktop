@@ -20,7 +20,8 @@
 import Image
 
 class ayabImage(object):
-  def __init__(self, pFilename, pNumColors):
+  def __init__(self, pCallback, pFilename, pNumColors):
+    self.__callback       = pCallback
     self.__numColors      = pNumColors
 
     self.__imgPosition    = 'center'
@@ -73,6 +74,10 @@ class ayabImage(object):
     return self.__startLine
 
 
+  def __printToConsole(self, pString, pType):
+    self.__callback(self, pType, pString)
+
+
   def __updateImageData(self):
     self.__imgWidth   = self.__image.size[0]
     self.__imgHeight  = self.__image.size[1]      
@@ -113,7 +118,7 @@ class ayabImage(object):
             self.__imageColors[row][color]  += 1
             # colors separated per line
             self.__imageExpanded[(num_colors*row)+color][col] = 1
-    
+
     # print(self.__imageIntern)
     # print(self.__imageColors)
     # print(self.__imageExpanded)
