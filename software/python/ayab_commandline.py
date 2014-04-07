@@ -122,9 +122,16 @@ def setImagePosition(image):
   print ""
   image.setImagePosition(raw_input("Image Position: "))
 
+
 def setStartLine(image):
   image.setStartLine(int(raw_input("Start Line: ")))
 
+
+def printToTerminal(pSource, pString, pType):
+  print pSource
+  print pType
+  print pString
+  raw_input("Press Enter")
 
 def print_main_menu(image):
     """Print the main menu"""
@@ -178,10 +185,12 @@ def mainFunction(filename, options):
       return 
 
 
-    image = ayab_image.ayabImage(filename, \
+    image = ayab_image.ayabImage(printToTerminal, \
+                                    filename, \
                                     options.num_colors)
     
-    ayabControl = ayab_control.ayabControl(options)
+    ayabControl = ayab_control.ayabControl(printToTerminal, \
+                                            options)
     
 
     actions = {"1": "showImage(image)", 
