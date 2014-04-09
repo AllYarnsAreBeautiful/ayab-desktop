@@ -20,20 +20,27 @@
 import ayab_communication
 import time
 
-# TODO insert logging
-
 class ayabControl(object):
     def __init__(self, pCallback, options):
-        self.__API_VERSION  = 0x03
         self.__callback     = pCallback
-        self.__ayabCom      = ayab_communication.ayabCommunication(pCallback, options.portname)
+        self.__API_VERSION  = 0x03
+        self.__ayabCom      = ayab_communication.ayabCommunication(options.portname)
 
         self.__formerRequest = 0
         self.__lineBlock     = 0
 
+    def __printDebug(self, pString):
+        self.__callback(self, pString, "debug")
 
-    def __printToConsole(self, pString):
-        self.__callback(pString)
+    def __printPrompt(self, pString):
+        self.__callback(self, pString, "prompt")
+
+    def __printStream(self, pString):
+        self.__callback(self, pString, "stream")
+
+    def __printError(self, pString):
+        self.__callback(self, pString, "error")
+
 
     def __setBit(self, int_type, offset):
         mask = 1 << offset
@@ -64,7 +71,7 @@ class ayabControl(object):
                 return ("reqLine", ord(line[1]))
                 
             else:
-                print "> unknown message: " + line[:] #drop crlf
+                self.__printError("unknown message: " + line[:]) #drop crlf
                 return ("unknown", 0)
         return("none", 0)
 
@@ -151,7 +158,7 @@ class ayabControl(object):
                 if (lineNumber % 2) == 0:
                     color = (lineNumber/2) % self.__numColors
                     indexToSend = (imgRow * self.__numColors) + color
-                    print "COLOR" + str(color)
+                    self.__printPrompt("COLOR" + str(color))
                 else:
                     sendBlankLine = True
 
@@ -182,9 +189,9 @@ class ayabControl(object):
             msg += ', reqLine: ' + str(reqestedLine)
             msg += ', lineNumber: ' + str(lineNumber)
             msg += ', lineBlock:' + str(self.__lineBlock) + ')'
-            print msg
+            self.__printStream(msg)
         else:
-            print "E: requested lineNumber out of range"
+            self.__printError("requested lineNumber out of range")
 
         if lastLine:
             return 1 # image finished 
@@ -205,6 +212,7 @@ class ayabControl(object):
         oldState = 'none'
 
         if self.__ayabCom.openSerial() == False:
+            self.__printError("Could not open serial port")
             return
 
         while True:
@@ -217,11 +225,10 @@ class ayabControl(object):
                 if rcvMsg == 'cnfInfo':
                     if rcvParam == API_VERSION:
                         curState = 's_start'                        
-                        raw_input(">Please init machine")
+                        self.__printPrompt("Please init machine")
                     else:
-                        print "E: wrong API version: " + str(rcvParam) \
-                            + (" (expected: )") + str(API_VERSION)
-                        raw_input("press Enter")
+                        self.__printError("wrong API version: " + str(rcvParam) \
+                            + (" (expected: )") + str(API_VERSION))
                         return
 
             if curState == 's_start':
@@ -232,12 +239,9 @@ class ayabControl(object):
                 if rcvMsg == 'cnfStart':
                     if rcvParam == 1:
                         curState = 's_operate'
-                        print "================="
-                        print ">Ready to Operate"
-                        print "================="
+                        self.__printPrompt("Ready to Operate")
                     else:
-                        print "E: device not ready"
-                        raw_input("press Enter")
+                        self.__printError("device not ready")
                         return
 
             if curState == 's_operate':
@@ -247,8 +251,7 @@ class ayabControl(object):
                         curState = 's_finished'
 
             if curState == 's_finished':
-                print "Image finished"
-                raw_input("press Enter")
+                self.__printPrompt("Image finished")
                 return
 
             oldState = curState

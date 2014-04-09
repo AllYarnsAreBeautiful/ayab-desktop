@@ -3,15 +3,21 @@ import os
 import serial
 import serial.tools.list_ports
 from PySide.QtCore import *
-from PySide.QtGui import *
+from PySide.QtGui  import *
+
+from optparse import OptionParser
+
+import ayab_image
+import ayab_control
 
 qt_app = QApplication(sys.argv)
+
 
 class AYABControlGUI(QWidget):
     def __init__(self):
         QWidget.__init__(self)
         self.setMinimumSize(QSize(800,600))
-        self.setWindowTitle("AYAB Control GUI")
+        self.setWindowTitle("AYAB Control GUI 1.2")
 
 
         ####
@@ -54,9 +60,22 @@ class AYABControlGUI(QWidget):
 
         self.setLayout(self.layout)
 
+
+    @Slot()
+    def _loadImg(self):        
+        self.options.filename     = "../../patterns/uc3.png"
+        self.options.num_colors   = 2
+        self.options.machine_type = 'single'
+        
+        image = ayab_image.ayabImage(options.filename, \
+                                    options.num_colors)
+        pass
+
+
     def _createImgCtrlLayout(self):
         self.imgCtrlLayout = QFormLayout()
         self.btnLoadImage = QPushButton("Load Image", self)
+        self.btnLoadImage.clicked.connect(self._loadImg)
         self.btnRotate = QPushButton("Rotate", self)
         self.btnInvert = QPushButton("Invert", self)
         self.btnResize = QPushButton("Resize", self)
@@ -94,9 +113,9 @@ class AYABControlGUI(QWidget):
 
     def _createKnitCtrlLayout(self):
         self.knitCtrlLayout = QHBoxLayout()
-        self.comboPorts = QComboBox(self)
+        self.comboPorts     = QComboBox(self)
         self.comboPorts.addItems(self._getSerialPorts())
-        self.btnStartKnit = QPushButton("Start Knitting", self)
+        self.btnStartKnit   = QPushButton("Start Knitting", self)
         self.knitCtrlLayout.addWidget(self.comboPorts)
         self.knitCtrlLayout.addWidget(self.btnStartKnit)
 
@@ -124,8 +143,18 @@ class AYABControlGUI(QWidget):
 
         return _portList
 
-    def run(self):
+    def run(self, options):
+        self.options = options
         self.show()
         qt_app.exec_()
 
-AYABControlGUI().run()
+if __name__ == '__main__':
+    # Parse command line options
+    parser = OptionParser("%prog [filename] [options]", \
+        description = "AYAB Control GUI Version")
+
+    (options, args) = parser.parse_args()
+
+    AYABControlGUI().run(options)
+
+    sys.exit(0)

@@ -20,8 +20,7 @@
 import Image
 
 class ayabImage(object):
-  def __init__(self, pCallback, pFilename, pNumColors):
-    self.__callback       = pCallback
+  def __init__(self, pFilename, pNumColors):
     self.__numColors      = pNumColors
 
     self.__imgPosition    = 'center'
@@ -34,15 +33,14 @@ class ayabImage(object):
     self.__startLine  = 0
 
     self.__image = Image.open(pFilename)
-    self.__filename  = pFilename
+    self.__filename = pFilename
 
     self.__image = self.__image.convert('L') # convert to 1 byte depth
     self.__updateImageData()
 
-
   def filename(self):
     return self.__filename
-
+    
   def imageIntern(self):
     return self.__imageIntern
 
@@ -72,10 +70,6 @@ class ayabImage(object):
 
   def startLine(self):
     return self.__startLine
-
-
-  def __printToConsole(self, pString, pType):
-    self.__callback(self, pType, pString)
 
 
   def __updateImageData(self):
@@ -163,7 +157,6 @@ class ayabImage(object):
       """
       rotate the image 90 degrees clockwise
       """
-      print "rotating image 90 degrees..."
       self.__image = self.__image.rotate(-90)
 
       self.__updateImageData()
