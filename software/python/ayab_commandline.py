@@ -27,7 +27,7 @@ from optparse import OptionParser
 import ayab_image
 import ayab_control
 
-VERSION = "1.1"
+VERSION = "1.2"
 
 def getSerialPorts():
   """
@@ -127,11 +127,21 @@ def setStartLine(image):
   image.setStartLine(int(raw_input("Start Line: ")))
 
 
-def printToTerminal(pSource, pString, pType):
-  print pSource
-  print pType
-  print pString
+def mainCallback(pSource, pString, pType):
+  if pType == "stream":
+    print pString
+    return
+  
+  if pType == "error":
+    print "E: " + pString
+  elif pType == "debug":
+    print "D: " + pString
+  elif pType == "prompt":
+    print pString
+  
   raw_input("Press Enter")
+  return
+
 
 def print_main_menu(image):
     """Print the main menu"""
@@ -174,7 +184,7 @@ def no_such_action():
     print "Please make a valid selection"
 
 
-def mainFunction(filename, options):
+def mainFunction(options):
     """main"""
     if options.machine_type != 'single' \
           and options.machine_type != 'double':
@@ -185,11 +195,10 @@ def mainFunction(filename, options):
       return 
 
 
-    image = ayab_image.ayabImage(printToTerminal, \
-                                    filename, \
-                                    options.num_colors)
+    image = ayab_image.ayabImage(options.filename, \
+                                  options.num_colors)
     
-    ayabControl = ayab_control.ayabControl(printToTerminal, \
+    ayabControl = ayab_control.ayabControl(mainCallback, \
                                             options)
     
 
@@ -254,6 +263,7 @@ if __name__ == '__main__':
       sys.exit(0)
 
     if len(args):
-      mainFunction(args[0],options)
+      options.filename = args[0]
+      mainFunction(options)
 
     sys.exit(0)
