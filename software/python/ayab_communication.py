@@ -21,13 +21,14 @@ import time
 import serial
 
 class ayabCommunication(object):
-   def __init__(self, pPortname):
-      self.__portname = pPortname
+   def __init__(self):
+      pass
 
    def __del__(self): 
       self.closeSerial()
       
-   def openSerial(self):
+   def openSerial(self, pPortname):
+      self.__portname = pPortname
       try:
         self.__ser = serial.Serial(self.__portname, 115200)
         time.sleep(1)

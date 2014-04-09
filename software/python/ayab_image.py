@@ -27,8 +27,8 @@ class ayabImage(object):
     self.__imgStartNeedle = '0'
     self.__imgStopNeedle  = '0'
 
-    self.__knitStartNeedle = 80
-    self.__knitStopNeedle  = 119
+    self.__knitStartNeedle = 0
+    self.__knitStopNeedle  = 199
 
     self.__startLine  = 0
 
