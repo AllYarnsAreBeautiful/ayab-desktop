@@ -21,10 +21,10 @@ import ayab_communication
 import time
 
 class ayabControl(object):
-    def __init__(self, pCallback, options):
+    def __init__(self, pCallback):
         self.__callback     = pCallback
         self.__API_VERSION  = 0x03
-        self.__ayabCom      = ayab_communication.ayabCommunication(options.portname)
+        self.__ayabCom      = ayab_communication.ayabCommunication()
 
         self.__formerRequest = 0
         self.__lineBlock     = 0
@@ -211,7 +211,7 @@ class ayabControl(object):
         curState = 's_init'
         oldState = 'none'
 
-        if self.__ayabCom.openSerial() == False:
+        if self.__ayabCom.openSerial(pOptions.portname) == False:
             self.__printError("Could not open serial port")
             return
 

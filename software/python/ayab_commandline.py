@@ -198,8 +198,7 @@ def mainFunction(options):
     image = ayab_image.ayabImage(options.filename, \
                                   options.num_colors)
     
-    ayabControl = ayab_control.ayabControl(mainCallback, \
-                                            options)
+    ayabControl = ayab_control.ayabControl(mainCallback)
     
 
     actions = {"1": "showImage(image)", 

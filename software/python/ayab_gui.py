@@ -25,8 +25,8 @@ class AYABControlGUI(QWidget):
         ####
         self.imgBox   = QVBoxLayout()
         self.imgLabel = QLabel()
-        self.img = QImage("../../patterns/uc3.png")
-        self.imgLabel.setPixmap(QPixmap.fromImage(self.img))
+        #self.img = QImage("../../patterns/uc3.png")
+        #self.imgLabel.setPixmap(QPixmap.fromImage(self.img))
         self.imgBox.addWidget(self.imgLabel)
 
         self.consoleBox = QVBoxLayout()
@@ -60,28 +60,105 @@ class AYABControlGUI(QWidget):
 
         self.setLayout(self.layout)
 
+    def mainCallback(self, pSource, pString, pType):
+          if pType == "stream":
+            print pString
+            return
+          
+          if pType == "error":
+            print "E: " + pString
+          elif pType == "debug":
+            print "D: " + pString
+          elif pType == "prompt":
+            print pString
+          
+          return
 
     @Slot()
-    def _loadImg(self):        
+    def _loadImgSlot(self):        
+        # TODO File Open Dialogue
         self.options.filename     = "../../patterns/uc3.png"
-        self.options.num_colors   = 2
-        self.options.machine_type = 'single'
+        self._updateImgOnGui()
+
+    @Slot()
+    def _rotateImgSlot(self):
+        # TODO call rotate method
+        self._updateImgOnGui()
+
+    @Slot()
+    def _invertImgSlot(self):
+        # TODO call invert method
+        self._updateImgOnGui()
+
+    @Slot()
+    def _resizeImgeSlot(self):
+        # TODO call resize method
+        self._updateImgOnGui()
+
+    @Slot()
+    def _startLineChangedSlot(self):
+        try:
+            self._ayabImage.setStartLine(int(self.comboStartLine.currentText()))
+        except:
+            return
+
+    @Slot()
+    def _machineTypeChangedSlot(self):
+        self.options.machine_type = self.comboMachineType.currentText()
+        self._updateImgOnGui()
+
+    @Slot()
+    def _numColorsChangedSlot(self):
+        self.options.num_colors = int(self.comboNumColors.currentText())
+        print self.options.num_colors
+        self._updateImgOnGui()
+
+    @Slot()
+    def _needlesChangedSlot(self):
+        # TODO Error handling when setKnitNeedles fails
+        try:
+            self._ayabImage.setKnitNeedles(int(self.comboStartNeedle.currentText()), \
+                                        int(self.comboStopNeedle.currentText()))
+        except:
+            return
+
+    @Slot()
+    def _startKnitSlot(self):
+        ayabControl = ayab_control.ayabControl(self.mainCallback)
         
-        image = ayab_image.ayabImage(options.filename, \
+        ayabControl.knitImage(self._ayabImage,self.options)
+
+
+        
+    def _updateImgOnGui(self):
+        if self.options.filename == "":
+            return
+
+        try:
+            self._ayabImage = ayab_image.ayabImage(options.filename, \
                                     options.num_colors)
-        pass
+        except:
+            return
+
+        self.comboStartLine.clear()
+        for i in range(0, self._ayabImage.imgHeight()):
+            self.comboStartLine.addItem(str(i))
+
+        self.btnStartKnit.setEnabled(True)
+
+        self.img = QImage(self.options.filename)
+        self.imgLabel.setPixmap(QPixmap.fromImage(self.img))
 
 
     def _createImgCtrlLayout(self):
         self.imgCtrlLayout = QFormLayout()
         self.btnLoadImage = QPushButton("Load Image", self)
-        self.btnLoadImage.clicked.connect(self._loadImg)
+        self.btnLoadImage.clicked.connect(self._loadImgSlot)
         self.btnRotate = QPushButton("Rotate", self)
         self.btnInvert = QPushButton("Invert", self)
         self.btnResize = QPushButton("Resize", self)
         self.comboStartLine = QComboBox(self)
-        for i in range(10):
-            self.comboStartLine.addItem(str(i))
+        self.comboStartLine.currentIndexChanged.connect(self._startLineChangedSlot)
         
         self.imgCtrlLayout.addRow(self.btnLoadImage)
         self.imgCtrlLayout.addRow(self.btnRotate)
@@ -93,21 +170,36 @@ class AYABControlGUI(QWidget):
 
     def _createKnitSettingsLayout(self):
         self.knitSettingsLayout = QFormLayout()
+
+        self.comboMachineType = QComboBox(self)        
+        self.comboMachineType.addItems(['single','double'])
+        self.comboMachineType.currentIndexChanged.connect(self._machineTypeChangedSlot)
+        self.comboNumColors   = QComboBox(self)
+        self.comboNumColors.addItems(['2','3','4','5','6'])
+        self.comboNumColors.currentIndexChanged.connect(self._numColorsChangedSlot)        
+
         self.comboStartNeedle = QComboBox(self)
+        self.comboStartNeedle.currentIndexChanged.connect(self._needlesChangedSlot)
         self.comboStopNeedle  = QComboBox(self)
+        self.comboStopNeedle.currentIndexChanged.connect(self._needlesChangedSlot)
         for i in range(0,199):
             self.comboStartNeedle.addItem(str(i))
         for i in range(1,200):
             self.comboStopNeedle.addItem(str(i))
 
-        self.alignments = ['left', 'center', 'right']
         self.comboAlignments = QComboBox(self)
-        self.comboAlignments.addItems(self.alignments)
+        self.comboAlignments.addItems(['left', 'center', 'right'])
 
-
-        self.knitSettingsLayout.addRow("Start Needle", self.comboStartNeedle)
-        self.knitSettingsLayout.addRow("Stop Needle", self.comboStopNeedle)
-        self.knitSettingsLayout.addRow("Alignment", self.comboAlignments)
+        self.knitSettingsLayout.addRow("Machine Type", \
+                                        self.comboMachineType)
+        self.knitSettingsLayout.addRow("Colors", \
+                                        self.comboNumColors)
+        self.knitSettingsLayout.addRow("Start Needle", \
+                                        self.comboStartNeedle)
+        self.knitSettingsLayout.addRow("Stop Needle", \
+                                        self.comboStopNeedle)
+        self.knitSettingsLayout.addRow("Alignment", \
+                                        self.comboAlignments)
 
         return self.knitSettingsLayout
 
@@ -116,6 +208,8 @@ class AYABControlGUI(QWidget):
         self.comboPorts     = QComboBox(self)
         self.comboPorts.addItems(self._getSerialPorts())
         self.btnStartKnit   = QPushButton("Start Knitting", self)
+        self.btnStartKnit.clicked.connect(self._startKnitSlot)
+        self.btnStartKnit.setEnabled(False)
         self.knitCtrlLayout.addWidget(self.comboPorts)
         self.knitCtrlLayout.addWidget(self.btnStartKnit)
 
@@ -145,6 +239,12 @@ class AYABControlGUI(QWidget):
 
     def run(self, options):
         self.options = options
+        self.options.filename   = ""
+        # TODO Initially assign these values from UI elements
+        self.options.portname = "/dev/ttyACM0"
+        self.options.machine_type = "single"
+        self.options.num_colors = 2
+
         self.show()
         qt_app.exec_()
 
