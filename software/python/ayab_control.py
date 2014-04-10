@@ -105,6 +105,10 @@ class ayabControl(object):
             if self.__machineType == 'single' \
                     and self.__numColors == 2:
 
+                # color is always 0 in singlebed, 
+                # because both colors are knitted at once
+                color = 0
+                
                 # calculate imgRow
                 imgRow = lineNumber + self.__startLine
 
