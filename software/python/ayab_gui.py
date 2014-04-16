@@ -10,6 +10,8 @@ from optparse import OptionParser
 import ayab_image
 import ayab_control
 
+import Image
+
 qt_app = QApplication(sys.argv)
 
 
@@ -78,21 +80,23 @@ class AYABControlGUI(QWidget):
     def _loadImgSlot(self):        
         # TODO File Open Dialogue
         self.options.filename     = "../../patterns/uc3.png"
-        self._updateImgOnGui()
+        self._loadImgFile()
 
     @Slot()
     def _rotateImgSlot(self):
-        # TODO call rotate method
+        print "_rotateImgSlot"
+        self._ayabImage.rotateImage()
         self._updateImgOnGui()
 
     @Slot()
     def _invertImgSlot(self):
-        # TODO call invert method
+        print "_invertImgSlot"
+        self._ayabImage.invertImage()
         self._updateImgOnGui()
 
     @Slot()
-    def _resizeImgeSlot(self):
-        # TODO call resize method
+    def _resizeImgSlot(self):
+        print "_resizeImgSlot"
         self._updateImgOnGui()
 
     @Slot()
@@ -130,13 +134,12 @@ class AYABControlGUI(QWidget):
 
 
         
-    def _updateImgOnGui(self):
+    def _loadImgFile(self):
         if self.options.filename == "":
             return
 
         try:
-            self._ayabImage = ayab_image.ayabImage(options.filename, \
-                                    options.num_colors)
+            self._ayabImage = ayab_image.ayabImage(options.filename)
         except:
             return
 
@@ -149,14 +152,33 @@ class AYABControlGUI(QWidget):
         self.img = QImage(self.options.filename)
         self.imgLabel.setPixmap(QPixmap.fromImage(self.img))
 
+    def _updateImgOnGui(self):
+        print "_updateImgOnGui"
+        imageIntern = self._ayabImage.imageIntern()
+
+        width = self._ayabImage.imgWidth()
+        height = self._ayabImage.imgHeight()
+        
+        im = Image.new("L", (width,height))
+        #setpixels
+        for row in range(height):
+            msg = ''
+            for col in range(width):
+                msg += str(imageIntern[row][col])
+                im.putpixel((col,row), 127*(imageIntern[row][col]))
+            print msg
+        
 
     def _createImgCtrlLayout(self):
         self.imgCtrlLayout = QFormLayout()
         self.btnLoadImage = QPushButton("Load Image", self)
         self.btnLoadImage.clicked.connect(self._loadImgSlot)
         self.btnRotate = QPushButton("Rotate", self)
+        self.btnRotate.clicked.connect(self._rotateImgSlot)
         self.btnInvert = QPushButton("Invert", self)
+        self.btnInvert.clicked.connect(self._invertImgSlot)
         self.btnResize = QPushButton("Resize", self)
+        self.btnResize.clicked.connect(self._resizeImgSlot)
         self.comboStartLine = QComboBox(self)
         self.comboStartLine.currentIndexChanged.connect(self._startLineChangedSlot)
         

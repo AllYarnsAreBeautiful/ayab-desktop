@@ -20,7 +20,7 @@
 import Image
 
 class ayabImage(object):
-  def __init__(self, pFilename, pNumColors):
+  def __init__(self, pFilename, pNumColors = 2):
     self.__numColors      = pNumColors
 
     self.__imgPosition    = 'center'
@@ -70,6 +70,9 @@ class ayabImage(object):
 
   def startLine(self):
     return self.__startLine
+
+  def numColors(self):
+    return self.__numColors
 
 
   def __updateImageData(self):
@@ -140,6 +143,14 @@ class ayabImage(object):
         return False
     return True
 
+  def setNumColors(self, pNumColors):
+      """
+      sets the number of colors the be used for knitting
+      """
+      if pNumColors > 1 and pNumColors < 7:
+        self.__numColors      = pNumColors
+        self.__updateImageData()
+      return
 
   def invertImage(self):
       """
