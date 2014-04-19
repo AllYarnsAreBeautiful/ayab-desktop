@@ -27,13 +27,10 @@ class AYABControlGUI(QWidget):
         ####
         self.imgBox   = QVBoxLayout()
         self.imgLabel = QLabel()
-        #self.img = QImage("../../patterns/uc3.png")
-        #self.imgLabel.setPixmap(QPixmap.fromImage(self.img))
         self.imgBox.addWidget(self.imgLabel)
 
         self.consoleBox = QVBoxLayout()
         self.imgConsoleField = QTextEdit()
-        self.imgConsoleField.setEnabled(False)
         self.consoleField = QTextEdit()
         self.consoleField.setEnabled(False)
         self.consoleBox.addWidget(self.imgConsoleField)
@@ -85,25 +82,24 @@ class AYABControlGUI(QWidget):
 
     @Slot()
     def _loadImgSlot(self):        
-        # TODO File Open Dialogue
-        self.options.filename     = "../../patterns/uc3.png"
+        path, _ = QFileDialog.getOpenFileName(self, "Open File", os.getcwd())
+        #self.label.setText(path)
+        self.options.filename     = path
+        #self.options.filename     = "../../patterns/uc3.png"
         self._loadImgFile()
 
     @Slot()
     def _rotateImgSlot(self):
-        print "_rotateImgSlot"
         self._ayabImage.rotateImage()
         self._updateImgOnGui()
 
     @Slot()
     def _invertImgSlot(self):
-        print "_invertImgSlot"
         self._ayabImage.invertImage()
         self._updateImgOnGui()
 
     @Slot()
     def _resizeImgSlot(self):
-        print "_resizeImgSlot"
         self._updateImgOnGui()
 
     @Slot()
@@ -121,7 +117,7 @@ class AYABControlGUI(QWidget):
     @Slot()
     def _numColorsChangedSlot(self):
         self.options.num_colors = int(self.comboNumColors.currentText())
-        print self.options.num_colors
+        self._ayabImage.setNumColors(self.options.num_colors)
         self._updateImgOnGui()
 
     @Slot()
@@ -134,7 +130,15 @@ class AYABControlGUI(QWidget):
             return
 
     @Slot()
+    def _refreshComPorts(self):
+        self.comboPorts.clear()
+        self.comboPorts.addItems(self._getSerialPorts())
+
+    @Slot()
     def _startKnitSlot(self):
+        #TODO get knitting from GUI elements
+        self.options.num_colors = int(self.comboNumColors.currentText())
+
         ayabControl = ayab_control.ayabControl(self.mainCallback)
         
         ayabControl.knitImage(self._ayabImage,self.options)
@@ -167,8 +171,8 @@ class AYABControlGUI(QWidget):
         self.comboAlignments.setEnabled(True)
         self.btnStartKnit.setEnabled(True)
 
-        self.img = QImage(self.options.filename)
-        self.imgLabel.setPixmap(QPixmap.fromImage(self.img))
+        #self.img = QImage(self.options.filename)
+        #self.imgLabel.setPixmap(QPixmap.fromImage(self.img))
 
         self._updateImgOnGui()
 
@@ -179,14 +183,12 @@ class AYABControlGUI(QWidget):
         width = self._ayabImage.imgWidth()
         height = self._ayabImage.imgHeight()
         
-        im = Image.new("L", (width,height))
         #setpixels
         self.imgConsoleField.clear()
         for row in range(height):
             msg = ''
             for col in range(width):
                 msg += str(imageIntern[row][col])
-                im.putpixel((col,row), 127*(imageIntern[row][col]))
             if row < 10:
                 pre = "0"
             else:
@@ -262,11 +264,14 @@ class AYABControlGUI(QWidget):
 
     def _createKnitCtrlLayout(self):
         self.knitCtrlLayout = QHBoxLayout()
+        self.btnPortsRefresh = QPushButton("R", self)
+        self.btnPortsRefresh.clicked.connect(self._refreshComPorts)
         self.comboPorts     = QComboBox(self)
         self.comboPorts.addItems(self._getSerialPorts())
         self.btnStartKnit   = QPushButton("Start Knitting", self)
         self.btnStartKnit.clicked.connect(self._startKnitSlot)
         self.btnStartKnit.setEnabled(False)
+        self.knitCtrlLayout.addWidget(self.btnPortsRefresh)
         self.knitCtrlLayout.addWidget(self.comboPorts)
         self.knitCtrlLayout.addWidget(self.btnStartKnit)
 
@@ -290,7 +295,8 @@ class AYABControlGUI(QWidget):
         else:
             # unix
             for port in serial.tools.list_ports.comports():
-               _portList.append(port[0])
+               if port[0].find("ACM") != -1:
+                _portList.append(port[0])
 
         return _portList
 
