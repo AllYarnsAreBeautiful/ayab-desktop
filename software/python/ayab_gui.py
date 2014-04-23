@@ -10,7 +10,6 @@ from optparse import OptionParser
 import ayab_image
 import ayab_control
 
-import Image
 
 qt_app = QApplication(sys.argv)
 
@@ -31,9 +30,11 @@ class AYABControlGUI(QWidget):
 
         self.consoleBox = QVBoxLayout()
         self.imgConsoleField = QTextEdit()
+        self.imgAlignmentConsoleField = QTextEdit()
         self.consoleField = QTextEdit()
         self.consoleField.setEnabled(False)
         self.consoleBox.addWidget(self.imgConsoleField)
+        self.consoleBox.addWidget(self.imgAlignmentConsoleField)
         self.consoleBox.addWidget(self.consoleField)
 
         self.leftBox = QVBoxLayout()
@@ -128,6 +129,13 @@ class AYABControlGUI(QWidget):
                                         int(self.comboStopNeedle.currentText()))
         except:
             return
+        self._updateImgOnGui()
+
+    @Slot()
+    def _imgAlignmentChangedSlot(self):
+        options.imgAlignment = self.comboAlignments.currentText()
+        self._ayabImage.setImagePosition(options.imgAlignment)
+        self._updateImgOnGui()
 
     @Slot()
     def _refreshComPorts(self):
@@ -158,6 +166,8 @@ class AYABControlGUI(QWidget):
         for i in range(0, self._ayabImage.imgHeight()):
             self.comboStartLine.addItem(str(i))
 
+        self.comboStartNeedle.setCurrentIndex(self._ayabImage.knitStartNeedle())
+        self.comboStopNeedle.setCurrentIndex(self._ayabImage.knitStopNeedle()-1)
 
         self.btnRotate.setEnabled(True)
         self.btnInvert.setEnabled(True)
@@ -182,6 +192,10 @@ class AYABControlGUI(QWidget):
 
         width = self._ayabImage.imgWidth()
         height = self._ayabImage.imgHeight()
+
+        self.lblImgName.setText(self.options.filename)
+        self.lblImgWidth.setText(str(width)+ " px")
+        self.lblImgHeight.setText(str(height) + " px")
         
         #setpixels
         self.imgConsoleField.clear()
@@ -194,10 +208,51 @@ class AYABControlGUI(QWidget):
             else:
                 pre = ""
             self.imgConsoleField.append(pre + str(row) + ": " + msg)
+
+        self.imgAlignmentConsoleField.clear()
+        #show alignment
+        imgStartNeedle = self._ayabImage.imgStartNeedle()
+        imgStopNeedle  = self._ayabImage.imgStopNeedle()
+        knitStartNeedle = self._ayabImage.knitStartNeedle()
+        knitStopNeedle  = self._ayabImage.knitStopNeedle()
+
+        # print markers for active area and knitted image
+        msg = '|'
+        for i in range(0,200):
+            if i >= knitStartNeedle and i <= knitStopNeedle:
+                if i >= imgStartNeedle and i <= imgStopNeedle:
+                    msg += 'x'
+                else:          
+                    msg += '-'
+            else:
+                msg += '_'
+        msg += '|'
+        self.imgAlignmentConsoleField.append(msg)
+
+        # print markers at multiples of 10
+        msg = '|'
+        for i in range(0,200):
+            if i == 100:
+                msg += '|'
+            else:
+                if (i % 10) == 0:
+                    msg += '^'
+                else:
+                    msg += ' '
+        msg += '|'
+        self.imgAlignmentConsoleField.append(msg)
         
 
     def _createImgCtrlLayout(self):
         self.imgCtrlLayout = QFormLayout()
+
+        self.lblImgName   = QLabel(self)
+        self.lblImgName.setText("-")
+        self.lblImgWidth  = QLabel(self)
+        self.lblImgWidth.setText("-")
+        self.lblImgHeight = QLabel(self)
+        self.lblImgHeight.setText("-")
+
         self.btnLoadImage = QPushButton("Load Image", self)
         self.btnLoadImage.clicked.connect(self._loadImgSlot)
         self.btnRotate = QPushButton("Rotate", self)
@@ -213,6 +268,9 @@ class AYABControlGUI(QWidget):
         self.comboStartLine.setEnabled(False)
         self.comboStartLine.currentIndexChanged.connect(self._startLineChangedSlot)
         
+        self.imgCtrlLayout.addRow("Name", self.lblImgName)
+        self.imgCtrlLayout.addRow("Width", self.lblImgWidth)
+        self.imgCtrlLayout.addRow("Height", self.lblImgHeight)
         self.imgCtrlLayout.addRow(self.btnLoadImage)
         self.imgCtrlLayout.addRow(self.btnRotate)
         self.imgCtrlLayout.addRow(self.btnInvert)
@@ -247,7 +305,8 @@ class AYABControlGUI(QWidget):
 
         self.comboAlignments = QComboBox(self)
         self.comboAlignments.setEnabled(False)
-        self.comboAlignments.addItems(['left', 'center', 'right'])
+        self.comboAlignments.addItems(['center', 'left', 'right'])
+        self.comboAlignments.currentIndexChanged.connect(self._imgAlignmentChangedSlot)
 
         self.knitSettingsLayout.addRow("Machine Type", \
                                         self.comboMachineType)
@@ -304,9 +363,10 @@ class AYABControlGUI(QWidget):
         self.options = options
         self.options.filename   = ""
         # TODO Initially assign these values from UI elements
-        self.options.portname = "/dev/ttyACM0"
-        self.options.machine_type = "single"
-        self.options.num_colors = 2
+        self.options.portname       = "/dev/ttyACM0"
+        self.options.machine_type   = "single"
+        self.options.imgAlignment   = "center"
+        self.options.num_colors     = 2
 
         self.show()
         qt_app.exec_()
