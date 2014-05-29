@@ -52,7 +52,7 @@ class ayabControl(object):
         return bytearray
 
     def __checkSerial(self):
-        time.sleep(0.5) #TODO if problems in communication, tweak here
+        time.sleep(1) #TODO if problems in communication, tweak here
 
         line = self.__ayabCom.readLine()
 
@@ -78,7 +78,7 @@ class ayabControl(object):
 
     def __cnfLine(self, lineNumber):  
         imgHeight = self.__image.imgHeight()
-
+        color         = 0
         indexToSend   = 0
         sendBlankLine = False
         lastLine      = 0x00
@@ -108,6 +108,10 @@ class ayabControl(object):
             if self.__machineType == 'single' \
                     and self.__numColors == 2:
 
+                # color is always 0 in singlebed, 
+                # because both colors are knitted at once
+                color = 0
+                
                 # calculate imgRow
                 imgRow = lineNumber + self.__startLine
 
@@ -133,6 +137,12 @@ class ayabControl(object):
                 # 0 1 3 2 4 5 7 6 8 9 .. (imageExpanded)
                 lenImgExpanded = len(self.__image.imageExpanded())
                 indexToSend = self.__startLine*2
+
+                # TODO more beautiful algo
+                if lineNumber%4 == 1 or lineNumber%4 == 2:
+                    color = 1
+                else:
+                    color = 0 
 
                 if (lineNumber-2)%4 == 0:
                     indexToSend += lineNumber+1
@@ -169,12 +179,24 @@ class ayabControl(object):
             #########################
 
             # assign pixeldata
+            imgStartNeedle = self.__image.imgStartNeedle()
+            imgStopNeedle  = self.__image.imgStopNeedle()
+
+
+            # set the bitarray
+            for col in range(0, 200):
+                if color == 0 \
+                and self.__machineType == 'double':
+                    if col < imgStartNeedle \
+                        or col > imgStopNeedle:
+                        bytes = self.__setPixel(bytes,col)
+
+
             for col in range(0, self.__image.imgWidth()):
                 pxl = (self.__image.imageExpanded())[indexToSend][col]                
                 # take the image offset into account
                 if pxl == True and sendBlankLine == False:
                     bytes = self.__setPixel(bytes,col+self.__image.imgStartNeedle())
-
 
             # TODO implement CRC8
             crc8 = 0x00
