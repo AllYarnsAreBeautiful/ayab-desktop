@@ -17,22 +17,32 @@
 #    Copyright 2013 Christian Obersteiner, Andreas Müller
 #    https://bitbucket.org/chris007de/ayab-apparat/
 
+"""Handles the serial communication protocol.
+
+This module handles serial communication, currently works in a synchronous way.
+"""
+
 import time
 import serial
 
+#TODO implement logging
+
 class ayabCommunication(object):
-   def __init__(self):
-      pass
+   """Handles Serial Communication."""
+   
+   def __init__(self, pPortname):
+      self.__portname = pPortname
 
    def __del__(self): 
       self.closeSerial()
       
-   def openSerial(self, pPortname):
-      self.__portname = pPortname
+   def openSerial(self):
       try:
         self.__ser = serial.Serial(self.__portname, 115200)
         time.sleep(1)
       except:
+        print "E: could not open serial port " + self.__portname
+        raw_input("press Enter")
         return False
       return True
 
