@@ -80,5 +80,5 @@ class ayabCommunication(object):
       msg += chr(flags)                   # flags
       msg += chr(crc8)                    # crc8
       #print "< cnfLine"
-      print lineData
+      #print lineData
       self.__ser.write(msg + '\n\r')
