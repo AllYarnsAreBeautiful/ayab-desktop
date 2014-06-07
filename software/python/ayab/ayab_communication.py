@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#This file is part of AYAB.
+# This file is part of AYAB.
 #
 #    AYAB is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -25,60 +25,70 @@ This module handles serial communication, currently works in a synchronous way.
 import time
 import serial
 
-#TODO implement logging
+import logging
 
-class ayabCommunication(object):
-   def __init__(self):
-      pass
 
-   def __del__(self): 
-      self.closeSerial()
-      
-   def openSerial(self, pPortname):
+class AyabCommunication(object):
+
+  """Class Handling the serial communication protocol."""
+
+  def __init__(self, serial=None):
+    """Creates an AyabCommunication object, with an optional serial-like object."""
+    logging.basicConfig(level=logging.INFO)
+    self.logger = logging.getLogger(__name__)
+    if serial:
+      self.__ser = serial
+
+  def __del__(self):
+       self.close_serial()
+
+  def open_serial(self, pPortname):
+    if not self.__ser:
       self.__portname = pPortname
       try:
-        self.__ser = serial.Serial(self.__portname, 115200)
-        time.sleep(1)
+          self.__ser = serial.Serial(self.__portname, 115200)
+          time.sleep(1)
       except:
-        print "E: could not open serial port " + self.__portname
-        raw_input("press Enter")
-        return False
+        raise CommunicationException()
+        #print "E: could not open serial port " + self.__portname
+        #return False
       return True
 
-      
-   def closeSerial(self):
+  def close_serial(self):
       try:
-        self.__ser.close()
+          self.__ser.close()
       except:
-        pass
+          pass
 
+  def read_line(self):
+    """Reads a line from serial communication."""
+    #FIXME should be explicitly bytestring
+    line = ''
+    while self.__ser.inWaiting() > 0:
+        line += self.__ser.read(1)
+    return line
 
-   def readLine(self):
-      line = ''
-      while self.__ser.inWaiting() > 0:
-          line += self.__ser.read(1)
-      return line
-
-
-   def reqStart(self, startNeedle, stopNeedle):
-      msg = chr(0x01)                     #msg id
+  def req_start(self, startNeedle, stopNeedle):
+      msg = chr(0x01)  # msg id
       msg += chr(int(startNeedle))
       msg += chr(int(stopNeedle))
-      #print "< reqStart"
+      # print "< reqStart"
       self.__ser.write(msg + '\n\r')
-   
 
-   def reqInfo(self):
-      #print "< reqInfo"
+  def req_info(self):
+      # print "< reqInfo"
       self.__ser.write(chr(0x03) + '\n\r')
-      
 
-   def cnfLine(self,lineNumber, lineData, flags, crc8):
-      msg  = chr(0x42)                    # msg id
+  def cnf_line(self, lineNumber, lineData, flags, crc8):
+      msg = chr(0x42)                    # msg id
       msg += chr(lineNumber)              # line number
       msg += lineData                     # line data
       msg += chr(flags)                   # flags
       msg += chr(crc8)                    # crc8
-      #print "< cnfLine"
-      #print lineData
+      # print "< cnfLine"
+      # print lineData
       self.__ser.write(msg + '\n\r')
+
+
+class CommunicationException(Exception):
+  pass
