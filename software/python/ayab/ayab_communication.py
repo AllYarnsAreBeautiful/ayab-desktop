@@ -34,8 +34,8 @@ class AyabCommunication(object):
 
   def __init__(self, serial=None):
     """Creates an AyabCommunication object, with an optional serial-like object."""
-    logging.basicConfig(level=logging.INFO)
-    self.logger = logging.getLogger(__name__)
+    logging.basicConfig(level=logging.DEBUG)
+    self.__logger = logging.getLogger(__name__)
     if serial:
       self.__ser = serial
 
