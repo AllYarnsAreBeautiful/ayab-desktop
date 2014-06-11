@@ -2,11 +2,11 @@ AYAB API
 ===================================================
 
 
-.. automodule:: ayab_communication
+.. automodule:: ayab.ayab_communication
    :members:
 
-.. automodule:: ayab_control
+.. automodule:: ayab.ayab_control
    :members:
 
-.. automodule:: ayab_image
+.. automodule:: ayab.ayab_image
    :members:
