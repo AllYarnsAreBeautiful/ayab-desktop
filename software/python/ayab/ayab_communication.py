@@ -20,6 +20,8 @@
 """Handles the serial communication protocol.
 
 This module handles serial communication, currently works in a synchronous way.
+AyabCommunication uses an internal PySerial.Serial object to connect to the device.
+The initializer can also be overriden with a dummy serial object.
 """
 
 import time
