@@ -24,10 +24,14 @@ from PyQt4 import QtGui
 from ayab_gui import Ui_Form
 
 
+class GuiMain(QtGui.QWidget):
+    def __init__(self):
+        QtGui.QWidget.__init__(self)
+
+        self.ui = Ui_Form()
+        self.ui.setupUi(self)
 if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
-    Form = QtGui.QWidget()
-    ui = Ui_Form()
-    ui.setupUi(Form)
-    Form.show()
+    window = GuiMain()
+    window.show()
     sys.exit(app.exec_())
