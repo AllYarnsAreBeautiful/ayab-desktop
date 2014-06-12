@@ -26,10 +26,29 @@ from ayab_gui import Ui_Form
 
 class GuiMain(QtGui.QWidget):
     def __init__(self):
-        QtGui.QWidget.__init__(self)
+        super(GuiMain, self).__init__(None)
+        #QtGui.QWidget.__init__(self)
 
         self.ui = Ui_Form()
         self.ui.setupUi(self)
+        self.setupBehaviour()
+
+
+        self.fileSelected = None
+
+    def setupBehaviour(self):
+        self.ui.load_file_button.clicked.connect(self.file_select_dialog)
+
+    def file_select_dialog(self):
+        self.fd = QtGui.QFileDialog(parent = self)
+        self.fd.fileSelected.connect(self.set_file_selected)
+        self.fd.show()
+        self.fd.open()
+
+    def set_file_selected(self, file_selected):
+        print file_selected
+        self.fileSelected = file_selected
+
 if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
     window = GuiMain()
