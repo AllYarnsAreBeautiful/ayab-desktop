@@ -1,5 +1,7 @@
 from fysom import Fysom
 
+## Plugins should be class based but expose the fysom object events as a public inteface.
+
 
 def onconfigure(e):
     '''Sets configuration for knitting session.'''
