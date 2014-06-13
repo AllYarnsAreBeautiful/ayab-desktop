@@ -10,8 +10,10 @@ Contents:
 
 .. toctree::
    :maxdepth: 2
-   
+
    api_ref
+
+   serial_comm_page
 
 
 Indices and tables
