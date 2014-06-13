@@ -1,0 +1,21 @@
+seqdiag {
+  === Initial Handshake ===
+
+  host  -> controller [label = "reqInfo"];
+  host <- controller [label = "cnfInfo <versionNumber>"] [note = "Sending Firmware Version"];
+
+  === End of Handshake ===
+
+  host -> controller [label = "reqStart <start, stop>"] [rightnote = "Start knitting with\n start and stop Needles"];
+  host <- controller [label = "cnfStart <success>"] [leftnote = "Confirm the start request \n with true when is ready."];
+
+  host <- controller [label = "reqLine <nr>"] [leftnote = "Requests line number nr"];
+  host -> controller [label = "cnfLine <nr, data, crc, last = 0>"] [leftnote = "Sends Line Data"];
+  host <- controller [label = "reqLine <nr+1>"];
+
+  ... Repeat untill last line ...
+
+  host <- controller [label = "reqLine <nr>"];
+  host -> controller [label = "cnfLine <nr, data, crc, last = 1>"];
+
+}
