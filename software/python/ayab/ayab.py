@@ -20,7 +20,7 @@
 """Provides an Interface for users to operate AYAB using a GUI."""
 
 import sys
-from PyQt4 import QtGui
+from PyQt4 import QtGui, QtCore
 from ayab_gui import Ui_Form
 
 
@@ -39,6 +39,22 @@ class GuiMain(QtGui.QWidget):
 
     def file_select_dialog(self):
         self.fileSelected = QtGui.QFileDialog.getOpenFileName(self)
+class GenericThread(QtCore.QThread):
+    '''A generic thread wrapper for functions on threads.'''
+
+    def __init__(self, function, *args, **kwargs):
+        QtCore.QThread.__init__(self)
+        self.function = function
+        self.args = args
+        self.kwargs = kwargs
+
+    def __del__(self):
+        self.join()
+        self.wait()
+
+    def run(self):
+        self.function(*self.args, **self.kwargs)
+        return
 
 if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
