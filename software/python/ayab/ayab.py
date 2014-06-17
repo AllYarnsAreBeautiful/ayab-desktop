@@ -32,13 +32,25 @@ class GuiMain(QtGui.QWidget):
         self.ui.setupUi(self)
         self.setupBehaviour()
 
-        self.fileSelected = None
+        self.image_file_route = None
+
+    def updateProgress(self, progress):
+        '''Updates the Progress Bar.'''
+        self.ui.progressBar.setValue(progress)
+
+    def update_file_selected_text_field(self, route):
+        ''''Sets self.image_file_route and ui.filename_lineedit to route.'''
+        self.ui.filename_lineedit.setText(route)
+        self.image_file_route = route
 
     def setupBehaviour(self):
         self.ui.load_file_button.clicked.connect(self.file_select_dialog)
 
     def file_select_dialog(self):
-        self.fileSelected = QtGui.QFileDialog.getOpenFileName(self)
+        file_selected = QtGui.QFileDialog.getOpenFileName(self)
+        self.update_file_selected_text_field(file_selected)
+
+
 class GenericThread(QtCore.QThread):
     '''A generic thread wrapper for functions on threads.'''
 
