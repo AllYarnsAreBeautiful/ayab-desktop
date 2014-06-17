@@ -17,7 +17,7 @@
 #    Copyright 2013 Christian Obersteiner, Andreas Müller
 #    https://bitbucket.org/chris007de/ayab-apparat/
 
-import Image
+from PIL import Image
 
 class ayabImage(object):
   def __init__(self, pFilename, pNumColors):

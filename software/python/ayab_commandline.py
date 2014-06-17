@@ -197,6 +197,7 @@ def mainFunction(filename, options):
     while True:
         os.system('cls' if os.name=='nt' else 'clear')
         
+        print '\a'
         print_main_menu(image)
         print ""    
         selection = raw_input("Your selection: ")
