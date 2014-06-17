@@ -2,4 +2,4 @@ Pillow==2.4.0
 pyserial==2.7
 wsgiref==0.1.2
 fysom>=1.0.19
-
+Yapsy==1.10.423
