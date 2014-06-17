@@ -20,8 +20,12 @@
 """Provides an Interface for users to operate AYAB using a GUI."""
 
 import sys
+import logging
 from PyQt4 import QtGui, QtCore
 from ayab_gui import Ui_Form
+
+from yapsy.PluginManager import PluginManager
+from plugins.knitting_plugin import KnittingPlugin
 
 
 class GuiMain(QtGui.QWidget):
@@ -31,8 +35,24 @@ class GuiMain(QtGui.QWidget):
         self.ui = Ui_Form()
         self.ui.setupUi(self)
         self.setupBehaviour()
+        self.plugins_init()
 
         self.image_file_route = None
+
+    def plugins_init(self, is_reloading=False):
+        if is_reloading:
+          logging.info("Deactivating All Plugins")
+          for pluginInfo in self.pm.getAllPlugins():
+            self.pm.deactivatePluginByName(pluginInfo.name)
+
+        self.pm = PluginManager(directories_list=["plugins"],)
+
+        self.pm.collectPlugins()
+        for pluginInfo in self.pm.getAllPlugins():
+          ## This stops the plugins marked as Disabled from being activated.
+          if (not pluginInfo.details.has_option("Core", "Disabled")):
+            self.pm.activatePluginByName(pluginInfo.name)
+            logging.info("Plugin {0} activated".format(pluginInfo.name))
 
     def updateProgress(self, progress):
         '''Updates the Progress Bar.'''
