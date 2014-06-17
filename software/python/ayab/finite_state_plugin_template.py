@@ -38,6 +38,6 @@ fsm = Fysom(
          'onfinish': onfinish
      }})
 
-fsm.configure(image=None, options={})
+fsm.configure(image=None, options={"a":"b"})
 fsm.knit()
 fsm.finish()
