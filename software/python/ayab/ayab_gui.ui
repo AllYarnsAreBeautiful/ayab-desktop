@@ -25,7 +25,7 @@
    <item row="3" column="0">
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
-      <widget class="QGraphicsView" name="graphicsView"/>
+      <widget class="QGraphicsView" name="image_pattern_view"/>
      </item>
     </layout>
    </item>
@@ -40,7 +40,7 @@
      <property name="minimumSize">
       <size>
        <width>500</width>
-       <height>195</height>
+       <height>248</height>
       </size>
      </property>
      <property name="acceptDrops">
@@ -57,12 +57,28 @@
           <item>
            <widget class="QLabel" name="label_3">
             <property name="text">
+             <string>Select Module</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QComboBox" name="module_dropdown">
+            <item>
+             <property name="text">
+              <string>AYAB</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label">
+            <property name="text">
              <string>Select Serial Port</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QComboBox" name="comboBox"/>
+           <widget class="QComboBox" name="serial_port_dropdown"/>
           </item>
           <item>
            <widget class="QCheckBox" name="checkBox">
@@ -99,7 +115,11 @@
            </widget>
           </item>
           <item>
-           <widget class="QLineEdit" name="filename_lineedit"/>
+           <widget class="QLineEdit" name="filename_lineedit">
+            <property name="text">
+             <string notr="true"/>
+            </property>
+           </widget>
           </item>
           <item>
            <widget class="QPushButton" name="open_file_button">
@@ -126,6 +146,13 @@
        </item>
       </layout>
      </widget>
+    </widget>
+   </item>
+   <item row="4" column="0">
+    <widget class="QProgressBar" name="progressBar">
+     <property name="value">
+      <number>24</number>
+     </property>
     </widget>
    </item>
   </layout>
