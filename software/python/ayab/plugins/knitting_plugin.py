@@ -2,22 +2,14 @@ from yapsy.IPlugin import IPlugin
 from fysom import Fysom
 
 
-class KnittingPlugin(IPlugin):
+class KnittingPlugin(IPlugin, Fysom):
 
-  def __init__(self):
+  def __init__(self, callbacks_dict):
     """
     Args:
         _fsm: The internal finite state machine.
     """
-    # callbacks_dict = {
-    #          'onknit': onknit,
-    #          'onknitting': onknitting,
-    #          'onconfigure': onconfigure,
-    #          'onfinish': onfinish
-    #         }
-    callbacks_dict = {}
-    #self.fysom = False
-    self._fsm = Fysom(
+    Fysom.__init__(self,
         {'initial': 'activated',
          'events': [
              {'name': 'configure', 'src': 'activated', 'dst': 'configured'},
@@ -26,3 +18,9 @@ class KnittingPlugin(IPlugin):
          ],
          'callbacks':  callbacks_dict
          })
+    # callbacks_dict = {
+    #          'onknit': onknit,
+    #          'onknitting': onknitting,
+    #          'onconfigure': onconfigure,
+    #          'onfinish': onfinish
+    #         }
