@@ -27,6 +27,9 @@ from ayab_gui import Ui_Form
 from yapsy.PluginManager import PluginManager
 from plugins.knitting_plugin import KnittingPlugin
 
+#FIXME: move to plugin options
+from ayab_options import Ui_DockWidget
+
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -37,8 +40,8 @@ class GuiMain(QtGui.QWidget):
 
         self.ui = Ui_Form()
         self.ui.setupUi(self)
-        self.setupBehaviour()
         self.plugins_init()
+        self.setupBehaviour()
 
         self.image_file_route = None
 
@@ -57,6 +60,12 @@ class GuiMain(QtGui.QWidget):
             self.pm.activatePluginByName(pluginInfo.name)
             logging.info("Plugin {0} activated".format(pluginInfo.name))
 
+    def load_dock_ui(self, ui_instance_to_load=None):
+        #FIXME: set dynamically
+        ui_instance_to_load = Ui_DockWidget()
+        dock = self.ui.knitting_options_dock
+        ui_instance_to_load.setupUi(dock)
+
     def updateProgress(self, progress):
         '''Updates the Progress Bar.'''
         self.ui.progressBar.setValue(progress)
@@ -68,6 +77,8 @@ class GuiMain(QtGui.QWidget):
 
     def setupBehaviour(self):
         self.ui.load_file_button.clicked.connect(self.file_select_dialog)
+        #TODO: add trigger for correct loading ui file
+        self.load_dock_ui()
 
     def file_select_dialog(self):
         file_selected = QtGui.QFileDialog.getOpenFileName(self)
