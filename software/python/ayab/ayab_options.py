@@ -22,15 +22,13 @@ except AttributeError:
     def _translate(context, text, disambig):
         return QtGui.QApplication.translate(context, text, disambig)
 
-class Ui_Form(object):
-    def setupUi(self, Form):
-        Form.setObjectName(_fromUtf8("Form"))
-        Form.resize(223, 436)
-        self.ayab_config = QtGui.QWidget(Form)
-        self.ayab_config.setGeometry(QtCore.QRect(10, 10, 164, 391))
+class Ui_DockWidget(object):
+    def setupUi(self, DockWidget):
+        DockWidget.setObjectName(_fromUtf8("DockWidget"))
+        DockWidget.resize(223, 436)
+        self.ayab_config = QtGui.QWidget()
         self.ayab_config.setObjectName(_fromUtf8("ayab_config"))
         self.verticalLayout = QtGui.QVBoxLayout(self.ayab_config)
-        self.verticalLayout.setMargin(0)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
         self.label_5 = QtGui.QLabel(self.ayab_config)
         self.label_5.setObjectName(_fromUtf8("label_5"))
@@ -64,20 +62,31 @@ class Ui_Form(object):
         self.machine_type_box.addItem(_fromUtf8(""))
         self.machine_type_box.addItem(_fromUtf8(""))
         self.verticalLayout.addWidget(self.machine_type_box)
+        DockWidget.setWidget(self.ayab_config)
 
-        self.retranslateUi(Form)
-        QtCore.QMetaObject.connectSlotsByName(Form)
+        self.retranslateUi(DockWidget)
+        QtCore.QMetaObject.connectSlotsByName(DockWidget)
 
-    def retranslateUi(self, Form):
-        Form.setWindowTitle(_translate("Form", "Form", None))
-        self.label_5.setText(_translate("Form", "Start Line", None))
-        self.start_line_edit.setText(_translate("Form", "0", None))
-        self.label.setText(_translate("Form", "Start Needle", None))
-        self.start_needle_edit.setText(_translate("Form", "0", None))
-        self.label_2.setText(_translate("Form", "Stop Needle", None))
-        self.stop_needle_edit.setText(_translate("Form", "0", None))
-        self.label_3.setText(_translate("Form", "Alignment", None))
-        self.label_4.setText(_translate("Form", "Machine Type", None))
-        self.machine_type_box.setItemText(0, _translate("Form", "Single", None))
-        self.machine_type_box.setItemText(1, _translate("Form", "Double", None))
+    def retranslateUi(self, DockWidget):
+        DockWidget.setWindowTitle(_translate("DockWidget", "Form", None))
+        self.label_5.setText(_translate("DockWidget", "Start Line", None))
+        self.start_line_edit.setText(_translate("DockWidget", "0", None))
+        self.label.setText(_translate("DockWidget", "Start Needle", None))
+        self.start_needle_edit.setText(_translate("DockWidget", "0", None))
+        self.label_2.setText(_translate("DockWidget", "Stop Needle", None))
+        self.stop_needle_edit.setText(_translate("DockWidget", "0", None))
+        self.label_3.setText(_translate("DockWidget", "Alignment", None))
+        self.label_4.setText(_translate("DockWidget", "Machine Type", None))
+        self.machine_type_box.setItemText(0, _translate("DockWidget", "Single", None))
+        self.machine_type_box.setItemText(1, _translate("DockWidget", "Double", None))
+
+
+if __name__ == "__main__":
+    import sys
+    app = QtGui.QApplication(sys.argv)
+    DockWidget = QtGui.QDockWidget()
+    ui = Ui_DockWidget()
+    ui.setupUi(DockWidget)
+    DockWidget.show()
+    sys.exit(app.exec_())
 
