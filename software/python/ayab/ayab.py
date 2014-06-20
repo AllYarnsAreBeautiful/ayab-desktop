@@ -28,6 +28,9 @@ from yapsy.PluginManager import PluginManager
 from plugins.knitting_plugin import KnittingPlugin
 
 
+logging.basicConfig(level=logging.DEBUG)
+
+
 class GuiMain(QtGui.QWidget):
     def __init__(self):
         super(GuiMain, self).__init__(None)
