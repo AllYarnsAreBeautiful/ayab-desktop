@@ -31,7 +31,7 @@
      </widget>
     </item>
     <item>
-     <widget class="QLineEdit" name="lineEdit_3">
+     <widget class="QLineEdit" name="start_line_edit">
       <property name="text">
        <string>0</string>
       </property>
@@ -45,7 +45,7 @@
      </widget>
     </item>
     <item>
-     <widget class="QLineEdit" name="lineEdit">
+     <widget class="QLineEdit" name="start_needle_edit">
       <property name="text">
        <string>0</string>
       </property>
@@ -59,7 +59,7 @@
      </widget>
     </item>
     <item>
-     <widget class="QLineEdit" name="lineEdit_2">
+     <widget class="QLineEdit" name="stop_needle_edit">
       <property name="text">
        <string>0</string>
       </property>
@@ -73,7 +73,7 @@
      </widget>
     </item>
     <item>
-     <widget class="QComboBox" name="comboBox"/>
+     <widget class="QComboBox" name="alignment_combo_box"/>
     </item>
     <item>
      <widget class="QLabel" name="label_4">
@@ -83,7 +83,7 @@
      </widget>
     </item>
     <item>
-     <widget class="QComboBox" name="comboBox_2">
+     <widget class="QComboBox" name="machine_type_box">
       <item>
        <property name="text">
         <string>Single</string>
