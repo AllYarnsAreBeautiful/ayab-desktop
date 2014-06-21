@@ -23,7 +23,7 @@ from plugins.knitting_plugin import KnittingPlugin
 
 class TestingKnittingPlugin(KnittingPlugin):
 
-  def onknit(self, e):
+  def onknit(self, e):   # FIXME: setting options should go on onconfig.
     try:
         for i in range(e.many):
           print i
@@ -33,7 +33,7 @@ class TestingKnittingPlugin(KnittingPlugin):
         return False
 
   def __init__(self):
-    pass
+    super(TestingKnittingPlugin, self).__init__({})
     # callbacks_dict = {
     #     'onknit': self.onknit,
     # }
