@@ -62,13 +62,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QComboBox" name="module_dropdown">
-            <item>
-             <property name="text">
-              <string>AYAB</string>
-             </property>
-            </item>
-           </widget>
+           <widget class="QComboBox" name="module_dropdown"/>
           </item>
           <item>
            <widget class="QLabel" name="label">
