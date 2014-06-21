@@ -18,6 +18,7 @@
 #    https://bitbucket.org/chris007de/ayab-apparat/
 
 import time
+from PyQT4 import QtGui
 from plugins.knitting_plugin import KnittingPlugin
 
 
@@ -31,6 +32,13 @@ class TestingKnittingPlugin(KnittingPlugin):
         return True
     except:
         return False
+
+  def get_configuration_from_ui(self, ui):
+    self.conf = {}
+    start_line_text = ui.findChild(QtGui.QLineEdit, "start_line_edit").text()
+    self.conf["start_line_edit"] = start_line_text
+    #TODO: add more config options
+    return self.conf
 
   def __init__(self):
     super(TestingKnittingPlugin, self).__init__({})
