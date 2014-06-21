@@ -57,8 +57,22 @@ class GuiMain(QtGui.QWidget):
         for pluginInfo in self.pm.getAllPlugins():
           ## This stops the plugins marked as Disabled from being activated.
           if (not pluginInfo.details.has_option("Core", "Disabled")):
-            self.pm.activatePluginByName(pluginInfo.name)
-            logging.info("Plugin {0} activated".format(pluginInfo.name))
+            plugin_name = pluginInfo.name
+            self.pm.activatePluginByName(plugin_name)
+            self.add_plugin_name_on_module_dropdown(plugin_name)
+            logging.info("Plugin {0} activated".format(plugin_name))
+
+    def add_plugin_name_on_module_dropdown(self, module_name):
+        self.ui.module_dropdown.addItem(module_name)
+
+    def set_enabled_plugin(self, plugin_name=None):
+        """Returns the plugin_object from the plugin selected on module_dropdown."""
+        if not plugin_name:
+            plugin_name = window.ui.module_dropdown.currentText()
+        plugin_o = self.pm.getPluginByName(plugin_name)
+        self.enabled_plugin = plugin_o
+        logging.info("Set enabled_plugin as {0} - {1}".format(plugin_o, plugin_name))
+        return plugin_o
 
     def load_dock_ui(self, ui_instance_to_load=None):
         #FIXME: set dynamically
@@ -77,6 +91,7 @@ class GuiMain(QtGui.QWidget):
 
     def setupBehaviour(self):
         self.ui.load_file_button.clicked.connect(self.file_select_dialog)
+        self.ui.module_dropdown.activated.connect(self.set_enabled_plugin)
         #TODO: add trigger for correct loading ui file
         self.load_dock_ui()
 
