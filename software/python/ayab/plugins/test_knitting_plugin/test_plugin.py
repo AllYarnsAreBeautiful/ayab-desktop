@@ -25,13 +25,21 @@ from plugins.knitting_plugin import KnittingPlugin
 class TestingKnittingPlugin(KnittingPlugin):
 
   def onknit(self, e):   # FIXME: setting options should go on onconfig.
-    try:
-        for i in range(e.many):
+    #try:
+        for i in range(self._cycle_ammount):
           print i
           time.sleep(1)
+        self.finish()
         return True
-    except:
+    #except:
         return False
+
+  def onconfigure(self, e):
+    self._cycle_ammount = 3
+    return
+
+  def onfinish(self, e):
+    pass
 
   def get_configuration_from_ui(self, ui):
     self.conf = {}
