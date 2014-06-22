@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>223</width>
+    <width>237</width>
     <height>436</height>
    </rect>
   </property>
@@ -65,7 +65,23 @@
      </widget>
     </item>
     <item>
-     <widget class="QComboBox" name="alignment_combo_box"/>
+     <widget class="QComboBox" name="alignment_combo_box">
+      <item>
+       <property name="text">
+        <string>left</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>center</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>right</string>
+       </property>
+      </item>
+     </widget>
     </item>
     <item>
      <widget class="QLabel" name="label_4">
@@ -78,12 +94,12 @@
      <widget class="QComboBox" name="machine_type_box">
       <item>
        <property name="text">
-        <string>Single</string>
+        <string>single</string>
        </property>
       </item>
       <item>
        <property name="text">
-        <string>Double</string>
+        <string>double</string>
        </property>
       </item>
      </widget>
