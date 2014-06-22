@@ -27,6 +27,7 @@ class KnittingPlugin(IPlugin, Fysom):
         {'initial': 'activated',
          'events': [
              {'name': 'configure', 'src': 'activated', 'dst': 'configured'},
+             {'name': 'configure', 'src': 'configured', 'dst': 'configured'},
              {'name': 'knit', 'src': 'configured', 'dst': 'knitting'},
              {'name': 'finish', 'src': 'knitting', 'dst': 'finished'},
          ],
