@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>770</width>
+    <width>739</width>
     <height>581</height>
    </rect>
   </property>
@@ -22,12 +22,12 @@
      <widget class="QWidget" name="dockWidgetContents_2"/>
     </widget>
    </item>
-   <item row="3" column="0">
-    <layout class="QHBoxLayout" name="horizontalLayout_2">
-     <item>
-      <widget class="QGraphicsView" name="image_pattern_view"/>
-     </item>
-    </layout>
+   <item row="4" column="0">
+    <widget class="QProgressBar" name="progressBar">
+     <property name="value">
+      <number>24</number>
+     </property>
+    </widget>
    </item>
    <item row="2" column="0">
     <widget class="QDockWidget" name="assistant_dock">
@@ -40,7 +40,7 @@
      <property name="minimumSize">
       <size>
        <width>500</width>
-       <height>248</height>
+       <height>254</height>
       </size>
      </property>
      <property name="acceptDrops">
@@ -88,6 +88,19 @@
             </property>
            </widget>
           </item>
+          <item>
+           <spacer name="verticalSpacer_3">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>5</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
          </layout>
         </widget>
        </item>
@@ -122,6 +135,19 @@
             </property>
            </widget>
           </item>
+          <item>
+           <spacer name="verticalSpacer_2">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>5</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
          </layout>
         </widget>
        </item>
@@ -129,11 +155,31 @@
         <widget class="QWidget" name="widget_3" native="true">
          <layout class="QVBoxLayout" name="verticalLayout_3">
           <item>
+           <widget class="QLabel" name="label_4">
+            <property name="text">
+             <string>Control</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <widget class="QPushButton" name="knit_button">
             <property name="text">
              <string>Knit!</string>
             </property>
            </widget>
+          </item>
+          <item>
+           <spacer name="verticalSpacer">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>5</height>
+             </size>
+            </property>
+           </spacer>
           </item>
          </layout>
         </widget>
@@ -142,12 +188,12 @@
      </widget>
     </widget>
    </item>
-   <item row="4" column="0">
-    <widget class="QProgressBar" name="progressBar">
-     <property name="value">
-      <number>24</number>
-     </property>
-    </widget>
+   <item row="3" column="0">
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="QGraphicsView" name="image_pattern_view"/>
+     </item>
+    </layout>
    </item>
   </layout>
  </widget>
