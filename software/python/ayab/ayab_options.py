@@ -25,7 +25,7 @@ except AttributeError:
 class Ui_DockWidget(object):
     def setupUi(self, DockWidget):
         DockWidget.setObjectName(_fromUtf8("DockWidget"))
-        DockWidget.resize(223, 436)
+        DockWidget.resize(237, 436)
         self.ayab_config = QtGui.QWidget()
         self.ayab_config.setObjectName(_fromUtf8("ayab_config"))
         self.verticalLayout = QtGui.QVBoxLayout(self.ayab_config)
@@ -53,6 +53,9 @@ class Ui_DockWidget(object):
         self.verticalLayout.addWidget(self.label_3)
         self.alignment_combo_box = QtGui.QComboBox(self.ayab_config)
         self.alignment_combo_box.setObjectName(_fromUtf8("alignment_combo_box"))
+        self.alignment_combo_box.addItem(_fromUtf8(""))
+        self.alignment_combo_box.addItem(_fromUtf8(""))
+        self.alignment_combo_box.addItem(_fromUtf8(""))
         self.verticalLayout.addWidget(self.alignment_combo_box)
         self.label_4 = QtGui.QLabel(self.ayab_config)
         self.label_4.setObjectName(_fromUtf8("label_4"))
@@ -76,9 +79,12 @@ class Ui_DockWidget(object):
         self.label_2.setText(_translate("DockWidget", "Stop Needle", None))
         self.stop_needle_edit.setText(_translate("DockWidget", "0", None))
         self.label_3.setText(_translate("DockWidget", "Alignment", None))
+        self.alignment_combo_box.setItemText(0, _translate("DockWidget", "left", None))
+        self.alignment_combo_box.setItemText(1, _translate("DockWidget", "center", None))
+        self.alignment_combo_box.setItemText(2, _translate("DockWidget", "right", None))
         self.label_4.setText(_translate("DockWidget", "Machine Type", None))
-        self.machine_type_box.setItemText(0, _translate("DockWidget", "Single", None))
-        self.machine_type_box.setItemText(1, _translate("DockWidget", "Double", None))
+        self.machine_type_box.setItemText(0, _translate("DockWidget", "single", None))
+        self.machine_type_box.setItemText(1, _translate("DockWidget", "double", None))
 
 
 if __name__ == "__main__":
