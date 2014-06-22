@@ -91,7 +91,7 @@ class GuiMain(QtGui.QWidget):
 
     def setupBehaviour(self):
         self.ui.load_file_button.clicked.connect(self.file_select_dialog)
-        self.ui.module_dropdown.activated.connect(self.set_enabled_plugin)
+        self.ui.module_dropdown.activated[str].connect(self.set_enabled_plugin)
         #TODO: add trigger for correct loading ui file
         self.load_dock_ui()
 
