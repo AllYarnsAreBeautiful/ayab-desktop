@@ -190,10 +190,14 @@ class ayabControl(object):
 
 
             for col in range(0, self.__image.imgWidth()):
+                pos = col + imgStartNeedle
+                if pos > self.__image.knitStopNeedle():
+                    #Image exceeds knitting area
+                    break
                 pxl = (self.__image.imageExpanded())[indexToSend][col]                
                 # take the image offset into account
                 if pxl == True and sendBlankLine == False:
-                    bytes = self.__setPixel(bytes,col+self.__image.imgStartNeedle())
+                    bytes = self.__setPixel(bytes,pos)
 
             # TODO implement CRC8
             crc8 = 0x00
