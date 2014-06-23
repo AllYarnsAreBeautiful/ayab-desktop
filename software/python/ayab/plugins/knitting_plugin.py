@@ -23,6 +23,12 @@ class KnittingPlugin(IPlugin, Fysom):
     Args:
         _fsm: The internal finite state machine.
     """
+    callbacks_dict = {
+        'onknit': self.onknit,
+       # 'onknitting': self.onknitting,
+        'onconfigure': self.onconfigure,
+        'onfinish': self.onfinish,
+        }
     Fysom.__init__(self,
         {'initial': 'activated',
          'events': [
@@ -33,9 +39,3 @@ class KnittingPlugin(IPlugin, Fysom):
          ],
          'callbacks':  callbacks_dict
          })
-    # callbacks_dict = {
-    #          'onknit': onknit,
-    #          'onknitting': onknitting,
-    #          'onconfigure': onconfigure,
-    #          'onfinish': onfinish
-    #         }
