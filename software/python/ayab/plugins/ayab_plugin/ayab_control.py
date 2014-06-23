@@ -44,15 +44,8 @@ class AyabPluginControl(KnittingPlugin):
   def onfinish(self, e):
     pass
 
-  def __wait_for_user_action(self):
-    ret = QtGui.QMessageBox.warning(
-        self.__parent_ui,
-        "AYAB",
-        "INIT MACHINE.\n",
-        QtGui.QMessageBox.AcceptRole,
-        QtGui.QMessageBox.AcceptRole)
-    if ret == QtGui.QMessageBox.AcceptRole:
-      return True
+  def __wait_for_user_action(self, message=""):
+    self.__parent_ui.emit(QtCore.SIGNAL('display_blocking_pop_up_signal(QString)'), message)
 
   def setup_ui(self, ui):
     pass
