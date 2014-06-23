@@ -25,11 +25,17 @@ except AttributeError:
 class Ui_DockWidget(object):
     def setupUi(self, DockWidget):
         DockWidget.setObjectName(_fromUtf8("DockWidget"))
-        DockWidget.resize(237, 436)
+        DockWidget.resize(237, 551)
         self.ayab_config = QtGui.QWidget()
         self.ayab_config.setObjectName(_fromUtf8("ayab_config"))
         self.verticalLayout = QtGui.QVBoxLayout(self.ayab_config)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
+        self.label_6 = QtGui.QLabel(self.ayab_config)
+        self.label_6.setObjectName(_fromUtf8("label_6"))
+        self.verticalLayout.addWidget(self.label_6)
+        self.color_line_edit = QtGui.QLineEdit(self.ayab_config)
+        self.color_line_edit.setObjectName(_fromUtf8("color_line_edit"))
+        self.verticalLayout.addWidget(self.color_line_edit)
         self.label_5 = QtGui.QLabel(self.ayab_config)
         self.label_5.setObjectName(_fromUtf8("label_5"))
         self.verticalLayout.addWidget(self.label_5)
@@ -65,6 +71,11 @@ class Ui_DockWidget(object):
         self.machine_type_box.addItem(_fromUtf8(""))
         self.machine_type_box.addItem(_fromUtf8(""))
         self.verticalLayout.addWidget(self.machine_type_box)
+        self.configure_button = QtGui.QPushButton(self.ayab_config)
+        self.configure_button.setObjectName(_fromUtf8("configure_button"))
+        self.verticalLayout.addWidget(self.configure_button)
+        spacerItem = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
+        self.verticalLayout.addItem(spacerItem)
         DockWidget.setWidget(self.ayab_config)
 
         self.retranslateUi(DockWidget)
@@ -72,6 +83,7 @@ class Ui_DockWidget(object):
 
     def retranslateUi(self, DockWidget):
         DockWidget.setWindowTitle(_translate("DockWidget", "Form", None))
+        self.label_6.setText(_translate("DockWidget", "Colors", None))
         self.label_5.setText(_translate("DockWidget", "Start Line", None))
         self.start_line_edit.setText(_translate("DockWidget", "0", None))
         self.label.setText(_translate("DockWidget", "Start Needle", None))
@@ -85,6 +97,7 @@ class Ui_DockWidget(object):
         self.label_4.setText(_translate("DockWidget", "Machine Type", None))
         self.machine_type_box.setItemText(0, _translate("DockWidget", "single", None))
         self.machine_type_box.setItemText(1, _translate("DockWidget", "double", None))
+        self.configure_button.setText(_translate("DockWidget", "Configure", None))
 
 
 if __name__ == "__main__":
