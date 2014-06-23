@@ -18,7 +18,7 @@
 #    https://bitbucket.org/chris007de/ayab-apparat/
 
 import time
-from PyQt4 import QtGui
+from PyQt4 import QtGui, QtCore
 from plugins.knitting_plugin import KnittingPlugin
 
 
@@ -27,15 +27,18 @@ class TestingKnittingPlugin(KnittingPlugin):
   def onknit(self, e):   # FIXME: setting options should go on onconfig.
     #try:
         for i in range(self._cycle_ammount):
-          print i
-          time.sleep(1)
+          percent = (i / float(self._cycle_ammount))*100
+          print percent
+          self.parent_ui.emit(QtCore.SIGNAL('updateProgress(int)'), int(percent))
+          time.sleep(0.1)
         self.finish()
         return True
     #except:
         return False
 
   def onconfigure(self, e):
-    self._cycle_ammount = 3
+    self.parent_ui = e.parent_ui
+    self._cycle_ammount = 20
     return
 
   def onfinish(self, e):
