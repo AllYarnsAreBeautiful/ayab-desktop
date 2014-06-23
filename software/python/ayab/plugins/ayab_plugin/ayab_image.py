@@ -116,9 +116,9 @@ class ayabImage(object):
             # colors separated per line
             self.__imageExpanded[(num_colors*row)+color][col] = 1
 
-    print(self.__imageIntern)
-    print(self.__imageColors)
-    print(self.__imageExpanded)
+    #print(self.__imageIntern)
+    #print(self.__imageColors)
+    #print(self.__imageExpanded)
 
 
   def __calcImgStartStopNeedles(self):
