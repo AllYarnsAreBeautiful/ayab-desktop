@@ -89,11 +89,34 @@ class GuiMain(QtGui.QWidget):
         self.ui.filename_lineedit.setText(route)
         self.image_file_route = route
 
+    def start_knitting_process(self):
+        self.gt = GenericThread(self.enabled_plugin.plugin_object.knit)
+        self.gt.start()
+
     def setupBehaviour(self):
         self.ui.load_file_button.clicked.connect(self.file_select_dialog)
         self.ui.module_dropdown.activated[str].connect(self.set_enabled_plugin)
+        self.ui.knit_button.clicked.connect(self.start_knitting_process)
+        self.connect(self, QtCore.SIGNAL("updateProgress(int)"), self.updateProgress)
+        # This blocks the other thread until signal is done
+        self.connect(self, QtCore.SIGNAL("display_blocking_pop_up_signal(QString)"), self.display_blocking_pop_up, QtCore.Qt.BlockingQueuedConnection)
         #TODO: add trigger for correct loading ui file
         self.load_dock_ui()
+        conf_button = self.findChild(QtGui.QPushButton, "configure_button")  # this should be binded by knitting_plugin.setup_ui
+        conf_button.clicked.connect(self.conf_button_function)
+
+    def display_blocking_pop_up(self, message=""):
+        ret = QtGui.QMessageBox.warning(
+            self,
+            "AYAB",
+            message,
+            QtGui.QMessageBox.AcceptRole,
+            QtGui.QMessageBox.AcceptRole)
+        if ret == QtGui.QMessageBox.AcceptRole:
+            return True
+
+    def conf_button_function(self):
+        self.enabled_plugin.plugin_object.configure(parent_ui=self)
 
     def file_select_dialog(self):
         file_selected = QtGui.QFileDialog.getOpenFileName(self)
