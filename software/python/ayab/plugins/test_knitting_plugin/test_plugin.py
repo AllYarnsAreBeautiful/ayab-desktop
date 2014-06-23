@@ -41,20 +41,11 @@ class TestingKnittingPlugin(KnittingPlugin):
   def onfinish(self, e):
     pass
 
+  def setup_ui(self, base_ui):
+    pass
+
   def get_configuration_from_ui(self, ui):
-    self.conf = {}
-    start_line_text = ui.findChild(QtGui.QLineEdit, "start_line_edit").text()
-    self.conf["start_line"] = int(start_line_text)
-    start_needle_text = ui.findChild(QtGui.QLineEdit, "start_needle_edit").text()
-    self.conf["start_needle"] = int(start_needle_text)
-    stop_needle_text = ui.findChild(QtGui.QLineEdit, "stop_needle_edit").text()
-    self.conf["stop_needle"] = int(stop_needle_text)
-    alignment_text = ui.findChild(QtGui.QComboBox, "alignment_combo_box").currentText()
-    self.conf["alignment"] = alignment_text
-    machine_type_text = ui.findChild(QtGui.QComboBox, "machine_type_box").currentText()
-    self.conf["machine_type"] = machine_type_text
-    #TODO: add more config options
-    return self.conf
+    pass
 
   def __init__(self):
     super(TestingKnittingPlugin, self).__init__({})
