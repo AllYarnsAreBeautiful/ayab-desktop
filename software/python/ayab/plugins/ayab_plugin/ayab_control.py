@@ -26,19 +26,13 @@ from PyQt4 import QtGui
 class AyabPluginControl(KnittingPlugin):
 
   def onknit(self, e):
-    #try:
-        for i in range(self._cycle_ammount):
-          print i
-          self.__wait_for_user_action()
-          time.sleep(1)
-        return True
-    #except:
-        return False
+    self.__image = ayab_image.ayabImage(self.conf["filename"], self.conf["num_colors"])
+    self.__knitImage(self.__image, self.conf)
 
   def onconfigure(self, e):
     assert e.parent_ui
     self.__parent_ui = e.parent_ui
-    self._cycle_ammount = 3
+    self.get_configuration_from_ui(self.__parent_ui)
     return
 
   def onfinish(self, e):
