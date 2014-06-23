@@ -46,6 +46,8 @@ class AyabPluginControl(KnittingPlugin):
 
   def get_configuration_from_ui(self, ui):
     self.conf = {}
+    color_line_text = ui.findChild(QtGui.QLineEdit, "color_line_edit").text()
+    self.conf["num_colors"] = int(color_line_text)
     start_line_text = ui.findChild(QtGui.QLineEdit, "start_line_edit").text()
     self.conf["start_line"] = int(start_line_text)
     start_needle_text = ui.findChild(QtGui.QLineEdit, "start_needle_edit").text()
@@ -55,7 +57,16 @@ class AyabPluginControl(KnittingPlugin):
     alignment_text = ui.findChild(QtGui.QComboBox, "alignment_combo_box").currentText()
     self.conf["alignment"] = alignment_text
     machine_type_text = ui.findChild(QtGui.QComboBox, "machine_type_box").currentText()
-    self.conf["machine_type"] = machine_type_text
+    self.conf["machine_type"] = str(machine_type_text)
+    #serial_port_dropdown is on main gui frame
+    serial_port_text = ui.findChild(QtGui.QComboBox, "serial_port_dropdown").currentText()
+    self.conf["portname"] = str(serial_port_text)
+    self.conf["portname"] = "/dev/ttyACM0"
+    # getting file location from textbox
+    # FIXME: this should be sent at onconfigure
+    filename_text = ui.findChild(QtGui.QLineEdit, "filename_lineedit").text()
+    self.conf["filename"] = str(filename_text)
+    logging.debug(self.conf)
     #TODO: add more config options
     return self.conf
 
