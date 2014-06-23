@@ -73,11 +73,16 @@ class AyabPluginControl(KnittingPlugin):
     return self.conf
 
   def __init__(self):
-    callbacks_dict = {
-        'onknit': self.onknit,
-    }
-    super(AyabPluginControl, self).__init__(callbacks_dict)
+    super(AyabPluginControl, self).__init__({})
     # KnittingPlugin.__init__(self)
+
+    #Copying from ayab_control
+    self.__API_VERSION = 0x03
+    self.__ayabCom = AyabCommunication()
+
+    self.__formerRequest = 0
+    self.__lineBlock = 0
+
 ###Copied from ayab_control
 #####################################
 
