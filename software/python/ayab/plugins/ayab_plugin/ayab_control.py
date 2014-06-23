@@ -28,16 +28,19 @@ from PyQt4 import QtGui, QtCore
 class AyabPluginControl(KnittingPlugin):
 
   def onknit(self, e):
+    logging.debug("called onknit on AyabPluginControl")
     self.__image = ayab_image.ayabImage(self.conf["filename"], self.conf["num_colors"])
     self.__knitImage(self.__image, self.conf)
 
   def onconfigure(self, e):
+    logging.debug("called onconfigure on TestingKnittingPlugin")
     assert e.parent_ui
     self.__parent_ui = e.parent_ui
     self.get_configuration_from_ui(self.__parent_ui)
     return
 
   def onfinish(self, e):
+    logging.info("Finished Knitting.")
     pass
 
   def __wait_for_user_action(self, message=""):
