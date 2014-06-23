@@ -18,9 +18,11 @@
 #    https://bitbucket.org/chris007de/ayab-apparat/
 
 from ayab_communication import AyabCommunication
+import ayab_image
 import time
+import logging
 from plugins.knitting_plugin import KnittingPlugin
-from PyQt4 import QtGui
+from PyQt4 import QtGui, QtCore
 
 
 class AyabPluginControl(KnittingPlugin):
