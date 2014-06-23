@@ -133,7 +133,7 @@ class GenericThread(QtCore.QThread):
         self.kwargs = kwargs
 
     def __del__(self):
-        self.join()
+        #self.join()
         self.wait()
 
     def run(self):
