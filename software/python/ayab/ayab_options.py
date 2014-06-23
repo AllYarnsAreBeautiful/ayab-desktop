@@ -84,6 +84,7 @@ class Ui_DockWidget(object):
     def retranslateUi(self, DockWidget):
         DockWidget.setWindowTitle(_translate("DockWidget", "Form", None))
         self.label_6.setText(_translate("DockWidget", "Colors", None))
+        self.color_line_edit.setText(_translate("DockWidget", "2", None))
         self.label_5.setText(_translate("DockWidget", "Start Line", None))
         self.start_line_edit.setText(_translate("DockWidget", "0", None))
         self.label.setText(_translate("DockWidget", "Start Needle", None))

@@ -23,7 +23,11 @@
      </widget>
     </item>
     <item>
-     <widget class="QLineEdit" name="color_line_edit"/>
+     <widget class="QLineEdit" name="color_line_edit">
+      <property name="text">
+       <string>2</string>
+      </property>
+     </widget>
     </item>
     <item>
      <widget class="QLabel" name="label_5">
