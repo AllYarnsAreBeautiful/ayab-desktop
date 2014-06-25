@@ -22,9 +22,10 @@
 import sys
 import logging
 from PyQt4 import QtGui, QtCore
-from ayab_gui import Ui_Form
-
 from yapsy.PluginManager import PluginManager
+from PIL import ImageQt
+
+from ayab_gui import Ui_Form
 from plugins.knitting_plugin import KnittingPlugin
 
 #FIXME: move to plugin options
