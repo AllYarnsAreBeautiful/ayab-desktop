@@ -23,9 +23,12 @@
      </widget>
     </item>
     <item>
-     <widget class="QLineEdit" name="color_line_edit">
-      <property name="text">
-       <string>2</string>
+     <widget class="QSpinBox" name="color_edit">
+      <property name="minimum">
+       <number>2</number>
+      </property>
+      <property name="maximum">
+       <number>8</number>
       </property>
      </widget>
     </item>
@@ -37,9 +40,25 @@
      </widget>
     </item>
     <item>
-     <widget class="QLineEdit" name="start_line_edit">
-      <property name="text">
-       <string>0</string>
+     <widget class="QSpinBox" name="start_line_edit">
+      <property name="suffix">
+       <string/>
+      </property>
+      <property name="prefix">
+       <string>line </string>
+      </property>
+      <property name="minimum">
+       <number>0</number>
+      </property>
+      <property name="maximum">
+       <number>256</number>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="Line" name="line">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
       </property>
      </widget>
     </item>
@@ -51,9 +70,12 @@
      </widget>
     </item>
     <item>
-     <widget class="QLineEdit" name="start_needle_edit">
-      <property name="text">
-       <string>0</string>
+     <widget class="QSpinBox" name="start_needle_edit">
+      <property name="prefix">
+       <string>needle </string>
+      </property>
+      <property name="maximum">
+       <number>200</number>
       </property>
      </widget>
     </item>
@@ -65,9 +87,15 @@
      </widget>
     </item>
     <item>
-     <widget class="QLineEdit" name="stop_needle_edit">
-      <property name="text">
-       <string>0</string>
+     <widget class="QSpinBox" name="stop_needle_edit">
+      <property name="suffix">
+       <string/>
+      </property>
+      <property name="prefix">
+       <string>needle </string>
+      </property>
+      <property name="maximum">
+       <number>200</number>
       </property>
      </widget>
     </item>

@@ -51,13 +51,13 @@ class AyabPluginControl(KnittingPlugin):
 
   def get_configuration_from_ui(self, ui):
     self.conf = {}
-    color_line_text = ui.findChild(QtGui.QLineEdit, "color_line_edit").text()
+    color_line_text = ui.findChild(QtGui.QSpinBox, "color_edit").value()
     self.conf["num_colors"] = int(color_line_text)
-    start_line_text = ui.findChild(QtGui.QLineEdit, "start_line_edit").text()
+    start_line_text = ui.findChild(QtGui.QSpinBox, "start_line_edit").value()
     self.conf["start_line"] = int(start_line_text)
-    start_needle_text = ui.findChild(QtGui.QLineEdit, "start_needle_edit").text()
+    start_needle_text = ui.findChild(QtGui.QSpinBox, "start_needle_edit").value()
     self.conf["start_needle"] = int(start_needle_text)
-    stop_needle_text = ui.findChild(QtGui.QLineEdit, "stop_needle_edit").text()
+    stop_needle_text = ui.findChild(QtGui.QSpinBox, "stop_needle_edit").value()
     self.conf["stop_needle"] = int(stop_needle_text)
     alignment_text = ui.findChild(QtGui.QComboBox, "alignment_combo_box").currentText()
     self.conf["alignment"] = alignment_text
