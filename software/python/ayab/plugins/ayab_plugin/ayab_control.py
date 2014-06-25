@@ -37,6 +37,12 @@ class AyabPluginControl(KnittingPlugin):
     assert e.parent_ui
     self.__parent_ui = e.parent_ui
     self.get_configuration_from_ui(self.__parent_ui)
+    if self.conf.get("start_needle") and self.conf.get("stop_needle"):
+      self.__image.setKnitNeedles(self.conf.get("start_needle"), self.conf.get("stop_needle"))
+      if self.conf.get("alignment"):
+        self.__image.setImagePosition(self.conf.get("alignment"))
+    if self.conf.get("start_needle"):
+      self.__image.setStartLine(self.conf.get("start_needle"))
     return
 
   def onfinish(self, e):
