@@ -29,7 +29,6 @@ class AyabPluginControl(KnittingPlugin):
 
   def onknit(self, e):
     logging.debug("called onknit on AyabPluginControl")
-    self.__image = ayab_image.ayabImage(self.conf["filename"], self.conf["num_colors"])
     self.__knitImage(self.__image, self.conf)
 
   def onconfigure(self, e):
@@ -37,6 +36,7 @@ class AyabPluginControl(KnittingPlugin):
     assert e.parent_ui
     self.__parent_ui = e.parent_ui
     self.get_configuration_from_ui(self.__parent_ui)
+    self.__image = ayab_image.ayabImage(self.conf["filename"], self.conf["num_colors"])
     if self.conf.get("start_needle") and self.conf.get("stop_needle"):
       self.__image.setKnitNeedles(self.conf.get("start_needle"), self.conf.get("stop_needle"))
       if self.conf.get("alignment"):
