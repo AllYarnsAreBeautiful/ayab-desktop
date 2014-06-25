@@ -82,13 +82,6 @@
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="set_serial_port_button">
-            <property name="text">
-             <string>Set Serial Port</string>
-            </property>
-           </widget>
-          </item>
-          <item>
            <spacer name="verticalSpacer_3">
             <property name="orientation">
              <enum>Qt::Vertical</enum>
@@ -125,13 +118,6 @@
            <widget class="QLineEdit" name="filename_lineedit">
             <property name="text">
              <string notr="true"/>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="open_file_button">
-            <property name="text">
-             <string>Open File</string>
             </property>
            </widget>
           </item>
