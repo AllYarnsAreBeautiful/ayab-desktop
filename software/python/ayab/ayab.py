@@ -27,8 +27,7 @@ from PIL import ImageQt
 
 from ayab_gui import Ui_Form
 from plugins.knitting_plugin import KnittingPlugin
-
-
+from fysom import FysomError
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -89,7 +88,7 @@ class GuiMain(QtGui.QWidget):
         self.image_file_route = route
 
     def start_knitting_process(self):
-        self.gt = GenericThread(self.enabled_plugin.plugin_object.knit)
+        self.gt = GenericThread(self.enabled_plugin.plugin_object.knit, parent_window=self)
         self.gt.start()
 
     def setupBehaviour(self):
@@ -98,6 +97,7 @@ class GuiMain(QtGui.QWidget):
         self.ui.knit_button.clicked.connect(self.start_knitting_process)
         self.connect(self, QtCore.SIGNAL("updateProgress(int)"), self.updateProgress)
         # This blocks the other thread until signal is done
+        self.connect(self, QtCore.SIGNAL("display_blocking_pop_up_signal(QString, QString)"), self.display_blocking_pop_up, QtCore.Qt.BlockingQueuedConnection)
         self.connect(self, QtCore.SIGNAL("display_blocking_pop_up_signal(QString)"), self.display_blocking_pop_up, QtCore.Qt.BlockingQueuedConnection)
 
     def load_image_on_scene(self, image_str):
@@ -114,8 +114,15 @@ class GuiMain(QtGui.QWidget):
         qv = self.ui.image_pattern_view
         qv.setScene(self.__qscene)
 
-    def display_blocking_pop_up(self, message=""):
-        ret = QtGui.QMessageBox.warning(
+    def display_blocking_pop_up(self, message="", message_type="info"):
+        logging.debug("message emited: '{}'".format(message))
+        box_function = {
+            "info": QtGui.QMessageBox.information,
+            "warning": QtGui.QMessageBox.warning,
+            "error": QtGui.QMessageBox.critical,
+        }
+        message_box_function = box_function.get(message_type, QtGui.QMessageBox.warning)
+        ret = message_box_function(
             self,
             "AYAB",
             message,
@@ -147,7 +154,13 @@ class GenericThread(QtCore.QThread):
         self.wait()
 
     def run(self):
-        self.function(*self.args, **self.kwargs)
+        try:
+            self.function(*self.args, **self.kwargs)
+        except FysomError as fe:
+            logging.error(fe)
+            parent = self.kwargs["parent_window"]
+            parent.emit(QtCore.SIGNAL('display_blocking_pop_up_signal(QString, QString)'), QtGui.QApplication.translate("Form",
+                                                                      "Error on plugin action, be sure to configure before starting Knitting.", None), "error")
         return
 
 if __name__ == '__main__':
