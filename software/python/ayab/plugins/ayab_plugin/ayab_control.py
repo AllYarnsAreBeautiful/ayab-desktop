@@ -35,14 +35,16 @@ class AyabPluginControl(KnittingPlugin):
 
   def onconfigure(self, e):
     logging.debug("called onconfigure on TestingKnittingPlugin")
-    self.get_configuration_from_ui(self.__parent_ui)
+    conf = self.get_configuration_from_ui(self.__parent_ui)
+    #TODO: detect if previous conf had the same image to avoid re-generating.
     self.__image = ayab_image.ayabImage(self.conf["filename"], self.conf["num_colors"])
-    if self.conf.get("start_needle") and self.conf.get("stop_needle"):
-      self.__image.setKnitNeedles(self.conf.get("start_needle"), self.conf.get("stop_needle"))
-      if self.conf.get("alignment"):
-        self.__image.setImagePosition(self.conf.get("alignment"))
-    if self.conf.get("start_needle"):
-      self.__image.setStartLine(self.conf.get("start_needle"))
+
+    if conf.get("start_needle") and conf.get("stop_needle"):
+      self.__image.setKnitNeedles(conf.get("start_needle"), conf.get("stop_needle"))
+      if conf.get("alignment"):
+        self.__image.setImagePosition(conf.get("alignment"))
+    if conf.get("start_needle"):
+      self.__image.setStartLine(conf.get("start_needle"))
     return
 
   def onfinish(self, e):
