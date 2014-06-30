@@ -65,23 +65,6 @@
            <widget class="QComboBox" name="module_dropdown"/>
           </item>
           <item>
-           <widget class="QLabel" name="label">
-            <property name="text">
-             <string>Select Serial Port</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QComboBox" name="serial_port_dropdown"/>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="checkBox">
-            <property name="text">
-             <string>Active</string>
-            </property>
-           </widget>
-          </item>
-          <item>
            <spacer name="verticalSpacer_3">
             <property name="orientation">
              <enum>Qt::Vertical</enum>

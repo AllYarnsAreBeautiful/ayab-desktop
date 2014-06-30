@@ -30,6 +30,12 @@ class Ui_DockWidget(object):
         self.ayab_config.setObjectName(_fromUtf8("ayab_config"))
         self.verticalLayout = QtGui.QVBoxLayout(self.ayab_config)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
+        self.label_7 = QtGui.QLabel(self.ayab_config)
+        self.label_7.setObjectName(_fromUtf8("label_7"))
+        self.verticalLayout.addWidget(self.label_7)
+        self.serial_port_dropdown = QtGui.QComboBox(self.ayab_config)
+        self.serial_port_dropdown.setObjectName(_fromUtf8("serial_port_dropdown"))
+        self.verticalLayout.addWidget(self.serial_port_dropdown)
         self.label_6 = QtGui.QLabel(self.ayab_config)
         self.label_6.setObjectName(_fromUtf8("label_6"))
         self.verticalLayout.addWidget(self.label_6)
@@ -96,6 +102,7 @@ class Ui_DockWidget(object):
 
     def retranslateUi(self, DockWidget):
         DockWidget.setWindowTitle(_translate("DockWidget", "Form", None))
+        self.label_7.setText(_translate("DockWidget", "Port", None))
         self.label_6.setText(_translate("DockWidget", "Colors", None))
         self.label_5.setText(_translate("DockWidget", "Start Line", None))
         self.start_line_edit.setPrefix(_translate("DockWidget", "line ", None))
