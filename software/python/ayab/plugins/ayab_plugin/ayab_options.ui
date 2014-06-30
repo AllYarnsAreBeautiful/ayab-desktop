@@ -16,6 +16,16 @@
   <widget class="QWidget" name="ayab_config">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
+     <widget class="QLabel" name="label_7">
+      <property name="text">
+       <string>Port</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QComboBox" name="serial_port_dropdown"/>
+    </item>
+    <item>
      <widget class="QLabel" name="label_6">
       <property name="text">
        <string>Colors</string>
