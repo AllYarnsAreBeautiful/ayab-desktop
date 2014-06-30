@@ -10,23 +10,23 @@ class KnittingPlugin(IPlugin, Fysom):
 
   def onknit(self, e):
     """Callback when state machine executes knit()"""
-    raise NotImplementedError(__NOT_IMPLEMENTED_ERROR.format("onknit is used for the main 'knitting loop'."))
+    raise NotImplementedError(__NOT_IMPLEMENTED_ERROR.format("onknit. It is used for the main 'knitting loop'."))
 
   def onfinish(self, e):
     """Callback when state machine executes finish()"""
-    raise NotImplementedError(__NOT_IMPLEMENTED_ERROR.format("onfinish is a callback that is called when knitting is over."))
+    raise NotImplementedError(__NOT_IMPLEMENTED_ERROR.format("onfinish. It is a callback that is called when knitting is over."))
 
   def onconfigure(self, e):
     """Callback when state machine executes configure(parent_ui = parent, options={})"""
     assert e.parent_ui
-    raise NotImplementedError(__NOT_IMPLEMENTED_ERROR.format("onconfigure is used to configure the knitting plugin before starting."))
+    raise NotImplementedError(__NOT_IMPLEMENTED_ERROR.format("onconfigure. It is used to configure the knitting plugin before starting."))
 
   def setup_ui(self, ui):
-    raise NotImplementedError(__NOT_IMPLEMENTED_ERROR.format("setup_ui is used to load the knitting_options_dock panel ui for the plugin."))
+    raise NotImplementedError(__NOT_IMPLEMENTED_ERROR.format("setup_ui. It loads the knitting_options_dock panel ui for the plugin."))
 
   def get_configuration_from_ui(self, ui):
     """Loads options dict with a given parent QtGui object."""
-    raise NotImplementedError(__NOT_IMPLEMENTED_ERROR.format("get_configuration_from_ui loads options with a given parent ui object."))
+    raise NotImplementedError(__NOT_IMPLEMENTED_ERROR.format("get_configuration_from_ui. It loads options with a given parent ui object."))
 
   def __init__(self, callbacks_dict):
     """
