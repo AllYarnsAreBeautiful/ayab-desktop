@@ -23,10 +23,10 @@ from plugins.knitting_plugin import KnittingPlugin
 import logging
 
 
-class TestingKnittingPlugin(KnittingPlugin):
+class DummyKnittingPlugin(KnittingPlugin):
 
   def onknit(self, e):   # FIXME: setting options should go on onconfig.
-    logging.debug("called onknit on TestingKnittingPlugin")
+    logging.debug("called onknit on DummyKnittingPlugin")
     for i in range(self._cycle_ammount):
       percent = (i / float(self._cycle_ammount))*100
       print percent
@@ -36,7 +36,7 @@ class TestingKnittingPlugin(KnittingPlugin):
     return True
 
   def onconfigure(self, e):
-    logging.debug("called onconfigure on TestingKnittingPlugin")
+    logging.debug("called onconfigure on DummyKnittingPlugin")
     self.parent_ui = e.parent_ui
     self._cycle_ammount = 20
     return
@@ -45,16 +45,19 @@ class TestingKnittingPlugin(KnittingPlugin):
     logging.info("finished knitting")
     pass
 
-  def setup_ui(self, base_ui):
+  def setup_ui(self, parent_ui):
+    pass
+
+  def cleanup_ui(self, parent_ui):
     pass
 
   def get_configuration_from_ui(self, ui):
     pass
 
   def __init__(self):
-    super(TestingKnittingPlugin, self).__init__({})
+    super(DummyKnittingPlugin, self).__init__({})
     # callbacks_dict = {
     #     'onknit': self.onknit,
     # }
-    # super(TestingKnittingPlugin, self).__init__(callbacks_dict)
+    # super(DummyKnittingPlugin, self).__init__(callbacks_dict)
     # KnittingPlugin.__init__(self)
