@@ -20,14 +20,17 @@
 """Provides an Interface for users to operate AYAB using a GUI."""
 
 import sys
+import os
 import logging
+
 from PyQt4 import QtGui, QtCore
-from yapsy.PluginManager import PluginManager
+from yapsy import PluginManager
 from PIL import ImageQt
+from fysom import FysomError
 
 from ayab_gui import Ui_Form
-from plugins.knitting_plugin import KnittingPlugin
-from fysom import FysomError
+import plugins
+
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -49,8 +52,12 @@ class GuiMain(QtGui.QWidget):
           logging.info("Deactivating All Plugins")
           for pluginInfo in self.pm.getAllPlugins():
             self.pm.deactivatePluginByName(pluginInfo.name)
-
-        self.pm = PluginManager(directories_list=["plugins"],)
+        if getattr(sys, 'frozen', False):
+            route = sys._MEIPASS
+            logging.info("loading from pyinstaller")
+            self.pm = PluginManager.PluginManager(directories_list=[os.path.join(route, "plugins")],)
+        else:
+            self.pm = PluginManager.PluginManager(directories_list=["plugins"],)
 
         self.pm.collectPlugins()
         for pluginInfo in self.pm.getAllPlugins():
