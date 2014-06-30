@@ -24,6 +24,8 @@ import logging
 from plugins.knitting_plugin import KnittingPlugin
 from PyQt4 import QtGui, QtCore
 
+from ayab_options import Ui_DockWidget
+
 
 class AyabPluginControl(KnittingPlugin):
 
@@ -33,8 +35,6 @@ class AyabPluginControl(KnittingPlugin):
 
   def onconfigure(self, e):
     logging.debug("called onconfigure on TestingKnittingPlugin")
-    assert e.parent_ui
-    self.__parent_ui = e.parent_ui
     self.get_configuration_from_ui(self.__parent_ui)
     self.__image = ayab_image.ayabImage(self.conf["filename"], self.conf["num_colors"])
     if self.conf.get("start_needle") and self.conf.get("stop_needle"):
@@ -52,8 +52,27 @@ class AyabPluginControl(KnittingPlugin):
   def __wait_for_user_action(self, message=""):
     self.__parent_ui.emit(QtCore.SIGNAL('display_blocking_pop_up_signal(QString)'), message)
 
-  def setup_ui(self, ui):
-    pass
+  def setup_ui(self, parent_ui):
+    self.__parent_ui = parent_ui
+    self.options_ui = Ui_DockWidget()
+    self.dock = parent_ui.ui.knitting_options_dock  # findChild(QtGui.QDockWidget, "knitting_options_dock")
+    self.options_ui.setupUi(self.dock)
+    self.setup_behaviour_ui()
+
+  def setup_behaviour_ui(self):
+    conf_button = self.options_ui.configure_button  # Used instead of findChild(QtGui.QPushButton, "configure_button")
+    conf_button.clicked.connect(self.conf_button_function)
+
+  def conf_button_function(self):
+    self.configure()
+
+  def cleanup_ui(self, parent_ui):
+    #dock = parent_ui.knitting_options_dock
+    dock = self.dock
+    cleaner = QtCore.QObjectCleanupHandler()
+    cleaner.add(dock.widget())
+    self.__qw = QtGui.QWidget()
+    dock.setWidget(self.__qw)
 
   def get_configuration_from_ui(self, ui):
     self.conf = {}

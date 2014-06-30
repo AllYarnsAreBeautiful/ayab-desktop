@@ -28,8 +28,6 @@ from PIL import ImageQt
 from ayab_gui import Ui_Form
 from plugins.knitting_plugin import KnittingPlugin
 
-#FIXME: move to plugin options
-from ayab_options import Ui_DockWidget
 
 
 logging.basicConfig(level=logging.DEBUG)
@@ -45,6 +43,7 @@ class GuiMain(QtGui.QWidget):
         self.setupBehaviour()
 
         self.image_file_route = None
+        self.enabled_plugin = None
 
     def plugins_init(self, is_reloading=False):
         if is_reloading:
@@ -67,19 +66,18 @@ class GuiMain(QtGui.QWidget):
         self.ui.module_dropdown.addItem(module_name)
 
     def set_enabled_plugin(self, plugin_name=None):
-        """Returns the plugin_object from the plugin selected on module_dropdown."""
+        """Enables plugin, sets up gui and returns the plugin_object from the plugin selected on module_dropdown."""
+        if self.enabled_plugin:
+            self.enabled_plugin.plugin_object.cleanup_ui(window)
+
         if not plugin_name:
             plugin_name = window.ui.module_dropdown.currentText()
         plugin_o = self.pm.getPluginByName(plugin_name)
         self.enabled_plugin = plugin_o
+
+        self.enabled_plugin.plugin_object.setup_ui(self)
         logging.info("Set enabled_plugin as {0} - {1}".format(plugin_o, plugin_name))
         return plugin_o
-
-    def load_dock_ui(self, ui_instance_to_load=None):
-        #FIXME: set dynamically
-        ui_instance_to_load = Ui_DockWidget()
-        dock = self.ui.knitting_options_dock
-        ui_instance_to_load.setupUi(dock)
 
     def updateProgress(self, progress):
         '''Updates the Progress Bar.'''
@@ -101,10 +99,6 @@ class GuiMain(QtGui.QWidget):
         self.connect(self, QtCore.SIGNAL("updateProgress(int)"), self.updateProgress)
         # This blocks the other thread until signal is done
         self.connect(self, QtCore.SIGNAL("display_blocking_pop_up_signal(QString)"), self.display_blocking_pop_up, QtCore.Qt.BlockingQueuedConnection)
-        #TODO: add trigger for correct loading ui file
-        self.load_dock_ui()
-        conf_button = self.findChild(QtGui.QPushButton, "configure_button")  # this should be binded by knitting_plugin.setup_ui
-        conf_button.clicked.connect(self.conf_button_function)
 
     def load_image_on_scene(self, image_str):
         """Loads an image into self.ui.image_pattern_view using a temporary QGraphicsScene"""

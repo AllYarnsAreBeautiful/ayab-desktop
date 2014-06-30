@@ -24,6 +24,9 @@ class KnittingPlugin(IPlugin, Fysom):
   def setup_ui(self, ui):
     raise NotImplementedError(__NOT_IMPLEMENTED_ERROR.format("setup_ui. It loads the knitting_options_dock panel ui for the plugin."))
 
+  def cleanup_ui(self, ui):
+    raise NotImplementedError(__NOT_IMPLEMENTED_ERROR.format("cleanup_ui. It cleans up the knitting_options_dock panel ui for the plugin."))
+
   def get_configuration_from_ui(self, ui):
     """Loads options dict with a given parent QtGui object."""
     raise NotImplementedError(__NOT_IMPLEMENTED_ERROR.format("get_configuration_from_ui. It loads options with a given parent ui object."))
