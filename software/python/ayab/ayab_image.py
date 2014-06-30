@@ -40,7 +40,7 @@ class ayabImage(object):
 
   def filename(self):
     return self.__filename
-    
+
   def imageIntern(self):
     return self.__imageIntern
 
@@ -77,19 +77,19 @@ class ayabImage(object):
 
   def __updateImageData(self):
     self.__imgWidth   = self.__image.size[0]
-    self.__imgHeight  = self.__image.size[1]      
+    self.__imgHeight  = self.__image.size[1]
 
     self.__convertImgToIntern()
     self.__calcImgStartStopNeedles()
 
 
-  def __convertImgToIntern(self): 
+  def __convertImgToIntern(self):
     num_colors = self.__numColors
     clr_range  = float(256)/num_colors
 
     imgWidth   = self.__imgWidth
     imgHeight  = self.__imgHeight
-    
+
     self.__imageIntern = \
       [[0 for i in range(imgWidth)] \
       for j in range(imgHeight)]
@@ -107,7 +107,7 @@ class ayabImage(object):
 
         for color in range(0, num_colors):
           lowerBound = int(color*clr_range)
-          upperBound = int((color+1)*clr_range) 
+          upperBound = int((color+1)*clr_range)
           if pxl>=lowerBound and pxl<upperBound:
             # color map
             self.__imageIntern[row][col]    = color
@@ -162,7 +162,7 @@ class ayabImage(object):
           self.__image.putpixel((x,y),255-pxl)
       self.__updateImageData()
       return
-      
+
 
   def rotateImage(self):
       """
@@ -189,13 +189,13 @@ class ayabImage(object):
   def setKnitNeedles(self, pKnitStart, pKnitStop):
       """
       set the start and stop needle
-      """      
+      """
       if (pKnitStart < pKnitStop) \
           and pKnitStart >= 0 \
           and pKnitStop < 200:
         self.__knitStartNeedle = pKnitStart
         self.__knitStopNeedle  = pKnitStop
-        
+
       self.__updateImageData()
       return
 

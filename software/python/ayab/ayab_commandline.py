@@ -73,7 +73,7 @@ def showImagePosition(image):
       knitStopNeedle  = image.knitStopNeedle()
 
       print "Image Start: ", imgStartNeedle
-      print "Image Stop : ", imgStopNeedle 
+      print "Image Stop : ", imgStopNeedle
       print ""
 
       # print markers for active area and knitted image
@@ -82,7 +82,7 @@ def showImagePosition(image):
           if i >= knitStartNeedle and i <= knitStopNeedle:
               if i >= imgStartNeedle and i <= imgStopNeedle:
                   msg += 'x'
-              else:          
+              else:
                   msg += '-'
           else:
               msg += '_'
@@ -132,14 +132,14 @@ def mainCallback(pSource, pString, pType):
   if pType == "stream":
     print pString
     return
-  
+
   if pType == "error":
     print "E: " + pString
   elif pType == "debug":
     print "D: " + pString
   elif pType == "prompt":
     print pString
-  
+
   raw_input("Press Enter")
   return
 
@@ -179,7 +179,7 @@ def print_main_menu(image):
     print "Stop Needle   : ", image.knitStopNeedle()
     print "Start Line    : ", image.startLine()
     print "Image position: ", image.imgPosition()
-  
+
 
 def no_such_action():
     print "Please make a valid selection"
@@ -193,37 +193,37 @@ def mainFunction(options):
     if options.machine_type == 'single' \
           and options.num_colors != 2:
       print "E: singlebed only supports 2 color knitting"
-      return 
+      return
 
 
     image = ayab_image.ayabImage(options.filename, \
                                   options.num_colors)
-    
-    ayabControl = ayab_control.ayabControl(mainCallback)
-    
 
-    actions = {"1": "showImage(image)", 
+    ayabControl = ayab_control.ayabControl(mainCallback)
+
+
+    actions = {"1": "showImage(image)",
                 "2": "image.invertImage()",
-                "3": "resizeImage(image)", 
-                "4": "image.rotateImage()", 
-                "5": "setKnitNeedles(image)", 
+                "3": "resizeImage(image)",
+                "4": "image.rotateImage()",
+                "5": "setKnitNeedles(image)",
                 "6": "setImagePosition(image)",
-                "7": "setStartLine(image)", 
+                "7": "setStartLine(image)",
                 "8": "showImagePosition(image)",
                 "9": "ayabControl.knitImage(image, options)"
-                }    
+                }
     while True:
         os.system('cls' if os.name=='nt' else 'clear')
-        
+
         print_main_menu(image)
-        print ""    
+        print ""
         selection = raw_input("Your selection: ")
         print ""
         if "0" == selection:
             exit()
             return
         toDo = actions.get(selection, "no_such_action")
-        eval(toDo)        
+        eval(toDo)
 
     return
 
