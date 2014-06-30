@@ -22,11 +22,28 @@ from PyQt4 import QtGui, QtCore
 from plugins.knitting_plugin import KnittingPlugin
 import logging
 
+try:
+    _fromUtf8 = QtCore.QString.fromUtf8
+except AttributeError:
+    def _fromUtf8(s):
+        return s
+
+try:
+    _encoding = QtGui.QApplication.UnicodeUTF8
+
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig, _encoding)
+except AttributeError:
+
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig)
+
 
 class DummyKnittingPlugin(KnittingPlugin):
 
-  def onknit(self, e):   # FIXME: setting options should go on onconfig.
+  def onknit(self, e):
     logging.debug("called onknit on DummyKnittingPlugin")
+    # Simulating a blocking task.
     for i in range(self._cycle_ammount):
       percent = (i / float(self._cycle_ammount))*100
       print percent
@@ -36,31 +53,37 @@ class DummyKnittingPlugin(KnittingPlugin):
     return True
 
   def onconfigure(self, e):
-    logging.debug("called onconfigure on DummyKnittingPlugin")
+    logging.debug("Called onconfigure on DummyKnittingPlugin")
     self._cycle_ammount = 20
     return
 
   def onfinish(self, e):
-    logging.info("finished knitting")
+    logging.info("Finished Knitting")
     pass
 
   def setup_ui(self, parent_ui):
-    #TODO: add button
     self.parent_ui = parent_ui
-    pass
+    dock = parent_ui.ui.knitting_options_dock
+    self.qwidget = QtGui.QWidget(dock)
+    self.configure_button = QtGui.QPushButton(self.qwidget)
+    self.configure_button.setObjectName(_fromUtf8("configure_button"))
+    self.configure_button.setText(_translate("DockWidget", "Configure", None))
+    self.configure_button.clicked.connect(self.__conf_button_function)
+    dock.setWidget(self.qwidget)
 
   def cleanup_ui(self, parent_ui):
-    #TODO: remove button
     self.parent_ui = parent_ui
-    pass
+    dock = parent_ui.ui.knitting_options_dock
+    cleaner = QtCore.QObjectCleanupHandler()
+    cleaner.add(self.qwidget)
+    self.__qw = QtGui.QWidget()
+    dock.setWidget(self.__qw)
+
+  def __conf_button_function(self):
+    self.configure()
 
   def get_configuration_from_ui(self, ui):
     pass
 
   def __init__(self):
     super(DummyKnittingPlugin, self).__init__({})
-    # callbacks_dict = {
-    #     'onknit': self.onknit,
-    # }
-    # super(DummyKnittingPlugin, self).__init__(callbacks_dict)
-    # KnittingPlugin.__init__(self)
