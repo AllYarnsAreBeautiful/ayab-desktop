@@ -37,7 +37,6 @@ class DummyKnittingPlugin(KnittingPlugin):
 
   def onconfigure(self, e):
     logging.debug("called onconfigure on DummyKnittingPlugin")
-    self.parent_ui = e.parent_ui
     self._cycle_ammount = 20
     return
 
@@ -46,9 +45,13 @@ class DummyKnittingPlugin(KnittingPlugin):
     pass
 
   def setup_ui(self, parent_ui):
+    #TODO: add button
+    self.parent_ui = parent_ui
     pass
 
   def cleanup_ui(self, parent_ui):
+    #TODO: remove button
+    self.parent_ui = parent_ui
     pass
 
   def get_configuration_from_ui(self, ui):
