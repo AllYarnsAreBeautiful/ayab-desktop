@@ -106,6 +106,20 @@ class GuiMain(QtGui.QWidget):
         conf_button = self.findChild(QtGui.QPushButton, "configure_button")  # this should be binded by knitting_plugin.setup_ui
         conf_button.clicked.connect(self.conf_button_function)
 
+    def load_image_on_scene(self, image_str):
+        """Loads an image into self.ui.image_pattern_view using a temporary QGraphicsScene"""
+        self.__pil_image = ImageQt.Image.open(image_str)
+        self.__qt_image = ImageQt.ImageQt(self.__pil_image)
+        self.__qpixmap = QtGui.QPixmap.fromImage(self.__qt_image)
+        self.__qscene = QtGui.QGraphicsScene()
+        self.__qscene.addPixmap(self.__qpixmap)
+
+        #l = QtCore.QLineF(0,0,100,100)
+        #self.__qscene.addLine(l)
+
+        qv = self.ui.image_pattern_view
+        qv.setScene(self.__qscene)
+
     def display_blocking_pop_up(self, message=""):
         ret = QtGui.QMessageBox.warning(
             self,
@@ -120,8 +134,9 @@ class GuiMain(QtGui.QWidget):
         self.enabled_plugin.plugin_object.configure(parent_ui=self)
 
     def file_select_dialog(self):
-        file_selected = QtGui.QFileDialog.getOpenFileName(self)
-        self.update_file_selected_text_field(file_selected)
+        file_selected_route = QtGui.QFileDialog.getOpenFileName(self)
+        self.update_file_selected_text_field(file_selected_route)
+        self.load_image_on_scene(str(file_selected_route))
 
 
 class GenericThread(QtCore.QThread):
