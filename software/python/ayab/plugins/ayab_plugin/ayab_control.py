@@ -54,6 +54,9 @@ class AyabPluginControl(KnittingPlugin):
   def __wait_for_user_action(self, message=""):
     self.__parent_ui.emit(QtCore.SIGNAL('display_blocking_pop_up_signal(QString)'), message)
 
+  def __emit_progress(self, percent):
+    self.__parent_ui.emit(QtCore.SIGNAL('updateProgress(int)'), int(percent))
+
   def setup_ui(self, parent_ui):
     self.__parent_ui = parent_ui
     self.options_ui = Ui_DockWidget()
@@ -287,6 +290,10 @@ class AyabPluginControl(KnittingPlugin):
             msg += ', lineNumber: ' + str(lineNumber)
             msg += ', lineBlock:' + str(self.__lineBlock) + ')'
             logging.debug(msg)
+            #sending line progress to gui
+            progress_int = 100 * float(reqestedLine + 1)/self.__image.imgHeight()
+            self.__emit_progress(progress_int)
+
         else:
             logging.error("requested lineNumber out of range")
 
