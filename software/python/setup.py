@@ -71,7 +71,11 @@ setup(
     author_email='info@ayab-knitting.com',
     description='GUI for Machine assisted Knitting. Reference implementation for AYAB.',
     long_description=long_description,
-    packages=['ayab'],
+    ## TODO: load plugins automatically.
+    packages=['ayab',
+              'ayab.plugins',
+              'ayab.plugins.ayab_plugin',
+              'ayab.plugins.dummy_knitting_plugin',],
     include_package_data=True,
     platforms='any',
     # test_suite='ayab.tests',
