@@ -74,7 +74,7 @@ class GuiMain(QtGui.QWidget):
     def set_enabled_plugin(self, plugin_name=None):
         """Enables plugin, sets up gui and returns the plugin_object from the plugin selected on module_dropdown."""
         if self.enabled_plugin:
-            self.enabled_plugin.plugin_object.cleanup_ui(window)
+            self.enabled_plugin.plugin_object.cleanup_ui(self)
 
         if not plugin_name:
             plugin_name = window.ui.module_dropdown.currentText()
