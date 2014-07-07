@@ -1,2 +1,2 @@
--e software/python/
+-e software/python
 
