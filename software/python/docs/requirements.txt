@@ -1,1 +1,2 @@
+-e software/python
 sphinxcontrib-blockdiag==1.1.1
