@@ -170,8 +170,11 @@ class GenericThread(QtCore.QThread):
                                                                       "Error on plugin action, be sure to configure before starting Knitting.", None), "error")
         return
 
+def run():
+  app = QtGui.QApplication(sys.argv)
+  window = GuiMain()
+  window.show()
+  sys.exit(app.exec_())
+
 if __name__ == '__main__':
-    app = QtGui.QApplication(sys.argv)
-    window = GuiMain()
-    window.show()
-    sys.exit(app.exec_())
+  run()
