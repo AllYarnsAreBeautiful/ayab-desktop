@@ -1,7 +1,7 @@
 import pytest
 import serial
 import unittest
-from ayab.ayab_communication import AyabCommunication
+from ayab.plugins.ayab_plugin.ayab_communication import AyabCommunication
 
 
 class TestCommunication(unittest.TestCase):
