@@ -19,8 +19,8 @@
 #    https://bitbucket.org/chris007de/ayab-apparat/
 
 from __future__ import print_function
-from setuptools import setup, find_packages
-from setuptools.command.test import test as TestCommand
+from distutils.core import setup, Command
+
 import io
 import codecs
 import os
@@ -43,23 +43,25 @@ def read(*filenames, **kwargs):
 long_description = read('README.md') #, 'CHANGES.txt')
 
 
-class PyTest(TestCommand):
-    def finalize_options(self):
-        TestCommand.finalize_options(self)
-        self.test_args = []
-        self.test_suite = True
+class PyTest(Command):
+    user_options = []
+    def initialize_options(self):
+        pass
 
-    def run_tests(self):
-        import pytest
-        errcode = pytest.main(self.test_args)
-        sys.exit(errcode)
+    def finalize_options(self):
+        pass
+
+    def run(self):
+        import sys,subprocess
+        errno = subprocess.call([sys.executable, 'runtests.py'])
+        raise SystemExit(errno)
 
 setup(
     name='ayab',
     version=ayab.__version__,
     url='http://ayab-knitting.com/',
     license='GNU GPLv3+',
-    author='Christian Obersteiner, Andreas Müller, Sebastian Oliva',
+    author=u'Christian Obersteiner, Andreas Müller, Sebastian Oliva',
     scripts=['bin/ayab'],
     tests_require=['pytest'],
     ## TODO: load this from requirements.
@@ -71,7 +73,7 @@ setup(
     author_email='info@ayab-knitting.com',
     description='GUI for Machine assisted Knitting. Reference implementation for AYAB.',
     long_description=long_description,
-    packages=['ayab'],
+    packages=['ayab', 'ayab.plugins'],
     include_package_data=True,
     platforms='any',
     # test_suite='ayab.tests',
