@@ -19,7 +19,7 @@
 
 import time
 from PyQt4 import QtGui, QtCore
-from plugins.knitting_plugin import KnittingPlugin
+from ayab.plugins.knitting_plugin import KnittingPlugin
 import logging
 
 try:

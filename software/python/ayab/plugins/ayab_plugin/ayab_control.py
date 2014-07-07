@@ -21,7 +21,7 @@ from ayab_communication import AyabCommunication
 import ayab_image
 import time
 import logging
-from plugins.knitting_plugin import KnittingPlugin
+from ayab.plugins.knitting_plugin import KnittingPlugin
 from PyQt4 import QtGui, QtCore
 
 from ayab_options import Ui_DockWidget
