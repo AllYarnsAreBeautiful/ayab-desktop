@@ -29,7 +29,6 @@ from PIL import ImageQt
 from fysom import FysomError
 
 from ayab_gui import Ui_Form
-import plugins
 
 
 logging.basicConfig(level=logging.DEBUG)
@@ -57,7 +56,9 @@ class GuiMain(QtGui.QWidget):
             logging.info("loading from pyinstaller")
             self.pm = PluginManager.PluginManager(directories_list=[os.path.join(route, "plugins")],)
         else:
-            self.pm = PluginManager.PluginManager(directories_list=["plugins"],)
+            plugins_folder = os.path.join(os.path.dirname(__file__),"plugins")
+            print(plugins_folder)
+            self.pm = PluginManager.PluginManager(directories_list=[plugins_folder],)
 
         self.pm.collectPlugins()
         for pluginInfo in self.pm.getAllPlugins():
