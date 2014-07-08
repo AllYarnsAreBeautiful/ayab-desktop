@@ -1,2 +1,3 @@
+sphinxcontrib-seqdiag>=1.1.1
 -e software/python
 
