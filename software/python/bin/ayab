@@ -3,4 +3,4 @@
 
 import ayab
 
-ayab.ayab.run()
+ayab.run()
