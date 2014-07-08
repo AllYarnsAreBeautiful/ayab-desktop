@@ -1,4 +1,3 @@
 sphinxcontrib-seqdiag
-PyQt4
 -e software/python
 
