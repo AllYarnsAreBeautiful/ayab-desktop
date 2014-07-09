@@ -40,18 +40,19 @@ class AyabCommunication(object):
     self.__ser = serial
 
   def __del__(self):
-       self.close_serial()
+    """Handles on delete behaviour closing serial port object."""
+    self.close_serial()
 
-  def open_serial(self, pPortname):
+  def open_serial(self, pPortname=None):
+    """Opens serial port communication with a portName."""
     if not self.__ser:
       self.__portname = pPortname
       try:
           self.__ser = serial.Serial(self.__portname, 115200)
           time.sleep(1)
       except:
+        self.__logger.error("could not open serial port " +  self.__portname)
         raise CommunicationException()
-        #print "E: could not open serial port " + self.__portname
-        #return False
       return True
 
   def close_serial(self):
@@ -62,13 +63,14 @@ class AyabCommunication(object):
 
   def read_line(self):
     """Reads a line from serial communication."""
-    #FIXME should be explicitly bytestring
-    line = ''
+    line = bytes()
     while self.__ser.inWaiting() > 0:
         line += self.__ser.read(1)
     return line
 
   def req_start(self, startNeedle, stopNeedle):
+      """Sends a start message to the controller."""
+
       msg = chr(0x01)  # msg id
       msg += chr(int(startNeedle))
       msg += chr(int(stopNeedle))
@@ -76,10 +78,25 @@ class AyabCommunication(object):
       self.__ser.write(msg + '\n\r')
 
   def req_info(self):
+      """Sends a request for information to controller."""
       # print "< reqInfo"
       self.__ser.write(chr(0x03) + '\n\r')
 
   def cnf_line(self, lineNumber, lineData, flags, crc8):
+      """Sends a line of data via the serial port.
+
+      Sends a line of data to the serial port, all arguments are mandatory.
+      The data sent here is parsed by the Arduino controller which sets the
+      knitting needles accordingly.
+
+      Args:
+        lineNumber (int): The line number to be sent.
+        lineData (bytes): The bytearray to be sent to needles.
+        flags (bytes): The flags sent to the controller.
+        crc8 (bytes, optional): The CRC-8 checksum for transmission.
+
+      """
+
       msg = chr(0x42)                    # msg id
       msg += chr(lineNumber)              # line number
       msg += lineData                     # line data

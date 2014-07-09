@@ -35,6 +35,11 @@ logging.basicConfig(level=logging.DEBUG)
 
 
 class GuiMain(QtGui.QWidget):
+    """GuiMain is the main object that handles the instance of AYAB's GUI from ayab_gui.UiForm .
+
+    GuiMain inherits from QWidget and instanciates a window with the form components form ayab_gui.UiForm.
+    """
+
     def __init__(self):
         super(GuiMain, self).__init__(None)
 
@@ -107,6 +112,7 @@ class GuiMain(QtGui.QWidget):
         # This blocks the other thread until signal is done
         self.connect(self, QtCore.SIGNAL("display_blocking_pop_up_signal(QString, QString)"), self.display_blocking_pop_up, QtCore.Qt.BlockingQueuedConnection)
         self.connect(self, QtCore.SIGNAL("display_blocking_pop_up_signal(QString)"), self.display_blocking_pop_up, QtCore.Qt.BlockingQueuedConnection)
+        self.connect(self, QtCore.SIGNAL("display_pop_up_signal(QString, QString)"), self.display_blocking_pop_up)
 
     def load_image_on_scene(self, image_str):
         """Loads an image into self.ui.image_pattern_view using a temporary QGraphicsScene"""

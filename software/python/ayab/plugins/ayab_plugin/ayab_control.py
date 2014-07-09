@@ -65,6 +65,7 @@ class AyabPluginControl(KnittingPlugin):
     self.setup_behaviour_ui()
 
   def setup_behaviour_ui(self):
+    """Connects methods to UI elements."""
     conf_button = self.options_ui.configure_button  # Used instead of findChild(QtGui.QPushButton, "configure_button")
     conf_button.clicked.connect(self.conf_button_function)
 
@@ -72,6 +73,7 @@ class AyabPluginControl(KnittingPlugin):
     self.configure()
 
   def cleanup_ui(self, parent_ui):
+    """Cleans up UI elements inside knitting option dock."""
     #dock = parent_ui.knitting_options_dock
     dock = self.dock
     cleaner = QtCore.QObjectCleanupHandler()
@@ -80,6 +82,13 @@ class AyabPluginControl(KnittingPlugin):
     dock.setWidget(self.__qw)
 
   def get_configuration_from_ui(self, ui):
+    """Creates a configuration dict from the ui elements.
+
+    Returns:
+      dict: A dict with configuration.
+
+    """
+
     self.conf = {}
     color_line_text = ui.findChild(QtGui.QSpinBox, "color_edit").value()
     self.conf["num_colors"] = int(color_line_text)
@@ -142,6 +151,7 @@ class AyabPluginControl(KnittingPlugin):
 
             elif msgId == 0xC3:  # cnfInfo
                 # print "> cnfInfo: Version=" + str(ord(line[1]))
+                logging.debug("Detected device with" + str(ord(line[1])))
                 return ("cnfInfo", ord(line[1]))
 
             elif msgId == 0x82:  # reqLine
