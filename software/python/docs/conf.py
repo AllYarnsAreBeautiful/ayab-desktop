@@ -31,7 +31,9 @@ sys.path.insert(0, os.path.abspath('../'))
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
-    'sphinx.ext.napoleon',
+    ## Should eventually be replaced on Sphinx 1.3.
+    ## http://sphinxcontrib-napoleon.readthedocs.org/en/latest/index.html
+    'sphinxcontrib.napoleon',
     'sphinx.ext.doctest',
     'sphinx.ext.intersphinx',
     'sphinx.ext.todo',
