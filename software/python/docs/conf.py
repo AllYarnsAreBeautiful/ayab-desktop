@@ -57,7 +57,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'All Yarns Are Beautiful'
-copyright = u'2014, Christian Obersteiner, Andreas Müller'
+copyright = u'2014, Christian Obersteiner, Andreas Müller, Sebastian Oliva'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
