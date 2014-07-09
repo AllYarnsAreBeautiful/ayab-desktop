@@ -31,33 +31,55 @@ class AyabPluginControl(KnittingPlugin):
 
   def onknit(self, e):
     logging.debug("called onknit on AyabPluginControl")
+    #TODO: handle error behaviour.
     self.__knitImage(self.__image, self.conf)
 
   def onconfigure(self, e):
     logging.debug("called onconfigure on TestingKnittingPlugin")
     conf = self.get_configuration_from_ui(self.__parent_ui)
     #TODO: detect if previous conf had the same image to avoid re-generating.
-    self.__image = ayab_image.ayabImage(self.conf["filename"], self.conf["num_colors"])
+    try:
+      self.__image = ayab_image.ayabImage(self.conf["filename"], self.conf["num_colors"])
+    except:
+      self.__notify_user("You need to set an image.", "error")
+      return
 
     if conf.get("start_needle") and conf.get("stop_needle"):
       self.__image.setKnitNeedles(conf.get("start_needle"), conf.get("stop_needle"))
       if conf.get("alignment"):
         self.__image.setImagePosition(conf.get("alignment"))
-    if conf.get("start_needle"):
-      self.__image.setStartLine(conf.get("start_needle"))
+    if conf.get("start_line"):
+      self.__image.setStartLine(conf.get("start_line"))
+
+    self.validate_configuration(conf)
+
     return
+
+  def validate_configuration(self, conf):
+    if conf.get("start_needle") and conf.get("stop_needle"):
+      if conf.get("start_needle") > conf.get("stop_needle"):
+        self.__notify_user("Invalid needle start and end.", "warning")
+    if conf.get("start_line") > self.__image.imgHeight():
+      self.__notify_user("Start Line is larger than the image.")
 
   def onfinish(self, e):
     logging.info("Finished Knitting.")
     pass
 
-  def __wait_for_user_action(self, message=""):
-    self.__parent_ui.emit(QtCore.SIGNAL('display_blocking_pop_up_signal(QString)'), message)
+  def __wait_for_user_action(self, message="", message_type="info"):
+    """Sends the display_blocking_pop_up_signal QtSignal to main GUI thread, blocking it."""
+    self.__parent_ui.emit(QtCore.SIGNAL('display_blocking_pop_up_signal(QString, QString)'), message, message_type)
+
+  def __notify_user(self, message="", message_type="info"):
+    """Sends the display_pop_up_signal QtSignal to main GUI thread, not blocking it."""
+    self.__parent_ui.emit(QtCore.SIGNAL('display_pop_up_signal(QString, QString)'), message, message_type)
 
   def __emit_progress(self, percent):
+    """Sends the updateProgress QtSignal."""
     self.__parent_ui.emit(QtCore.SIGNAL('updateProgress(int)'), int(percent))
 
   def setup_ui(self, parent_ui):
+    """Sets up UI elements from ayab_options.Ui_DockWidget in parent_ui."""
     self.__parent_ui = parent_ui
     self.options_ui = Ui_DockWidget()
     self.dock = parent_ui.ui.knitting_options_dock  # findChild(QtGui.QDockWidget, "knitting_options_dock")
