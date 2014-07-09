@@ -273,3 +273,30 @@ texinfo_documents = [
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {'http://docs.python.org/': None}
+
+## Mock for libraries.
+## http://docs.readthedocs.org/en/latest/faq.html#i-get-import-errors-on-libraries-that-depend-on-c-modules
+class Mock(object):
+
+    __all__ = []
+
+    def __init__(self, *args, **kwargs):
+        pass
+
+    def __call__(self, *args, **kwargs):
+        return Mock()
+
+    @classmethod
+    def __getattr__(cls, name):
+        if name in ('__file__', '__path__'):
+            return '/dev/null'
+        elif name[0] == name[0].upper():
+            mockType = type(name, (), {})
+            mockType.__module__ = __name__
+            return mockType
+        else:
+            return Mock()
+
+MOCK_MODULES = ['PyQt']
+for mod_name in MOCK_MODULES:
+    sys.modules[mod_name] = Mock()
