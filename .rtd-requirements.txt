@@ -1,0 +1,3 @@
+sphinxcontrib-seqdiag
+-e software/python
+
