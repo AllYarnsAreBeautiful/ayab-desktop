@@ -17,27 +17,26 @@
 #    Copyright 2013 Christian Obersteiner, Andreas Müller
 #    https://bitbucket.org/chris007de/ayab-apparat/
 
-import Image
+from PIL import Image
 
 class ayabImage(object):
-  def __init__(self, pFilename, pNumColors):
+  def __init__(self, pFilename, pNumColors = 2):
     self.__numColors      = pNumColors
 
     self.__imgPosition    = 'center'
     self.__imgStartNeedle = '0'
     self.__imgStopNeedle  = '0'
 
-    self.__knitStartNeedle = 80
-    self.__knitStopNeedle  = 119
+    self.__knitStartNeedle = 0
+    self.__knitStopNeedle  = 199
 
     self.__startLine  = 0
 
     self.__image = Image.open(pFilename)
-    self.__filename  = pFilename
+    self.__filename = pFilename
 
     self.__image = self.__image.convert('L') # convert to 1 byte depth
     self.__updateImageData()
-
 
   def filename(self):
     return self.__filename
@@ -72,22 +71,25 @@ class ayabImage(object):
   def startLine(self):
     return self.__startLine
 
+  def numColors(self):
+    return self.__numColors
+
 
   def __updateImageData(self):
     self.__imgWidth   = self.__image.size[0]
-    self.__imgHeight  = self.__image.size[1]      
+    self.__imgHeight  = self.__image.size[1]
 
     self.__convertImgToIntern()
     self.__calcImgStartStopNeedles()
 
 
-  def __convertImgToIntern(self): 
+  def __convertImgToIntern(self):
     num_colors = self.__numColors
     clr_range  = float(256)/num_colors
 
     imgWidth   = self.__imgWidth
     imgHeight  = self.__imgHeight
-    
+
     self.__imageIntern = \
       [[0 for i in range(imgWidth)] \
       for j in range(imgHeight)]
@@ -105,7 +107,7 @@ class ayabImage(object):
 
         for color in range(0, num_colors):
           lowerBound = int(color*clr_range)
-          upperBound = int((color+1)*clr_range) 
+          upperBound = int((color+1)*clr_range)
           if pxl>=lowerBound and pxl<upperBound:
             # color map
             self.__imageIntern[row][col]    = color
@@ -113,7 +115,7 @@ class ayabImage(object):
             self.__imageColors[row][color]  += 1
             # colors separated per line
             self.__imageExpanded[(num_colors*row)+color][col] = 1
-    
+
     # print(self.__imageIntern)
     # print(self.__imageColors)
     # print(self.__imageExpanded)
@@ -141,6 +143,14 @@ class ayabImage(object):
         return False
     return True
 
+  def setNumColors(self, pNumColors):
+      """
+      sets the number of colors the be used for knitting
+      """
+      if pNumColors > 1 and pNumColors < 7:
+        self.__numColors      = pNumColors
+        self.__updateImageData()
+      return
 
   def invertImage(self):
       """
@@ -152,13 +162,12 @@ class ayabImage(object):
           self.__image.putpixel((x,y),255-pxl)
       self.__updateImageData()
       return
-      
+
 
   def rotateImage(self):
       """
       rotate the image 90 degrees clockwise
       """
-      print "rotating image 90 degrees..."
       self.__image = self.__image.rotate(-90)
 
       self.__updateImageData()
@@ -180,13 +189,13 @@ class ayabImage(object):
   def setKnitNeedles(self, pKnitStart, pKnitStop):
       """
       set the start and stop needle
-      """      
+      """
       if (pKnitStart < pKnitStop) \
           and pKnitStart >= 0 \
           and pKnitStop < 200:
         self.__knitStartNeedle = pKnitStart
         self.__knitStopNeedle  = pKnitStop
-        
+
       self.__updateImageData()
       return
 

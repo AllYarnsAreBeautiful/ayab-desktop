@@ -17,27 +17,30 @@
 #    Copyright 2013 Christian Obersteiner, Andreas Müller
 #    https://bitbucket.org/chris007de/ayab-apparat/
 
-import ayab_communication
+from ayab_communication import AyabCommunication
 import time
 
-# TODO insert logging
-
 class ayabControl(object):
-    def __init__(self, options):
+    def __init__(self, pCallback):
+        self.__callback     = pCallback
         self.__API_VERSION  = 0x03
-        self.__ayabCom = ayab_communication.ayabCommunication(options.portname)
+        self.__ayabCom      = AyabCommunication()
 
         self.__formerRequest = 0
         self.__lineBlock     = 0
 
-    # TODO decision: callback vs. python logger
-    # http://stackoverflow.com/questions/1904351/python-observer-pattern-examples-tips
-    # vs.
-    # http://docs.python.org/2/library/logging.html
-    #     self.callbacks = []
+    def __printDebug(self, pString):
+        self.__callback(self, pString, "debug")
 
-    # def subscribe(self, callback):
-    #     self.callbacks.append(callback)
+    def __printPrompt(self, pString):
+        self.__callback(self, pString, "prompt")
+
+    def __printStream(self, pString):
+        self.__callback(self, pString, "stream")
+
+    def __printError(self, pString):
+        self.__callback(self, pString, "error")
+
 
     def __setBit(self, int_type, offset):
         mask = 1 << offset
@@ -51,29 +54,29 @@ class ayabControl(object):
     def __checkSerial(self):
         time.sleep(1) #TODO if problems in communication, tweak here
 
-        line = self.__ayabCom.readLine()
+        line = self.__ayabCom.read_line()
 
         if line != '':
-            msgId = ord(line[0])            
+            msgId = ord(line[0])
             if msgId == 0xC1:    # cnfStart
                 #print "> cnfStart: " + str(ord(line[1]))
-                return ("cnfStart", ord(line[1]))            
+                return ("cnfStart", ord(line[1]))
 
             elif msgId == 0xC3: # cnfInfo
                 #print "> cnfInfo: Version=" + str(ord(line[1]))
                 return ("cnfInfo", ord(line[1]))
 
-            elif msgId == 0x82: #reqLine            
+            elif msgId == 0x82: #reqLine
                 #print "> reqLine: " + str(ord(line[1]))
                 return ("reqLine", ord(line[1]))
-                
+
             else:
-                print "> unknown message: " + line[:] #drop crlf
+                self.__printError("unknown message: " + line[:]) #drop crlf
                 return ("unknown", 0)
         return("none", 0)
 
 
-    def __cnfLine(self, lineNumber):  
+    def __cnfLine(self, lineNumber):
         imgHeight = self.__image.imgHeight()
         color         = 0
         indexToSend   = 0
@@ -88,7 +91,7 @@ class ayabControl(object):
 
         if lineNumber < 256:
             # TODO some better algorithm for block wrapping
-            # if the last requested line number was 255, wrap to next block of lines 
+            # if the last requested line number was 255, wrap to next block of lines
             if self.__formerRequest == 255 and lineNumber == 0:
                 self.__lineBlock += 1
             # store requested line number for next request
@@ -105,25 +108,25 @@ class ayabControl(object):
             if self.__machineType == 'single' \
                     and self.__numColors == 2:
 
-                # color is always 0 in singlebed, 
+                # color is always 0 in singlebed,
                 # because both colors are knitted at once
                 color = 0
-                
+
                 # calculate imgRow
                 imgRow = lineNumber + self.__startLine
 
                 # 0   1   2   3   4 .. (imgRow)
-                # |   |   |   |   | 
+                # |   |   |   |   |
                 # 0 1 2 3 4 5 6 7 8 .. (imageExpanded)
                 indexToSend = imgRow * 2
 
                 # Check if the last line of the image was requested
                 if imgRow == imgHeight-1:
-                    lastLine = 0x01                    
+                    lastLine = 0x01
 
             # doublebed, 2 color
             elif self.__machineType == 'double' \
-                    and self.__numColors == 2: 
+                    and self.__numColors == 2:
 
                 # calculate imgRow
                 imgRow = int(lineNumber/2) + self.__startLine
@@ -139,7 +142,7 @@ class ayabControl(object):
                 if lineNumber%4 == 1 or lineNumber%4 == 2:
                     color = 1
                 else:
-                    color = 0 
+                    color = 0
 
                 if (lineNumber-2)%4 == 0:
                     indexToSend += lineNumber+1
@@ -148,14 +151,14 @@ class ayabControl(object):
                     indexToSend += lineNumber-1
                     if (imgRow == imgHeight-1) \
                         and (indexToSend == lenImgExpanded-2):
-                        lastLine = 0x01 
+                        lastLine = 0x01
                 else:
                     indexToSend += lineNumber
                     if (imgRow == imgHeight-1) \
                         and (indexToSend == lenImgExpanded-1):
-                        lastLine = 0x01 
-            
-            # doublebed, multicolor    
+                        lastLine = 0x01
+
+            # doublebed, multicolor
             elif self.__machineType == 'double' \
                     and self.__numColors > 2:
 
@@ -165,14 +168,14 @@ class ayabControl(object):
                 if (lineNumber % 2) == 0:
                     color = (lineNumber/2) % self.__numColors
                     indexToSend = (imgRow * self.__numColors) + color
-                    print "COLOR" + str(color)
+                    self.__printPrompt("COLOR" + str(color))
                 else:
                     sendBlankLine = True
 
                 # TODO Check assignment
                 if imgRow == imgHeight-1 \
                     and (indexToSend == lenImgExpanded-1):
-                    lastLine = 0x01 
+                    lastLine = 0x01
             #########################
 
             # assign pixeldata
@@ -190,7 +193,7 @@ class ayabControl(object):
 
 
             for col in range(0, self.__image.imgWidth()):
-                pxl = (self.__image.imageExpanded())[indexToSend][col]                
+                pxl = (self.__image.imageExpanded())[indexToSend][col]
                 # take the image offset into account
                 if pxl == True and sendBlankLine == False:
                     bytes = self.__setPixel(bytes,col+self.__image.imgStartNeedle())
@@ -199,7 +202,7 @@ class ayabControl(object):
             crc8 = 0x00
 
             # send line to machine
-            self.__ayabCom.cnfLine(reqestedLine, bytes, lastLine, crc8)
+            self.__ayabCom.cnf_line(reqestedLine, bytes, lastLine, crc8)
 
             # screen output
             msg = str((self.__image.imageExpanded())[indexToSend])
@@ -208,12 +211,12 @@ class ayabControl(object):
             msg += ', reqLine: ' + str(reqestedLine)
             msg += ', lineNumber: ' + str(lineNumber)
             msg += ', lineBlock:' + str(self.__lineBlock) + ')'
-            print msg
+            self.__printStream(msg)
         else:
-            print "E: requested lineNumber out of range"
+            self.__printError("requested lineNumber out of range")
 
         if lastLine:
-            return 1 # image finished 
+            return 1 # image finished
         else:
             return 0 # keep knitting
 
@@ -225,12 +228,13 @@ class ayabControl(object):
 
         self.__numColors     = pOptions.num_colors
         self.__machineType   = pOptions.machine_type
-        
+
         API_VERSION = self.__API_VERSION
         curState = 's_init'
         oldState = 'none'
 
-        if self.__ayabCom.openSerial() == False:
+        if self.__ayabCom.open_serial(pOptions.portname) == False:
+            self.__printError("Could not open serial port")
             return
 
         while True:
@@ -238,32 +242,28 @@ class ayabControl(object):
             rcvMsg, rcvParam = self.__checkSerial()
             if curState == 's_init':
                 if oldState != curState:
-                    self.__ayabCom.reqInfo()
+                    self.__ayabCom.req_info()
 
                 if rcvMsg == 'cnfInfo':
                     if rcvParam == API_VERSION:
-                        curState = 's_start'                        
-                        raw_input(">Please init machine")
+                        curState = 's_start'
+                        self.__printPrompt("Please init machine")
                     else:
-                        print "E: wrong API version: " + str(rcvParam) \
-                            + (" (expected: )") + str(API_VERSION)
-                        raw_input("press Enter")
+                        self.__printError("wrong API version: " + str(rcvParam) \
+                            + (" (expected: )") + str(API_VERSION))
                         return
 
             if curState == 's_start':
                 if oldState != curState:
-                    self.__ayabCom.reqStart(self.__image.knitStartNeedle(), \
+                    self.__ayabCom.req_start(self.__image.knitStartNeedle(), \
                         self.__image.knitStopNeedle() )
 
                 if rcvMsg == 'cnfStart':
                     if rcvParam == 1:
                         curState = 's_operate'
-                        print "================="
-                        print ">Ready to Operate"
-                        print "================="
+                        self.__printPrompt("Ready to Operate")
                     else:
-                        print "E: device not ready"
-                        raw_input("press Enter")
+                        self.__printError("device not ready")
                         return
 
             if curState == 's_operate':
@@ -273,12 +273,11 @@ class ayabControl(object):
                         curState = 's_finished'
 
             if curState == 's_finished':
-                print "Image finished"
-                raw_input("press Enter")
+                self.__printPrompt("Image finished")
                 return
 
             oldState = curState
-        
-        return  
+
+        return
 
 

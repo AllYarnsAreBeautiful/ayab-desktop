@@ -1,12 +1,24 @@
+**************
 AYAB API
-===================================================
+**************
 
+Main AYAB GUI module
+====================
 
-.. automodule:: ayab_communication
+.. automodule:: ayab.ayab
    :members:
 
-.. automodule:: ayab_control
+Knitting Plugin API
+===================
+
+.. automodule:: ayab.plugins.knitting_plugin
    :members:
 
-.. automodule:: ayab_image
+AYAB Control Plugin
+===================
+
+.. automodule:: ayab.plugins.ayab_plugin.ayab_control
+   :members:
+
+.. automodule:: ayab.plugins.ayab_plugin.ayab_communication
    :members:

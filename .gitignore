@@ -5,3 +5,9 @@ eagle.epf
 *.s#*
 *.b#*
 *.l#*
+# Makefile directories
+.lib/
+.dep/
+# Binaries
+*.o
+*.hex

@@ -31,6 +31,9 @@ sys.path.insert(0, os.path.abspath('../'))
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
+    ## Should eventually be replaced on Sphinx 1.3.
+    ## http://sphinxcontrib-napoleon.readthedocs.org/en/latest/index.html
+    'sphinxcontrib.napoleon',
     'sphinx.ext.doctest',
     'sphinx.ext.intersphinx',
     'sphinx.ext.todo',
@@ -38,7 +41,10 @@ extensions = [
     'sphinx.ext.pngmath',
     'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode',
+    'sphinxcontrib.seqdiag',
 ]
+
+#seqdiag_fontpath = '/usr/share/fonts/truetype/ipafont/ipagp.ttf'
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -54,7 +60,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'All Yarns Are Beautiful'
-copyright = u'2014, Christian Obersteiner, Andreas Müller'
+copyright = u'2014, Christian Obersteiner, Andreas Müller, Sebastian Oliva'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -270,3 +276,30 @@ texinfo_documents = [
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {'http://docs.python.org/': None}
+
+## Mock for libraries.
+## http://docs.readthedocs.org/en/latest/faq.html#i-get-import-errors-on-libraries-that-depend-on-c-modules
+class Mock(object):
+
+    __all__ = []
+
+    def __init__(self, *args, **kwargs):
+        pass
+
+    def __call__(self, *args, **kwargs):
+        return Mock()
+
+    @classmethod
+    def __getattr__(cls, name):
+        if name in ('__file__', '__path__'):
+            return '/dev/null'
+        elif name[0] == name[0].upper():
+            mockType = type(name, (), {})
+            mockType.__module__ = __name__
+            return mockType
+        else:
+            return Mock()
+
+MOCK_MODULES = ['PyQt4', 'PyQt4.QtGui', 'PIL']
+for mod_name in MOCK_MODULES:
+    sys.modules[mod_name] = Mock()
