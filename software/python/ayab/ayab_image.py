@@ -141,6 +141,12 @@ class ayabImage(object):
 
     else:
         return False
+
+    if self.__imgStartNeedle < self.__knitStartNeedle:
+      self.__imgStartNeedle = self.__knitStartNeedle
+    if self.__imgStopNeedle > self.__knitStopNeedle:
+      self.__imgStopNeedle = self.__knitStopNeedle
+      
     return True
 
   def setNumColors(self, pNumColors):
