@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>305</height>
+    <width>672</width>
+    <height>386</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Frame</string>
+   <string>Firmware Flashing Utility</string>
   </property>
   <property name="frameShape">
    <enum>QFrame::StyledPanel</enum>
@@ -19,82 +19,102 @@
   <property name="frameShadow">
    <enum>QFrame::Raised</enum>
   </property>
-  <widget class="QWidget" name="verticalLayoutWidget">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>20</y>
-     <width>351</width>
-     <height>261</height>
-    </rect>
-   </property>
-   <layout class="QVBoxLayout" name="verticalLayout">
-    <item>
-     <widget class="QLabel" name="label">
-      <property name="text">
-       <string>Device</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QListWidget" name="listWidget">
+  <layout class="QHBoxLayout" name="horizontalLayout">
+   <item>
+    <widget class="QWidget" name="widget" native="true">
+     <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
-       <property name="text">
-        <string>Arduino Uno</string>
-       </property>
+       <widget class="QTextBrowser" name="textBrowser">
+        <property name="html">
+         <string notr="true">&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans Serif'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:18px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:xx-large; font-weight:600;&quot;&gt;Firmware Install Guide&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus egestas, lacus sed tincidunt tristique, nisl lacus suscipit felis, sed mattis risus sem quis sem. Fusce lorem purus, pharetra sed dapibus non, placerat ac sem. In eget varius massa. Cras vel blandit erat, at fermentum quam. Vivamus ipsum sem, elementum consequat lorem semper, posuere varius tortor. Sed vel ornare nulla. Ut a metus ut lacus elementum feugiat. Pellentesque sed vulputate dolor. Aliquam sem risus, dictum non commodo id, ullamcorper suscipit nisi. Aliquam quis fermentum sem. Phasellus felis velit, consequat sed convallis a, tempor quis ante. Ut placerat eleifend eleifend. Sed leo mi, gravida in vulputate vitae, luctus at neque. Vivamus in hendrerit ligula. Pellentesque non cursus tellus. Suspendisse rhoncus felis sit amet purus scelerisque, eu scelerisque ligula suscipit. Aenean accumsan ligula ante. Donec interdum magna vel enim adipiscing, sed dictum lacus accumsan. Praesent laoreet, libero quis pretium tincidunt, augue odio fermentum justo, in iaculis ligula urna ac nulla. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Aenean eu lectus a elit fermentum condimentum. Nullam tincidunt consequat dui facilisis tincidunt. Quisque et nisl facilisis, fermentum ante sit amet, facilisis velit. Nunc sed ligula et mi ultricies blandit nec in risus. Nulla at tortor urna. Proin iaculis fringilla est sit amet semper. Nam luctus dui faucibus blandit tempus. Quisque at tempus libero. Donec bibendum eleifend dui, id rutrum libero venenatis ut. Pellentesque id odio est. Vivamus rutrum scelerisque adipiscing. Nunc et sapien ut urna eleifend mattis vitae vitae sapien. Nulla iaculis quis metus et tincidunt. In venenatis elit a turpis mollis, ut ornare est consectetur. Maecenas tellus ante, tincidunt vitae ligula a, euismod aliquet nibh. Fusce tempus accumsan ante, eu mattis odio lobortis vel. Ut non aliquam tellus, sed faucibus justo. Cras sodales felis sem, ut semper metus tempus in. Etiam pulvinar dapibus ullamcorper. Morbi ut facilisis purus. Pellentesque tempor sed turpis id tempor. Etiam dictum lectus a velit tempus, vitae convallis purus interdum. Maecenas consectetur condimentum risus, quis tempus velit consectetur id. Aliquam ut nulla enim. Vestibulum eget lacinia magna. Fusce convallis, elit ac tincidunt gravida, tellus purus posuere diam, iaculis pharetra urna erat sit amet purus. Nullam metus erat, auctor vitae massa nec, pulvinar gravida est. Donec ullamcorper, nibh ac feugiat volutpat, lectus turpis eleifend neque, at consequat est eros a lorem. Pellentesque rutrum turpis nec eros fringilla, nec auctor leo faucibus. Proin magna ante, dignissim id massa ac, blandit eleifend tellus. Maecenas a dolor enim. Integer quam eros, dapibus in pellentesque id, lobortis vitae diam. Sed sed lorem blandit, suscipit magna a, ullamcorper metus. Nulla rhoncus quam sit amet leo blandit, in porta augue hendrerit. Phasellus adipiscing quis tortor vitae porta. Nam in venenatis sem, sit amet fringilla dolor. Suspendisse eu iaculis justo. Integer faucibus risus nec sapien venenatis, eget ultrices nulla pellentesque. Duis sagittis turpis eget pellentesque fermentum. Aliquam ac ante at odio posuere pharetra ut sed neque. Nullam blandit libero et nibh luctus, ac congue dui consectetur. Etiam erat erat, gravida in dui vitae, vestibulum iaculis libero. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+       </widget>
       </item>
-      <item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <widget class="QLabel" name="label_3">
        <property name="text">
-        <string>Arduino Mega 2560</string>
+        <string>Port</string>
        </property>
-      </item>
-     </widget>
-    </item>
-    <item>
-     <widget class="QLabel" name="label_2">
-      <property name="text">
-       <string>Firmware Version</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QListWidget" name="listWidget_2">
-      <item>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="comboBox"/>
+     </item>
+     <item>
+      <widget class="QLabel" name="label">
        <property name="text">
-        <string>v3</string>
+        <string>Device</string>
        </property>
-      </item>
-      <item>
+      </widget>
+     </item>
+     <item>
+      <widget class="QListWidget" name="device_list">
+       <item>
+        <property name="text">
+         <string>Arduino Uno</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Arduino Mega 2560</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_2">
        <property name="text">
-        <string>v3-dummy</string>
+        <string>Firmware Version</string>
        </property>
-      </item>
-     </widget>
-    </item>
-    <item>
-     <widget class="QPushButton" name="pushButton">
-      <property name="text">
-       <string>Flash</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <spacer name="verticalSpacer">
-      <property name="orientation">
-       <enum>Qt::Vertical</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>20</width>
-        <height>40</height>
-       </size>
-      </property>
-     </spacer>
-    </item>
-   </layout>
-  </widget>
-  <zorder>verticalLayoutWidget</zorder>
-  <zorder>label</zorder>
+      </widget>
+     </item>
+     <item>
+      <widget class="QListWidget" name="firmware_list">
+       <item>
+        <property name="text">
+         <string>v3</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>v3-dummy</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="flash_firmware">
+       <property name="text">
+        <string>Flash</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="verticalSpacer">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+  </layout>
  </widget>
  <resources/>
  <connections/>
