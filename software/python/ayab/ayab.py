@@ -29,6 +29,11 @@ from PIL import ImageQt
 from fysom import FysomError
 
 from ayab_gui import Ui_MainWindow
+from firmware_flash_ui import Ui_FirmwareFlashFrame
+
+## Temporal serial imports.
+import serial
+import serial.tools.list_ports
 
 
 logging.basicConfig(level=logging.DEBUG)
@@ -105,9 +110,12 @@ class GuiMain(QtGui.QMainWindow):
         self.gt.start()
 
     def setupBehaviour(self):
+        # Connecting UI elements.
         self.ui.load_file_button.clicked.connect(self.file_select_dialog)
         self.ui.module_dropdown.activated[str].connect(self.set_enabled_plugin)
         self.ui.knit_button.clicked.connect(self.start_knitting_process)
+        self.ui.actionLoad_AYAB_Firmware.activated.connect(self.generate_firmware_ui)
+        # Connecting Signals.
         self.connect(self, QtCore.SIGNAL("updateProgress(int)"), self.updateProgress)
         # This blocks the other thread until signal is done
         self.connect(self, QtCore.SIGNAL("display_blocking_pop_up_signal(QString, QString)"), self.display_blocking_pop_up, QtCore.Qt.BlockingQueuedConnection)
@@ -152,6 +160,36 @@ class GuiMain(QtGui.QMainWindow):
         file_selected_route = QtGui.QFileDialog.getOpenFileName(self)
         self.update_file_selected_text_field(file_selected_route)
         self.load_image_on_scene(str(file_selected_route))
+
+    def generate_firmware_ui(self):
+      self.__FirmwareFlashFrame = QtGui.QFrame()
+      self.__firmware_ui = Ui_FirmwareFlashFrame()
+      self.__firmware_ui.setupUi(self.__FirmwareFlashFrame)
+      ports_list = list(self.getSerialPorts())
+      def populate(ui, port_list):
+        for item in port_list:
+          ui.port_combo_box.addItem(item)
+      populate(self.__firmware_ui, ports_list)
+      self.__FirmwareFlashFrame.show()
+
+
+    def getSerialPorts(self):
+      """
+      Returns a generator for all available serial ports
+      """
+      if os.name == 'nt':
+      # windows
+        for i in range(256):
+            try:
+              s = serial.Serial(i)
+              s.close()
+              yield 'COM' + str(i + 1)
+            except serial.SerialException:
+              pass
+      else:
+        # unix
+        for port in serial.tools.list_ports.grep("USB"):
+            yield port[0]
 
 
 class GenericThread(QtCore.QThread):
