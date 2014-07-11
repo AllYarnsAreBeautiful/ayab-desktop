@@ -28,22 +28,22 @@ from yapsy import PluginManager
 from PIL import ImageQt
 from fysom import FysomError
 
-from ayab_gui import Ui_Form
+from ayab_gui import Ui_MainWindow
 
 
 logging.basicConfig(level=logging.DEBUG)
 
 
-class GuiMain(QtGui.QWidget):
+class GuiMain(QtGui.QMainWindow):
     """GuiMain is the main object that handles the instance of AYAB's GUI from ayab_gui.UiForm .
 
-    GuiMain inherits from QWidget and instanciates a window with the form components form ayab_gui.UiForm.
+    GuiMain inherits from QMainWindow and instanciates a window with the form components form ayab_gui.UiForm.
     """
 
     def __init__(self):
         super(GuiMain, self).__init__(None)
 
-        self.ui = Ui_Form()
+        self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self.plugins_init()
         self.setupBehaviour()
