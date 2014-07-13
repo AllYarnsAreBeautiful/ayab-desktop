@@ -165,31 +165,19 @@ class GuiMain(QtGui.QMainWindow):
       self.__FirmwareFlashFrame = QtGui.QFrame()
       self.__firmware_ui = Ui_FirmwareFlashFrame()
       self.__firmware_ui.setupUi(self.__FirmwareFlashFrame)
-      ports_list = list(self.getSerialPorts())
+      ports_list = self.getSerialPorts()
       def populate(ui, port_list):
         for item in port_list:
-          ui.port_combo_box.addItem(item)
+          ui.port_combo_box.addItem(item[0])
       populate(self.__firmware_ui, ports_list)
       self.__FirmwareFlashFrame.show()
 
 
     def getSerialPorts(self):
       """
-      Returns a generator for all available serial ports
+      Returns a list of all USB Serial Ports
       """
-      if os.name == 'nt':
-      # windows
-        for i in range(256):
-            try:
-              s = serial.Serial(i)
-              s.close()
-              yield 'COM' + str(i + 1)
-            except serial.SerialException:
-              pass
-      else:
-        # unix
-        for port in serial.tools.list_ports.grep("USB"):
-            yield port[0]
+      return list(serial.tools.list_ports.grep("USB"))
 
 
 class GenericThread(QtCore.QThread):
