@@ -95,7 +95,7 @@ class AyabPluginControl(KnittingPlugin):
     def populate(combo_box, port_list):
       for item in port_list:
         #TODO: should display the info of the device.
-        port_combo_box.addItem(item[0])
+        combo_box.addItem(item[0])
     populate(serial_port_combo_box, ports_list)
 
 
