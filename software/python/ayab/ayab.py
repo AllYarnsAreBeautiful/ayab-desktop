@@ -61,14 +61,8 @@ class GuiMain(QtGui.QMainWindow):
           logging.info("Deactivating All Plugins")
           for pluginInfo in self.pm.getAllPlugins():
             self.pm.deactivatePluginByName(pluginInfo.name)
-        if getattr(sys, 'frozen', False):
-            route = sys._MEIPASS
-            logging.info("loading from pyinstaller")
-            self.pm = PluginManager.PluginManager(directories_list=[os.path.join(route, "plugins")],)
-        else:
-            plugins_folder = os.path.join(os.path.dirname(__file__),"plugins")
-            print(plugins_folder)
-            self.pm = PluginManager.PluginManager(directories_list=[plugins_folder],)
+        route = get_route()
+        self.pm = PluginManager.PluginManager(directories_list=[os.path.join(route, "plugins")],)
 
         self.pm.collectPlugins()
         for pluginInfo in self.pm.getAllPlugins():
@@ -203,8 +197,23 @@ class GenericThread(QtCore.QThread):
                                                                       "Error on plugin action, be sure to configure before starting Knitting.", None), "error")
         return
 
+def get_route():
+  if getattr(sys, 'frozen', False):
+    route = sys._MEIPASS
+    logging.debug("Loading AYAB from pyinstaller.")
+    return route
+  else:
+    filename = os.path.dirname(__file__)
+    logging.debug("Loading AYAB from normal package structure.")
+    return filename
+
+
 def run():
+  translator = QtCore.QTranslator()
+  ## Loading ayab_gui main translator.
+  translator.load(QtCore.QLocale.system(), "ayab_gui", ".", os.path.join(get_route(), "translations"), ".qm")
   app = QtGui.QApplication(sys.argv)
+  app.installTranslator(translator)
   window = GuiMain()
   window.show()
   sys.exit(app.exec_())

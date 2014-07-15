@@ -21,7 +21,9 @@ from ayab_communication import AyabCommunication
 import ayab_image
 import time
 import logging
+import os
 from ayab.plugins.knitting_plugin import KnittingPlugin
+import ayab.ayab
 from PyQt4 import QtGui, QtCore
 
 from ayab_options import Ui_DockWidget
@@ -80,11 +82,24 @@ class AyabPluginControl(KnittingPlugin):
 
   def setup_ui(self, parent_ui):
     """Sets up UI elements from ayab_options.Ui_DockWidget in parent_ui."""
+    self.set_translator()
     self.__parent_ui = parent_ui
     self.options_ui = Ui_DockWidget()
     self.dock = parent_ui.ui.knitting_options_dock  # findChild(QtGui.QDockWidget, "knitting_options_dock")
     self.options_ui.setupUi(self.dock)
     self.setup_behaviour_ui()
+
+  def set_translator(self):
+    #FIXME: using unsafe dirname(__file__)
+    dirname = os.path.dirname(__file__)
+    self.translator = QtCore.QTranslator()
+    self.translator.load(QtCore.QLocale.system(), "ayab_options", ".", dirname, ".qm")
+    app = QtCore.QCoreApplication.instance()
+    app.installTranslator(self.translator)
+
+  def unset_translator(self):
+    app = QtCore.QCoreApplication.instance()
+    app.removeTranslator(self.translator)
 
   def setup_behaviour_ui(self):
     """Connects methods to UI elements."""
@@ -110,6 +125,7 @@ class AyabPluginControl(KnittingPlugin):
     cleaner.add(dock.widget())
     self.__qw = QtGui.QWidget()
     dock.setWidget(self.__qw)
+    self.unset_translator()
 
   def get_configuration_from_ui(self, ui):
     """Creates a configuration dict from the ui elements.
