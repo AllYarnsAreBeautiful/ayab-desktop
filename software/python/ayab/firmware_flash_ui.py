@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'firmware_flash.ui'
+# Form implementation generated from reading ui file 'firmware_flash_ui.ui'
 #
 # Created by: PyQt4 UI code generator 4.10.3
 #
@@ -25,7 +25,7 @@ except AttributeError:
 class Ui_FirmwareFlashFrame(object):
     def setupUi(self, FirmwareFlashFrame):
         FirmwareFlashFrame.setObjectName(_fromUtf8("FirmwareFlashFrame"))
-        FirmwareFlashFrame.resize(672, 386)
+        FirmwareFlashFrame.resize(672, 493)
         FirmwareFlashFrame.setFrameShape(QtGui.QFrame.StyledPanel)
         FirmwareFlashFrame.setFrameShadow(QtGui.QFrame.Raised)
         self.horizontalLayout = QtGui.QHBoxLayout(FirmwareFlashFrame)
@@ -53,6 +53,12 @@ class Ui_FirmwareFlashFrame(object):
         self.port_combo_box = QtGui.QComboBox(FirmwareFlashFrame)
         self.port_combo_box.setObjectName(_fromUtf8("port_combo_box"))
         self.verticalLayout.addWidget(self.port_combo_box)
+        self.label_4 = QtGui.QLabel(FirmwareFlashFrame)
+        self.label_4.setObjectName(_fromUtf8("label_4"))
+        self.verticalLayout.addWidget(self.label_4)
+        self.hardware_list = QtGui.QListWidget(FirmwareFlashFrame)
+        self.hardware_list.setObjectName(_fromUtf8("hardware_list"))
+        self.verticalLayout.addWidget(self.hardware_list)
         self.label = QtGui.QLabel(FirmwareFlashFrame)
         self.label.setObjectName(_fromUtf8("label"))
         self.verticalLayout.addWidget(self.label)
@@ -86,6 +92,7 @@ class Ui_FirmwareFlashFrame(object):
     def retranslateUi(self, FirmwareFlashFrame):
         FirmwareFlashFrame.setWindowTitle(_translate("FirmwareFlashFrame", "Firmware Flashing Utility", None))
         self.label_3.setText(_translate("FirmwareFlashFrame", "Port", None))
+        self.label_4.setText(_translate("FirmwareFlashFrame", "Hardware List", None))
         self.label.setText(_translate("FirmwareFlashFrame", "Device", None))
         __sortingEnabled = self.device_list.isSortingEnabled()
         self.device_list.setSortingEnabled(False)
