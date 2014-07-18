@@ -29,7 +29,7 @@ from PIL import ImageQt
 from fysom import FysomError
 
 from ayab_gui import Ui_MainWindow
-from firmware_flash_ui import Ui_FirmwareFlashFrame
+from firmware_flash import FirmwareFlash
 
 ## Temporal serial imports.
 import serial
@@ -156,15 +156,8 @@ class GuiMain(QtGui.QMainWindow):
         self.load_image_on_scene(str(file_selected_route))
 
     def generate_firmware_ui(self):
-      self.__FirmwareFlashFrame = QtGui.QFrame()
-      self.__firmware_ui = Ui_FirmwareFlashFrame()
-      self.__firmware_ui.setupUi(self.__FirmwareFlashFrame)
-      ports_list = self.getSerialPorts()
-      def populate(ui, port_list):
-        for item in port_list:
-          ui.port_combo_box.addItem(item[0])
-      populate(self.__firmware_ui, ports_list)
-      self.__FirmwareFlashFrame.show()
+      self.__flash_ui = FirmwareFlash()
+      self.__flash_ui.show()
 
 
     def getSerialPorts(self):
