@@ -41,15 +41,25 @@ class FirmwareFlash(QtGui.QFrame):
     def add_items_from_json_object(self, json_object):
       repo = json_object
       for hardware_device in repo:
-        logging.debug("Hardware Device "+ hardware_device)
-        self.ui.firmware_list.addItem(hardware_device)
+        self.add_hardware_to_list(hardware_device)
         for controller in repo.get(hardware_device, []):
-          logging.debug("Controller "+ controller)
-          self.ui.device_list.addItem(controller)
+          self.add_controller_to_list(controller)
           for firmware in repo[hardware_device][controller]:
-            self.ui.firmware_list.addItem(firmware["version"])
-            logging.debug("firmware" +firmware["version"])
-            
+            self.add_firmware_dict_to_list(firmware)
+
+    def add_hardware_to_list(self, hardware_device):
+      logging.debug("Hardware Device "+ hardware_device)
+      self.ui.firmware_list.addItem(hardware_device)
+
+    def add_controller_to_list(self, controller):
+      logging.debug("Controller "+ controller)
+      self.ui.device_list.addItem(controller)
+
+    def add_firmware_dict_to_list(self, firmware):
+      ## Could add more info to display, such as date.
+      version = firmware.get("version", "unspecified version")
+      logging.debug("firmware" + firmware.get("version"))
+      self.ui.firmware_list.addItem(version)
 
     def getSerialPorts(self):
       """
