@@ -63,23 +63,12 @@ p, li { white-space: pre-wrap; }
      <item>
       <widget class="QLabel" name="label">
        <property name="text">
-        <string>Device</string>
+        <string>Controller</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QListWidget" name="device_list">
-       <item>
-        <property name="text">
-         <string>Arduino Uno</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Arduino Mega 2560</string>
-        </property>
-       </item>
-      </widget>
+      <widget class="QListWidget" name="controller_list"/>
      </item>
      <item>
       <widget class="QLabel" name="label_2">
@@ -89,18 +78,7 @@ p, li { white-space: pre-wrap; }
       </widget>
      </item>
      <item>
-      <widget class="QListWidget" name="firmware_list">
-       <item>
-        <property name="text">
-         <string>v3</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>v3-dummy</string>
-        </property>
-       </item>
-      </widget>
+      <widget class="QListWidget" name="firmware_list"/>
      </item>
      <item>
       <widget class="QPushButton" name="flash_firmware">
