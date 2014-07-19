@@ -55,11 +55,11 @@ class FirmwareFlash(QtGui.QFrame):
 
     def add_hardware_to_list(self, hardware_device):
       logging.debug("Hardware Device "+ hardware_device)
-      self.ui.firmware_list.addItem(hardware_device)
+      self.ui.hardware_list.addItem(hardware_device)
 
     def add_controller_to_list(self, controller):
       logging.debug("Controller "+ controller)
-      self.ui.device_list.addItem(controller)
+      self.ui.controller_list.addItem(controller)
 
     def add_firmware_dict_to_list(self, firmware):
       ## Could add more info to display, such as date.
