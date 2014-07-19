@@ -28,6 +28,9 @@ class FirmwareFlash(QtGui.QFrame):
       populate(self.ui, ports_list)
 
       self.load_json()
+      #TODO connect the other signals
+      self.ui.hardware_list.itemActivated[QtGui.QListWidgetItem].connect(self.hardware_item_activated)
+
 
     def load_json(self):
       json_object = self.parse_json("")
@@ -46,6 +49,9 @@ class FirmwareFlash(QtGui.QFrame):
           self.add_controller_to_list(controller)
           for firmware in repo[hardware_device][controller]:
             self.add_firmware_dict_to_list(firmware)
+
+    def hardware_item_activated(self, qitem):
+      print qitem.text()
 
     def add_hardware_to_list(self, hardware_device):
       logging.debug("Hardware Device "+ hardware_device)
