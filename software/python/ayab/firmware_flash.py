@@ -30,11 +30,12 @@ class FirmwareFlash(QtGui.QFrame):
       self.load_json()
       #TODO connect the other signals
       self.ui.hardware_list.itemActivated[QtGui.QListWidgetItem].connect(self.hardware_item_activated)
-
+      self.ui.controller_list.itemActivated[QtGui.QListWidgetItem].connect(self.controller_item_activated)
+      self.ui.firmware_list.itemActivated[QtGui.QListWidgetItem].connect(self.firmware_item_activated)
 
     def load_json(self):
-      json_object = self.parse_json("")
-      self.add_items_from_json_object(json_object)
+      self.json_object = self.parse_json("")
+      self.add_items_from_json_object(self.json_object)
 
     def parse_json(self, json_string):
       x = """{"kh910": {"uno": [{"url": "/", "version": "latest"}, {"url": "/kh910/uno/ayab_k910_uno_v3.hex", "version": "v3"}], "mega2560": [{"url": "/", "date": "", "version": "latest", "sha1sum": ""}, {"url": "/kh910/mega2560/ayab_kh910_mega_v3.hex", "version": "v3"}]}, "kh930": {"uno": [{"url": "/kh930/uno/ayab_kh930_uno_v3.hex", "version": "latest"}], "mega2560": [{"url": "/kh930/mega/ayab_kh930_mega_v3.hex", "version": "latest"}]}, "hardware_test": {"uno": [{"version": "latest"}], "mega2560": [{"date": "", "version": "latest", "sha1sum": ""}]}}"""
@@ -45,13 +46,42 @@ class FirmwareFlash(QtGui.QFrame):
       repo = json_object
       for hardware_device in repo:
         self.add_hardware_to_list(hardware_device)
-        for controller in repo.get(hardware_device, []):
-          self.add_controller_to_list(controller)
-          for firmware in repo[hardware_device][controller]:
-            self.add_firmware_dict_to_list(firmware)
+        #for controller in repo.get(hardware_device, []):
+          #self.add_controller_to_list(controller)
+          #for firmware in repo[hardware_device][controller]:
+            #self.add_firmware_dict_to_list(firmware)
 
-    def hardware_item_activated(self, qitem):
-      print qitem.text()
+    def hardware_item_activated(self, hardware_qitem):
+      '''Signal on hardware_list activated. Triggers loading of controllers.'''
+      logging.debug("selected "+hardware_qitem.text())
+      self.load_controllers(hardware_qitem.text())
+
+    def controller_item_activated(self, control_qitem):
+      '''Signal on controller_list activated. Triggers loading of firmwares.'''
+      logging.debug("selected "+control_qitem.text())
+      hardware_loaded_qitem = self.ui.hardware_list.currentItem()
+      self.load_firmware(hardware_loaded_qitem.text(), control_qitem.text())
+
+    def firmware_item_activated(self, firmware_qitem):
+      '''Signal on firmware_list activated.'''
+      logging.debug("selected firmware qitem" +firmware_qitem.text())
+
+    def load_controllers(self, hardware_qstring):
+      #TODO: add cleanup
+      repo = self.json_object
+      hardware_string = unicode(hardware_qstring)
+      for controller in repo.get(hardware_string, []):
+        self.add_controller_to_list(controller)
+
+    def load_firmware(self, hardware_qstring, controller_qstring):
+      #TODO: add cleanup
+      hardware_key = unicode(hardware_qstring)
+      controller_key = unicode(controller_qstring)
+      repo = self.json_object
+      for firmware in repo[hardware_key][controller_key]:
+        self.add_firmware_dict_to_list(firmware)
+      #print hardware_key
+      #print controller_key
 
     def add_hardware_to_list(self, hardware_device):
       logging.debug("Hardware Device "+ hardware_device)
