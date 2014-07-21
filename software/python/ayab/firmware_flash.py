@@ -67,14 +67,14 @@ class FirmwareFlash(QtGui.QFrame):
       logging.debug("selected firmware qitem" +firmware_qitem.text())
 
     def load_controllers(self, hardware_qstring):
-      #TODO: add cleanup
+      self.clean_controller_list()
       repo = self.json_object
       hardware_string = unicode(hardware_qstring)
       for controller in repo.get(hardware_string, []):
         self.add_controller_to_list(controller)
 
     def load_firmware(self, hardware_qstring, controller_qstring):
-      #TODO: add cleanup
+      self.clean_firmware_list()
       hardware_key = unicode(hardware_qstring)
       controller_key = unicode(controller_qstring)
       repo = self.json_object
@@ -82,6 +82,18 @@ class FirmwareFlash(QtGui.QFrame):
         self.add_firmware_dict_to_list(firmware)
       #print hardware_key
       #print controller_key
+
+    def clean_hardware_list(self):
+      self.__clean_QListWidget(self.ui.hardware_list)
+
+    def clean_controller_list(self):
+      self.__clean_QListWidget(self.ui.controller_list)
+
+    def clean_firmware_list(self):
+      self.__clean_QListWidget(self.ui.firmware_list)
+
+    def __clean_QListWidget(self, qlistw):
+      qlistw.clear()
 
     def add_hardware_to_list(self, hardware_device):
       logging.debug("Hardware Device "+ hardware_device)
