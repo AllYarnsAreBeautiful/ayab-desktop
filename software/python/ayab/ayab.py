@@ -29,7 +29,7 @@ from PIL import ImageQt
 from fysom import FysomError
 
 from ayab_gui import Ui_MainWindow
-from firmware_flash import FirmwareFlash
+from plugins.ayab_plugin.firmware_flash import FirmwareFlash
 
 ## Temporal serial imports.
 import serial
