@@ -20,13 +20,7 @@ class FirmwareFlash(QtGui.QFrame):
       self.ui = Ui_FirmwareFlashFrame()
       self.ui.setupUi(self)
 
-      #TODO: move to function
-      ports_list = self.getSerialPorts()
-      def populate(ui, port_list):
-        for item in port_list:
-          ui.port_combo_box.addItem(item[0])
-      populate(self.ui, ports_list)
-
+      self.load_ports()
       self.load_json()
       #TODO connect the other signals
       self.ui.hardware_list.itemActivated[QtGui.QListWidgetItem].connect(self.hardware_item_activated)
@@ -125,6 +119,13 @@ class FirmwareFlash(QtGui.QFrame):
       device = """m2560"""
       windows_command = """{0} -F -v -p {1}
   -C "{2}" -c wiring -P {3}  -b115200 -D -Uflash:w:"{4}":i """.format(exe_file, device, conf_file, serial_port, binary_file)
+
+    def load_ports(self):
+      ports_list = self.getSerialPorts()
+      def populate(ui, port_list):
+        for item in port_list:
+          ui.port_combo_box.addItem(item[0])
+      populate(self.ui, ports_list)
 
 
     def getSerialPorts(self):
