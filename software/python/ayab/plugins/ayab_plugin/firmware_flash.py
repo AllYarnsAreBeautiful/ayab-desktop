@@ -109,6 +109,24 @@ class FirmwareFlash(QtGui.QFrame):
       logging.debug("firmware" + firmware.get("version"))
       self.ui.firmware_list.addItem(version)
 
+    def execute_flash_command(self):
+      self.generate_command_with_options()
+
+    def generate_command_with_options(self, os_type):
+      exe_file_dict = {"Windows": ".\\avrdude.exe",
+                      "Linux": "avrdude" ## Assuming it is installed and on the PATH
+                     }
+
+      #http://www.ladyada.net/learn/avr/avrdude.html
+      exe_file = exe_file_dict.get(os_type)
+      conf_file = """C:\Users\tian\Downloads\arduino-1.0.5-r2-windows\arduino-1.0.5-r2\hardware\tools\avr\bin\avrdude.conf"""
+      binary_file = """C:\Users\tian\Documents\ayab-apparat\firmware\binaries\ayab_hw_test\mega\firmware.hex"""
+      serial_port = """COM3"""
+      device = """m2560"""
+      windows_command = """{0} -F -v -p {1}
+  -C "{2}" -c wiring -P {3}  -b115200 -D -Uflash:w:"{4}":i """.format(exe_file, device, conf_file, serial_port, binary_file)
+
+
     def getSerialPorts(self):
       """
       Returns a list of all USB Serial Ports
