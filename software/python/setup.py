@@ -59,7 +59,7 @@ setup(
     version=ayab.__version__,
     url='http://ayab-knitting.com/',
     license='GNU GPLv3+',
-    author='Christian Obersteiner, Andreas Müller, Sebastian Oliva',
+    author=u'Christian Obersteiner, Andreas Müller, Sebastian Oliva',
     scripts=['bin/ayab'],
     tests_require=['pytest'],
     ## TODO: load this from requirements.
