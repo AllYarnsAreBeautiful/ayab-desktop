@@ -3,44 +3,59 @@ repo = {
       "kh910":
        {"mega2560":
           [
-            {"version": "latest",
-             "url": "/",
-             "date": "",
-             "sha1sum": ""
+            {
+              "version": "latest",
+              "url": "",
+              "file": "firmware.hex",
+              "date": "",
+              "sha1sum": ""
             },
-            {"version": "v3",
-             "url":"/kh910/mega2560/ayab_kh910_mega_v3.hex"},
           ],
         "uno":
           [
-            {"version": "latest",
-             "url": "/"},
-            {"version":"v3",
-             "url": "/kh910/uno/ayab_k910_uno_v3.hex"},
+            {
+              "version": "latest",
+              "url": "/",
+              "file": "firmware.hex"
+            },
           ]
        },
       "kh930":
         {"mega2560":
            [
-             {"version": "latest",
-              "url": "/kh930/mega/ayab_kh930_mega_v3.hex"}
+             {
+               "version": "latest",
+               "url": "",
+               "file": "firmware.hex",
+               "date": "",
+               "sha1sum": ""
+             },
            ],
          "uno":
            [
-              {"version": "latest",
-               "url": "/kh930/uno/ayab_kh930_uno_v3.hex"}
+            {
+              "version": "latest",
+              "url": "/",
+              "file": "firmware.hex"
+            },
            ]
         },
       "hardware_test":{
         "mega2560":
           [
-            {"version":"latest",
-             "date": "",
-             "sha1sum": ""},
+            {
+              "version": "latest",
+              "url": "/",
+              "file": "firmware.hex"
+            },
           ],
         "uno":
           [
-            {"version": "latest"}
+            {
+              "version": "latest",
+              "url": "/",
+              "file": "firmware.hex"
+            },
           ]
         }
      }
