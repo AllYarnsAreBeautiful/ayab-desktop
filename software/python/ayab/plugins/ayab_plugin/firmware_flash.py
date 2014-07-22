@@ -8,6 +8,8 @@ import serial
 import serial.tools.list_ports
 import json
 import logging
+import os
+import platform
 
 from firmware_flash_ui import Ui_FirmwareFlashFrame
 
@@ -22,17 +24,18 @@ class FirmwareFlash(QtGui.QFrame):
 
       self.load_ports()
       self.load_json()
-      #TODO connect the other signals
+
       self.ui.hardware_list.itemActivated[QtGui.QListWidgetItem].connect(self.hardware_item_activated)
       self.ui.controller_list.itemActivated[QtGui.QListWidgetItem].connect(self.controller_item_activated)
       self.ui.firmware_list.itemActivated[QtGui.QListWidgetItem].connect(self.firmware_item_activated)
+      self.ui.flash_firmware.clicked.connect(self.execute_flash_command)
 
     def load_json(self):
       self.json_object = self.parse_json("")
       self.add_items_from_json_object(self.json_object)
 
     def parse_json(self, json_string):
-      x = """{"kh910": {"uno": [{"url": "/", "version": "latest"}, {"url": "/kh910/uno/ayab_k910_uno_v3.hex", "version": "v3"}], "mega2560": [{"url": "/", "date": "", "version": "latest", "sha1sum": ""}, {"url": "/kh910/mega2560/ayab_kh910_mega_v3.hex", "version": "v3"}]}, "kh930": {"uno": [{"url": "/kh930/uno/ayab_kh930_uno_v3.hex", "version": "latest"}], "mega2560": [{"url": "/kh930/mega/ayab_kh930_mega_v3.hex", "version": "latest"}]}, "hardware_test": {"uno": [{"version": "latest"}], "mega2560": [{"date": "", "version": "latest", "sha1sum": ""}]}}"""
+      x = """{"kh910": {"uno": [{"url": "/", "version": "latest", "file": "firmware.hex"}], "mega2560": [{"url": "", "date": "", "version": "latest", "file": "firmware.hex", "sha1sum": ""}]}, "kh930": {"uno": [{"url": "/", "version": "latest", "file": "firmware.hex"}], "mega2560": [{"url": "", "date": "", "version": "latest", "file": "firmware.hex", "sha1sum": ""}]}, "hardware_test": {"uno": [{"url": "/", "version": "latest", "file": "firmware.hex"}], "mega2560": [{"url": "/", "version": "latest", "file": "firmware.hex"}]}}"""
       json_string = x
       return json.loads(json_string)
 
@@ -104,21 +107,48 @@ class FirmwareFlash(QtGui.QFrame):
       self.ui.firmware_list.addItem(version)
 
     def execute_flash_command(self):
-      self.generate_command_with_options()
+      os_name = platform.system()
+      base_dir = os.path.dirname(__file__)
+      port = self.ui.port_combo_box.currentText()
+      hardware_name = unicode(self.ui.hardware_list.currentItem().text())
+      controller_name = unicode(self.ui.controller_list.currentItem().text())
+      firmware_key = unicode(self.ui.firmware_list.currentItem().text())
+      firmware_name = "firmware.hex"
+      for firmware in self.json_object[hardware_name][controller_name]:
+        if firmware.get("version") == firmware_key:
+          firmware_name = firmware.get("file")
 
-    def generate_command_with_options(self, os_type):
-      exe_file_dict = {"Windows": ".\\avrdude.exe",
-                      "Linux": "avrdude" ## Assuming it is installed and on the PATH
-                     }
+      command = self.generate_command_with_options(base_dir,
+                                                   os_name,
+                                                   port,
+                                                   hardware_name,
+                                                   controller_name,
+                                                   firmware_name,
+                                                   )
 
-      #http://www.ladyada.net/learn/avr/avrdude.html
-      exe_file = exe_file_dict.get(os_type)
-      conf_file = """C:\Users\tian\Downloads\arduino-1.0.5-r2-windows\arduino-1.0.5-r2\hardware\tools\avr\bin\avrdude.conf"""
-      binary_file = """C:\Users\tian\Documents\ayab-apparat\firmware\binaries\ayab_hw_test\mega\firmware.hex"""
-      serial_port = """COM3"""
-      device = """m2560"""
-      windows_command = """{0} -F -v -p {1}
-  -C "{2}" -c wiring -P {3}  -b115200 -D -Uflash:w:"{4}":i """.format(exe_file, device, conf_file, serial_port, binary_file)
+    def generate_command_with_options(self, base_dir, os_name, port, hardware_name, controller_name, firmware_name):
+      exe_file_dict = {
+                        "Windows": os.path.join("firwmare", ".\\avrdude.exe"),
+                        "Linux": os.path.join("firwmare", "avrdude"), #TODO, detect 64bit OS
+                      }
+      ## If unknown OS we assume avrdude is installed and on the PATH.
+      exe_file = exe_file_dict.get(os_name, "avrdude")
+      conf_file = os.path.join(base_dir, "firmware","avrdude.conf")
+
+      binary_file = os.path.join(base_dir, "firmware", hardware_name, controller_name, firmware_name)
+      serial_port = port
+      # List of Arduino controllers and their avrdude names.
+      device_dict = {
+          "mega2560": "m2560",
+          "uno": "m328p",
+        }
+      device = device_dict.get(controller_name)
+      ## avrdude command.
+      ## http://www.ladyada.net/learn/avr/avrdude.html
+      exec_command = """{0} -F -v -p {1} -C "{2}" -c wiring -P {3} -b115200 -D -Uflash:w:"{4}":i """.format(
+                       exe_file, device, conf_file, serial_port, binary_file)
+      logging.debug(exec_command)
+      return exec_command
 
     def load_ports(self):
       ports_list = self.getSerialPorts()
