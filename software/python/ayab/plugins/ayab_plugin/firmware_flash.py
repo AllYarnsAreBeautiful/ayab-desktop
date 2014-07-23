@@ -10,6 +10,7 @@ import json
 import logging
 import os
 import platform
+import subprocess
 
 from firmware_flash_ui import Ui_FirmwareFlashFrame
 
@@ -126,13 +127,23 @@ class FirmwareFlash(QtGui.QFrame):
                                                    firmware_name,
                                                    )
 
+      try:
+        value = subprocess.call(command, shell=True)
+        if value == 0:
+          logging.info("Flashing Done!")
+        else:
+          logging.info("Error on flashing firmware.")
+      except e:
+        logging.info("Error on flashing firmware.")
+
     def generate_command_with_options(self, base_dir, os_name, port, hardware_name, controller_name, firmware_name):
       exe_file_dict = {
-                        "Windows": os.path.join("firwmare", ".\\avrdude.exe"),
-                        "Linux": os.path.join("firwmare", "avrdude"), #TODO, detect 64bit OS
+                        "Windows": os.path.join("firmware", ".\\avrdude.exe"),
+                        "Linux": os.path.join("firmware", "avrdude"), #TODO, detect 64bit OS
                       }
       ## If unknown OS we assume avrdude is installed and on the PATH.
       exe_file = exe_file_dict.get(os_name, "avrdude")
+      exe_route = os.path.join(base_dir, exe_file)
       conf_file = os.path.join(base_dir, "firmware","avrdude.conf")
 
       binary_file = os.path.join(base_dir, "firmware", hardware_name, controller_name, firmware_name)
@@ -146,7 +157,7 @@ class FirmwareFlash(QtGui.QFrame):
       ## avrdude command.
       ## http://www.ladyada.net/learn/avr/avrdude.html
       exec_command = """{0} -F -v -p {1} -C "{2}" -c wiring -P {3} -b115200 -D -Uflash:w:"{4}":i """.format(
-                       exe_file, device, conf_file, serial_port, binary_file)
+                       exe_route, device, conf_file, serial_port, binary_file)
       logging.debug(exec_command)
       return exec_command
 
