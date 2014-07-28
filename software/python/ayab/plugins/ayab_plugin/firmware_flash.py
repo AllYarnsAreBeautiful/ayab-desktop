@@ -26,9 +26,9 @@ class FirmwareFlash(QtGui.QFrame):
       self.load_ports()
       self.load_json()
 
-      self.ui.hardware_list.itemActivated[QtGui.QListWidgetItem].connect(self.hardware_item_activated)
-      self.ui.controller_list.itemActivated[QtGui.QListWidgetItem].connect(self.controller_item_activated)
-      self.ui.firmware_list.itemActivated[QtGui.QListWidgetItem].connect(self.firmware_item_activated)
+      self.ui.hardware_list.itemClicked[QtGui.QListWidgetItem].connect(self.hardware_item_activated)
+      self.ui.controller_list.itemClicked[QtGui.QListWidgetItem].connect(self.controller_item_activated)
+      self.ui.firmware_list.itemClicked[QtGui.QListWidgetItem].connect(self.firmware_item_activated)
       self.ui.flash_firmware.clicked.connect(self.execute_flash_command)
 
     def load_json(self):
