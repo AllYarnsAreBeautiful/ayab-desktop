@@ -48,13 +48,13 @@ class GuiMain(QtGui.QMainWindow):
     def __init__(self):
         super(GuiMain, self).__init__(None)
 
+        self.image_file_route = None
+        self.enabled_plugin = None
+
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self.plugins_init()
         self.setupBehaviour()
-
-        self.image_file_route = None
-        self.enabled_plugin = None
 
     def plugins_init(self, is_reloading=False):
         if is_reloading:
@@ -72,14 +72,20 @@ class GuiMain(QtGui.QMainWindow):
             self.pm.activatePluginByName(plugin_name)
             self.add_plugin_name_on_module_dropdown(plugin_name)
             logging.info("Plugin {0} activated".format(plugin_name))
+        ## Setting AYAB as the default value
+        ## TODO: better way of setting ayab as default plugin.
+        self.set_enabled_plugin("AYAB")
 
     def add_plugin_name_on_module_dropdown(self, module_name):
         self.ui.module_dropdown.addItem(module_name)
 
     def set_enabled_plugin(self, plugin_name=None):
         """Enables plugin, sets up gui and returns the plugin_object from the plugin selected on module_dropdown."""
-        if self.enabled_plugin:
+        try:
+          if self.enabled_plugin:
             self.enabled_plugin.plugin_object.cleanup_ui(self)
+        except:
+          pass
 
         if not plugin_name:
             plugin_name = window.ui.module_dropdown.currentText()
