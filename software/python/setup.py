@@ -24,7 +24,10 @@ from setuptools.command.test import test as TestCommand
 import io
 import codecs
 import os
+import glob
 import sys
+
+import py2exe
 
 import ayab
 
@@ -68,6 +71,31 @@ class PyTest(TestCommand):
         errcode = pytest.main(self.test_args)
         sys.exit(errcode)
 
+
+def find_data_files(source,target,patterns):
+    """Locates the specified data-files and returns the matches
+    in a data_files compatible format.
+
+    source is the root of the source data tree.
+        Use '' or '.' for current directory.
+    target is the root of the target data tree.
+        Use '' or '.' for the distribution directory.
+    patterns is a sequence of glob-patterns for the
+        files you want to copy.
+    """
+    if glob.has_magic(source) or glob.has_magic(target):
+        raise ValueError("Magic not allowed in src, target")
+    ret = {}
+    for pattern in patterns:
+        pattern = os.path.join(source,pattern)
+        for filename in glob.glob(pattern):
+            if os.path.isfile(filename):
+                targetpath = os.path.join(target,os.path.relpath(filename,source))
+                path = os.path.dirname(targetpath)
+                ret.setdefault(path,[]).append(filename)
+    return sorted(ret.items())
+
+
 setup(
     name='ayab',
     version=ayab.__version__,
@@ -75,7 +103,21 @@ setup(
     license='GNU GPLv3+',
     author=u'Christian Obersteiner, Andreas Müller, Sebastian Oliva',
     scripts=['bin/ayab'],
+    windows=['bin/ayab'],
+    skip_archive=True,
     tests_require=['pytest'],
+    options={"py2exe": {
+        "includes": ["sip"],
+        "skip_archive": True
+        }},
+    data_files=find_data_files('ayab','ayab',[
+        'README',
+        'images/*',
+        '*.ts',
+        '*.yapsy-plugin',
+        'plugins/*',
+        'plugins/ayab_plugin/firmware/*',
+        ]),
     install_requires=[read_requirements("requirements.txt")],
     cmdclass={'test': PyTest},
     author_email='info@ayab-knitting.com',
