@@ -23,7 +23,6 @@ import time
 import logging
 import os
 from ayab.plugins.knitting_plugin import KnittingPlugin
-import ayab.ayab
 from PyQt4 import QtGui, QtCore
 
 from ayab_options import Ui_DockWidget
