@@ -21,11 +21,12 @@ from ayab_communication import AyabCommunication
 import ayab_image
 import time
 import logging
+import os
 from ayab.plugins.knitting_plugin import KnittingPlugin
 from PyQt4 import QtGui, QtCore
 
 from ayab_options import Ui_DockWidget
-
+import serial.tools.list_ports
 
 class AyabPluginControl(KnittingPlugin):
 
@@ -80,16 +81,37 @@ class AyabPluginControl(KnittingPlugin):
 
   def setup_ui(self, parent_ui):
     """Sets up UI elements from ayab_options.Ui_DockWidget in parent_ui."""
+    self.set_translator()
     self.__parent_ui = parent_ui
     self.options_ui = Ui_DockWidget()
     self.dock = parent_ui.ui.knitting_options_dock  # findChild(QtGui.QDockWidget, "knitting_options_dock")
     self.options_ui.setupUi(self.dock)
     self.setup_behaviour_ui()
 
+  def set_translator(self):
+    #FIXME: using unsafe dirname(__file__)
+    dirname = os.path.dirname(__file__)
+    self.translator = QtCore.QTranslator()
+    self.translator.load(QtCore.QLocale.system(), "ayab_options", ".", dirname, ".qm")
+    app = QtCore.QCoreApplication.instance()
+    app.installTranslator(self.translator)
+
+  def unset_translator(self):
+    app = QtCore.QCoreApplication.instance()
+    app.removeTranslator(self.translator)
+
   def setup_behaviour_ui(self):
     """Connects methods to UI elements."""
     conf_button = self.options_ui.configure_button  # Used instead of findChild(QtGui.QPushButton, "configure_button")
     conf_button.clicked.connect(self.conf_button_function)
+    serial_port_combo_box = self.__parent_ui.findChild(QtGui.QComboBox, "serial_port_dropdown")
+    ports_list = self.getSerialPorts()
+    def populate(combo_box, port_list):
+      for item in port_list:
+        #TODO: should display the info of the device.
+        combo_box.addItem(item[0])
+    populate(serial_port_combo_box, ports_list)
+
 
   def conf_button_function(self):
     self.configure()
@@ -102,6 +124,7 @@ class AyabPluginControl(KnittingPlugin):
     cleaner.add(dock.widget())
     self.__qw = QtGui.QWidget()
     dock.setWidget(self.__qw)
+    self.unset_translator()
 
   def get_configuration_from_ui(self, ui):
     """Creates a configuration dict from the ui elements.
@@ -124,10 +147,10 @@ class AyabPluginControl(KnittingPlugin):
     self.conf["alignment"] = alignment_text
     machine_type_text = ui.findChild(QtGui.QComboBox, "machine_type_box").currentText()
     self.conf["machine_type"] = str(machine_type_text)
-    #serial_port_dropdown is on main gui frame
+
     serial_port_text = ui.findChild(QtGui.QComboBox, "serial_port_dropdown").currentText()
     self.conf["portname"] = str(serial_port_text)
-    self.conf["portname"] = "/dev/ttyACM0"
+    ## self.conf["portname"] = "/dev/ttyACM0"
     # getting file location from textbox
     # FIXME: this should be sent at onconfigure
     filename_text = ui.findChild(QtGui.QLineEdit, "filename_lineedit").text()
@@ -135,6 +158,12 @@ class AyabPluginControl(KnittingPlugin):
     logging.debug(self.conf)
     #TODO: add more config options
     return self.conf
+
+  def getSerialPorts(self):
+      """
+      Returns a list of all USB Serial Ports
+      """
+      return list(serial.tools.list_ports.grep("USB"))
 
   def __init__(self):
     super(AyabPluginControl, self).__init__({})

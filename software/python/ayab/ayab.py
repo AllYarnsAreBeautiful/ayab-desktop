@@ -29,6 +29,11 @@ from PIL import ImageQt
 from fysom import FysomError
 
 from ayab_gui import Ui_MainWindow
+from plugins.ayab_plugin.firmware_flash import FirmwareFlash
+
+## Temporal serial imports.
+import serial
+import serial.tools.list_ports
 
 
 logging.basicConfig(level=logging.DEBUG)
@@ -43,27 +48,21 @@ class GuiMain(QtGui.QMainWindow):
     def __init__(self):
         super(GuiMain, self).__init__(None)
 
+        self.image_file_route = None
+        self.enabled_plugin = None
+
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self.plugins_init()
         self.setupBehaviour()
-
-        self.image_file_route = None
-        self.enabled_plugin = None
 
     def plugins_init(self, is_reloading=False):
         if is_reloading:
           logging.info("Deactivating All Plugins")
           for pluginInfo in self.pm.getAllPlugins():
             self.pm.deactivatePluginByName(pluginInfo.name)
-        if getattr(sys, 'frozen', False):
-            route = sys._MEIPASS
-            logging.info("loading from pyinstaller")
-            self.pm = PluginManager.PluginManager(directories_list=[os.path.join(route, "plugins")],)
-        else:
-            plugins_folder = os.path.join(os.path.dirname(__file__),"plugins")
-            print(plugins_folder)
-            self.pm = PluginManager.PluginManager(directories_list=[plugins_folder],)
+        route = get_route()
+        self.pm = PluginManager.PluginManager(directories_list=[os.path.join(route, "plugins")],)
 
         self.pm.collectPlugins()
         for pluginInfo in self.pm.getAllPlugins():
@@ -73,22 +72,31 @@ class GuiMain(QtGui.QMainWindow):
             self.pm.activatePluginByName(plugin_name)
             self.add_plugin_name_on_module_dropdown(plugin_name)
             logging.info("Plugin {0} activated".format(plugin_name))
+        ## Setting AYAB as the default value
+        ## TODO: better way of setting ayab as default plugin.
+        self.set_enabled_plugin("AYAB")
 
     def add_plugin_name_on_module_dropdown(self, module_name):
         self.ui.module_dropdown.addItem(module_name)
 
     def set_enabled_plugin(self, plugin_name=None):
         """Enables plugin, sets up gui and returns the plugin_object from the plugin selected on module_dropdown."""
-        if self.enabled_plugin:
+        try:
+          if self.enabled_plugin:
             self.enabled_plugin.plugin_object.cleanup_ui(self)
+        except:
+          pass
 
         if not plugin_name:
             plugin_name = window.ui.module_dropdown.currentText()
         plugin_o = self.pm.getPluginByName(plugin_name)
         self.enabled_plugin = plugin_o
 
-        self.enabled_plugin.plugin_object.setup_ui(self)
-        logging.info("Set enabled_plugin as {0} - {1}".format(plugin_o, plugin_name))
+        try:
+            self.enabled_plugin.plugin_object.setup_ui(self)
+            logging.info("Set enabled_plugin as {0} - {1}".format(plugin_o, plugin_name))
+        except:
+            logging.error("no plugin object loaded")
         return plugin_o
 
     def updateProgress(self, progress):
@@ -105,14 +113,18 @@ class GuiMain(QtGui.QMainWindow):
         self.gt.start()
 
     def setupBehaviour(self):
+        # Connecting UI elements.
         self.ui.load_file_button.clicked.connect(self.file_select_dialog)
         self.ui.module_dropdown.activated[str].connect(self.set_enabled_plugin)
         self.ui.knit_button.clicked.connect(self.start_knitting_process)
+        self.ui.actionLoad_AYAB_Firmware.activated.connect(self.generate_firmware_ui)
+        # Connecting Signals.
         self.connect(self, QtCore.SIGNAL("updateProgress(int)"), self.updateProgress)
         # This blocks the other thread until signal is done
         self.connect(self, QtCore.SIGNAL("display_blocking_pop_up_signal(QString, QString)"), self.display_blocking_pop_up, QtCore.Qt.BlockingQueuedConnection)
         self.connect(self, QtCore.SIGNAL("display_blocking_pop_up_signal(QString)"), self.display_blocking_pop_up, QtCore.Qt.BlockingQueuedConnection)
         self.connect(self, QtCore.SIGNAL("display_pop_up_signal(QString, QString)"), self.display_blocking_pop_up)
+        self.ui.actionQuit.activated.connect(QtCore.QCoreApplication.instance().quit)
 
     def load_image_on_scene(self, image_str):
         """Loads an image into self.ui.image_pattern_view using a temporary QGraphicsScene"""
@@ -153,6 +165,17 @@ class GuiMain(QtGui.QMainWindow):
         self.update_file_selected_text_field(file_selected_route)
         self.load_image_on_scene(str(file_selected_route))
 
+    def generate_firmware_ui(self):
+      self.__flash_ui = FirmwareFlash()
+      self.__flash_ui.show()
+
+
+    def getSerialPorts(self):
+      """
+      Returns a list of all USB Serial Ports
+      """
+      return list(serial.tools.list_ports.grep("USB"))
+
 
 class GenericThread(QtCore.QThread):
     '''A generic thread wrapper for functions on threads.'''
@@ -177,8 +200,23 @@ class GenericThread(QtCore.QThread):
                                                                       "Error on plugin action, be sure to configure before starting Knitting.", None), "error")
         return
 
+def get_route():
+  #if getattr(sys, 'frozen', False):
+  #  route = sys._MEIPASS
+  #  logging.debug("Loading AYAB from pyinstaller.")
+  #  return route
+  #else:
+    filename = os.path.dirname(__file__)
+    logging.debug("Loading AYAB from normal package structure.")
+    return filename
+
+
 def run():
+  translator = QtCore.QTranslator()
+  ## Loading ayab_gui main translator.
+  translator.load(QtCore.QLocale.system(), "ayab_gui", ".", os.path.join(get_route(), "translations"), ".qm")
   app = QtGui.QApplication(sys.argv)
+  app.installTranslator(translator)
   window = GuiMain()
   window.show()
   sys.exit(app.exec_())
