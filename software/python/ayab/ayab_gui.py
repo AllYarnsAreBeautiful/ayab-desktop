@@ -109,7 +109,7 @@ class Ui_MainWindow(object):
         self.gridLayout.addLayout(self.horizontalLayout_2, 3, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 20))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 21))
         self.menubar.setObjectName(_fromUtf8("menubar"))
         self.menuFile = QtGui.QMenu(self.menubar)
         self.menuFile.setObjectName(_fromUtf8("menuFile"))
@@ -131,9 +131,7 @@ class Ui_MainWindow(object):
         self.actionAbout.setObjectName(_fromUtf8("actionAbout"))
         self.actionHelp = QtGui.QAction(MainWindow)
         self.actionHelp.setObjectName(_fromUtf8("actionHelp"))
-        self.menuFile.addAction(self.actionOpen_Knitting_Project)
         self.menuFile.addAction(self.actionQuit)
-        self.menuHelp.addAction(self.actionHelp)
         self.menuHelp.addAction(self.actionAbout)
         self.menuTools.addAction(self.actionLoad_AYAB_Firmware)
         self.menubar.addAction(self.menuFile.menuAction())
@@ -158,7 +156,7 @@ class Ui_MainWindow(object):
         self.actionLoad_AYAB_Firmware.setText(_translate("MainWindow", "Load AYAB Firmware", None))
         self.actionQuit.setText(_translate("MainWindow", "Quit", None))
         self.actionOpen_Knitting_Project.setText(_translate("MainWindow", "Open Knitting Project", None))
-        self.actionAbout.setText(_translate("MainWindow", "About", None))
+        self.actionAbout.setText(_translate("MainWindow", "Help - About", None))
         self.actionHelp.setText(_translate("MainWindow", "Help", None))
 
 
