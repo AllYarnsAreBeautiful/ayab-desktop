@@ -92,8 +92,11 @@ class GuiMain(QtGui.QMainWindow):
         plugin_o = self.pm.getPluginByName(plugin_name)
         self.enabled_plugin = plugin_o
 
-        self.enabled_plugin.plugin_object.setup_ui(self)
-        logging.info("Set enabled_plugin as {0} - {1}".format(plugin_o, plugin_name))
+        try:
+            self.enabled_plugin.plugin_object.setup_ui(self)
+            logging.info("Set enabled_plugin as {0} - {1}".format(plugin_o, plugin_name))
+        except:
+            logging.error("no plugin object loaded")
         return plugin_o
 
     def updateProgress(self, progress):
@@ -198,11 +201,11 @@ class GenericThread(QtCore.QThread):
         return
 
 def get_route():
-  if getattr(sys, 'frozen', False):
-    route = sys._MEIPASS
-    logging.debug("Loading AYAB from pyinstaller.")
-    return route
-  else:
+  #if getattr(sys, 'frozen', False):
+  #  route = sys._MEIPASS
+  #  logging.debug("Loading AYAB from pyinstaller.")
+  #  return route
+  #else:
     filename = os.path.dirname(__file__)
     logging.debug("Loading AYAB from normal package structure.")
     return filename
