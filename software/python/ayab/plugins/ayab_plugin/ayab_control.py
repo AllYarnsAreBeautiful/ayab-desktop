@@ -114,17 +114,28 @@ class AyabPluginControl(KnittingPlugin):
     app = QtCore.QCoreApplication.instance()
     app.removeTranslator(self.translator)
 
-  def setup_behaviour_ui(self):
-    """Connects methods to UI elements."""
-    conf_button = self.options_ui.configure_button  # Used instead of findChild(QtGui.QPushButton, "configure_button")
-    conf_button.clicked.connect(self.conf_button_function)
-    serial_port_combo_box = self.__parent_ui.findChild(QtGui.QComboBox, "serial_port_dropdown")
-    ports_list = self.getSerialPorts()
+  def populate_ports(self, combo_box=None, port_list=None):
+    if not combo_box:
+      combo_box = self.__parent_ui.findChild(QtGui.QComboBox, "serial_port_dropdown")
+    if not port_list:
+      port_list = self.getSerialPorts()
+
+    combo_box.clear()
+
     def populate(combo_box, port_list):
       for item in port_list:
         #TODO: should display the info of the device.
         combo_box.addItem(item[0])
-    populate(serial_port_combo_box, ports_list)
+    populate(combo_box, port_list)
+
+
+  def setup_behaviour_ui(self):
+    """Connects methods to UI elements."""
+    conf_button = self.options_ui.configure_button  # Used instead of findChild(QtGui.QPushButton, "configure_button")
+    conf_button.clicked.connect(self.conf_button_function)
+    self.populate_ports()
+    refresh_ports = self.options_ui.refresh_ports_button
+    refresh_ports.click.connect(self.populate_ports)
 
 
   def conf_button_function(self):
