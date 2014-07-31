@@ -27,7 +27,11 @@ import os
 import glob
 import sys
 
-import py2exe
+try:
+    import py2exe
+except:
+    #TODO: notify of missing functionality.
+    pass
 
 import ayab
 
