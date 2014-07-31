@@ -201,6 +201,9 @@ class AyabPluginControl(KnittingPlugin):
     self.__formerRequest = 0
     self.__lineBlock = 0
 
+  def __del__(self):
+    self.__close_serial()
+
 ###Copied from ayab_control
 #####################################
 
