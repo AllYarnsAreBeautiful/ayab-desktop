@@ -28,12 +28,14 @@ from PyQt4 import QtGui, QtCore
 from ayab_options import Ui_DockWidget
 import serial.tools.list_ports
 
+
 class AyabPluginControl(KnittingPlugin):
 
   def onknit(self, e):
     logging.debug("called onknit on AyabPluginControl")
     #TODO: handle error behaviour.
     self.__knitImage(self.__image, self.conf)
+    self.finish()
 
   def onconfigure(self, e):
     logging.debug("called onconfigure on TestingKnittingPlugin")
@@ -65,7 +67,19 @@ class AyabPluginControl(KnittingPlugin):
 
   def onfinish(self, e):
     logging.info("Finished Knitting.")
-    pass
+    self.__close_serial()
+
+  def __close_serial(self):
+    try:
+      self.__ayabCom.close_serial()
+      logging.debug("Closing Serial port successful.")
+    except:
+      logging.debug("Closing Serial port failed. Was it ever open?")
+
+  def onerror(self, e):
+    #TODO add message info from event
+    logging.error("Error while Knitting.")
+    self.__close_serial()
 
   def __wait_for_user_action(self, message="", message_type="info"):
     """Sends the display_blocking_pop_up_signal QtSignal to main GUI thread, blocking it."""

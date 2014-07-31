@@ -46,8 +46,11 @@ class KnittingPlugin(IPlugin, Fysom):
              ## TODO: add more states for handling error management.
              {'name': 'configure', 'src': 'activated', 'dst': 'configured'},
              {'name': 'configure', 'src': 'configured', 'dst': 'configured'},
+             {'name': 'configure', 'src': 'finished', 'dst': 'configured'},
+             {'name': 'configure', 'src': 'error', 'dst': 'configured'},
              {'name': 'knit', 'src': 'configured', 'dst': 'knitting'},
              {'name': 'finish', 'src': 'knitting', 'dst': 'finished'},
+             {'name': 'fail', 'src': 'knittng', 'dst': 'error'}
          ],
          'callbacks':  callbacks_dict
          })
