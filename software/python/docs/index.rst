@@ -15,6 +15,8 @@ Contents:
 
    serial_comm_page
 
+   build_process
+
 
 Indices and tables
 ==================
