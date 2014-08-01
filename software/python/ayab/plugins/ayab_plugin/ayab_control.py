@@ -417,7 +417,7 @@ class AyabPluginControl(KnittingPlugin):
               if rcvMsg == 'cnfInfo':
                   if rcvParam == API_VERSION:
                       curState = 's_start'
-                      self.__wait_for_user_action("Please init machine")
+                      self.__wait_for_user_action("Please init machine. (Set the carriage to mode KC-I or KC-II and move the carriage over the left turn mark).")
                   else:
                       logging.error("wrong API version: " + str(rcvParam)
                                         + (" (expected: )") + str(API_VERSION))
@@ -433,6 +433,7 @@ class AyabPluginControl(KnittingPlugin):
                       curState = 's_operate'
                       self.__wait_for_user_action("Ready to Operate")
                   else:
+                      self.__wait_for_user_action("Device not ready, configure and try again.")
                       logging.error("device not ready")
                       return
 
@@ -443,7 +444,7 @@ class AyabPluginControl(KnittingPlugin):
                       curState = 's_finished'
 
           if curState == 's_finished':
-              self.__wait_for_user_action("Image finished")
+              self.__wait_for_user_action("Image transmission finished. Please knit until you hear the double beep sound.")
               return
 
           oldState = curState
