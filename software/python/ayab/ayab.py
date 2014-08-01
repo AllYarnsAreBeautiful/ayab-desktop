@@ -33,6 +33,7 @@ from fysom import FysomError
 
 from ayab_gui import Ui_MainWindow
 from plugins.ayab_plugin.firmware_flash import FirmwareFlash
+from ayab_about import Ui_AboutForm
 
 ## Temporal serial imports.
 import serial
@@ -128,6 +129,7 @@ class GuiMain(QMainWindow):
         self.connect(self, QtCore.SIGNAL("display_blocking_pop_up_signal(QString)"), self.display_blocking_pop_up, QtCore.Qt.BlockingQueuedConnection)
         self.connect(self, QtCore.SIGNAL("display_pop_up_signal(QString, QString)"), self.display_blocking_pop_up)
         self.ui.actionQuit.activated.connect(QtCore.QCoreApplication.instance().quit)
+        self.ui.actionAbout.activated.connect(self.open_about_ui)
 
     def load_image_on_scene(self, image_str):
         """Loads an image into self.ui.image_pattern_view using a temporary QGraphicsScene"""
@@ -171,6 +173,13 @@ class GuiMain(QMainWindow):
     def generate_firmware_ui(self):
       self.__flash_ui = FirmwareFlash()
       self.__flash_ui.show()
+
+    def open_about_ui(self):
+        self.__AboutForm = QtGui.QFrame()
+        self.__about_ui = Ui_AboutForm()
+        self.__about_ui.setupUi(self.__AboutForm)
+        self.__AboutForm.show()
+
 
     def getSerialPorts(self):
       """
