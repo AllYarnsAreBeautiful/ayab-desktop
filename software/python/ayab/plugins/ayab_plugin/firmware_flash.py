@@ -2,7 +2,8 @@
 # This file is part of AYAB.
 
 
-from PyQt4 import QtGui, QtCore
+from PyQt4 import QtGui
+from PyQt4.QtGui import QFrame
 
 import serial
 import serial.tools.list_ports
@@ -14,7 +15,8 @@ import subprocess
 
 from firmware_flash_ui import Ui_FirmwareFlashFrame
 
-class FirmwareFlash(QtGui.QFrame):
+
+class FirmwareFlash(QFrame):
 
     def __init__(self):
       #TODO: add creator that does not depend from super to ease testing.
