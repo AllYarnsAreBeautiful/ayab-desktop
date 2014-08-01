@@ -24,6 +24,9 @@ import os
 import logging
 
 from PyQt4 import QtGui, QtCore
+from PyQt4.QtGui import QMainWindow
+from PyQt4.QtCore import QThread
+
 from yapsy import PluginManager
 from PIL import ImageQt
 from fysom import FysomError
@@ -39,7 +42,7 @@ import serial.tools.list_ports
 logging.basicConfig(level=logging.DEBUG)
 
 
-class GuiMain(QtGui.QMainWindow):
+class GuiMain(QMainWindow):
     """GuiMain is the main object that handles the instance of AYAB's GUI from ayab_gui.UiForm .
 
     GuiMain inherits from QMainWindow and instanciates a window with the form components form ayab_gui.UiForm.
@@ -169,7 +172,6 @@ class GuiMain(QtGui.QMainWindow):
       self.__flash_ui = FirmwareFlash()
       self.__flash_ui.show()
 
-
     def getSerialPorts(self):
       """
       Returns a list of all USB Serial Ports
@@ -177,7 +179,7 @@ class GuiMain(QtGui.QMainWindow):
       return list(serial.tools.list_ports.grep("USB"))
 
 
-class GenericThread(QtCore.QThread):
+class GenericThread(QThread):
     '''A generic thread wrapper for functions on threads.'''
 
     def __init__(self, function, *args, **kwargs):
