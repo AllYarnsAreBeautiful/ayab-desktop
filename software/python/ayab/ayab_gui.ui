@@ -47,6 +47,9 @@
       <property name="acceptDrops">
        <bool>true</bool>
       </property>
+      <property name="features">
+       <set>QDockWidget::NoDockWidgetFeatures</set>
+      </property>
       <property name="windowTitle">
        <string>Asistant</string>
       </property>
@@ -173,7 +176,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>21</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
