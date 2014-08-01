@@ -37,6 +37,9 @@ class Ui_AboutForm(object):
         self.label_2 = QtGui.QLabel(AboutForm)
         self.label_2.setObjectName(_fromUtf8("label_2"))
         self.verticalLayout.addWidget(self.label_2)
+        self.label_4 = QtGui.QLabel(AboutForm)
+        self.label_4.setObjectName(_fromUtf8("label_4"))
+        self.verticalLayout.addWidget(self.label_4)
         self.label_3 = QtGui.QLabel(AboutForm)
         self.label_3.setObjectName(_fromUtf8("label_3"))
         self.verticalLayout.addWidget(self.label_3)
@@ -50,6 +53,7 @@ class Ui_AboutForm(object):
         AboutForm.setWindowTitle(_translate("AboutForm", "About AYAB", None))
         self.label.setText(_translate("AboutForm", "AYAB", None))
         self.label_2.setText(_translate("AboutForm", "All Yarns Are Beautiful", None))
+        self.label_4.setText(_translate("AboutForm", "<html><head/><body><p><a href=\"http://ayab-knitting.com\"><span style=\" text-decoration: underline; color:#0000ff;\">http://ayab-knitting.com</span></a></p></body></html>", None))
         self.label_3.setText(_translate("AboutForm", "Beta 1 Version (2014-07-31)", None))
 
 
