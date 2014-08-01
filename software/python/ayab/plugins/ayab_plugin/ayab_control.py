@@ -55,7 +55,7 @@ class AyabPluginControl(KnittingPlugin):
       self.__image.setStartLine(conf.get("start_line"))
 
     self.validate_configuration(conf)
-
+    self.__emit_progress(0)
     return
 
   def validate_configuration(self, conf):
