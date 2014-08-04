@@ -28,12 +28,14 @@ from PyQt4 import QtGui, QtCore
 from ayab_options import Ui_DockWidget
 import serial.tools.list_ports
 
+
 class AyabPluginControl(KnittingPlugin):
 
   def onknit(self, e):
     logging.debug("called onknit on AyabPluginControl")
     #TODO: handle error behaviour.
     self.__knitImage(self.__image, self.conf)
+    self.finish()
 
   def onconfigure(self, e):
     logging.debug("called onconfigure on TestingKnittingPlugin")
@@ -53,7 +55,7 @@ class AyabPluginControl(KnittingPlugin):
       self.__image.setStartLine(conf.get("start_line"))
 
     self.validate_configuration(conf)
-
+    self.__emit_progress(0)
     return
 
   def validate_configuration(self, conf):
@@ -65,7 +67,19 @@ class AyabPluginControl(KnittingPlugin):
 
   def onfinish(self, e):
     logging.info("Finished Knitting.")
-    pass
+    self.__close_serial()
+
+  def __close_serial(self):
+    try:
+      self.__ayabCom.close_serial()
+      logging.debug("Closing Serial port successful.")
+    except:
+      logging.debug("Closing Serial port failed. Was it ever open?")
+
+  def onerror(self, e):
+    #TODO add message info from event
+    logging.error("Error while Knitting.")
+    self.__close_serial()
 
   def __wait_for_user_action(self, message="", message_type="info"):
     """Sends the display_blocking_pop_up_signal QtSignal to main GUI thread, blocking it."""
@@ -100,17 +114,28 @@ class AyabPluginControl(KnittingPlugin):
     app = QtCore.QCoreApplication.instance()
     app.removeTranslator(self.translator)
 
-  def setup_behaviour_ui(self):
-    """Connects methods to UI elements."""
-    conf_button = self.options_ui.configure_button  # Used instead of findChild(QtGui.QPushButton, "configure_button")
-    conf_button.clicked.connect(self.conf_button_function)
-    serial_port_combo_box = self.__parent_ui.findChild(QtGui.QComboBox, "serial_port_dropdown")
-    ports_list = self.getSerialPorts()
+  def populate_ports(self, combo_box=None, port_list=None):
+    if not combo_box:
+      combo_box = self.__parent_ui.findChild(QtGui.QComboBox, "serial_port_dropdown")
+    if not port_list:
+      port_list = self.getSerialPorts()
+
+    combo_box.clear()
+
     def populate(combo_box, port_list):
       for item in port_list:
         #TODO: should display the info of the device.
         combo_box.addItem(item[0])
-    populate(serial_port_combo_box, ports_list)
+    populate(combo_box, port_list)
+
+
+  def setup_behaviour_ui(self):
+    """Connects methods to UI elements."""
+    conf_button = self.options_ui.configure_button  # Used instead of findChild(QtGui.QPushButton, "configure_button")
+    conf_button.clicked.connect(self.conf_button_function)
+    self.populate_ports()
+    refresh_ports = self.options_ui.refresh_ports_button
+    refresh_ports.click.connect(self.populate_ports)
 
 
   def conf_button_function(self):
@@ -175,6 +200,9 @@ class AyabPluginControl(KnittingPlugin):
 
     self.__formerRequest = 0
     self.__lineBlock = 0
+
+  def __del__(self):
+    self.__close_serial()
 
 ###Copied from ayab_control
 #####################################
@@ -389,7 +417,7 @@ class AyabPluginControl(KnittingPlugin):
               if rcvMsg == 'cnfInfo':
                   if rcvParam == API_VERSION:
                       curState = 's_start'
-                      self.__wait_for_user_action("Please init machine")
+                      self.__wait_for_user_action("Please init machine. (Set the carriage to mode KC-I or KC-II and move the carriage over the left turn mark).")
                   else:
                       logging.error("wrong API version: " + str(rcvParam)
                                         + (" (expected: )") + str(API_VERSION))
@@ -405,6 +433,7 @@ class AyabPluginControl(KnittingPlugin):
                       curState = 's_operate'
                       self.__wait_for_user_action("Ready to Operate")
                   else:
+                      self.__wait_for_user_action("Device not ready, configure and try again.")
                       logging.error("device not ready")
                       return
 
@@ -415,7 +444,7 @@ class AyabPluginControl(KnittingPlugin):
                       curState = 's_finished'
 
           if curState == 's_finished':
-              self.__wait_for_user_action("Image finished")
+              self.__wait_for_user_action("Image transmission finished. Please knit until you hear the double beep sound.")
               return
 
           oldState = curState

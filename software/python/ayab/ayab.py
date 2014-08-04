@@ -24,12 +24,16 @@ import os
 import logging
 
 from PyQt4 import QtGui, QtCore
+from PyQt4.QtGui import QMainWindow
+from PyQt4.QtCore import QThread
+
 from yapsy import PluginManager
 from PIL import ImageQt
 from fysom import FysomError
 
 from ayab_gui import Ui_MainWindow
 from plugins.ayab_plugin.firmware_flash import FirmwareFlash
+from ayab_about import Ui_AboutForm
 
 ## Temporal serial imports.
 import serial
@@ -39,7 +43,7 @@ import serial.tools.list_ports
 logging.basicConfig(level=logging.DEBUG)
 
 
-class GuiMain(QtGui.QMainWindow):
+class GuiMain(QMainWindow):
     """GuiMain is the main object that handles the instance of AYAB's GUI from ayab_gui.UiForm .
 
     GuiMain inherits from QMainWindow and instanciates a window with the form components form ayab_gui.UiForm.
@@ -125,6 +129,7 @@ class GuiMain(QtGui.QMainWindow):
         self.connect(self, QtCore.SIGNAL("display_blocking_pop_up_signal(QString)"), self.display_blocking_pop_up, QtCore.Qt.BlockingQueuedConnection)
         self.connect(self, QtCore.SIGNAL("display_pop_up_signal(QString, QString)"), self.display_blocking_pop_up)
         self.ui.actionQuit.activated.connect(QtCore.QCoreApplication.instance().quit)
+        self.ui.actionAbout.activated.connect(self.open_about_ui)
 
     def load_image_on_scene(self, image_str):
         """Loads an image into self.ui.image_pattern_view using a temporary QGraphicsScene"""
@@ -169,6 +174,12 @@ class GuiMain(QtGui.QMainWindow):
       self.__flash_ui = FirmwareFlash()
       self.__flash_ui.show()
 
+    def open_about_ui(self):
+        self.__AboutForm = QtGui.QFrame()
+        self.__about_ui = Ui_AboutForm()
+        self.__about_ui.setupUi(self.__AboutForm)
+        self.__AboutForm.show()
+
 
     def getSerialPorts(self):
       """
@@ -177,7 +188,7 @@ class GuiMain(QtGui.QMainWindow):
       return list(serial.tools.list_ports.grep("USB"))
 
 
-class GenericThread(QtCore.QThread):
+class GenericThread(QThread):
     '''A generic thread wrapper for functions on threads.'''
 
     def __init__(self, function, *args, **kwargs):
