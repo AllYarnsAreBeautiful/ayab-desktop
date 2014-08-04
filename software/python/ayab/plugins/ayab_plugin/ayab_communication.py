@@ -51,15 +51,19 @@ class AyabCommunication(object):
           self.__ser = serial.Serial(self.__portname, 115200)
           time.sleep(1)
       except:
-        self.__logger.error("could not open serial port " +  self.__portname)
+        self.__logger.error("could not open serial port " + self.__portname)
         raise CommunicationException()
       return True
 
   def close_serial(self):
-      try:
-          self.__ser.close()
-      except:
-          pass
+    """Closes serial port."""
+    try:
+      self.__ser.close()
+      del(self.__ser)
+      self.__ser = None
+    except:
+      #TODO: add message for closing serial failure.
+      raise CommunicationException()
 
   def read_line(self):
     """Reads a line from serial communication."""

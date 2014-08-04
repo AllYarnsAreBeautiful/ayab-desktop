@@ -2,7 +2,8 @@
 # This file is part of AYAB.
 
 
-from PyQt4 import QtGui, QtCore
+from PyQt4 import QtGui
+from PyQt4.QtGui import QFrame
 
 import serial
 import serial.tools.list_ports
@@ -14,7 +15,8 @@ import subprocess
 
 from firmware_flash_ui import Ui_FirmwareFlashFrame
 
-class FirmwareFlash(QtGui.QFrame):
+
+class FirmwareFlash(QFrame):
 
     def __init__(self):
       #TODO: add creator that does not depend from super to ease testing.
@@ -152,12 +154,20 @@ class FirmwareFlash(QtGui.QFrame):
       device_dict = {
           "mega2560": "m2560",
           "uno": "m328p",
-        }
+      }
       device = device_dict.get(controller_name)
+
+      programmer_dict = {
+          "uno": "stk500v1",
+          "mega2560": "wiring",
+      }
+      programmer = programmer_dict.get(controller_name, "wiring")
+
       ## avrdude command.
       ## http://www.ladyada.net/learn/avr/avrdude.html
-      exec_command = """{0} -F -v -p {1} -C "{2}" -c wiring -P {3} -b115200 -D -Uflash:w:"{4}":i """.format(
-                       exe_route, device, conf_file, serial_port, binary_file)
+      ## http://sharats.me/the-ever-useful-and-neat-subprocess-module.html
+      exec_command = """{0} -F -v -p {1} -C "{2}" -c {3} -P {4} -b115200 -D -Uflash:w:"{5}":i """.format(
+                     exe_route, device, conf_file, programmer, serial_port, binary_file)
       logging.debug(exec_command)
       return exec_command
 

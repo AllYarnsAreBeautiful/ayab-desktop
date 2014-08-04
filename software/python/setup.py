@@ -27,7 +27,11 @@ import os
 import glob
 import sys
 
-import py2exe
+try:
+    import py2exe
+except:
+    #TODO: notify of missing functionality.
+    pass
 
 import ayab
 
@@ -36,6 +40,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 ## Useful Docs
 ## https://wiki.python.org/moin/Distutils/Tutorial
 ## https://pythonhosted.org/setuptools/setuptools.html
+
 
 def read(*filenames, **kwargs):
     encoding = kwargs.get('encoding', 'utf-8')
@@ -46,18 +51,19 @@ def read(*filenames, **kwargs):
             buf.append(f.read())
     return sep.join(buf)
 
+
 def read_requirements(file_name):
     file_ob = file(file_name)
     raw_requirements_list = file_ob.readlines()
     requirements_list = []
-    for line in requirements_list:
+    for line in raw_requirements_list:
       l = line.strip(' \t\n\r')
       if not l.startswith("#"):
         requirements_list.append(l)
     return requirements_list
 
 ## This builds the long description from Readme file, should be rst.
-long_description = read('README.md') #, 'CHANGES.txt')
+long_description = read('README.md')  # TODO: Add 'CHANGES.txt'
 
 
 class PyTest(TestCommand):
@@ -72,7 +78,7 @@ class PyTest(TestCommand):
         sys.exit(errcode)
 
 
-def find_data_files(source,target,patterns):
+def find_data_files(source, target, patterns):
     """Locates the specified data-files and returns the matches
     in a data_files compatible format.
 
@@ -87,12 +93,12 @@ def find_data_files(source,target,patterns):
         raise ValueError("Magic not allowed in src, target")
     ret = {}
     for pattern in patterns:
-        pattern = os.path.join(source,pattern)
+        pattern = os.path.join(source, pattern)
         for filename in glob.glob(pattern):
             if os.path.isfile(filename):
-                targetpath = os.path.join(target,os.path.relpath(filename,source))
+                targetpath = os.path.join(target, os.path.relpath(filename, source))
                 path = os.path.dirname(targetpath)
-                ret.setdefault(path,[]).append(filename)
+                ret.setdefault(path, []).append(filename)
     return sorted(ret.items())
 
 
@@ -110,7 +116,7 @@ setup(
         "includes": ["sip"],
         "skip_archive": True
         }},
-    data_files=find_data_files('ayab','ayab',[
+    data_files=find_data_files('ayab', 'ayab', [
         'README',
         'images/*',
         '*.ts',
@@ -136,11 +142,11 @@ setup(
     packages=['ayab',
               'ayab.plugins',
               'ayab.plugins.ayab_plugin',
-              'ayab.plugins.dummy_knitting_plugin',],
+              'ayab.plugins.dummy_knitting_plugin', ],
     include_package_data=True,
     platforms='any',
     # test_suite='ayab.tests',
-    classifiers = [
+    classifiers=[
         'Programming Language :: Python',
         'Development Status :: 4 - Beta',
         'Natural Language :: English',
