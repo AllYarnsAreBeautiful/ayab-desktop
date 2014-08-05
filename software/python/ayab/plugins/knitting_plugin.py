@@ -14,7 +14,20 @@ class KnittingPlugin(IPlugin, Fysom):
     raise NotImplementedError(self.__NOT_IMPLEMENTED_ERROR.format("onfinish. It is a callback that is called when knitting is over."))
 
   def onconfigure(self, e):
-    """Callback when state machine executes configure(parent_ui = parent, options={})"""
+    """Callback when state machine executes configure(parent_ui = parent, options={})
+
+    This state gets called to configure the plugin for knitting. It can either
+    be called when first configuring the plugin, when an error had happened and
+    reset is necessary. The parent ui is expected to hold an object with
+    properties.
+
+    Args:
+      parent_ui: An object holding the parent_ui.pil_image property.
+
+    Returns:
+      dict: A dict with configuration.
+
+    """
     raise NotImplementedError(self.__NOT_IMPLEMENTED_ERROR.format("onconfigure. It is used to configure the knitting plugin before starting."))
 
   def setup_ui(self, ui):
