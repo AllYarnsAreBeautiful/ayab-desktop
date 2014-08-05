@@ -20,7 +20,7 @@
 from PIL import Image
 
 class ayabImage(object):
-  def __init__(self, pFilename, pNumColors = 2):
+  def __init__(self, pil_image, pNumColors = 2):
     self.__numColors      = pNumColors
 
     self.__imgPosition    = 'center'
@@ -32,14 +32,10 @@ class ayabImage(object):
 
     self.__startLine  = 0
 
-    self.__image = Image.open(pFilename)
-    self.__filename = pFilename
+    self.__image = pil_image
 
     self.__image = self.__image.convert('L') # convert to 1 byte depth
     self.__updateImageData()
-
-  def filename(self):
-    return self.__filename
 
   def imageIntern(self):
     return self.__imageIntern
