@@ -76,6 +76,7 @@ class Ui_FirmwareFlashFrame(object):
         self.verticalLayout.addWidget(self.firmware_list)
         self.flash_firmware = QtGui.QPushButton(FirmwareFlashFrame)
         self.flash_firmware.setObjectName(_fromUtf8("flash_firmware"))
+        self.flash_firmware.setEnabled(False)
         self.verticalLayout.addWidget(self.flash_firmware)
         spacerItem = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
         self.verticalLayout.addItem(spacerItem)
