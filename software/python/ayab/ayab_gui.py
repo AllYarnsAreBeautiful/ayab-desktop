@@ -138,11 +138,17 @@ class Ui_MainWindow(object):
         self.actionInvert.setObjectName(_fromUtf8("actionInvert"))
         self.actionMirror = QtGui.QAction(MainWindow)
         self.actionMirror.setObjectName(_fromUtf8("actionMirror"))
+        self.actionRotate_Left = QtGui.QAction(MainWindow)
+        self.actionRotate_Left.setObjectName(_fromUtf8("actionRotate_Left"))
+        self.actionRotate_Right = QtGui.QAction(MainWindow)
+        self.actionRotate_Right.setObjectName(_fromUtf8("actionRotate_Right"))
         self.menuFile.addAction(self.actionQuit)
         self.menuHelp.addAction(self.actionAbout)
         self.menuTools.addAction(self.actionLoad_AYAB_Firmware)
         self.menuImage_Actions.addAction(self.actionInvert)
         self.menuImage_Actions.addAction(self.actionMirror)
+        self.menuImage_Actions.addAction(self.actionRotate_Left)
+        self.menuImage_Actions.addAction(self.actionRotate_Right)
         self.menubar.addAction(self.menuFile.menuAction())
         self.menubar.addAction(self.menuImage_Actions.menuAction())
         self.menubar.addAction(self.menuTools.menuAction())
@@ -171,6 +177,8 @@ class Ui_MainWindow(object):
         self.actionHelp.setText(_translate("MainWindow", "Help", None))
         self.actionInvert.setText(_translate("MainWindow", "Invert", None))
         self.actionMirror.setText(_translate("MainWindow", "Mirror", None))
+        self.actionRotate_Left.setText(_translate("MainWindow", "Rotate Left", None))
+        self.actionRotate_Right.setText(_translate("MainWindow", "Rotate Right", None))
 
 
 if __name__ == "__main__":

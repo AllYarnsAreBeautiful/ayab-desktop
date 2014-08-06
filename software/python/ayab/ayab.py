@@ -133,6 +133,8 @@ class GuiMain(QMainWindow):
         self.ui.actionAbout.activated.connect(self.open_about_ui)
         self.ui.actionMirror.activated.connect(self.mirror_image)
         self.ui.actionInvert.activated.connect(self.invert_image)
+        self.ui.actionRotate_Left.activated.connect(self.rotate_left)
+        self.ui.actionRotate_Right.activated.connect(self.rotate_right)
 
     def load_image_from_string(self, image_str):
         """Loads an image into self.ui.image_pattern_view using a temporary QGraphicsScene"""
@@ -192,10 +194,18 @@ class GuiMain(QMainWindow):
     def mirror_image(self):
         self.apply_image_transform("mirror")
 
+    def rotate_left(self):
+        self.apply_image_transform("rotate", -90.0)
+
+    def rotate_right(self):
+        self.apply_image_transform("rotate", 90.0)
+
     def apply_image_transform(self, transform_type, *args):
+        #TODO add try-catch
         transform_dict = {
             'invert': self.__invert_image,
             'mirror': self.__mirror_image,
+            'rotate': self.__rotate_image,
         }
         transform = transform_dict.get(transform_type)
         image = self.pil_image
@@ -207,12 +217,19 @@ class GuiMain(QMainWindow):
         self.pil_image = image
         self.load_pil_image_on_scene(self.pil_image)
 
-    def __invert_image(self, image, *args):
+    def __rotate_image(self, image, args):
+        if not args:
+            logging.debug("image not altered on __rotate_image.")
+            return image
+        rotated_image = image.rotate(args[0])
+        return rotated_image
+
+    def __invert_image(self, image, args):
         import PIL.ImageChops
         inverted_image = PIL.ImageChops.invert(image)
         return inverted_image
 
-    def __mirror_image(self, image, *args):
+    def __mirror_image(self, image, args):
         import PIL.ImageOps
         mirrored_image = PIL.ImageOps.mirror(image)
         return mirrored_image
