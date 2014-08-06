@@ -29,6 +29,7 @@ from PyQt4.QtCore import QThread
 
 from yapsy import PluginManager
 from PIL import ImageQt
+from PIL import Image
 from fysom import FysomError
 
 from ayab_gui import Ui_MainWindow
@@ -133,8 +134,8 @@ class GuiMain(QMainWindow):
 
     def load_image_on_scene(self, image_str):
         """Loads an image into self.ui.image_pattern_view using a temporary QGraphicsScene"""
-        self.__pil_image = ImageQt.Image.open(image_str)
-        self.__qt_image = ImageQt.ImageQt(self.__pil_image)
+        self.pil_image = Image.open(image_str)
+        self.__qt_image = ImageQt.ImageQt(self.pil_image)
         self.__qpixmap = QtGui.QPixmap.fromImage(self.__qt_image)
         self.__qscene = QtGui.QGraphicsScene()
         self.__qscene.addPixmap(self.__qpixmap)
@@ -163,7 +164,7 @@ class GuiMain(QMainWindow):
             return True
 
     def conf_button_function(self):
-        self.enabled_plugin.plugin_object.configure(parent_ui=self)
+        self.enabled_plugin.plugin_object.configure(self)
 
     def file_select_dialog(self):
         file_selected_route = QtGui.QFileDialog.getOpenFileName(self)

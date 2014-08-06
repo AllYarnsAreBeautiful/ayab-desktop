@@ -39,10 +39,17 @@ class AyabPluginControl(KnittingPlugin):
 
   def onconfigure(self, e):
     logging.debug("called onconfigure on TestingKnittingPlugin")
-    conf = self.get_configuration_from_ui(self.__parent_ui)
+    #print ', '.join("%s: %s" % item for item in vars(e).items())
+    #FIXME: substitute setting parent_ui from self.__parent_ui
+    #self.__parent_ui = e.event.parent_ui
+    parent_ui = self.__parent_ui
+    pil_image = parent_ui.pil_image
+
+    conf = self.get_configuration_from_ui(parent_ui)
     #TODO: detect if previous conf had the same image to avoid re-generating.
+
     try:
-      self.__image = ayab_image.ayabImage(self.conf["filename"], self.conf["num_colors"])
+      self.__image = ayab_image.ayabImage(pil_image, self.conf["num_colors"])
     except:
       self.__notify_user("You need to set an image.", "error")
       return
