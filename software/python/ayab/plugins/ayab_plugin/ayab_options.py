@@ -47,7 +47,7 @@ class Ui_DockWidget(object):
         self.verticalLayout.addWidget(self.label_6)
         self.color_edit = QtGui.QSpinBox(self.ayab_config)
         self.color_edit.setMinimum(2)
-        self.color_edit.setMaximum(8)
+        self.color_edit.setMaximum(6)
         self.color_edit.setObjectName(_fromUtf8("color_edit"))
         self.verticalLayout.addWidget(self.color_edit)
         self.label_5 = QtGui.QLabel(self.ayab_config)
