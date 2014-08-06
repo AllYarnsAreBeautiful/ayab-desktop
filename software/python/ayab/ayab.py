@@ -131,11 +131,16 @@ class GuiMain(QMainWindow):
         self.connect(self, QtCore.SIGNAL("display_pop_up_signal(QString, QString)"), self.display_blocking_pop_up)
         self.ui.actionQuit.activated.connect(QtCore.QCoreApplication.instance().quit)
         self.ui.actionAbout.activated.connect(self.open_about_ui)
+        self.ui.actionMirror.activated.connect(self.mirror_image)
+        self.ui.actionInvert.activated.connect(self.invert_image)
 
-    def load_image_on_scene(self, image_str):
+    def load_image_from_string(self, image_str):
         """Loads an image into self.ui.image_pattern_view using a temporary QGraphicsScene"""
         self.pil_image = Image.open(image_str)
-        self.__qt_image = ImageQt.ImageQt(self.pil_image)
+        self.load_pil_image_on_scene(self.pil_image)
+
+    def load_pil_image_on_scene(self, image_obj):
+        self.__qt_image = ImageQt.ImageQt(image_obj)
         self.__qpixmap = QtGui.QPixmap.fromImage(self.__qt_image)
         self.__qscene = QtGui.QGraphicsScene()
         self.__qscene.addPixmap(self.__qpixmap)
@@ -169,7 +174,7 @@ class GuiMain(QMainWindow):
     def file_select_dialog(self):
         file_selected_route = QtGui.QFileDialog.getOpenFileName(self)
         self.update_file_selected_text_field(file_selected_route)
-        self.load_image_on_scene(str(file_selected_route))
+        self.load_image_from_string(str(file_selected_route))
 
     def generate_firmware_ui(self):
       self.__flash_ui = FirmwareFlash()
@@ -180,6 +185,37 @@ class GuiMain(QMainWindow):
         self.__about_ui = Ui_AboutForm()
         self.__about_ui.setupUi(self.__AboutForm)
         self.__AboutForm.show()
+
+    def invert_image(self):
+        self.apply_image_transform("invert")
+
+    def mirror_image(self):
+        self.apply_image_transform("mirror")
+
+    def apply_image_transform(self, transform_type, *args):
+        transform_dict = {
+            'invert': self.__invert_image,
+            'mirror': self.__mirror_image,
+        }
+        transform = transform_dict.get(transform_type)
+        image = self.pil_image
+        if not image:
+            return
+        #executing transform
+        image = transform(image, args)
+        #update the view
+        self.pil_image = image
+        self.load_pil_image_on_scene(self.pil_image)
+
+    def __invert_image(self, image, *args):
+        import PIL.ImageChops
+        inverted_image = PIL.ImageChops.invert(image)
+        return inverted_image
+
+    def __mirror_image(self, image, *args):
+        import PIL.ImageOps
+        mirrored_image = PIL.ImageOps.mirror(image)
+        return mirrored_image
 
 
     def getSerialPorts(self):

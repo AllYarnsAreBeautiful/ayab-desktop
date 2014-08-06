@@ -197,7 +197,15 @@
     </property>
     <addaction name="actionLoad_AYAB_Firmware"/>
    </widget>
+   <widget class="QMenu" name="menuImage_Actions">
+    <property name="title">
+     <string>Image Actions</string>
+    </property>
+    <addaction name="actionInvert"/>
+    <addaction name="actionMirror"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuImage_Actions"/>
    <addaction name="menuTools"/>
    <addaction name="menuHelp"/>
   </widget>
@@ -225,6 +233,16 @@
   <action name="actionHelp">
    <property name="text">
     <string>Help</string>
+   </property>
+  </action>
+  <action name="actionInvert">
+   <property name="text">
+    <string>Invert</string>
+   </property>
+  </action>
+  <action name="actionMirror">
+   <property name="text">
+    <string>Mirror</string>
    </property>
   </action>
  </widget>
