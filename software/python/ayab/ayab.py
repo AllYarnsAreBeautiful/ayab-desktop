@@ -93,7 +93,7 @@ class GuiMain(QMainWindow):
           pass
 
         if not plugin_name:
-            plugin_name = window.ui.module_dropdown.currentText()
+            plugin_name = self.ui.module_dropdown.currentText()
         plugin_o = self.pm.getPluginByName(plugin_name)
         self.enabled_plugin = plugin_o
 
@@ -189,18 +189,27 @@ class GuiMain(QMainWindow):
         self.__AboutForm.show()
 
     def invert_image(self):
+        '''Public invert current Image function.'''
         self.apply_image_transform("invert")
 
     def mirror_image(self):
+        '''Public mirror current Image function.'''
         self.apply_image_transform("mirror")
 
     def rotate_left(self):
+        '''Public rotate left current Image function.'''
         self.apply_image_transform("rotate", -90.0)
 
     def rotate_right(self):
+        '''Public rotate right current Image function.'''
         self.apply_image_transform("rotate", 90.0)
 
     def apply_image_transform(self, transform_type, *args):
+        '''Executes an image transform specified by key and args.
+
+        Calls a function from transform_dict, forwarding args and the image,
+        and replaces the QtImage on scene.
+        '''
         #TODO add try-catch
         transform_dict = {
             'invert': self.__invert_image,
@@ -233,7 +242,6 @@ class GuiMain(QMainWindow):
         import PIL.ImageOps
         mirrored_image = PIL.ImageOps.mirror(image)
         return mirrored_image
-
 
     def getSerialPorts(self):
       """
