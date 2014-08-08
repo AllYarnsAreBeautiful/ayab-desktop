@@ -179,7 +179,7 @@ class GuiMain(QMainWindow):
         self.load_image_from_string(str(file_selected_route))
 
     def generate_firmware_ui(self):
-      self.__flash_ui = FirmwareFlash()
+      self.__flash_ui = FirmwareFlash(self)
       self.__flash_ui.show()
 
     def open_about_ui(self):

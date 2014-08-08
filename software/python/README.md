@@ -21,6 +21,15 @@ Move to the software/python/ folder and install the required dependencies.
     # openSUSE
     sudo zypper install python-pip python-qt4 python-virtualenv
 
+*For Windows*
+
+Download and install Python 2.7.x from
+    https://www.python.org/downloads/windows/
+Download and install pip from
+    https://pip.pypa.io/en/latest/installing.html
+Download and install PyQt4 from
+    http://www.riverbankcomputing.co.uk/software/pyqt/download
+
 Then create a virtual enviroment on software/python/ with
 
     virtualenv venv/

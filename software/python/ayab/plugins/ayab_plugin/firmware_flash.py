@@ -4,6 +4,7 @@
 
 from PyQt4 import QtGui
 from PyQt4.QtGui import QFrame
+from PyQt4 import QtCore
 
 import serial
 import serial.tools.list_ports
@@ -18,9 +19,11 @@ from firmware_flash_ui import Ui_FirmwareFlashFrame
 
 class FirmwareFlash(QFrame):
 
-    def __init__(self):
+    def __init__(self, parent_ui):
       #TODO: add creator that does not depend from super to ease testing.
       super(FirmwareFlash, self).__init__(None)
+
+      self.__parent_ui = parent_ui
 
       self.ui = Ui_FirmwareFlashFrame()
       self.ui.setupUi(self)
@@ -32,6 +35,23 @@ class FirmwareFlash(QFrame):
       self.ui.controller_list.itemClicked[QtGui.QListWidgetItem].connect(self.controller_item_activated)
       self.ui.firmware_list.itemClicked[QtGui.QListWidgetItem].connect(self.firmware_item_activated)
       self.ui.flash_firmware.clicked.connect(self.execute_flash_command)
+
+    def display_blocking_pop_up(self, message="", message_type="info"):
+      logging.debug("message emited: '{}'".format(message))
+      box_function = {
+          "info": QtGui.QMessageBox.information,
+          "warning": QtGui.QMessageBox.warning,
+          "error": QtGui.QMessageBox.critical,
+      }
+      message_box_function = box_function.get(message_type, QtGui.QMessageBox.warning)
+      ret = message_box_function(
+          self,
+          "AYAB",
+          message,
+          QtGui.QMessageBox.AcceptRole,
+          QtGui.QMessageBox.AcceptRole)
+      if ret == QtGui.QMessageBox.AcceptRole:
+          return True
 
     def load_json(self):
       self.json_object = self.parse_json("")
@@ -65,6 +85,7 @@ class FirmwareFlash(QFrame):
     def firmware_item_activated(self, firmware_qitem):
       '''Signal on firmware_list activated.'''
       logging.debug("selected firmware qitem" +firmware_qitem.text())
+      self.ui.flash_firmware.setEnabled(True)
 
     def load_controllers(self, hardware_qstring):
       self.clean_controller_list()
@@ -133,10 +154,13 @@ class FirmwareFlash(QFrame):
         value = subprocess.call(command, shell=True)
         if value == 0:
           logging.info("Flashing Done!")
+          self.display_blocking_pop_up("Flashing Done!")
         else:
           logging.info("Error on flashing firmware.")
+          self.display_blocking_pop_up("Error on flashing firmware.", message_type="error")
       except e:
         logging.info("Error on flashing firmware.")
+        self.display_blocking_pop_up("Error on flashing firmware.", message_type="error")
 
     def generate_command_with_options(self, base_dir, os_name, port, hardware_name, controller_name, firmware_name):
       exe_file_dict = {
@@ -153,12 +177,12 @@ class FirmwareFlash(QFrame):
       # List of Arduino controllers and their avrdude names.
       device_dict = {
           "mega2560": "m2560",
-          "uno": "m328p",
+          "uno": "atmega328p",
       }
       device = device_dict.get(controller_name)
 
       programmer_dict = {
-          "uno": "stk500v1",
+          "uno": "arduino",
           "mega2560": "wiring",
       }
       programmer = programmer_dict.get(controller_name, "wiring")
@@ -166,7 +190,7 @@ class FirmwareFlash(QFrame):
       ## avrdude command.
       ## http://www.ladyada.net/learn/avr/avrdude.html
       ## http://sharats.me/the-ever-useful-and-neat-subprocess-module.html
-      exec_command = """{0} -F -v -p {1} -C "{2}" -c {3} -P {4} -b115200 -D -Uflash:w:"{5}":i """.format(
+      exec_command = """{0} -v -p {1} -C "{2}" -c {3} -P {4} -b115200 -D -Uflash:w:"{5}":i """.format(
                      exe_route, device, conf_file, programmer, serial_port, binary_file)
       logging.debug(exec_command)
       return exec_command
