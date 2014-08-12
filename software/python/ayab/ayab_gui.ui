@@ -135,6 +135,26 @@
     <item row="0" column="0">
      <layout class="QVBoxLayout" name="image_side_panel">
       <item>
+       <widget class="QWidget" name="widget_6" native="true">
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <item>
+          <widget class="QLabel" name="label_4">
+           <property name="text">
+            <string>Image Dimensions</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="dimensions_label">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
        <widget class="QGraphicsView" name="image_pattern_view"/>
       </item>
       <item>
@@ -183,6 +203,7 @@
     <addaction name="actionMirror"/>
     <addaction name="actionRotate_Left"/>
     <addaction name="actionRotate_Right"/>
+    <addaction name="actionSmart_Resize"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuImage_Actions"/>
@@ -233,6 +254,11 @@
   <action name="actionRotate_Right">
    <property name="text">
     <string>Rotate Right</string>
+   </property>
+  </action>
+  <action name="actionSmart_Resize">
+   <property name="text">
+    <string>Smart Resize</string>
    </property>
   </action>
  </widget>
