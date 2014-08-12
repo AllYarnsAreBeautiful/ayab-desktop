@@ -135,7 +135,7 @@ class GuiMain(QMainWindow):
         self.ui.actionInvert.activated.connect(self.invert_image)
         self.ui.actionRotate_Left.activated.connect(self.rotate_left)
         self.ui.actionRotate_Right.activated.connect(self.rotate_right)
-        self.ui.actionSmart_Resize.activated.connect(self.smart_resize_image)
+        self.ui.actionSmart_Resize.activated.connect(self.smart_resize)
 
     def load_image_from_string(self, image_str):
         """Loads an image into self.ui.image_pattern_view using a temporary QGraphicsScene"""
@@ -197,14 +197,6 @@ class GuiMain(QMainWindow):
         self.__about_ui.setupUi(self.__AboutForm)
         self.__AboutForm.show()
 
-    def smart_resize_image(self):
-      #TODO implement resize process.
-      #should look like
-      #self.apply_image_transform("smart_resize", self, self)
-      dialog_result = self.__launch_get_start_smart_resize_dialog_result(self)
-
-      logging.debug(dialog_result)
-
     def invert_image(self):
         '''Public invert current Image function.'''
         self.apply_image_transform("invert")
@@ -221,6 +213,14 @@ class GuiMain(QMainWindow):
         '''Public rotate right current Image function.'''
         self.apply_image_transform("rotate", 90.0)
 
+    def smart_resize(self):
+      dialog_result = self.__launch_get_start_smart_resize_dialog_result(self)
+      #TODO: gets the ratio
+      ratio = 45.0
+      if dialog_result:
+        self.apply_image_transform("smart_resize", ratio)
+      logging.debug(dialog_result)
+
     def apply_image_transform(self, transform_type, *args):
         '''Executes an image transform specified by key and args.
 
@@ -232,7 +232,7 @@ class GuiMain(QMainWindow):
             'invert': self.__invert_image,
             'mirror': self.__mirror_image,
             'rotate': self.__rotate_image,
-            'smart_resize': self.__launch_get_start_smart_resize_dialog_result,
+            'smart_resize': self.__smart_resize_image,
         }
         transform = transform_dict.get(transform_type)
         image = self.pil_image
@@ -243,6 +243,13 @@ class GuiMain(QMainWindow):
         #update the view
         self.pil_image = image
         self.load_pil_image_on_scene(self.pil_image)
+
+    def __smart_resize_image(self, image, args):
+      '''Implement resize process. Ratio sent as horizontal and vertical tuple of integers.'''
+      #wratio, hratio = args[0] # unpacks arg 0
+      logging.debug("resizing image with args: {0}".format(args))
+      rot = image.rotate(args[0])
+      return rot
 
     def __rotate_image(self, image, args):
         if not args:
@@ -265,6 +272,19 @@ class GuiMain(QMainWindow):
         import smart_resize
         ##TODO: create smart_resize dialog
         ## Show dialog
+        Dialog = QtGui.QDialog()
+        ui = smart_resize.Ui_Dialog()
+        ui.setupUi(Dialog)
+        #Dialog.show()
+        dialog_ok = Dialog.exec_()
+        logging.debug(dialog_ok)
+        if dialog_ok:
+          pass
+          #set variables to parent
+        else:
+          pass
+        return dialog_ok
+
     def getSerialPorts(self):
       """
       Returns a list of all USB Serial Ports
