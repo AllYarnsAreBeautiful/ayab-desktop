@@ -40,16 +40,6 @@
      </property>
     </widget>
    </item>
-   <item row="5" column="4">
-    <widget class="QDialogButtonBox" name="buttonBox">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-     </property>
-    </widget>
-   </item>
    <item row="0" column="4">
     <widget class="QLabel" name="label_2">
      <property name="text">
@@ -139,6 +129,9 @@
      </property>
     </widget>
    </item>
+   <item row="0" column="2">
+    <widget class="QDoubleSpinBox" name="ratio_spinbox"/>
+   </item>
    <item row="2" column="4">
     <widget class="QLabel" name="label_5">
      <property name="text">
@@ -146,8 +139,15 @@
      </property>
     </widget>
    </item>
-   <item row="0" column="2">
-    <widget class="QDoubleSpinBox" name="ratio_spinbox"/>
+   <item row="5" column="4">
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>
