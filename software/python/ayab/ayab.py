@@ -142,6 +142,7 @@ class GuiMain(QMainWindow):
         self.load_pil_image_on_scene(self.pil_image)
 
     def load_pil_image_on_scene(self, image_obj):
+        width, height = image_obj.size
         self.__qt_image = ImageQt.ImageQt(image_obj)
         self.__qpixmap = QtGui.QPixmap.fromImage(self.__qt_image)
         self.__qscene = QtGui.QGraphicsScene()
@@ -150,8 +151,15 @@ class GuiMain(QMainWindow):
         #l = QtCore.QLineF(0,0,100,100)
         #self.__qscene.addLine(l)
 
+        self.set_dimensions_on_gui(width, height)
+
         qv = self.ui.image_pattern_view
         qv.setScene(self.__qscene)
+
+    def set_dimensions_on_gui(self, width, height):
+        text = u"{} - {}".format(width, height)
+        self.ui.dimensions_label.setText(text)
+
 
     def display_blocking_pop_up(self, message="", message_type="info"):
         logging.debug("message emited: '{}'".format(message))
