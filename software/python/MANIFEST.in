@@ -1,0 +1,2 @@
+include *.md
+recursive-include ayab *.md *.txt *.py *.yapsy-plugin *.ts *.qm
