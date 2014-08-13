@@ -272,13 +272,19 @@ class GuiMain(QMainWindow):
         import smart_resize
         ##TODO: create smart_resize dialog
         ## Show dialog
-        Dialog = QtGui.QDialog()
-        ui = smart_resize.Ui_Dialog()
-        ui.setupUi(Dialog)
-        #Dialog.show()
-        dialog_ok = Dialog.exec_()
+        dialog = QtGui.QDialog()
+        dialog.ui = smart_resize.Ui_Dialog()
+        dialog.ui.setupUi(dialog)
+        #dialog.show()
+        def get_ratio_value(dialog):
+          ratio_value = dialog.ui.ratio_spinbox.value()
+          print(ratio_value)
+          return ratio_value
+        dialog_ok = dialog.exec_()
+        val = get_ratio_value(dialog)
         logging.debug(dialog_ok)
         if dialog_ok:
+          print val
           pass
           #set variables to parent
         else:
