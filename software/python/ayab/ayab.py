@@ -272,19 +272,38 @@ class GuiMain(QMainWindow):
         import smart_resize
         ##TODO: create smart_resize dialog
         ## Show dialog
+        self.physical_width, self.physical_height = 0.0, 0.0
+        ratio = 0.0
         dialog = QtGui.QDialog()
         dialog.ui = smart_resize.Ui_Dialog()
         dialog.ui.setupUi(dialog)
         #dialog.show()
-        def get_ratio_value(dialog):
-          ratio_value = dialog.ui.ratio_spinbox.value()
-          print(ratio_value)
-          return ratio_value
+        def calculate_ratio_value(height, width):
+          try:
+            return height / width
+          except:
+            return 0.0
+        def set_ratio_value(ratio):
+          dialog.ui.ratio_label.setText(unicode(ratio))
+        #Trigger
+        def recalculate_real_size():
+          ratio = calculate_ratio_value(self.physical_height, self.physical_width)
+          set_ratio_value(ratio)
+          logging.debug("Set Ratio to {}".format(ratio))
+        def set_height_ratio(height_string):
+          self.physical_height = float(height_string)
+          recalculate_real_size()
+        def set_width_ratio(width_string):
+          self.physical_width = float(width_string)
+          recalculate_real_size()
+
+        dialog.ui.height_spinbox.valueChanged[unicode].connect(set_height_ratio)
+        dialog.ui.width_spinbox.valueChanged[unicode].connect(set_width_ratio)
+
         dialog_ok = dialog.exec_()
-        val = get_ratio_value(dialog)
         logging.debug(dialog_ok)
         if dialog_ok:
-          print val
+          print ratio
           pass
           #set variables to parent
         else:
