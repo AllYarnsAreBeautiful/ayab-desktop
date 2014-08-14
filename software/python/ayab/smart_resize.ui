@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>655</width>
+    <width>668</width>
     <height>331</height>
    </rect>
   </property>
@@ -15,32 +15,13 @@
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="4" column="4">
-    <spacer name="verticalSpacer">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>40</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item row="2" column="2">
-    <widget class="QSpinBox" name="height_spinbox"/>
-   </item>
-   <item row="1" column="3" rowspan="4">
-    <widget class="QListWidget" name="ratios_list"/>
-   </item>
-   <item row="1" column="4">
-    <widget class="QLabel" name="label_4">
+    <widget class="QLabel" name="label_3">
      <property name="text">
-      <string>Calculated Vertical Stitches</string>
+      <string>Calculated Height</string>
      </property>
     </widget>
    </item>
-   <item row="0" column="4">
+   <item row="1" column="4">
     <widget class="QLabel" name="label_2">
      <property name="text">
       <string>Calculated Horizontal Stitches</string>
@@ -54,28 +35,14 @@
      </property>
     </widget>
    </item>
-   <item row="2" column="0">
+   <item row="3" column="0">
     <widget class="QLabel" name="label_7">
      <property name="text">
       <string>Physical Height</string>
      </property>
     </widget>
    </item>
-   <item row="0" column="5">
-    <widget class="QLabel" name="horizontal_stitches_label">
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
-   </item>
    <item row="2" column="5">
-    <widget class="QLabel" name="calculated_width_label">
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="5">
     <widget class="QLabel" name="vertical_stitches_label">
      <property name="text">
       <string/>
@@ -89,17 +56,20 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="2">
-    <widget class="QSpinBox" name="width_spinbox"/>
-   </item>
-   <item row="3" column="4">
-    <widget class="QLabel" name="label_3">
-     <property name="text">
-      <string>Calculated Height</string>
+   <item row="5" column="4">
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
      </property>
-    </widget>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
    </item>
-   <item row="4" column="5">
+   <item row="5" column="5">
     <spacer name="horizontalSpacer">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -115,37 +85,78 @@
      </property>
     </spacer>
    </item>
-   <item row="3" column="5">
+   <item row="4" column="5">
     <widget class="QLabel" name="calculated_height_label">
      <property name="text">
       <string/>
      </property>
     </widget>
    </item>
-   <item row="1" column="0">
+   <item row="2" column="0">
     <widget class="QLabel" name="label_9">
      <property name="text">
       <string>Physical Width</string>
      </property>
     </widget>
    </item>
-   <item row="0" column="2">
-    <widget class="QDoubleSpinBox" name="ratio_spinbox"/>
-   </item>
-   <item row="2" column="4">
-    <widget class="QLabel" name="label_5">
-     <property name="text">
-      <string>Calculated Width</string>
-     </property>
-    </widget>
-   </item>
-   <item row="5" column="4">
+   <item row="6" column="4">
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
      <property name="standardButtons">
       <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="2">
+    <widget class="QLabel" name="ratio_label">
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="3" rowspan="5">
+    <widget class="QListWidget" name="ratios_list"/>
+   </item>
+   <item row="2" column="2">
+    <widget class="QDoubleSpinBox" name="width_spinbox"/>
+   </item>
+   <item row="1" column="0" colspan="3">
+    <widget class="QLabel" name="label_8">
+     <property name="text">
+      <string>Input Width and Height in cm</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="5">
+    <widget class="QLabel" name="calculated_width_label">
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="4">
+    <widget class="QLabel" name="label_5">
+     <property name="text">
+      <string>Calculated Width</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="4">
+    <widget class="QLabel" name="label_4">
+     <property name="text">
+      <string>Calculated Vertical Stitches</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="2">
+    <widget class="QDoubleSpinBox" name="height_spinbox"/>
+   </item>
+   <item row="1" column="5">
+    <widget class="QLabel" name="horizontal_stitches_label">
+     <property name="text">
+      <string/>
      </property>
     </widget>
    </item>
