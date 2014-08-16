@@ -216,10 +216,11 @@ class GuiMain(QMainWindow):
     def smart_resize(self):
       dialog_result = self.__launch_get_start_smart_resize_dialog_result(self)
       #TODO: gets the ratio
-      ratio = 45.0
+
       if dialog_result:
-        self.apply_image_transform("smart_resize", ratio)
-      logging.debug(dialog_result)
+        #ratio = 45.0
+        self.apply_image_transform("smart_resize", dialog_result)
+      #logging.debug(dialog_result)
 
     def apply_image_transform(self, transform_type, *args):
         '''Executes an image transform specified by key and args.
@@ -246,10 +247,12 @@ class GuiMain(QMainWindow):
 
     def __smart_resize_image(self, image, args):
       '''Implement resize process. Ratio sent as horizontal and vertical tuple of integers.'''
-      #wratio, hratio = args[0] # unpacks arg 0
+      import knit_aware_resize
+      wratio, hratio = args[0] # unpacks arg 0
       logging.debug("resizing image with args: {0}".format(args))
-      rot = image.rotate(args[0])
-      return rot
+      resized_image = knit_aware_resize.resize_image(image, wratio, hratio)
+      #rot = image.rotate(args[0])
+      return resized_image
 
     def __rotate_image(self, image, args):
         if not args:
@@ -270,22 +273,32 @@ class GuiMain(QMainWindow):
 
     def __launch_get_start_smart_resize_dialog_result(self, parent):
         import smart_resize
+        import knit_aware_resize
         ##TODO: create smart_resize dialog
         ## Show dialog
         self.physical_width, self.physical_height = 0.0, 0.0
+        self.ratio_tuple = 1.0, 1.0
         ratio = 0.0
         dialog = QtGui.QDialog()
         dialog.ui = smart_resize.Ui_Dialog()
         dialog.ui.setupUi(dialog)
-        
+
         def calculate_ratio_value(height, width):
           try:
             return height / width
           except:
             return 0.0
 
+        def set_ratio_list(ratio):
+          dialog.ui.ratios_list.clear()
+          self.ratio_list = knit_aware_resize.get_rational_ratios(ratio)
+          for ratio in self.ratio_list:
+            ratio_string = "{} - {}".format(ratio[0], ratio[1])
+            dialog.ui.ratios_list.addItem(ratio_string)
+
         def set_ratio_value(ratio):
           dialog.ui.ratio_label.setText(unicode(ratio))
+          set_ratio_list(ratio)
 
         def recalculate_real_size():
           ratio = calculate_ratio_value(self.physical_height, self.physical_width)
@@ -300,8 +313,17 @@ class GuiMain(QMainWindow):
           self.physical_width = float(width_string)
           recalculate_real_size()
 
+        def get_ratios_list_item_value(selected_value):
+          try:
+            self.ratio_tuple = self.ratio_list[selected_value]
+            logging.debug(self.ratio_tuple)
+          except IndexError:
+            pass
+
+
         dialog.ui.height_spinbox.valueChanged[unicode].connect(set_height_ratio)
         dialog.ui.width_spinbox.valueChanged[unicode].connect(set_width_ratio)
+        dialog.ui.ratios_list.currentRowChanged[int].connect(get_ratios_list_item_value)
 
         dialog_ok = dialog.exec_()
         #dialog.show()
@@ -309,11 +331,11 @@ class GuiMain(QMainWindow):
         logging.debug(dialog_ok)
         if dialog_ok:
           print ratio
-          pass
+          return self.ratio_tuple
           #set variables to parent
         else:
-          pass
-        return dialog_ok
+          return False
+
 
     def getSerialPorts(self):
       """

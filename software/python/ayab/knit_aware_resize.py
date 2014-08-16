@@ -6,7 +6,7 @@ from math import sqrt, log, floor
 def resize_image(image, width_proportion, height_proportion):
     width, height = image.size
     resized_image = image.transform(
-        (width_proportion * width, height_proportion * height),
+        (int(width_proportion * width), int(height_proportion * height)),
         Image.AFFINE,
         (1./width_proportion, 0, 0, 0, 1./height_proportion, 0),
         Image.NEAREST)
