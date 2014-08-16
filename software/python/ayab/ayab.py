@@ -135,6 +135,7 @@ class GuiMain(QMainWindow):
         self.ui.actionInvert.activated.connect(self.invert_image)
         self.ui.actionRotate_Left.activated.connect(self.rotate_left)
         self.ui.actionRotate_Right.activated.connect(self.rotate_right)
+	self.ui.actionVertical_Flip.activated.connect(self.flip_image)
         self.ui.actionSmart_Resize.activated.connect(self.smart_resize)
 
     def load_image_from_string(self, image_str):

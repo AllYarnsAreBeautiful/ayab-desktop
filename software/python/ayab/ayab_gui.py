@@ -167,13 +167,19 @@ class Ui_MainWindow(object):
         self.actionRotate_Right.setObjectName(_fromUtf8("actionRotate_Right"))
         self.actionSmart_Resize = QtGui.QAction(MainWindow)
         self.actionSmart_Resize.setObjectName(_fromUtf8("actionSmart_Resize"))
+        self.actionVertical_Flip = QtGui.QAction(MainWindow)
+        self.actionVertical_Flip.setObjectName(_fromUtf8("actionVertical_Flip"))
         self.menuFile.addAction(self.actionQuit)
         self.menuHelp.addAction(self.actionAbout)
         self.menuTools.addAction(self.actionLoad_AYAB_Firmware)
         self.menuImage_Actions.addAction(self.actionInvert)
+        self.menuImage_Actions.addSeparator()
+        self.menuImage_Actions.addAction(self.actionVertical_Flip)
         self.menuImage_Actions.addAction(self.actionMirror)
+        self.menuImage_Actions.addSeparator()
         self.menuImage_Actions.addAction(self.actionRotate_Left)
         self.menuImage_Actions.addAction(self.actionRotate_Right)
+        self.menuImage_Actions.addSeparator()
         self.menuImage_Actions.addAction(self.actionSmart_Resize)
         self.menubar.addAction(self.menuFile.menuAction())
         self.menubar.addAction(self.menuImage_Actions.menuAction())
@@ -205,6 +211,7 @@ class Ui_MainWindow(object):
         self.actionRotate_Left.setText(_translate("MainWindow", "Rotate Left", None))
         self.actionRotate_Right.setText(_translate("MainWindow", "Rotate Right", None))
         self.actionSmart_Resize.setText(_translate("MainWindow", "Smart Resize", None))
+        self.actionVertical_Flip.setText(_translate("MainWindow", "Vertical Flip", None))
 
 
 if __name__ == "__main__":

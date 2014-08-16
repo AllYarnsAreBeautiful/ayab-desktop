@@ -200,9 +200,13 @@
      <string>Image Actions</string>
     </property>
     <addaction name="actionInvert"/>
+    <addaction name="separator"/>
+    <addaction name="actionVertical_Flip"/>
     <addaction name="actionMirror"/>
+    <addaction name="separator"/>
     <addaction name="actionRotate_Left"/>
     <addaction name="actionRotate_Right"/>
+    <addaction name="separator"/>
     <addaction name="actionSmart_Resize"/>
    </widget>
    <addaction name="menuFile"/>
@@ -259,6 +263,11 @@
   <action name="actionSmart_Resize">
    <property name="text">
     <string>Smart Resize</string>
+   </property>
+  </action>
+  <action name="actionVertical_Flip">
+   <property name="text">
+    <string>Vertical Flip</string>
    </property>
   </action>
  </widget>
