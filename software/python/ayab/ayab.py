@@ -205,6 +205,10 @@ class GuiMain(QMainWindow):
         '''Public mirror current Image function.'''
         self.apply_image_transform("mirror")
 
+    def flip_image(self):
+        '''Public mirror current Image function.'''
+        self.apply_image_transform("flip")
+
     def rotate_left(self):
         '''Public rotate left current Image function.'''
         self.apply_image_transform("rotate", -90.0)
@@ -232,6 +236,7 @@ class GuiMain(QMainWindow):
         transform_dict = {
             'invert': self.__invert_image,
             'mirror': self.__mirror_image,
+            'flip': self.__flip_image,
             'rotate': self.__rotate_image,
             'smart_resize': self.__smart_resize_image,
         }
@@ -271,6 +276,10 @@ class GuiMain(QMainWindow):
         mirrored_image = PIL.ImageOps.mirror(image)
         return mirrored_image
 
+    def __flip_image(self, image, args):
+        import PIL.ImageOps
+        flipped_image = PIL.ImageOps.flip(image)
+        return flipped_image
     def __launch_get_start_smart_resize_dialog_result(self, parent):
         import smart_resize
         import knit_aware_resize
