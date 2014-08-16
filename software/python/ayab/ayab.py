@@ -125,10 +125,10 @@ class GuiMain(QMainWindow):
         self.ui.actionLoad_AYAB_Firmware.activated.connect(self.generate_firmware_ui)
         # Connecting Signals.
         self.connect(self, QtCore.SIGNAL("updateProgress(int)"), self.updateProgress)
+        self.connect(self, QtCore.SIGNAL("display_pop_up_signal(QString, QString)"), self.display_blocking_pop_up)
         # This blocks the other thread until signal is done
         self.connect(self, QtCore.SIGNAL("display_blocking_pop_up_signal(QString, QString)"), self.display_blocking_pop_up, QtCore.Qt.BlockingQueuedConnection)
         self.connect(self, QtCore.SIGNAL("display_blocking_pop_up_signal(QString)"), self.display_blocking_pop_up, QtCore.Qt.BlockingQueuedConnection)
-        self.connect(self, QtCore.SIGNAL("display_pop_up_signal(QString, QString)"), self.display_blocking_pop_up)
         self.ui.actionQuit.activated.connect(QtCore.QCoreApplication.instance().quit)
         self.ui.actionAbout.activated.connect(self.open_about_ui)
         self.ui.actionMirror.activated.connect(self.mirror_image)
@@ -143,6 +143,7 @@ class GuiMain(QMainWindow):
         self.load_pil_image_on_scene(self.pil_image)
 
     def load_pil_image_on_scene(self, image_obj):
+        '''Loads the PIL image on a QtScene and sets it as the current scene on the Image View.'''
         width, height = image_obj.size
         self.__qt_image = ImageQt.ImageQt(image_obj)
         self.__qpixmap = QtGui.QPixmap.fromImage(self.__qt_image)
@@ -160,7 +161,6 @@ class GuiMain(QMainWindow):
     def set_dimensions_on_gui(self, width, height):
         text = u"{} - {}".format(width, height)
         self.ui.dimensions_label.setText(text)
-
 
     def display_blocking_pop_up(self, message="", message_type="info"):
         logging.debug("message emited: '{}'".format(message))
@@ -252,17 +252,16 @@ class GuiMain(QMainWindow):
     def __smart_resize_image(self, image, args):
       '''Implement the smart resize processing. Ratio sent as a tuple of horizontal and vertical values.'''
       import knit_aware_resize
-      wratio, hratio = args[0] # unpacks arg 0
+      wratio, hratio = args[0]  # Unpacks the first argument.
       logging.debug("resizing image with args: {0}".format(args))
       resized_image = knit_aware_resize.resize_image(image, wratio, hratio)
-      #rot = image.rotate(args[0])
       return resized_image
 
     def __rotate_image(self, image, args):
         if not args:
             logging.debug("image not altered on __rotate_image.")
             return image
-        rotated_image = image.rotate(args[0], expand = True)
+        rotated_image = image.rotate(args[0], expand=True)
         return rotated_image
 
     def __invert_image(self, image, args):
@@ -363,7 +362,6 @@ class GuiMain(QMainWindow):
         else:
           return False
 
-
     def getSerialPorts(self):
       """
       Returns a list of all USB Serial Ports
@@ -391,8 +389,9 @@ class GenericThread(QThread):
             logging.error(fe)
             parent = self.kwargs["parent_window"]
             parent.emit(QtCore.SIGNAL('display_blocking_pop_up_signal(QString, QString)'), QtGui.QApplication.translate("Form",
-                                                                      "Error on plugin action, be sure to configure before starting Knitting.", None), "error")
+                        "Error on plugin action, be sure to configure before starting Knitting.", None), "error")
         return
+
 
 def get_route():
   #if getattr(sys, 'frozen', False):
