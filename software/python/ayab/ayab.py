@@ -218,13 +218,10 @@ class GuiMain(QMainWindow):
         self.apply_image_transform("rotate", 90.0)
 
     def smart_resize(self):
+      '''Executes the smart resize process including dialog .'''
       dialog_result = self.__launch_get_start_smart_resize_dialog_result(self)
-      #TODO: gets the ratio
-
       if dialog_result:
-        #ratio = 45.0
         self.apply_image_transform("smart_resize", dialog_result)
-      #logging.debug(dialog_result)
 
     def apply_image_transform(self, transform_type, *args):
         '''Executes an image transform specified by key and args.
@@ -232,7 +229,6 @@ class GuiMain(QMainWindow):
         Calls a function from transform_dict, forwarding args and the image,
         and replaces the QtImage on scene.
         '''
-        #TODO add try-catch
         transform_dict = {
             'invert': self.__invert_image,
             'mirror': self.__mirror_image,
@@ -244,14 +240,17 @@ class GuiMain(QMainWindow):
         image = self.pil_image
         if not image:
             return
-        #executing transform
-        image = transform(image, args)
-        #update the view
+        # Executes the transform function
+        try:
+          image = transform(image, args)
+        except:
+          logging.error("Error on executing transform")
+        # Update the view
         self.pil_image = image
         self.load_pil_image_on_scene(self.pil_image)
 
     def __smart_resize_image(self, image, args):
-      '''Implement resize process. Ratio sent as horizontal and vertical tuple of integers.'''
+      '''Implement the smart resize processing. Ratio sent as a tuple of horizontal and vertical values.'''
       import knit_aware_resize
       wratio, hratio = args[0] # unpacks arg 0
       logging.debug("resizing image with args: {0}".format(args))
@@ -280,7 +279,9 @@ class GuiMain(QMainWindow):
         import PIL.ImageOps
         flipped_image = PIL.ImageOps.flip(image)
         return flipped_image
+
     def __launch_get_start_smart_resize_dialog_result(self, parent):
+        '''Processes dialog and returns a ratio tuple or False.'''
         import smart_resize
         import knit_aware_resize
         ##TODO: create smart_resize dialog
@@ -293,12 +294,14 @@ class GuiMain(QMainWindow):
         dialog.ui.setupUi(dialog)
 
         def calculate_ratio_value(height, width):
+          '''Calculates the ratio value with given height and width.'''
           try:
             return height / width
           except:
             return 0.0
 
         def set_ratio_list(ratio):
+          '''Sets the dialog ratio list to a list of aproximations of rational ratios that match it.'''
           dialog.ui.ratios_list.clear()
           self.ratio_list = knit_aware_resize.get_rational_ratios(ratio)
           for ratio in self.ratio_list:
@@ -323,6 +326,7 @@ class GuiMain(QMainWindow):
           recalculate_ratio()
 
         def get_ratios_list_item_value(selected_value):
+          '''Gets the value of the tuple corresponding to the selected ratio list.'''
           try:
             self.ratio_tuple = self.ratio_list[selected_value]
             recalculate_real_size(self.ratio_tuple)
@@ -331,6 +335,7 @@ class GuiMain(QMainWindow):
             pass
 
         def recalculate_real_size(ratio_tuple):
+          '''Updates the calculations on the Resize dialog.'''
           try:
             h, w = self.pil_image.size
             h_ratio, w_ratio = ratio_tuple
@@ -342,7 +347,6 @@ class GuiMain(QMainWindow):
             dialog.ui.calculated_height_label.setText(real_height_text)
           except:
             pass
-
 
         dialog.ui.height_spinbox.valueChanged[unicode].connect(set_height_ratio)
         dialog.ui.width_spinbox.valueChanged[unicode].connect(set_width_ratio)
