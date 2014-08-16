@@ -300,18 +300,18 @@ class GuiMain(QMainWindow):
           dialog.ui.ratio_label.setText(unicode(ratio))
           set_ratio_list(ratio)
 
-        def recalculate_real_size():
+        def recalculate_ratio():
           ratio = calculate_ratio_value(self.physical_height, self.physical_width)
           set_ratio_value(ratio)
           logging.debug("Set Ratio to {}".format(ratio))
 
         def set_height_ratio(height_string):
           self.physical_height = float(height_string)
-          recalculate_real_size()
+          recalculate_ratio()
 
         def set_width_ratio(width_string):
           self.physical_width = float(width_string)
-          recalculate_real_size()
+          recalculate_ratio()
 
         def get_ratios_list_item_value(selected_value):
           try:
