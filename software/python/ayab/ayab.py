@@ -123,6 +123,7 @@ class GuiMain(QMainWindow):
         self.ui.module_dropdown.activated[str].connect(self.set_enabled_plugin)
         self.ui.knit_button.clicked.connect(self.start_knitting_process)
         self.ui.actionLoad_AYAB_Firmware.activated.connect(self.generate_firmware_ui)
+        self.ui.image_pattern_view.setDragMode(QtGui.QGraphicsView.ScrollHandDrag)
         # Connecting Signals.
         self.connect(self, QtCore.SIGNAL("updateProgress(int)"), self.updateProgress)
         self.connect(self, QtCore.SIGNAL("display_pop_up_signal(QString, QString)"), self.display_blocking_pop_up)
@@ -135,7 +136,7 @@ class GuiMain(QMainWindow):
         self.ui.actionInvert.activated.connect(self.invert_image)
         self.ui.actionRotate_Left.activated.connect(self.rotate_left)
         self.ui.actionRotate_Right.activated.connect(self.rotate_right)
-	self.ui.actionVertical_Flip.activated.connect(self.flip_image)
+        self.ui.actionVertical_Flip.activated.connect(self.flip_image)
         self.ui.actionSmart_Resize.activated.connect(self.smart_resize)
 
     def load_image_from_string(self, image_str):
@@ -156,7 +157,10 @@ class GuiMain(QMainWindow):
 
         self.set_dimensions_on_gui(width, height)
 
+
+
         qv = self.ui.image_pattern_view
+        qv.scale(2.0, 2.0)
         qv.setScene(self.__qscene)
 
     def set_dimensions_on_gui(self, width, height):
