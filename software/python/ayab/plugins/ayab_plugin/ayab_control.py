@@ -33,7 +33,6 @@ class AyabPluginControl(KnittingPlugin):
 
   def onknit(self, e):
     logging.debug("called onknit on AyabPluginControl")
-    #TODO: handle error behaviour.
     self.__knitImage(self.__image, self.conf)
     self.finish()
 
@@ -110,7 +109,6 @@ class AyabPluginControl(KnittingPlugin):
     self.setup_behaviour_ui()
 
   def set_translator(self):
-    #FIXME: using unsafe dirname(__file__)
     dirname = os.path.dirname(__file__)
     self.translator = QtCore.QTranslator()
     self.translator.load(QtCore.QLocale.system(), "ayab_options", ".", dirname, ".qm")
@@ -182,13 +180,11 @@ class AyabPluginControl(KnittingPlugin):
 
     serial_port_text = ui.findChild(QtGui.QComboBox, "serial_port_dropdown").currentText()
     self.conf["portname"] = str(serial_port_text)
-    ## self.conf["portname"] = "/dev/ttyACM0"
     # getting file location from textbox
-    # FIXME: this should be sent at onconfigure
     filename_text = ui.findChild(QtGui.QLineEdit, "filename_lineedit").text()
     self.conf["filename"] = str(filename_text)
     logging.debug(self.conf)
-    #TODO: add more config options
+    ## Add more config options.
     return self.conf
 
   def getSerialPorts(self):
@@ -416,6 +412,7 @@ class AyabPluginControl(KnittingPlugin):
 
       while True:
           # TODO catch keyboard interrupts to abort knitting
+          # TODO: port to state machine or similar.
           rcvMsg, rcvParam = self.__checkSerial()
           if curState == 's_init':
               if oldState != curState:
@@ -426,6 +423,7 @@ class AyabPluginControl(KnittingPlugin):
                       curState = 's_start'
                       self.__wait_for_user_action("Please init machine. (Set the carriage to mode KC-I or KC-II and move the carriage over the left turn mark).")
                   else:
+                      self.__notify_user("Wrong API.")
                       logging.error("wrong API version: " + str(rcvParam)
                                         + (" (expected: )") + str(API_VERSION))
                       return
