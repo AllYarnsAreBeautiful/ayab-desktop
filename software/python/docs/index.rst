@@ -17,6 +17,8 @@ Contents:
 
    build_process
 
+   building_plugins
+
 
 Indices and tables
 ==================

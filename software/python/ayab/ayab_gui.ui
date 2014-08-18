@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>581</height>
+    <width>1138</width>
+    <height>856</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,46 +15,36 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="2" column="1" rowspan="2">
-     <widget class="QDockWidget" name="knitting_options_dock">
-      <property name="windowTitle">
-       <string>Knitting Options</string>
-      </property>
-      <widget class="QWidget" name="dockWidgetContents_2"/>
-     </widget>
-    </item>
-    <item row="4" column="0">
-     <widget class="QProgressBar" name="progressBar">
-      <property name="value">
-       <number>0</number>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="0">
-     <widget class="QDockWidget" name="assistant_dock">
+    <item row="0" column="1" rowspan="3">
+     <widget class="QScrollArea" name="assistant_dock">
       <property name="sizePolicy">
-       <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
         <horstretch>0</horstretch>
         <verstretch>0</verstretch>
        </sizepolicy>
       </property>
-      <property name="minimumSize">
-       <size>
-        <width>500</width>
-        <height>254</height>
-       </size>
-      </property>
-      <property name="acceptDrops">
-       <bool>true</bool>
-      </property>
-      <property name="features">
-       <set>QDockWidget::NoDockWidgetFeatures</set>
-      </property>
       <property name="windowTitle">
        <string>Asistant</string>
       </property>
+      <property name="frameShadow">
+       <enum>QFrame::Plain</enum>
+      </property>
+      <property name="horizontalScrollBarPolicy">
+       <enum>Qt::ScrollBarAlwaysOff</enum>
+      </property>
+      <property name="widgetResizable">
+       <bool>false</bool>
+      </property>
       <widget class="QWidget" name="dockWidgetContents">
-       <layout class="QHBoxLayout" name="horizontalLayout">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>555</width>
+         <height>791</height>
+        </rect>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_5">
         <item>
          <widget class="QWidget" name="widget" native="true">
           <layout class="QVBoxLayout" name="verticalLayout">
@@ -68,32 +58,12 @@
            <item>
             <widget class="QComboBox" name="module_dropdown"/>
            </item>
-           <item>
-            <spacer name="verticalSpacer_3">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>20</width>
-               <height>5</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
           </layout>
          </widget>
         </item>
         <item>
          <widget class="QWidget" name="widget_4" native="true">
           <layout class="QVBoxLayout" name="verticalLayout_4">
-           <item>
-            <widget class="QLabel" name="label_2">
-             <property name="text">
-              <string>Load File</string>
-             </property>
-            </widget>
-           </item>
            <item>
             <widget class="QPushButton" name="load_file_button">
              <property name="text">
@@ -108,51 +78,52 @@
              </property>
             </widget>
            </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QWidget" name="widget_2" native="true">
+          <layout class="QVBoxLayout" name="verticalLayout_2">
            <item>
-            <spacer name="verticalSpacer_2">
+            <widget class="Line" name="line">
              <property name="orientation">
-              <enum>Qt::Vertical</enum>
+              <enum>Qt::Horizontal</enum>
              </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>20</width>
-               <height>5</height>
-              </size>
+            </widget>
+           </item>
+           <item>
+            <widget class="QDockWidget" name="knitting_options_dock">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
              </property>
-            </spacer>
+             <property name="windowTitle">
+              <string>Knitting Options</string>
+             </property>
+             <widget class="QWidget" name="dockWidgetContents_2"/>
+            </widget>
            </item>
           </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="Line" name="line_2">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
          </widget>
         </item>
         <item>
          <widget class="QWidget" name="widget_3" native="true">
           <layout class="QVBoxLayout" name="verticalLayout_3">
            <item>
-            <widget class="QLabel" name="label_4">
-             <property name="text">
-              <string>Control</string>
-             </property>
-            </widget>
-           </item>
-           <item>
             <widget class="QPushButton" name="knit_button">
              <property name="text">
               <string>Knit!</string>
              </property>
             </widget>
-           </item>
-           <item>
-            <spacer name="verticalSpacer">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>20</width>
-               <height>5</height>
-              </size>
-             </property>
-            </spacer>
            </item>
           </layout>
          </widget>
@@ -161,10 +132,37 @@
       </widget>
      </widget>
     </item>
-    <item row="3" column="0">
-     <layout class="QHBoxLayout" name="horizontalLayout_2">
+    <item row="0" column="0">
+     <layout class="QVBoxLayout" name="image_side_panel">
+      <item>
+       <widget class="QWidget" name="widget_6" native="true">
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <item>
+          <widget class="QLabel" name="label_4">
+           <property name="text">
+            <string>Image Dimensions</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="dimensions_label">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
       <item>
        <widget class="QGraphicsView" name="image_pattern_view"/>
+      </item>
+      <item>
+       <widget class="QProgressBar" name="progressBar">
+        <property name="value">
+         <number>0</number>
+        </property>
+       </widget>
       </item>
      </layout>
     </item>
@@ -175,7 +173,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
+     <width>1138</width>
      <height>23</height>
     </rect>
    </property>
@@ -197,7 +195,22 @@
     </property>
     <addaction name="actionLoad_AYAB_Firmware"/>
    </widget>
+   <widget class="QMenu" name="menuImage_Actions">
+    <property name="title">
+     <string>Image Actions</string>
+    </property>
+    <addaction name="actionInvert"/>
+    <addaction name="separator"/>
+    <addaction name="actionVertical_Flip"/>
+    <addaction name="actionMirror"/>
+    <addaction name="separator"/>
+    <addaction name="actionRotate_Left"/>
+    <addaction name="actionRotate_Right"/>
+    <addaction name="separator"/>
+    <addaction name="actionSmart_Resize"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuImage_Actions"/>
    <addaction name="menuTools"/>
    <addaction name="menuHelp"/>
   </widget>
@@ -225,6 +238,36 @@
   <action name="actionHelp">
    <property name="text">
     <string>Help</string>
+   </property>
+  </action>
+  <action name="actionInvert">
+   <property name="text">
+    <string>Invert</string>
+   </property>
+  </action>
+  <action name="actionMirror">
+   <property name="text">
+    <string>Mirror</string>
+   </property>
+  </action>
+  <action name="actionRotate_Left">
+   <property name="text">
+    <string>Rotate Left</string>
+   </property>
+  </action>
+  <action name="actionRotate_Right">
+   <property name="text">
+    <string>Rotate Right</string>
+   </property>
+  </action>
+  <action name="actionSmart_Resize">
+   <property name="text">
+    <string>Smart Resize</string>
+   </property>
+  </action>
+  <action name="actionVertical_Flip">
+   <property name="text">
+    <string>Vertical Flip</string>
    </property>
   </action>
  </widget>

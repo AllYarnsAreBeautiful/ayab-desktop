@@ -25,9 +25,14 @@ except AttributeError:
 class Ui_DockWidget(object):
     def setupUi(self, DockWidget):
         DockWidget.setObjectName(_fromUtf8("DockWidget"))
-        DockWidget.resize(237, 551)
+        DockWidget.resize(237, 488)
         DockWidget.setFeatures(QtGui.QDockWidget.NoDockWidgetFeatures)
         self.ayab_config = QtGui.QWidget()
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Maximum)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.ayab_config.sizePolicy().hasHeightForWidth())
+        self.ayab_config.setSizePolicy(sizePolicy)
         self.ayab_config.setObjectName(_fromUtf8("ayab_config"))
         self.verticalLayout = QtGui.QVBoxLayout(self.ayab_config)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
@@ -99,8 +104,6 @@ class Ui_DockWidget(object):
         self.configure_button = QtGui.QPushButton(self.ayab_config)
         self.configure_button.setObjectName(_fromUtf8("configure_button"))
         self.verticalLayout.addWidget(self.configure_button)
-        spacerItem = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
-        self.verticalLayout.addItem(spacerItem)
         DockWidget.setWidget(self.ayab_config)
 
         self.retranslateUi(DockWidget)

@@ -93,7 +93,7 @@ class GuiMain(QMainWindow):
           pass
 
         if not plugin_name:
-            plugin_name = window.ui.module_dropdown.currentText()
+            plugin_name = self.ui.module_dropdown.currentText()
         plugin_o = self.pm.getPluginByName(plugin_name)
         self.enabled_plugin = plugin_o
 
@@ -125,17 +125,28 @@ class GuiMain(QMainWindow):
         self.ui.actionLoad_AYAB_Firmware.activated.connect(self.generate_firmware_ui)
         # Connecting Signals.
         self.connect(self, QtCore.SIGNAL("updateProgress(int)"), self.updateProgress)
+        self.connect(self, QtCore.SIGNAL("display_pop_up_signal(QString, QString)"), self.display_blocking_pop_up)
         # This blocks the other thread until signal is done
         self.connect(self, QtCore.SIGNAL("display_blocking_pop_up_signal(QString, QString)"), self.display_blocking_pop_up, QtCore.Qt.BlockingQueuedConnection)
         self.connect(self, QtCore.SIGNAL("display_blocking_pop_up_signal(QString)"), self.display_blocking_pop_up, QtCore.Qt.BlockingQueuedConnection)
-        self.connect(self, QtCore.SIGNAL("display_pop_up_signal(QString, QString)"), self.display_blocking_pop_up)
         self.ui.actionQuit.activated.connect(QtCore.QCoreApplication.instance().quit)
         self.ui.actionAbout.activated.connect(self.open_about_ui)
+        self.ui.actionMirror.activated.connect(self.mirror_image)
+        self.ui.actionInvert.activated.connect(self.invert_image)
+        self.ui.actionRotate_Left.activated.connect(self.rotate_left)
+        self.ui.actionRotate_Right.activated.connect(self.rotate_right)
+	self.ui.actionVertical_Flip.activated.connect(self.flip_image)
+        self.ui.actionSmart_Resize.activated.connect(self.smart_resize)
 
-    def load_image_on_scene(self, image_str):
+    def load_image_from_string(self, image_str):
         """Loads an image into self.ui.image_pattern_view using a temporary QGraphicsScene"""
         self.pil_image = Image.open(image_str)
-        self.__qt_image = ImageQt.ImageQt(self.pil_image)
+        self.load_pil_image_on_scene(self.pil_image)
+
+    def load_pil_image_on_scene(self, image_obj):
+        '''Loads the PIL image on a QtScene and sets it as the current scene on the Image View.'''
+        width, height = image_obj.size
+        self.__qt_image = ImageQt.ImageQt(image_obj)
         self.__qpixmap = QtGui.QPixmap.fromImage(self.__qt_image)
         self.__qscene = QtGui.QGraphicsScene()
         self.__qscene.addPixmap(self.__qpixmap)
@@ -143,8 +154,14 @@ class GuiMain(QMainWindow):
         #l = QtCore.QLineF(0,0,100,100)
         #self.__qscene.addLine(l)
 
+        self.set_dimensions_on_gui(width, height)
+
         qv = self.ui.image_pattern_view
         qv.setScene(self.__qscene)
+
+    def set_dimensions_on_gui(self, width, height):
+        text = u"{} - {}".format(width, height)
+        self.ui.dimensions_label.setText(text)
 
     def display_blocking_pop_up(self, message="", message_type="info"):
         logging.debug("message emited: '{}'".format(message))
@@ -169,7 +186,7 @@ class GuiMain(QMainWindow):
     def file_select_dialog(self):
         file_selected_route = QtGui.QFileDialog.getOpenFileName(self)
         self.update_file_selected_text_field(file_selected_route)
-        self.load_image_on_scene(str(file_selected_route))
+        self.load_image_from_string(str(file_selected_route))
 
     def generate_firmware_ui(self):
       self.__flash_ui = FirmwareFlash(self)
@@ -181,6 +198,170 @@ class GuiMain(QMainWindow):
         self.__about_ui.setupUi(self.__AboutForm)
         self.__AboutForm.show()
 
+    def invert_image(self):
+        '''Public invert current Image function.'''
+        self.apply_image_transform("invert")
+
+    def mirror_image(self):
+        '''Public mirror current Image function.'''
+        self.apply_image_transform("mirror")
+
+    def flip_image(self):
+        '''Public mirror current Image function.'''
+        self.apply_image_transform("flip")
+
+    def rotate_left(self):
+        '''Public rotate left current Image function.'''
+        self.apply_image_transform("rotate", -90.0)
+
+    def rotate_right(self):
+        '''Public rotate right current Image function.'''
+        self.apply_image_transform("rotate", 90.0)
+
+    def smart_resize(self):
+      '''Executes the smart resize process including dialog .'''
+      dialog_result = self.__launch_get_start_smart_resize_dialog_result(self)
+      if dialog_result:
+        self.apply_image_transform("smart_resize", dialog_result)
+
+    def apply_image_transform(self, transform_type, *args):
+        '''Executes an image transform specified by key and args.
+
+        Calls a function from transform_dict, forwarding args and the image,
+        and replaces the QtImage on scene.
+        '''
+        transform_dict = {
+            'invert': self.__invert_image,
+            'mirror': self.__mirror_image,
+            'flip': self.__flip_image,
+            'rotate': self.__rotate_image,
+            'smart_resize': self.__smart_resize_image,
+        }
+        transform = transform_dict.get(transform_type)
+        image = self.pil_image
+        if not image:
+            return
+        # Executes the transform function
+        try:
+          image = transform(image, args)
+        except:
+          logging.error("Error on executing transform")
+        # Update the view
+        self.pil_image = image
+        self.load_pil_image_on_scene(self.pil_image)
+
+    def __smart_resize_image(self, image, args):
+      '''Implement the smart resize processing. Ratio sent as a tuple of horizontal and vertical values.'''
+      import knit_aware_resize
+      wratio, hratio = args[0]  # Unpacks the first argument.
+      logging.debug("resizing image with args: {0}".format(args))
+      resized_image = knit_aware_resize.resize_image(image, wratio, hratio)
+      return resized_image
+
+    def __rotate_image(self, image, args):
+        if not args:
+            logging.debug("image not altered on __rotate_image.")
+            return image
+        rotated_image = image.rotate(args[0], expand=True)
+        return rotated_image
+
+    def __invert_image(self, image, args):
+        import PIL.ImageChops
+        inverted_image = PIL.ImageChops.invert(image)
+        return inverted_image
+
+    def __mirror_image(self, image, args):
+        import PIL.ImageOps
+        mirrored_image = PIL.ImageOps.mirror(image)
+        return mirrored_image
+
+    def __flip_image(self, image, args):
+        import PIL.ImageOps
+        flipped_image = PIL.ImageOps.flip(image)
+        return flipped_image
+
+    def __launch_get_start_smart_resize_dialog_result(self, parent):
+        '''Processes dialog and returns a ratio tuple or False.'''
+        import smart_resize
+        import knit_aware_resize
+        ##TODO: create smart_resize dialog
+        ## Show dialog
+        self.physical_width, self.physical_height = 0.0, 0.0
+        self.ratio_tuple = 1.0, 1.0
+        ratio = 0.0
+        dialog = QtGui.QDialog()
+        dialog.ui = smart_resize.Ui_Dialog()
+        dialog.ui.setupUi(dialog)
+
+        def calculate_ratio_value(height, width):
+          '''Calculates the ratio value with given height and width.'''
+          try:
+            return height / width
+          except:
+            return 0.0
+
+        def set_ratio_list(ratio):
+          '''Sets the dialog ratio list to a list of aproximations of rational ratios that match it.'''
+          dialog.ui.ratios_list.clear()
+          self.ratio_list = knit_aware_resize.get_rational_ratios(ratio)
+          for ratio in self.ratio_list:
+            ratio_string = "{0:.0f} - {1:.0f}".format(ratio[0], ratio[1])
+            dialog.ui.ratios_list.addItem(ratio_string)
+
+        def set_ratio_value(ratio):
+          dialog.ui.ratio_label.setText(u"{0:.2f}".format(ratio))
+          set_ratio_list(ratio)
+
+        def recalculate_ratio():
+          ratio = calculate_ratio_value(self.physical_height, self.physical_width)
+          set_ratio_value(ratio)
+          logging.debug("Set Ratio to {}".format(ratio))
+
+        def set_height_ratio(height_string):
+          self.physical_height = float(height_string)
+          recalculate_ratio()
+
+        def set_width_ratio(width_string):
+          self.physical_width = float(width_string)
+          recalculate_ratio()
+
+        def get_ratios_list_item_value(selected_value):
+          '''Gets the value of the tuple corresponding to the selected ratio list.'''
+          try:
+            self.ratio_tuple = self.ratio_list[selected_value]
+            recalculate_real_size(self.ratio_tuple)
+            logging.debug(self.ratio_tuple)
+          except IndexError:
+            pass
+
+        def recalculate_real_size(ratio_tuple):
+          '''Updates the calculations on the Resize dialog.'''
+          try:
+            h, w = self.pil_image.size
+            h_ratio, w_ratio = ratio_tuple
+            horizontal_size_text, vertical_size_text = u"{0:.2f}".format(h * h_ratio), u"{0:.2f}".format(w * w_ratio)
+            dialog.ui.horizontal_stitches_label.setText(horizontal_size_text)
+            dialog.ui.vertical_stitches_label.setText(vertical_size_text)
+            real_width_text, real_height_text = unicode(self.physical_height * h_ratio), unicode(self.physical_width * w_ratio)
+            dialog.ui.calculated_width_label.setText(real_width_text)
+            dialog.ui.calculated_height_label.setText(real_height_text)
+          except:
+            pass
+
+        dialog.ui.height_spinbox.valueChanged[unicode].connect(set_height_ratio)
+        dialog.ui.width_spinbox.valueChanged[unicode].connect(set_width_ratio)
+        dialog.ui.ratios_list.currentRowChanged[int].connect(get_ratios_list_item_value)
+
+        dialog_ok = dialog.exec_()
+        #dialog.show()
+
+        logging.debug(dialog_ok)
+        if dialog_ok:
+          print ratio
+          return self.ratio_tuple
+          #set variables to parent
+        else:
+          return False
 
     def getSerialPorts(self):
       """
@@ -209,8 +390,9 @@ class GenericThread(QThread):
             logging.error(fe)
             parent = self.kwargs["parent_window"]
             parent.emit(QtCore.SIGNAL('display_blocking_pop_up_signal(QString, QString)'), QtGui.QApplication.translate("Form",
-                                                                      "Error on plugin action, be sure to configure before starting Knitting.", None), "error")
+                        "Error on plugin action, be sure to configure before starting Knitting.", None), "error")
         return
+
 
 def get_route():
   #if getattr(sys, 'frozen', False):

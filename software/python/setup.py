@@ -117,7 +117,7 @@ setup(
         "skip_archive": True
         }},
     data_files=find_data_files('ayab', 'ayab', [
-        'README',
+        'README.md',
         'images/*',
         '*.ts',
         '*.yapsy-plugin',
