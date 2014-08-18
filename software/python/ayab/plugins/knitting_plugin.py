@@ -23,14 +23,25 @@ from fysom import Fysom
 
 
 class KnittingPlugin(IPlugin, Fysom):
-  '''A generic plugin implementing a state machine for knitting.'''
+  '''A generic plugin implementing a state machine for knitting.
+
+  Subclasses inherit the basic State Machine defined in __init__.
+  '''
 
   def onknit(self, e):
-    """Callback when state machine executes knit()"""
+    """Callback when state machine executes knit().
+
+    Starts the knitting process, this is the only function call that can block indefinitely, as it is called from an instance
+    of QThread, allowing for processes that require timing and/or blocking behaviour.
+    """
     raise NotImplementedError(self.__NOT_IMPLEMENTED_ERROR.format("onknit. It is used for the main 'knitting loop'."))
 
   def onfinish(self, e):
-    """Callback when state machine executes finish()"""
+    """Callback when state machine executes finish().
+
+    When finish() gets called, the plugin is expected to be able to restore it's state back when configure gets called.
+    Finish should trigger a Process Completed notification so the user can operate accordingly.
+    """
     raise NotImplementedError(self.__NOT_IMPLEMENTED_ERROR.format("onfinish. It is a callback that is called when knitting is over."))
 
   def onconfigure(self, e):
