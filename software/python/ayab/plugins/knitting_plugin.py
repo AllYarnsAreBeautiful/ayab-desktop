@@ -42,7 +42,7 @@ class KnittingPlugin(IPlugin, Fysom):
     properties.
 
     Args:
-      parent_ui: An object holding the parent_ui.pil_image property.
+      parent_ui: An object having already been set up by setup_ui.
 
     Returns:
       dict: A dict with configuration.
@@ -50,21 +50,26 @@ class KnittingPlugin(IPlugin, Fysom):
     """
     raise NotImplementedError(self.__NOT_IMPLEMENTED_ERROR.format("onconfigure. It is used to configure the knitting plugin before starting."))
 
-  def setup_ui(self, ui):
+  def setup_ui(self, parent_ui):
+    '''Sets up UI, usually as a child of parent_ui.ui.knitting_options_dock.
+
+    While the whole parent_ui object is available for the plugin to modify, plugins authors are **strongly** encouraged to
+    only manipulate the knitting_options_dock, plugins have full access to the parent UI as a way to fully customize the GUI experience.
+
+    Args:
+        parent_ui: A PyQt.QMainWindow with the property parent_ui.ui.knitting_options_dock, an instance of QDockWidget to hold the plugin's UI.
+    '''
     raise NotImplementedError(self.__NOT_IMPLEMENTED_ERROR.format("setup_ui. It loads the knitting_options_dock panel ui for the plugin."))
 
   def cleanup_ui(self, ui):
+    '''Cleans up and reverts changes to ui done by setup_ui.'''
     raise NotImplementedError(self.__NOT_IMPLEMENTED_ERROR.format("cleanup_ui. It cleans up the knitting_options_dock panel ui for the plugin."))
 
   def get_configuration_from_ui(self, ui):
-    """Loads options dict with a given parent QtGui object."""
+    """Loads options dict with a given parent QtGui object. Required for save-load functionality."""
     raise NotImplementedError(self.__NOT_IMPLEMENTED_ERROR.format("get_configuration_from_ui. It loads options with a given parent ui object."))
 
   def __init__(self, callbacks_dict):
-    """
-    Args:
-        _fsm: The internal finite state machine.
-    """
     self.__NOT_IMPLEMENTED_ERROR = "Classes that inherit from KnittingPlugin should implment {0}"
 
     callbacks_dict = {
