@@ -51,23 +51,17 @@
            <item>
             <widget class="QLabel" name="label_3">
              <property name="text">
-              <string>Select Module</string>
+              <string>Load Images and Mode</string>
              </property>
             </widget>
            </item>
            <item>
             <widget class="QComboBox" name="module_dropdown"/>
            </item>
-          </layout>
-         </widget>
-        </item>
-        <item>
-         <widget class="QWidget" name="widget_4" native="true">
-          <layout class="QVBoxLayout" name="verticalLayout_4">
            <item>
             <widget class="QPushButton" name="load_file_button">
              <property name="text">
-              <string>Load File</string>
+              <string>Load Image File</string>
              </property>
             </widget>
            </item>
