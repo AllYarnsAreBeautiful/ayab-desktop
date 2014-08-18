@@ -39,7 +39,7 @@ class KnittingPlugin(IPlugin, Fysom):
   def onfinish(self, e):
     """Callback when state machine executes finish().
 
-    When finish() gets called, the plugin is expected to be able to restore it's state back when configure gets called.
+    When finish() gets called, the plugin is expected to be able to restore it's state back when configure() gets called.
     Finish should trigger a Process Completed notification so the user can operate accordingly.
     """
     raise NotImplementedError(self.__NOT_IMPLEMENTED_ERROR.format("onfinish. It is a callback that is called when knitting is over."))
@@ -54,10 +54,6 @@ class KnittingPlugin(IPlugin, Fysom):
 
     Args:
       parent_ui: An object having already been set up by setup_ui.
-
-    Returns:
-      dict: A dict with configuration.
-
     """
     raise NotImplementedError(self.__NOT_IMPLEMENTED_ERROR.format("onconfigure. It is used to configure the knitting plugin before starting."))
 
@@ -77,7 +73,12 @@ class KnittingPlugin(IPlugin, Fysom):
     raise NotImplementedError(self.__NOT_IMPLEMENTED_ERROR.format("cleanup_ui. It cleans up the knitting_options_dock panel ui for the plugin."))
 
   def get_configuration_from_ui(self, ui):
-    """Loads options dict with a given parent QtGui object. Required for save-load functionality."""
+    """Loads options dict with a given parent QtGui object. Required for save-load functionality.
+
+    Returns:
+      dict: A dict with configuration.
+    
+    """
     raise NotImplementedError(self.__NOT_IMPLEMENTED_ERROR.format("get_configuration_from_ui. It loads options with a given parent ui object."))
 
   def __init__(self, callbacks_dict):
