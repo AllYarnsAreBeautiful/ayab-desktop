@@ -101,7 +101,7 @@ class GuiMain(QMainWindow):
             self.enabled_plugin.plugin_object.setup_ui(self)
             logging.info("Set enabled_plugin as {0} - {1}".format(plugin_o, plugin_name))
         except:
-            logging.error("no plugin object loaded")
+            logging.info("no plugin object loaded")
         return plugin_o
 
     def updateProgress(self, progress):
