@@ -160,6 +160,7 @@ class GuiMain(QMainWindow):
 
 
         qv = self.ui.image_pattern_view
+        qv.resetTransform()
         qv.scale(2.0, 2.0)
         qv.setScene(self.__qscene)
 
