@@ -2,7 +2,8 @@
 
 # Form implementation generated from reading ui file 'ayab_gui.ui'
 #
-# Created by: PyQt4 UI code generator 4.10.3
+# Created: Mon Jan 26 22:30:51 2015
+#      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -25,7 +26,7 @@ except AttributeError:
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
-        MainWindow.resize(1138, 856)
+        MainWindow.resize(1057, 856)
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
         self.gridLayout = QtGui.QGridLayout(self.centralwidget)
@@ -120,6 +121,11 @@ class Ui_MainWindow(object):
         self.image_pattern_view = QtGui.QGraphicsView(self.centralwidget)
         self.image_pattern_view.setObjectName(_fromUtf8("image_pattern_view"))
         self.image_side_panel.addWidget(self.image_pattern_view)
+        self.progress_label = QtGui.QLabel(self.centralwidget)
+        self.progress_label.setText(_fromUtf8(""))
+        self.progress_label.setAlignment(QtCore.Qt.AlignCenter)
+        self.progress_label.setObjectName(_fromUtf8("progress_label"))
+        self.image_side_panel.addWidget(self.progress_label)
         self.progressBar = QtGui.QProgressBar(self.centralwidget)
         self.progressBar.setProperty("value", 0)
         self.progressBar.setObjectName(_fromUtf8("progressBar"))
@@ -127,7 +133,7 @@ class Ui_MainWindow(object):
         self.gridLayout.addLayout(self.image_side_panel, 0, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1138, 23))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1057, 25))
         self.menubar.setObjectName(_fromUtf8("menubar"))
         self.menuFile = QtGui.QMenu(self.menubar)
         self.menuFile.setObjectName(_fromUtf8("menuFile"))
@@ -206,14 +212,4 @@ class Ui_MainWindow(object):
         self.actionRotate_Right.setText(_translate("MainWindow", "Rotate Right", None))
         self.actionSmart_Resize.setText(_translate("MainWindow", "Smart Resize", None))
         self.actionVertical_Flip.setText(_translate("MainWindow", "Vertical Flip", None))
-
-
-if __name__ == "__main__":
-    import sys
-    app = QtGui.QApplication(sys.argv)
-    MainWindow = QtGui.QMainWindow()
-    ui = Ui_MainWindow()
-    ui.setupUi(MainWindow)
-    MainWindow.show()
-    sys.exit(app.exec_())
 

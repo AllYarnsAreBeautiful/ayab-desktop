@@ -104,9 +104,10 @@ class GuiMain(QMainWindow):
             logging.info("no plugin object loaded")
         return plugin_o
 
-    def updateProgress(self, progress):
+    def updateProgress(self, progress, done=0, total=0):
         '''Updates the Progress Bar.'''
         self.ui.progressBar.setValue(progress)
+        self.ui.progress_label.setText("{0}/{1}".format(done, total))
 
     def update_file_selected_text_field(self, route):
         ''''Sets self.image_file_route and ui.filename_lineedit to route.'''
@@ -125,7 +126,7 @@ class GuiMain(QMainWindow):
         self.ui.actionLoad_AYAB_Firmware.activated.connect(self.generate_firmware_ui)
         self.ui.image_pattern_view.setDragMode(QtGui.QGraphicsView.ScrollHandDrag)
         # Connecting Signals.
-        self.connect(self, QtCore.SIGNAL("updateProgress(int)"), self.updateProgress)
+        self.connect(self, QtCore.SIGNAL("updateProgress(int,int,int)"), self.updateProgress)
         self.connect(self, QtCore.SIGNAL("display_pop_up_signal(QString, QString)"), self.display_blocking_pop_up)
         # This blocks the other thread until signal is done
         self.connect(self, QtCore.SIGNAL("display_blocking_pop_up_signal(QString, QString)"), self.display_blocking_pop_up, QtCore.Qt.BlockingQueuedConnection)

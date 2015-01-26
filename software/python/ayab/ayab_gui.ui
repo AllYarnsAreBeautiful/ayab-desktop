@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1138</width>
+    <width>1057</width>
     <height>856</height>
    </rect>
   </property>
@@ -152,6 +152,16 @@
        <widget class="QGraphicsView" name="image_pattern_view"/>
       </item>
       <item>
+       <widget class="QLabel" name="progress_label">
+        <property name="text">
+         <string notr="true"/>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QProgressBar" name="progressBar">
         <property name="value">
          <number>0</number>
@@ -167,8 +177,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1138</width>
-     <height>23</height>
+     <width>1057</width>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
