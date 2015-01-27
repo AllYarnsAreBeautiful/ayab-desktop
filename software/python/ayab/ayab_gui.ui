@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1057</width>
+    <width>1008</width>
     <height>856</height>
    </rect>
   </property>
@@ -17,14 +17,32 @@
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="1" rowspan="3">
      <widget class="QScrollArea" name="assistant_dock">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
       <property name="sizePolicy">
        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
         <horstretch>0</horstretch>
         <verstretch>0</verstretch>
        </sizepolicy>
       </property>
+      <property name="minimumSize">
+       <size>
+        <width>250</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>540</width>
+        <height>16777215</height>
+       </size>
+      </property>
       <property name="windowTitle">
        <string>Asistant</string>
+      </property>
+      <property name="layoutDirection">
+       <enum>Qt::LeftToRight</enum>
       </property>
       <property name="frameShadow">
        <enum>QFrame::Plain</enum>
@@ -40,14 +58,35 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>555</width>
-         <height>791</height>
+         <width>500</width>
+         <height>700</height>
         </rect>
        </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <layout class="QVBoxLayout" name="verticalLayout_5">
-        <item>
+        <property name="sizeConstraint">
+         <enum>QLayout::SetFixedSize</enum>
+        </property>
+        <item alignment="Qt::AlignHCenter">
          <widget class="QWidget" name="widget" native="true">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
           <layout class="QVBoxLayout" name="verticalLayout">
+           <property name="sizeConstraint">
+            <enum>QLayout::SetMaximumSize</enum>
+           </property>
            <item>
             <widget class="QLabel" name="label_3">
              <property name="text">
@@ -75,9 +114,12 @@
           </layout>
          </widget>
         </item>
-        <item>
+        <item alignment="Qt::AlignHCenter">
          <widget class="QWidget" name="widget_2" native="true">
           <layout class="QVBoxLayout" name="verticalLayout_2">
+           <property name="sizeConstraint">
+            <enum>QLayout::SetMaximumSize</enum>
+           </property>
            <item>
             <widget class="Line" name="line">
              <property name="orientation">
@@ -96,7 +138,9 @@
              <property name="windowTitle">
               <string>Knitting Options</string>
              </property>
-             <widget class="QWidget" name="dockWidgetContents_2"/>
+             <widget class="QWidget" name="dockWidgetContents_2">
+              <zorder>widget</zorder>
+             </widget>
             </widget>
            </item>
           </layout>
@@ -109,9 +153,12 @@
           </property>
          </widget>
         </item>
-        <item>
+        <item alignment="Qt::AlignHCenter">
          <widget class="QWidget" name="widget_3" native="true">
           <layout class="QVBoxLayout" name="verticalLayout_3">
+           <property name="sizeConstraint">
+            <enum>QLayout::SetMaximumSize</enum>
+           </property>
            <item>
             <widget class="QPushButton" name="knit_button">
              <property name="text">
@@ -177,7 +224,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1057</width>
+     <width>1008</width>
      <height>25</height>
     </rect>
    </property>
