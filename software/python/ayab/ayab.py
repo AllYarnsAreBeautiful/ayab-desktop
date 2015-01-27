@@ -144,6 +144,8 @@ class GuiMain(QMainWindow):
         """Loads an image into self.ui.image_pattern_view using a temporary QGraphicsScene"""
         self.pil_image = Image.open(image_str)
         self.load_pil_image_on_scene(self.pil_image)
+        self.ui.widget_optionsdock.setEnabled(True)
+        self.ui.menuImage_Actions.setEnabled(True)
 
     def load_pil_image_on_scene(self, image_obj):
         '''Loads the PIL image on a QtScene and sets it as the current scene on the Image View.'''

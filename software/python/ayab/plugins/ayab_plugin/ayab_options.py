@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ayab/plugins/ayab_plugin/ayab_options.ui'
 #
-# Created: Tue Jan 27 21:33:49 2015
+# Created: Tue Jan 27 22:11:18 2015
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -128,5 +128,5 @@ class Ui_DockWidget(object):
         self.label_4.setText(_translate("DockWidget", "Machine Type", None))
         self.machine_type_box.setItemText(0, _translate("DockWidget", "single", None))
         self.machine_type_box.setItemText(1, _translate("DockWidget", "double", None))
-        self.configure_button.setText(_translate("DockWidget", "Configure", None))
+        self.configure_button.setText(_translate("DockWidget", "2. Configure", None))
 
