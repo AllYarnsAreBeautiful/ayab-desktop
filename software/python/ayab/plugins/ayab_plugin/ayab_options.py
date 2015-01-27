@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'ayab_options.ui'
+# Form implementation generated from reading ui file 'ayab/plugins/ayab_plugin/ayab_options.ui'
 #
-# Created by: PyQt4 UI code generator 4.10.3
+# Created: Tue Jan 27 21:33:49 2015
+#      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -25,7 +26,7 @@ except AttributeError:
 class Ui_DockWidget(object):
     def setupUi(self, DockWidget):
         DockWidget.setObjectName(_fromUtf8("DockWidget"))
-        DockWidget.resize(237, 488)
+        DockWidget.resize(237, 475)
         DockWidget.setFeatures(QtGui.QDockWidget.NoDockWidgetFeatures)
         self.ayab_config = QtGui.QWidget()
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Maximum)
@@ -121,21 +122,11 @@ class Ui_DockWidget(object):
         self.label_2.setText(_translate("DockWidget", "Stop Needle", None))
         self.stop_needle_edit.setPrefix(_translate("DockWidget", "needle ", None))
         self.label_3.setText(_translate("DockWidget", "Alignment", None))
-        self.alignment_combo_box.setItemText(0, _translate("DockWidget", "left", None))
-        self.alignment_combo_box.setItemText(1, _translate("DockWidget", "center", None))
+        self.alignment_combo_box.setItemText(0, _translate("DockWidget", "center", None))
+        self.alignment_combo_box.setItemText(1, _translate("DockWidget", "left", None))
         self.alignment_combo_box.setItemText(2, _translate("DockWidget", "right", None))
         self.label_4.setText(_translate("DockWidget", "Machine Type", None))
         self.machine_type_box.setItemText(0, _translate("DockWidget", "single", None))
         self.machine_type_box.setItemText(1, _translate("DockWidget", "double", None))
         self.configure_button.setText(_translate("DockWidget", "Configure", None))
-
-
-if __name__ == "__main__":
-    import sys
-    app = QtGui.QApplication(sys.argv)
-    DockWidget = QtGui.QDockWidget()
-    ui = Ui_DockWidget()
-    ui.setupUi(DockWidget)
-    DockWidget.show()
-    sys.exit(app.exec_())
 

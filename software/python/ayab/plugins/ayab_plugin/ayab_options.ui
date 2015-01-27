@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>237</width>
-    <height>488</height>
+    <height>475</height>
    </rect>
   </property>
   <property name="features">
@@ -138,12 +138,12 @@
      <widget class="QComboBox" name="alignment_combo_box">
       <item>
        <property name="text">
-        <string>left</string>
+        <string>center</string>
        </property>
       </item>
       <item>
        <property name="text">
-        <string>center</string>
+        <string>left</string>
        </property>
       </item>
       <item>
