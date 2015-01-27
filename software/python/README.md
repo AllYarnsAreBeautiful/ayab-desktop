@@ -14,7 +14,7 @@ Move to the software/python/ folder and install the required dependencies.
 
 *For Debian/Ubuntu*
 
-    sudo apt-get install python-qt4 python-pip python-dev
+    sudo apt-get install python-qt4 pyqt4-dev-tools python-pip python-dev
 
 *For openSUSE*
 
