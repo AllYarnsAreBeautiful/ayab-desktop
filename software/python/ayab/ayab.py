@@ -254,6 +254,10 @@ class GuiMain(QMainWindow):
           image = transform(image, args)
         except:
           logging.error("Error on executing transform")
+
+        # Disable Knit Controls
+        self.ui.widget_knitcontrol.setEnabled(False)
+
         # Update the view
         self.pil_image = image
         self.load_pil_image_on_scene(self.pil_image)
