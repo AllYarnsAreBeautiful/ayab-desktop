@@ -393,8 +393,8 @@ class AyabPluginControl(KnittingPlugin):
             msg += ', lineBlock:' + str(self.__lineBlock) + ')'
             logging.debug(msg)
             #sending line progress to gui
-            progress_int = 100 * float(imgRow + 1)/self.__image.imgHeight()
-            self.__emit_progress(progress_int, imgRow+1, imgHeight)
+            progress_int = 100 * float(imgRow)/self.__image.imgHeight()
+            self.__emit_progress(progress_int, imgRow, imgHeight)
 
         else:
             logging.error("requested lineNumber out of range")
