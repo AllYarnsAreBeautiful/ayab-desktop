@@ -177,7 +177,7 @@
     <item>
      <widget class="QPushButton" name="configure_button">
       <property name="text">
-       <string>Configure</string>
+       <string>2. Configure</string>
       </property>
      </widget>
     </item>

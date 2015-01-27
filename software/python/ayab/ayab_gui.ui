@@ -73,7 +73,7 @@
          <enum>QLayout::SetFixedSize</enum>
         </property>
         <item alignment="Qt::AlignHCenter">
-         <widget class="QWidget" name="widget" native="true">
+         <widget class="QWidget" name="widget_imgload" native="true">
           <property name="enabled">
            <bool>true</bool>
           </property>
@@ -98,16 +98,19 @@
             <widget class="QComboBox" name="module_dropdown"/>
            </item>
            <item>
-            <widget class="QPushButton" name="load_file_button">
+            <widget class="QLineEdit" name="filename_lineedit">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
              <property name="text">
-              <string>Load Image File</string>
+              <string notr="true"/>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QLineEdit" name="filename_lineedit">
+            <widget class="QPushButton" name="load_file_button">
              <property name="text">
-              <string notr="true"/>
+              <string>1. Load Image File</string>
              </property>
             </widget>
            </item>
@@ -115,7 +118,10 @@
          </widget>
         </item>
         <item alignment="Qt::AlignHCenter">
-         <widget class="QWidget" name="widget_2" native="true">
+         <widget class="QWidget" name="widget_optionsdock" native="true">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <layout class="QVBoxLayout" name="verticalLayout_2">
            <property name="sizeConstraint">
             <enum>QLayout::SetMaximumSize</enum>
@@ -139,7 +145,7 @@
               <string>Knitting Options</string>
              </property>
              <widget class="QWidget" name="dockWidgetContents_2">
-              <zorder>widget</zorder>
+              <zorder>widget_imgload</zorder>
              </widget>
             </widget>
            </item>
@@ -154,7 +160,10 @@
          </widget>
         </item>
         <item alignment="Qt::AlignHCenter">
-         <widget class="QWidget" name="widget_3" native="true">
+         <widget class="QWidget" name="widget_knitcontrol" native="true">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <layout class="QVBoxLayout" name="verticalLayout_3">
            <property name="sizeConstraint">
             <enum>QLayout::SetMaximumSize</enum>
@@ -162,7 +171,7 @@
            <item>
             <widget class="QPushButton" name="knit_button">
              <property name="text">
-              <string>Knit!</string>
+              <string>3. Knit!</string>
              </property>
             </widget>
            </item>
@@ -247,6 +256,9 @@
     <addaction name="actionLoad_AYAB_Firmware"/>
    </widget>
    <widget class="QMenu" name="menuImage_Actions">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="title">
      <string>Image Actions</string>
     </property>
