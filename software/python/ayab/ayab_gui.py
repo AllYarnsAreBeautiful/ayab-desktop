@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ayab/ayab_gui.ui'
 #
-# Created: Tue Jan 27 22:12:25 2015
+# Created: Tue Jan 27 22:40:17 2015
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -38,7 +38,7 @@ class Ui_MainWindow(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.assistant_dock.sizePolicy().hasHeightForWidth())
         self.assistant_dock.setSizePolicy(sizePolicy)
-        self.assistant_dock.setMinimumSize(QtCore.QSize(250, 0))
+        self.assistant_dock.setMinimumSize(QtCore.QSize(280, 0))
         self.assistant_dock.setMaximumSize(QtCore.QSize(540, 16777215))
         self.assistant_dock.setLayoutDirection(QtCore.Qt.LeftToRight)
         self.assistant_dock.setFrameShadow(QtGui.QFrame.Plain)
