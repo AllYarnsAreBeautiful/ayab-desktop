@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'ayab_gui.ui'
+# Form implementation generated from reading ui file 'ayab/ayab_gui.ui'
 #
-# Created: Mon Jan 26 22:30:51 2015
+# Created: Tue Jan 27 21:28:05 2015
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,29 +26,46 @@ except AttributeError:
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
-        MainWindow.resize(1057, 856)
+        MainWindow.resize(1008, 856)
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
         self.gridLayout = QtGui.QGridLayout(self.centralwidget)
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
         self.assistant_dock = QtGui.QScrollArea(self.centralwidget)
+        self.assistant_dock.setEnabled(True)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.assistant_dock.sizePolicy().hasHeightForWidth())
         self.assistant_dock.setSizePolicy(sizePolicy)
+        self.assistant_dock.setMinimumSize(QtCore.QSize(250, 0))
+        self.assistant_dock.setMaximumSize(QtCore.QSize(540, 16777215))
+        self.assistant_dock.setLayoutDirection(QtCore.Qt.LeftToRight)
         self.assistant_dock.setFrameShadow(QtGui.QFrame.Plain)
         self.assistant_dock.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.assistant_dock.setWidgetResizable(False)
         self.assistant_dock.setObjectName(_fromUtf8("assistant_dock"))
         self.dockWidgetContents = QtGui.QWidget()
-        self.dockWidgetContents.setGeometry(QtCore.QRect(0, 0, 555, 791))
+        self.dockWidgetContents.setGeometry(QtCore.QRect(0, 0, 500, 700))
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.dockWidgetContents.sizePolicy().hasHeightForWidth())
+        self.dockWidgetContents.setSizePolicy(sizePolicy)
         self.dockWidgetContents.setObjectName(_fromUtf8("dockWidgetContents"))
         self.verticalLayout_5 = QtGui.QVBoxLayout(self.dockWidgetContents)
+        self.verticalLayout_5.setSizeConstraint(QtGui.QLayout.SetFixedSize)
         self.verticalLayout_5.setObjectName(_fromUtf8("verticalLayout_5"))
         self.widget = QtGui.QWidget(self.dockWidgetContents)
+        self.widget.setEnabled(True)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.widget.sizePolicy().hasHeightForWidth())
+        self.widget.setSizePolicy(sizePolicy)
         self.widget.setObjectName(_fromUtf8("widget"))
         self.verticalLayout = QtGui.QVBoxLayout(self.widget)
+        self.verticalLayout.setSizeConstraint(QtGui.QLayout.SetMaximumSize)
         self.verticalLayout.setMargin(0)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
         self.label_3 = QtGui.QLabel(self.widget)
@@ -68,6 +85,7 @@ class Ui_MainWindow(object):
         self.widget_2 = QtGui.QWidget(self.dockWidgetContents)
         self.widget_2.setObjectName(_fromUtf8("widget_2"))
         self.verticalLayout_2 = QtGui.QVBoxLayout(self.widget_2)
+        self.verticalLayout_2.setSizeConstraint(QtGui.QLayout.SetMaximumSize)
         self.verticalLayout_2.setMargin(0)
         self.verticalLayout_2.setObjectName(_fromUtf8("verticalLayout_2"))
         self.line = QtGui.QFrame(self.widget_2)
@@ -95,6 +113,7 @@ class Ui_MainWindow(object):
         self.widget_3 = QtGui.QWidget(self.dockWidgetContents)
         self.widget_3.setObjectName(_fromUtf8("widget_3"))
         self.verticalLayout_3 = QtGui.QVBoxLayout(self.widget_3)
+        self.verticalLayout_3.setSizeConstraint(QtGui.QLayout.SetMaximumSize)
         self.verticalLayout_3.setMargin(0)
         self.verticalLayout_3.setObjectName(_fromUtf8("verticalLayout_3"))
         self.knit_button = QtGui.QPushButton(self.widget_3)
@@ -133,7 +152,7 @@ class Ui_MainWindow(object):
         self.gridLayout.addLayout(self.image_side_panel, 0, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1057, 25))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1008, 25))
         self.menubar.setObjectName(_fromUtf8("menubar"))
         self.menuFile = QtGui.QMenu(self.menubar)
         self.menuFile.setObjectName(_fromUtf8("menuFile"))
