@@ -152,7 +152,6 @@ class AyabPluginControl(KnittingPlugin):
     refresh_ports = self.options_ui.refresh_ports_button
     refresh_ports.click.connect(self.populate_ports)
 
-
   def conf_button_function(self):
     self.configure()
 
@@ -364,9 +363,9 @@ class AyabPluginControl(KnittingPlugin):
             imgStopNeedle = self.__image.imgStopNeedle()
 
             # set the bitarray
-            for col in range(0, 200):
-                if color == 0 \
-                        and self.__machineType == 'double':
+            if color == 0 \
+                    and self.__machineType == 'double':
+                for col in range(0, 200):
                     if col < imgStartNeedle \
                             or col > imgStopNeedle:
                         bytes = self.__setPixel(bytes, col)
