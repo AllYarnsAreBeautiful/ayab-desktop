@@ -103,7 +103,7 @@
        <string>needle </string>
       </property>
       <property name="maximum">
-       <number>200</number>
+       <number>198</number>
       </property>
      </widget>
     </item>
@@ -122,8 +122,11 @@
       <property name="prefix">
        <string>needle </string>
       </property>
+      <property name="minimum">
+       <number>1</number>
+      </property>
       <property name="maximum">
-       <number>200</number>
+       <number>199</number>
       </property>
      </widget>
     </item>
