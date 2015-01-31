@@ -115,6 +115,13 @@ class GuiMain(QMainWindow):
         self.image_file_route = route
 
     def start_knitting_process(self):
+        # Disable everythin which should not be touched
+        # during knitting
+        self.ui.menuTools.setEnabled(False)
+        self.ui.widget_imgload.setEnabled(False)
+        self.ui.menuImage_Actions.setEnabled(False)
+        self.ui.widget_optionsdock.setEnabled(False)
+
         self.gt = GenericThread(self.enabled_plugin.plugin_object.knit, parent_window=self)
         self.gt.start()
 
