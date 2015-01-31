@@ -184,6 +184,10 @@ class AyabPluginControl(KnittingPlugin):
     self.conf["stop_needle"] = int(stop_needle_text)
     alignment_text = ui.findChild(QtGui.QComboBox, "alignment_combo_box").currentText()
     self.conf["alignment"] = alignment_text
+
+    self.conf["inf_repeat"] = \
+        int(ui.findChild(QtGui.QCheckBox, "infRepeat_checkbox").isChecked())
+
     machine_type_text = ui.findChild(QtGui.QComboBox, "machine_type_box").currentText()
     self.conf["machine_type"] = str(machine_type_text)
 
@@ -281,6 +285,11 @@ class AyabPluginControl(KnittingPlugin):
             lineNumber = lineNumber \
                 + (self.__lineBlock * 256)
 
+            # when knitting infinitely, keep the requested 
+            # lineNumber in its limits
+            if self.__infRepeat:
+              lineNumber = lineNumber % imgHeight
+
             #########################
             # decide which line to send according to machine type and amount of colors
             # singlebed, 2 color
@@ -360,7 +369,12 @@ class AyabPluginControl(KnittingPlugin):
 
             # assign pixeldata
             imgStartNeedle = self.__image.imgStartNeedle()
+            if imgStartNeedle < 0:
+              imgStartNeedle = 0
+
             imgStopNeedle = self.__image.imgStopNeedle()
+            if imgStopNeedle > 199:
+              imgStopNeedle = 199
 
             # set the bitarray
             if color == 0 \
@@ -399,7 +413,11 @@ class AyabPluginControl(KnittingPlugin):
             logging.error("requested lineNumber out of range")
 
         if lastLine:
-            return 1  # image finished
+          if self.__infRepeat:
+              self.__lineBlock = 0
+              return 0 # keep knitting
+          else:
+              return 1  # image finished
         else:
             return 0  # keep knitting
 
@@ -410,6 +428,7 @@ class AyabPluginControl(KnittingPlugin):
 
       self.__numColors = pOptions["num_colors"]
       self.__machineType = pOptions["machine_type"]
+      self.__infRepeat = pOptions["inf_repeat"]
 
       API_VERSION = self.__API_VERSION
       curState = 's_init'

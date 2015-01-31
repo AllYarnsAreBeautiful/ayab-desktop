@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file './ayab/plugins/ayab_plugin/ayab_options.ui'
 #
-# Created: Sat Jan 31 11:25:19 2015
+# Created: Sat Jan 31 13:11:18 2015
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,7 +26,7 @@ except AttributeError:
 class Ui_DockWidget(object):
     def setupUi(self, DockWidget):
         DockWidget.setObjectName(_fromUtf8("DockWidget"))
-        DockWidget.resize(237, 475)
+        DockWidget.resize(237, 502)
         DockWidget.setFeatures(QtGui.QDockWidget.NoDockWidgetFeatures)
         self.ayab_config = QtGui.QWidget()
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Maximum)
@@ -65,6 +65,9 @@ class Ui_DockWidget(object):
         self.start_line_edit.setMaximum(256)
         self.start_line_edit.setObjectName(_fromUtf8("start_line_edit"))
         self.verticalLayout.addWidget(self.start_line_edit)
+        self.infRepeat_checkbox = QtGui.QCheckBox(self.ayab_config)
+        self.infRepeat_checkbox.setObjectName(_fromUtf8("infRepeat_checkbox"))
+        self.verticalLayout.addWidget(self.infRepeat_checkbox)
         self.line = QtGui.QFrame(self.ayab_config)
         self.line.setFrameShape(QtGui.QFrame.HLine)
         self.line.setFrameShadow(QtGui.QFrame.Sunken)
@@ -118,6 +121,7 @@ class Ui_DockWidget(object):
         self.label_6.setText(_translate("DockWidget", "Colors", None))
         self.label_5.setText(_translate("DockWidget", "Start Line", None))
         self.start_line_edit.setPrefix(_translate("DockWidget", "line ", None))
+        self.infRepeat_checkbox.setText(_translate("DockWidget", "Infinite Repeat", None))
         self.label.setText(_translate("DockWidget", "Start Needle", None))
         self.start_needle_edit.setPrefix(_translate("DockWidget", "needle ", None))
         self.label_2.setText(_translate("DockWidget", "Stop Needle", None))
