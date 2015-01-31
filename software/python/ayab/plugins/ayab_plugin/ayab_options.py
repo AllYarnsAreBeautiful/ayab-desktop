@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'ayab/plugins/ayab_plugin/ayab_options.ui'
+# Form implementation generated from reading ui file './ayab/plugins/ayab_plugin/ayab_options.ui'
 #
-# Created: Tue Jan 27 22:11:18 2015
+# Created: Sat Jan 31 11:25:19 2015
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -74,7 +74,7 @@ class Ui_DockWidget(object):
         self.label.setObjectName(_fromUtf8("label"))
         self.verticalLayout.addWidget(self.label)
         self.start_needle_edit = QtGui.QSpinBox(self.ayab_config)
-        self.start_needle_edit.setMaximum(200)
+        self.start_needle_edit.setMaximum(198)
         self.start_needle_edit.setObjectName(_fromUtf8("start_needle_edit"))
         self.verticalLayout.addWidget(self.start_needle_edit)
         self.label_2 = QtGui.QLabel(self.ayab_config)
@@ -82,7 +82,8 @@ class Ui_DockWidget(object):
         self.verticalLayout.addWidget(self.label_2)
         self.stop_needle_edit = QtGui.QSpinBox(self.ayab_config)
         self.stop_needle_edit.setSuffix(_fromUtf8(""))
-        self.stop_needle_edit.setMaximum(200)
+        self.stop_needle_edit.setMinimum(1)
+        self.stop_needle_edit.setMaximum(199)
         self.stop_needle_edit.setObjectName(_fromUtf8("stop_needle_edit"))
         self.verticalLayout.addWidget(self.stop_needle_edit)
         self.label_3 = QtGui.QLabel(self.ayab_config)
