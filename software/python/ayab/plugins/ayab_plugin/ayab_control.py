@@ -42,8 +42,9 @@ class AyabPluginControl(KnittingPlugin):
     #FIXME: substitute setting parent_ui from self.__parent_ui
     #self.__parent_ui = e.event.parent_ui
     parent_ui = self.__parent_ui
-    import PIL.ImageOps
-    pil_image = PIL.ImageOps.flip(parent_ui.pil_image)
+
+    #Start to knit with the bottom first
+    pil_image = parent_ui.pil_image.rotate(180)
 
     conf = self.get_configuration_from_ui(parent_ui)
     #TODO: detect if previous conf had the same image to avoid re-generating.
@@ -395,8 +396,11 @@ class AyabPluginControl(KnittingPlugin):
             crc8 = 0x00
 
             # send line to machine
-            self.__ayabCom.cnf_line(reqestedLine, bytes, lastLine, crc8)
-
+            if self.__infRepeat:
+              self.__ayabCom.cnf_line(reqestedLine, bytes, 0, crc8)
+            else:
+              self.__ayabCom.cnf_line(reqestedLine, bytes, lastLine, crc8)
+            
             # screen output
             msg = str((self.__image.imageExpanded())[indexToSend])
             msg += ' Image Row: ' + str(imgRow)
