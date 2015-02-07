@@ -1,0 +1,5 @@
+<RCC>
+  <qresource prefix="/">
+    <file>ayab_logo.jpg</file>
+  </qresource>
+</RCC>
