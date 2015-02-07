@@ -7,11 +7,17 @@
     <x>0</x>
     <y>0</y>
     <width>583</width>
-    <height>309</height>
+    <height>312</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>About AYAB</string>
+  </property>
+  <property name="autoFillBackground">
+   <bool>false</bool>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: rgb(255, 255, 255);</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -22,7 +28,13 @@
       </font>
      </property>
      <property name="text">
-      <string>AYAB</string>
+      <string/>
+     </property>
+     <property name="pixmap">
+      <pixmap resource="resources_rc.qrc">:/ayab_logo.jpg</pixmap>
+     </property>
+     <property name="scaledContents">
+      <bool>true</bool>
      </property>
     </widget>
    </item>
@@ -43,7 +55,7 @@
    <item>
     <widget class="QLabel" name="label_3">
      <property name="text">
-      <string>Beta 2 Version (2014-08-07)</string>
+      <string>Version 0.7</string>
      </property>
     </widget>
    </item>
@@ -62,6 +74,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="resources_rc.qrc"/>
+ </resources>
  <connections/>
 </ui>
