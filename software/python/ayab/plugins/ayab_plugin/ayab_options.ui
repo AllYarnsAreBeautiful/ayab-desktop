@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>237</width>
-    <height>502</height>
+    <height>510</height>
    </rect>
   </property>
   <property name="features">
@@ -98,49 +98,113 @@
      </widget>
     </item>
     <item>
-     <widget class="QLabel" name="label">
-      <property name="text">
+     <widget class="QGroupBox" name="gbox_startneedle">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>50</height>
+       </size>
+      </property>
+      <property name="title">
        <string>Start Needle</string>
       </property>
+      <widget class="QComboBox" name="start_needle_color">
+       <property name="geometry">
+        <rect>
+         <x>50</x>
+         <y>20</y>
+         <width>81</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <item>
+        <property name="text">
+         <string>orange</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>green</string>
+        </property>
+       </item>
+      </widget>
+      <widget class="QSpinBox" name="start_needle_edit">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>20</y>
+         <width>51</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="prefix">
+        <string/>
+       </property>
+       <property name="minimum">
+        <number>1</number>
+       </property>
+       <property name="maximum">
+        <number>100</number>
+       </property>
+       <property name="value">
+        <number>20</number>
+       </property>
+      </widget>
      </widget>
     </item>
     <item>
-     <widget class="QSpinBox" name="start_needle_edit">
-      <property name="prefix">
-       <string>needle </string>
+     <widget class="QGroupBox" name="gbox_stopneedle">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>50</height>
+       </size>
       </property>
-      <property name="maximum">
-       <number>198</number>
-      </property>
-      <property name="value">
-       <number>80</number>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QLabel" name="label_2">
-      <property name="text">
+      <property name="title">
        <string>Stop Needle</string>
       </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QSpinBox" name="stop_needle_edit">
-      <property name="suffix">
-       <string/>
-      </property>
-      <property name="prefix">
-       <string>needle </string>
-      </property>
-      <property name="minimum">
-       <number>1</number>
-      </property>
-      <property name="maximum">
-       <number>199</number>
-      </property>
-      <property name="value">
-       <number>120</number>
-      </property>
+      <widget class="QComboBox" name="stop_needle_color">
+       <property name="geometry">
+        <rect>
+         <x>50</x>
+         <y>20</y>
+         <width>81</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <item>
+        <property name="text">
+         <string>green</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>orange</string>
+        </property>
+       </item>
+      </widget>
+      <widget class="QSpinBox" name="stop_needle_edit">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>20</y>
+         <width>51</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="prefix">
+        <string/>
+       </property>
+       <property name="minimum">
+        <number>1</number>
+       </property>
+       <property name="maximum">
+        <number>100</number>
+       </property>
+       <property name="value">
+        <number>20</number>
+       </property>
+      </widget>
      </widget>
     </item>
     <item>
