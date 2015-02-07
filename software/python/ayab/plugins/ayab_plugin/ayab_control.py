@@ -179,10 +179,24 @@ class AyabPluginControl(KnittingPlugin):
     self.conf["num_colors"] = int(color_line_text)
     start_line_text = ui.findChild(QtGui.QSpinBox, "start_line_edit").value()
     self.conf["start_line"] = int(start_line_text)
+
+    start_needle_color = ui.findChild(QtGui.QComboBox, "start_needle_color").currentText()
     start_needle_text = ui.findChild(QtGui.QSpinBox, "start_needle_edit").value()
-    self.conf["start_needle"] = int(start_needle_text)
+
+    if(start_needle_color == "orange"):
+      self.conf["start_needle"] = 100 - int(start_needle_text)
+    elif(start_needle_color == "green"):
+      self.conf["start_needle"] = 99 + int(start_needle_text)
+
+    stop_needle_color = ui.findChild(QtGui.QComboBox, "stop_needle_color").currentText()
     stop_needle_text = ui.findChild(QtGui.QSpinBox, "stop_needle_edit").value()
-    self.conf["stop_needle"] = int(stop_needle_text)
+
+    if(stop_needle_color == "orange"):
+      self.conf["stop_needle"] = 100 - int(stop_needle_text)
+    elif(stop_needle_color == "green"):
+      self.conf["stop_needle"] = 99 + int(stop_needle_text)
+
+
     alignment_text = ui.findChild(QtGui.QComboBox, "alignment_combo_box").currentText()
     self.conf["alignment"] = alignment_text
 
