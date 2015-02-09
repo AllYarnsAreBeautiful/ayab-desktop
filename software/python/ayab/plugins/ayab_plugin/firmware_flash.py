@@ -58,7 +58,21 @@ class FirmwareFlash(QFrame):
       self.add_items_from_json_object(self.json_object)
 
     def parse_json(self, json_string):
-      x = """{"kh910": {"uno": [{"url": "/", "version": "latest", "file": "firmware.hex"}], "mega2560": [{"url": "", "date": "", "version": "latest", "file": "firmware.hex", "sha1sum": ""}]}, "kh930": {"uno": [{"url": "/", "version": "latest", "file": "firmware.hex"}], "mega2560": [{"url": "", "date": "", "version": "latest", "file": "firmware.hex", "sha1sum": ""}]}, "hardware_test": {"uno": [{"url": "/", "version": "latest", "file": "firmware.hex"}], "mega2560": [{"url": "/", "version": "latest", "file": "firmware.hex"}]}}"""
+      x = """{"kh910": {"uno": [{"url": "/", "version": "0.7 (latest)", "file": "kh910_uno_0-7.hex"}, \
+                                {"url": "/", "version": "0.6", "file": "kh910_uno_0-6.hex"}], \
+                        "mega2560": [{"url": "/", "version": "0.7 (latest)", "file": "kh910_mega_0-7.hex"}, \
+                                      {"url": "/", "version": "0.6", "file": "kh910_mega_0-6.hex"}] \
+                        }, \
+              "kh930": {"uno": [{"url": "/", "version": "0.7 (latest)", "file": "kh930_uno_0-7.hex"}, \
+                                {"url": "/", "version": "0.6", "file": "kh930_uno_0-6.hex"}], \
+                        "mega2560": [{"url": "/", "version": "0.7 (latest)", "file": "kh930_mega_0-7.hex"}, \
+                                      {"url": "/", "version": "0.6", "file": "kh930_mega_0-6.hex"}] \
+                        }, \
+              "hardware_test": {"uno": [{"url": "/", "version": "0.7 (latest)", "file": "hwtest_uno_0-7.hex"}, \
+                                        {"url": "/", "version": "0.6", "file": "hwtest_uno_0-6.hex"}], \
+                                "mega2560": [{"url": "/", "version": "0.7 (latest)", "file": "hwtest_mega_0-7.hex"}, \
+                                              {"url": "/", "version": "0.6", "file": "hwtest_mega_0-6.hex"}] \
+                                }}"""
       json_string = x
       return json.loads(json_string)
 
