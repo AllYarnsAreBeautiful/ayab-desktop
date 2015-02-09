@@ -474,9 +474,7 @@ class AyabPluginControl(KnittingPlugin):
                   self.__ayabCom.req_info()
 
               if rcvMsg == 'cnfInfo':
-                  logging.error("whoop")
                   if rcvParam == API_VERSION:
-                      logging.error("miau")
                       curState = 's_start'
                       self.__wait_for_user_action("Please init machine. (Set the carriage to mode KC-I or KC-II and move the carriage over the left turn mark).")
                   else:
