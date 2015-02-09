@@ -68,8 +68,9 @@ class AyabCommunication(object):
   def read_line(self):
     """Reads a line from serial communication."""
     line = bytes()
-    while self.__ser.inWaiting() > 0:
-        line += self.__ser.read(1)
+    if self.__ser:
+      while self.__ser.inWaiting() > 0:
+          line += self.__ser.read(1)
     return line
 
   def req_start(self, startNeedle, stopNeedle):

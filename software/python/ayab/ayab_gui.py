@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ayab/ayab_gui.ui'
 #
-# Created: Tue Jan 27 22:40:17 2015
+# Created: Mon Feb  9 22:25:25 2015
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -113,15 +113,20 @@ class Ui_MainWindow(object):
         self.line_2.setObjectName(_fromUtf8("line_2"))
         self.verticalLayout_5.addWidget(self.line_2)
         self.widget_knitcontrol = QtGui.QWidget(self.dockWidgetContents)
-        self.widget_knitcontrol.setEnabled(False)
+        self.widget_knitcontrol.setEnabled(True)
         self.widget_knitcontrol.setObjectName(_fromUtf8("widget_knitcontrol"))
         self.verticalLayout_3 = QtGui.QVBoxLayout(self.widget_knitcontrol)
         self.verticalLayout_3.setSizeConstraint(QtGui.QLayout.SetMaximumSize)
         self.verticalLayout_3.setMargin(0)
         self.verticalLayout_3.setObjectName(_fromUtf8("verticalLayout_3"))
         self.knit_button = QtGui.QPushButton(self.widget_knitcontrol)
+        self.knit_button.setEnabled(False)
         self.knit_button.setObjectName(_fromUtf8("knit_button"))
         self.verticalLayout_3.addWidget(self.knit_button)
+        self.cancel_button = QtGui.QPushButton(self.widget_knitcontrol)
+        self.cancel_button.setEnabled(False)
+        self.cancel_button.setObjectName(_fromUtf8("cancel_button"))
+        self.verticalLayout_3.addWidget(self.cancel_button)
         self.verticalLayout_5.addWidget(self.widget_knitcontrol)
         self.assistant_dock.setWidget(self.dockWidgetContents)
         self.gridLayout.addWidget(self.assistant_dock, 0, 1, 3, 1)
@@ -219,6 +224,7 @@ class Ui_MainWindow(object):
         self.load_file_button.setText(_translate("MainWindow", "1. Load Image File", None))
         self.knitting_options_dock.setWindowTitle(_translate("MainWindow", "Knitting Options", None))
         self.knit_button.setText(_translate("MainWindow", "3. Knit!", None))
+        self.cancel_button.setText(_translate("MainWindow", "Cancel Knitting", None))
         self.label_4.setText(_translate("MainWindow", "Image Dimensions", None))
         self.menuFile.setTitle(_translate("MainWindow", "File", None))
         self.menuHelp.setTitle(_translate("MainWindow", "Help", None))

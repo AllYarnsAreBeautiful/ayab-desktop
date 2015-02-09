@@ -144,9 +144,7 @@
              <property name="windowTitle">
               <string>Knitting Options</string>
              </property>
-             <widget class="QWidget" name="dockWidgetContents_2">
-              <zorder>widget_imgload</zorder>
-             </widget>
+             <widget class="QWidget" name="dockWidgetContents_2"/>
             </widget>
            </item>
           </layout>
@@ -162,7 +160,7 @@
         <item alignment="Qt::AlignHCenter">
          <widget class="QWidget" name="widget_knitcontrol" native="true">
           <property name="enabled">
-           <bool>false</bool>
+           <bool>true</bool>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_3">
            <property name="sizeConstraint">
@@ -170,8 +168,21 @@
            </property>
            <item>
             <widget class="QPushButton" name="knit_button">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
              <property name="text">
               <string>3. Knit!</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="cancel_button">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="text">
+              <string>Cancel Knitting</string>
              </property>
             </widget>
            </item>
