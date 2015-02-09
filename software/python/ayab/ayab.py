@@ -121,15 +121,30 @@ class GuiMain(QMainWindow):
         self.ui.widget_imgload.setEnabled(False)
         self.ui.menuImage_Actions.setEnabled(False)
         self.ui.widget_optionsdock.setEnabled(False)
+        self.ui.knit_button.setEnabled(False)
+        self.ui.cancel_button.setEnabled(True)
 
         self.gt = GenericThread(self.enabled_plugin.plugin_object.knit, parent_window=self)
         self.gt.start()
+
+    def cancel_knitting_process(self):
+        self.enabled_plugin.plugin_object.cancel()
+
+    def resetUI(self):
+        # (Re-)enable UI elements
+        self.ui.menuTools.setEnabled(True)
+        self.ui.widget_imgload.setEnabled(True)
+        self.ui.menuImage_Actions.setEnabled(True)
+        self.ui.widget_optionsdock.setEnabled(True)
+        self.ui.knit_button.setEnabled(False)
+        self.ui.cancel_button.setEnabled(False)
 
     def setupBehaviour(self):
         # Connecting UI elements.
         self.ui.load_file_button.clicked.connect(self.file_select_dialog)
         self.ui.module_dropdown.activated[str].connect(self.set_enabled_plugin)
         self.ui.knit_button.clicked.connect(self.start_knitting_process)
+        self.ui.cancel_button.clicked.connect(self.cancel_knitting_process)
         self.ui.actionLoad_AYAB_Firmware.activated.connect(self.generate_firmware_ui)
         self.ui.image_pattern_view.setDragMode(QtGui.QGraphicsView.ScrollHandDrag)
         # Connecting Signals.

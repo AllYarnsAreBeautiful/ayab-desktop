@@ -37,7 +37,7 @@ class AyabPluginControl(KnittingPlugin):
     self.finish()
 
   def onconfigure(self, e):
-    logging.debug("called onconfigure on TestingKnittingPlugin")
+    logging.debug("called onconfigure on AYAB Knitting Plugin")
     #print ', '.join("%s: %s" % item for item in vars(e).items())
     #FIXME: substitute setting parent_ui from self.__parent_ui
     #self.__parent_ui = e.event.parent_ui
@@ -63,7 +63,7 @@ class AyabPluginControl(KnittingPlugin):
       self.__image.setStartLine(conf.get("start_line"))
 
     if self.validate_configuration(conf):
-      parent_ui.ui.widget_knitcontrol.setEnabled(True)
+      parent_ui.ui.knit_button.setEnabled(True)
       self.__emit_progress(0, 0, self.__image.imgHeight())
     return
 
@@ -85,6 +85,12 @@ class AyabPluginControl(KnittingPlugin):
   def onfinish(self, e):
     logging.info("Finished Knitting.")
     self.__close_serial()
+    self.__parent_ui.resetUI()
+    self.__parent_ui.emit(QtCore.SIGNAL('updateProgress(int,int,int)'), 0, 0, 0)
+
+  def cancel(self):
+    self._knitImage = False
+    #self.finish()
 
   def __close_serial(self):
     try:
@@ -149,6 +155,8 @@ class AyabPluginControl(KnittingPlugin):
     """Connects methods to UI elements."""
     conf_button = self.options_ui.configure_button  # Used instead of findChild(QtGui.QPushButton, "configure_button")
     conf_button.clicked.connect(self.conf_button_function)
+
+
     self.populate_ports()
     refresh_ports = self.options_ui.refresh_ports_button
     refresh_ports.click.connect(self.populate_ports)
@@ -261,7 +269,7 @@ class AyabPluginControl(KnittingPlugin):
 
             elif msgId == 0xC3:  # cnfInfo
                 # print "> cnfInfo: Version=" + str(ord(line[1]))
-                logging.debug("Detected device with" + str(ord(line[1])))
+                logging.debug("Detected device with API v" + str(ord(line[1])))
                 return ("cnfInfo", ord(line[1]))
 
             elif msgId == 0x82:  # reqLine
@@ -456,7 +464,8 @@ class AyabPluginControl(KnittingPlugin):
           logging.error("Could not open serial port")
           return
 
-      while True:
+      self._knitImage = True
+      while self._knitImage:
           # TODO catch keyboard interrupts to abort knitting
           # TODO: port to state machine or similar.
           rcvMsg, rcvParam = self.__checkSerial()
@@ -465,7 +474,9 @@ class AyabPluginControl(KnittingPlugin):
                   self.__ayabCom.req_info()
 
               if rcvMsg == 'cnfInfo':
+                  logging.error("whoop")
                   if rcvParam == API_VERSION:
+                      logging.error("miau")
                       curState = 's_start'
                       self.__wait_for_user_action("Please init machine. (Set the carriage to mode KC-I or KC-II and move the carriage over the left turn mark).")
                   else:
