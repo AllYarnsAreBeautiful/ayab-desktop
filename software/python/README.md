@@ -36,3 +36,20 @@ Then create a virtual enviroment on software/python/ with
     source venv/bin/activate
     pip install -r requirements.txt
 
+## Release Notes
+
+### 0.7 (February 2015)
+
+#### Firmware
+
+* Lace carriage support
+
+#### GUI
+
+* Showing info about current line number
+* Some layout fixes (disabling UI elements, ...)
+* Starting to knit with the bottom of the image
+* Fixed progressbar in 2 color doublebed mode
+* Start and Stop needle selection like on the machine (orange/green)
+* Infinite Repeat functionality
+* Cancel button added
