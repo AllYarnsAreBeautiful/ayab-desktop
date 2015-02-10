@@ -32,7 +32,7 @@ In the folder where this README.md is located, create a virtual enviroment and i
 
     virtualenv --system-site-packages venv/
     source venv/bin/activate
-    pip install ayab
+    sudo python setup.py install
 
 Start ayab with
     ayab
