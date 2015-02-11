@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ayab/plugins/ayab_plugin/ayab_options.ui'
 #
-# Created: Sat Feb  7 20:18:15 2015
+# Created: Wed Feb 11 17:33:45 2015
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,7 +26,7 @@ except AttributeError:
 class Ui_DockWidget(object):
     def setupUi(self, DockWidget):
         DockWidget.setObjectName(_fromUtf8("DockWidget"))
-        DockWidget.resize(237, 510)
+        DockWidget.resize(237, 530)
         DockWidget.setFeatures(QtGui.QDockWidget.NoDockWidgetFeatures)
         self.ayab_config = QtGui.QWidget()
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Maximum)
@@ -74,15 +74,15 @@ class Ui_DockWidget(object):
         self.line.setObjectName(_fromUtf8("line"))
         self.verticalLayout.addWidget(self.line)
         self.gbox_startneedle = QtGui.QGroupBox(self.ayab_config)
-        self.gbox_startneedle.setMinimumSize(QtCore.QSize(0, 50))
+        self.gbox_startneedle.setMinimumSize(QtCore.QSize(0, 60))
         self.gbox_startneedle.setObjectName(_fromUtf8("gbox_startneedle"))
         self.start_needle_color = QtGui.QComboBox(self.gbox_startneedle)
-        self.start_needle_color.setGeometry(QtCore.QRect(50, 20, 81, 31))
+        self.start_needle_color.setGeometry(QtCore.QRect(100, 20, 81, 31))
         self.start_needle_color.setObjectName(_fromUtf8("start_needle_color"))
         self.start_needle_color.addItem(_fromUtf8(""))
         self.start_needle_color.addItem(_fromUtf8(""))
         self.start_needle_edit = QtGui.QSpinBox(self.gbox_startneedle)
-        self.start_needle_edit.setGeometry(QtCore.QRect(0, 20, 51, 31))
+        self.start_needle_edit.setGeometry(QtCore.QRect(50, 20, 51, 31))
         self.start_needle_edit.setPrefix(_fromUtf8(""))
         self.start_needle_edit.setMinimum(1)
         self.start_needle_edit.setMaximum(100)
@@ -90,15 +90,15 @@ class Ui_DockWidget(object):
         self.start_needle_edit.setObjectName(_fromUtf8("start_needle_edit"))
         self.verticalLayout.addWidget(self.gbox_startneedle)
         self.gbox_stopneedle = QtGui.QGroupBox(self.ayab_config)
-        self.gbox_stopneedle.setMinimumSize(QtCore.QSize(0, 50))
+        self.gbox_stopneedle.setMinimumSize(QtCore.QSize(0, 60))
         self.gbox_stopneedle.setObjectName(_fromUtf8("gbox_stopneedle"))
         self.stop_needle_color = QtGui.QComboBox(self.gbox_stopneedle)
-        self.stop_needle_color.setGeometry(QtCore.QRect(50, 20, 81, 31))
+        self.stop_needle_color.setGeometry(QtCore.QRect(100, 20, 81, 31))
         self.stop_needle_color.setObjectName(_fromUtf8("stop_needle_color"))
         self.stop_needle_color.addItem(_fromUtf8(""))
         self.stop_needle_color.addItem(_fromUtf8(""))
         self.stop_needle_edit = QtGui.QSpinBox(self.gbox_stopneedle)
-        self.stop_needle_edit.setGeometry(QtCore.QRect(0, 20, 51, 31))
+        self.stop_needle_edit.setGeometry(QtCore.QRect(50, 20, 51, 31))
         self.stop_needle_edit.setPrefix(_fromUtf8(""))
         self.stop_needle_edit.setMinimum(1)
         self.stop_needle_edit.setMaximum(100)

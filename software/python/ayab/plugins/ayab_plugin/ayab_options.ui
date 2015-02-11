@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>237</width>
-    <height>510</height>
+    <height>530</height>
    </rect>
   </property>
   <property name="features">
@@ -102,7 +102,7 @@
       <property name="minimumSize">
        <size>
         <width>0</width>
-        <height>50</height>
+        <height>60</height>
        </size>
       </property>
       <property name="title">
@@ -111,7 +111,7 @@
       <widget class="QComboBox" name="start_needle_color">
        <property name="geometry">
         <rect>
-         <x>50</x>
+         <x>100</x>
          <y>20</y>
          <width>81</width>
          <height>31</height>
@@ -131,7 +131,7 @@
       <widget class="QSpinBox" name="start_needle_edit">
        <property name="geometry">
         <rect>
-         <x>0</x>
+         <x>50</x>
          <y>20</y>
          <width>51</width>
          <height>31</height>
@@ -157,7 +157,7 @@
       <property name="minimumSize">
        <size>
         <width>0</width>
-        <height>50</height>
+        <height>60</height>
        </size>
       </property>
       <property name="title">
@@ -166,7 +166,7 @@
       <widget class="QComboBox" name="stop_needle_color">
        <property name="geometry">
         <rect>
-         <x>50</x>
+         <x>100</x>
          <y>20</y>
          <width>81</width>
          <height>31</height>
@@ -186,7 +186,7 @@
       <widget class="QSpinBox" name="stop_needle_edit">
        <property name="geometry">
         <rect>
-         <x>0</x>
+         <x>50</x>
          <y>20</y>
          <width>51</width>
          <height>31</height>
