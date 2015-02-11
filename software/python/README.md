@@ -25,7 +25,7 @@ In the folder where this README.md is located, create a virtual enviroment and i
 
     virtualenv --system-site-packages venv/
     source venv/bin/activate
-    python setup.py install
+    pip install ayab
 
 Start ayab with
     ayab
