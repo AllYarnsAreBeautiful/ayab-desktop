@@ -118,7 +118,7 @@ setup(
         }},
     data_files=find_data_files('ayab', 'ayab', [
         'README.md',
-        'images/*',
+        'patterns/*',
         '*.ts',
         '*.yapsy-plugin',
         'plugins/*',
