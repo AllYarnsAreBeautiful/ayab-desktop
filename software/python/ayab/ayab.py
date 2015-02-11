@@ -62,6 +62,9 @@ class GuiMain(QMainWindow):
         self.setupBehaviour()
 
     def plugins_init(self, is_reloading=False):
+        # Disable DEBUG logging of yapsy
+        logging.getLogger('yapsy').setLevel(logging.WARNING)
+
         if is_reloading:
           logging.info("Deactivating All Plugins")
           for pluginInfo in self.pm.getAllPlugins():
@@ -145,7 +148,7 @@ class GuiMain(QMainWindow):
         self.ui.module_dropdown.activated[str].connect(self.set_enabled_plugin)
         self.ui.knit_button.clicked.connect(self.start_knitting_process)
         self.ui.cancel_button.clicked.connect(self.cancel_knitting_process)
-        self.ui.actionLoad_AYAB_Firmware.activated.connect(self.generate_firmware_ui)
+        self.ui.actionLoad_AYAB_Firmware.triggered.connect(self.generate_firmware_ui)
         self.ui.image_pattern_view.setDragMode(QtGui.QGraphicsView.ScrollHandDrag)
         # Connecting Signals.
         self.connect(self, QtCore.SIGNAL("updateProgress(int,int,int)"), self.updateProgress)
@@ -153,14 +156,14 @@ class GuiMain(QMainWindow):
         # This blocks the other thread until signal is done
         self.connect(self, QtCore.SIGNAL("display_blocking_pop_up_signal(QString, QString)"), self.display_blocking_pop_up, QtCore.Qt.BlockingQueuedConnection)
         self.connect(self, QtCore.SIGNAL("display_blocking_pop_up_signal(QString)"), self.display_blocking_pop_up, QtCore.Qt.BlockingQueuedConnection)
-        self.ui.actionQuit.activated.connect(QtCore.QCoreApplication.instance().quit)
-        self.ui.actionAbout.activated.connect(self.open_about_ui)
-        self.ui.actionMirror.activated.connect(self.mirror_image)
-        self.ui.actionInvert.activated.connect(self.invert_image)
-        self.ui.actionRotate_Left.activated.connect(self.rotate_left)
-        self.ui.actionRotate_Right.activated.connect(self.rotate_right)
-        self.ui.actionVertical_Flip.activated.connect(self.flip_image)
-        self.ui.actionSmart_Resize.activated.connect(self.smart_resize)
+        self.ui.actionQuit.triggered.connect(QtCore.QCoreApplication.instance().quit)
+        self.ui.actionAbout.triggered.connect(self.open_about_ui)
+        self.ui.actionMirror.triggered.connect(self.mirror_image)
+        self.ui.actionInvert.triggered.connect(self.invert_image)
+        self.ui.actionRotate_Left.triggered.connect(self.rotate_left)
+        self.ui.actionRotate_Right.triggered.connect(self.rotate_right)
+        self.ui.actionVertical_Flip.triggered.connect(self.flip_image)
+        self.ui.actionSmart_Resize.triggered.connect(self.smart_resize)
 
     def load_image_from_string(self, image_str):
         """Loads an image into self.ui.image_pattern_view using a temporary QGraphicsScene"""
