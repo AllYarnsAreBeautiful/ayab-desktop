@@ -12,7 +12,7 @@ This is the GUI interface for AYAB.
 
 *For Debian/Ubuntu*
 
-    sudo apt-get install python-qt4 pyqt4-dev-tools python-pip python-dev
+    sudo apt-get install python-pip python-qt4 python-dev
 
 *For openSUSE*
 
@@ -25,7 +25,7 @@ In the folder where this README.md is located, create a virtual enviroment and i
 
     virtualenv --system-site-packages venv/
     source venv/bin/activate
-    sudo python setup.py install
+    python setup.py install
 
 Start ayab with
     ayab
@@ -40,6 +40,10 @@ Just unzip the archive to C:\ayab-apparat and start ayab.exe
 To install the development version you can checkout the git repository. You need Python 2.7 and PyQt from your package manager's repository.
 The other main dependencies are: Pillow >= 2.4, pyserial >= 2.7, fysom >= 1.1 and Yapsy >= 1.10
 Move to the software/python/ folder and install the required dependencies.
+
+#### Development Dependencies for Linux
+
+pyqt4-dev-tools 
 
 #### Development Dependencies for Windows
 
