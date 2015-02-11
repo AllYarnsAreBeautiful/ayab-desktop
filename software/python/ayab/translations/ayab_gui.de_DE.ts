@@ -76,12 +76,12 @@
     <message>
         <location filename="ayab_gui.py" line="223"/>
         <source>Load Images and Mode</source>
-        <translation>Bilder und Modus laden</translation>
+        <translation>Muster laden</translation>
     </message>
     <message>
         <location filename="ayab_gui.py" line="224"/>
         <source>1. Load Image File</source>
-        <translation>1. Bild öffnen</translation>
+        <translation>1. Muster öffnen</translation>
     </message>
     <message>
         <location filename="ayab_gui.py" line="226"/>
@@ -96,12 +96,12 @@
     <message>
         <location filename="ayab_gui.py" line="228"/>
         <source>Image Dimensions</source>
-        <translation>Bildgröße</translation>
+        <translation>Mustergröße</translation>
     </message>
     <message>
         <location filename="ayab_gui.py" line="232"/>
         <source>Image Actions</source>
-        <translation>Bild Aktionen</translation>
+        <translation>Musterbearbeitung</translation>
     </message>
     <message>
         <location filename="ayab_gui.py" line="236"/>
