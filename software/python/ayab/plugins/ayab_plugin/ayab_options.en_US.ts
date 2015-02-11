@@ -13,97 +13,97 @@
         <translation type="obsolete">Serial Port</translation>
     </message>
     <message>
-        <location filename="ayab_options.py" line="137"/>
+        <location filename="ayab_options.ui" line="49"/>
         <source>Colors</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ayab_options.py" line="138"/>
+        <location filename="ayab_options.ui" line="66"/>
         <source>Start Line</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ayab_options.py" line="139"/>
+        <location filename="ayab_options.ui" line="76"/>
         <source>line </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ayab_options.py" line="141"/>
+        <location filename="ayab_options.ui" line="109"/>
         <source>Start Needle</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ayab_options.py" line="144"/>
+        <location filename="ayab_options.ui" line="164"/>
         <source>Stop Needle</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ayab_options.py" line="147"/>
+        <location filename="ayab_options.ui" line="213"/>
         <source>Alignment</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ayab_options.py" line="149"/>
+        <location filename="ayab_options.ui" line="226"/>
         <source>left</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ayab_options.py" line="148"/>
+        <location filename="ayab_options.ui" line="221"/>
         <source>center</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ayab_options.py" line="150"/>
+        <location filename="ayab_options.ui" line="231"/>
         <source>right</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ayab_options.py" line="151"/>
+        <location filename="ayab_options.ui" line="239"/>
         <source>Machine Type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ayab_options.py" line="152"/>
+        <location filename="ayab_options.ui" line="247"/>
         <source>single</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ayab_options.py" line="153"/>
+        <location filename="ayab_options.ui" line="252"/>
         <source>double</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ayab_options.py" line="134"/>
+        <location filename="ayab_options.ui" line="17"/>
         <source>AYAB</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ayab_options.py" line="135"/>
+        <location filename="ayab_options.ui" line="30"/>
         <source>Port Selection</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ayab_options.py" line="136"/>
+        <location filename="ayab_options.ui" line="39"/>
         <source>Refresh Ports</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ayab_options.py" line="140"/>
+        <location filename="ayab_options.ui" line="89"/>
         <source>Infinite Repeat</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ayab_options.py" line="146"/>
+        <location filename="ayab_options.ui" line="182"/>
         <source>orange</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ayab_options.py" line="145"/>
+        <location filename="ayab_options.ui" line="177"/>
         <source>green</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ayab_options.py" line="154"/>
+        <location filename="ayab_options.ui" line="260"/>
         <source>2. Configure</source>
         <translation type="unfinished"></translation>
     </message>
