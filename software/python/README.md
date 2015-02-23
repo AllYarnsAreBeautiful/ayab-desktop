@@ -21,7 +21,7 @@ This is the GUI interface for AYAB.
 
 #### Setup
 
-In the folder where this README.md is located, create a virtual enviroment and install ayab with
+Create a virtual enviroment (e.g. in $HOME/ayab/) and install ayab with
 
     virtualenv --system-site-packages venv/
     source venv/bin/activate
@@ -32,8 +32,9 @@ Start ayab with
 
 ### Windows
 
-The Windows version has been packed with py2exe and should not require any additional dependencies. 
-Just unzip the archive to C:\ayab-apparat and start ayab.exe
+The Windows version which is available at http://ayab-knitting.com has been packed with py2exe and should not require
+any additional dependencies. Just unzip the archive to C:\ayab-apparat-0.7 and
+start ayab.exe
 
 ### Development
 
@@ -55,6 +56,12 @@ Download and install PyQt4 from
     http://www.riverbankcomputing.co.uk/software/pyqt/download
 
 ## Release Notes
+
+### 0.75 (February 2015)
+
+#### Firmware
+
+* Fixed Lace carriage support
 
 ### 0.7 (February 2015)
 
