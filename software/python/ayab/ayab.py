@@ -299,7 +299,8 @@ class GuiMain(QMainWindow):
         if not args:
             logging.debug("image not altered on __rotate_image.")
             return image
-        rotated_image = image.rotate(args[0], expand=True)
+        logging.debug("rotating image")
+        rotated_image = image.rotate(args[0], expand=False)
         return rotated_image
 
     def __invert_image(self, image, args):
