@@ -28,8 +28,6 @@ from PyQt4 import QtGui, QtCore
 from ayab_options import Ui_DockWidget
 import serial.tools.list_ports
 
-from pprint import pprint
-
 
 class AyabPluginControl(KnittingPlugin):
 
@@ -44,8 +42,6 @@ class AyabPluginControl(KnittingPlugin):
     #FIXME: substitute setting parent_ui from self.__parent_ui
     #self.__parent_ui = e.event.parent_ui
     parent_ui = self.__parent_ui
-
-    pprint(vars(parent_ui.ui))
 
     #Start to knit with the bottom first
     pil_image = parent_ui.pil_image.rotate(180)
