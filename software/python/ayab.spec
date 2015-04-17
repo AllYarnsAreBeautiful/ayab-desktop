@@ -1,7 +1,7 @@
 # -*- mode: python -*-
 a = Analysis(['ayab/ayab.py'],
              pathex=['/home/tian/devel/ayab-apparat/software/python'],
-             hiddenimports=['fysom', 'yapsy'],
+             hiddenimports=['fysom', 'yapsy', 'ayab'],
              hookspath=None,
              runtime_hooks=None)
 pyz = PYZ(a.pure)
