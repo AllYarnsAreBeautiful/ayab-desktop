@@ -278,7 +278,7 @@ class AyabPluginControl(KnittingPlugin):
                 return ("reqLine", ord(line[1]))
 
             else:
-                self.__printError("unknown message: " + line[:])  # drop crlf
+                logging.warning("unknown message: " + line[:])  # drop crlf
                 return ("unknown", 0)
         return("none", 0)
 
