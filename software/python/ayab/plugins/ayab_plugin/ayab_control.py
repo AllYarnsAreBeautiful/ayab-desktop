@@ -337,7 +337,7 @@ class AyabPluginControl(KnittingPlugin):
                     lastLine = 0x01
 
             # doublebed, 2 color
-            elif self.__machineType == 'double' \
+            elif self.__machineType == 'ribber' \
                     and self.__numColors == 2:
 
                 # calculate imgRow
@@ -371,7 +371,7 @@ class AyabPluginControl(KnittingPlugin):
                         lastLine = 0x01
 
             # doublebed, multicolor
-            elif self.__machineType == 'double' \
+            elif self.__machineType == 'ribber' \
                     and self.__numColors > 2:
 
                 # calculate imgRow
@@ -402,7 +402,7 @@ class AyabPluginControl(KnittingPlugin):
 
             # set the bitarray
             if color == 0 \
-                    and self.__machineType == 'double':
+                    and self.__machineType == 'ribber':
                 for col in range(0, 200):
                     if col < imgStartNeedle \
                             or col > imgStopNeedle:
