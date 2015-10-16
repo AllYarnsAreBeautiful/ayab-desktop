@@ -150,6 +150,6 @@ class Ui_DockWidget(object):
         self.alignment_combo_box.setItemText(2, _translate("DockWidget", "right", None))
         self.label_4.setText(_translate("DockWidget", "Machine Type", None))
         self.machine_type_box.setItemText(0, _translate("DockWidget", "single", None))
-        self.machine_type_box.setItemText(1, _translate("DockWidget", "double", None))
+        self.machine_type_box.setItemText(1, _translate("DockWidget", "ribber", None))
         self.configure_button.setText(_translate("DockWidget", "2. Configure", None))
 

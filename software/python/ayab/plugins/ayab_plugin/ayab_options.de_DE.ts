@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS><TS version="2.0" language="de_DE" sourcelanguage="en_US">
+<!DOCTYPE TS>
+<TS version="2.0" language="de_DE" sourcelanguage="en_US">
 <context>
     <name>DockWidget</name>
     <message>
@@ -43,11 +44,13 @@
         <translation>Startnadel</translation>
     </message>
     <message>
+        <location filename="ayab_options.ui" line="122"/>
         <location filename="ayab_options.ui" line="182"/>
         <source>orange</source>
         <translation>orange</translation>
     </message>
     <message>
+        <location filename="ayab_options.ui" line="127"/>
         <location filename="ayab_options.ui" line="177"/>
         <source>green</source>
         <translation>grün</translation>
@@ -85,12 +88,12 @@
     <message>
         <location filename="ayab_options.ui" line="247"/>
         <source>single</source>
-        <translation>Einzelbett</translation>
+        <translation>single</translation>
     </message>
     <message>
         <location filename="ayab_options.ui" line="252"/>
-        <source>double</source>
-        <translation>Doppelbett</translation>
+        <source>ribber</source>
+        <translation>ribber</translation>
     </message>
     <message>
         <location filename="ayab_options.ui" line="260"/>
