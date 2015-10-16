@@ -175,22 +175,25 @@ class GuiMain(QMainWindow):
     def load_pil_image_on_scene(self, image_obj):
         '''Loads the PIL image on a QtScene and sets it as the current scene on the Image View.'''
         width, height = image_obj.size
-        self.__qt_image = ImageQt.ImageQt(image_obj)
-        self.__qpixmap = QtGui.QPixmap.fromImage(self.__qt_image)
-        self.__qscene = QtGui.QGraphicsScene()
-        self.__qscene.addPixmap(self.__qpixmap)
+
+        if image_obj.mode == "RGB":
+            pass
+        elif image_obj.mode == "L":
+            image_obj = image_obj.convert("RGBA")
+        data = image_obj.convert("RGBA").tostring("raw", "RGBA")
+        qim = QtGui.QImage(data, image_obj.size[0], image_obj.size[1], QtGui.QImage.Format_ARGB32)
+        pixmap = QtGui.QPixmap.fromImage(qim)
+
+        qscene = QtGui.QGraphicsScene()
+        qscene.addPixmap(pixmap)
 
         #l = QtCore.QLineF(0,0,100,100)
         #self.__qscene.addLine(l)
 
-        self.set_dimensions_on_gui(width, height)
-
-
-
         qv = self.ui.image_pattern_view
         qv.resetTransform()
         qv.scale(2.0, 2.0)
-        qv.setScene(self.__qscene)
+        qv.setScene(qscene)
 
     def set_dimensions_on_gui(self, width, height):
         text = u"{} - {}".format(width, height)
