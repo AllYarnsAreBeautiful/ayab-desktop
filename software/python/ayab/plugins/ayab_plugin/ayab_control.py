@@ -160,7 +160,7 @@ class AyabPluginControl(KnittingPlugin):
 
     self.populate_ports()
     refresh_ports = self.options_ui.refresh_ports_button
-    refresh_ports.click.connect(self.populate_ports)
+    refresh_ports.clicked.connect(self.populate_ports)
 
   def conf_button_function(self):
     self.configure()
