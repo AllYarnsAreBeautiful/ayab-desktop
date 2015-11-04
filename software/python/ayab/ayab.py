@@ -56,6 +56,10 @@ class GuiMain(QMainWindow):
         self.image_file_route = None
         self.enabled_plugin = None
 
+        self.start_needle = 80
+        self.stop_needle = 119
+        self.imageAlignment = "center"
+
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self.plugins_init()
@@ -113,9 +117,20 @@ class GuiMain(QMainWindow):
         self.ui.progress_label.setText("{0}/{1}".format(done, total))
 
     def update_file_selected_text_field(self, route):
-        ''''Sets self.image_file_route and ui.filename_lineedit to route.'''
+        '''Sets self.image_file_route and ui.filename_lineedit to route.'''
         self.ui.filename_lineedit.setText(route)
         self.image_file_route = route
+
+    def slotUpdateNeedles(self, start_needle, stop_needle):
+        '''Updates the position of the start/stop needle visualisation'''
+        self.start_needle = start_needle
+        self.stop_needle  = stop_needle
+        self.refresh_scene()
+
+    def slotUpdateAlignment(self, alignment):
+        '''Updates the alignment of the image between start/stop needle'''
+        self.imageAlignment = alignment
+        self.refresh_scene()
 
     def start_knitting_process(self):
         # Disable everythin which should not be touched
@@ -153,6 +168,8 @@ class GuiMain(QMainWindow):
         # Connecting Signals.
         self.connect(self, QtCore.SIGNAL("updateProgress(int,int,int)"), self.updateProgress)
         self.connect(self, QtCore.SIGNAL("display_pop_up_signal(QString, QString)"), self.display_blocking_pop_up)
+        self.connect(self, QtCore.SIGNAL("signalUpdateNeedles(int,int)"), self.slotUpdateNeedles)
+        self.connect(self, QtCore.SIGNAL("signalUpdateAlignment(QString)"), self.slotUpdateAlignment)
         # This blocks the other thread until signal is done
         self.connect(self, QtCore.SIGNAL("display_blocking_pop_up_signal(QString, QString)"), self.display_blocking_pop_up, QtCore.Qt.BlockingQueuedConnection)
         self.connect(self, QtCore.SIGNAL("display_blocking_pop_up_signal(QString)"), self.display_blocking_pop_up, QtCore.Qt.BlockingQueuedConnection)
@@ -166,29 +183,95 @@ class GuiMain(QMainWindow):
         self.ui.actionSmart_Resize.triggered.connect(self.smart_resize)
 
     def load_image_from_string(self, image_str):
-        """Loads an image into self.ui.image_pattern_view using a temporary QGraphicsScene"""
+        '''Loads an image into self.ui.image_pattern_view using a temporary QGraphicsScene'''
+        
+        # TODO Check for maximum width before loading the image
         self.pil_image = Image.open(image_str)
-        self.load_pil_image_on_scene(self.pil_image)
+        if self.pil_image.mode == "RGB":
+            pass
+        elif self.pil_image.mode == "L":
+            self.pil_image = self.pil_image.convert("RGBA")
+
+        self.refresh_scene()
+        # Enable plugin elements after first load of image
         self.ui.widget_optionsdock.setEnabled(True)
         self.ui.menuImage_Actions.setEnabled(True)
 
-    def load_pil_image_on_scene(self, image_obj):
-        '''Loads the PIL image on a QtScene and sets it as the current scene on the Image View.'''
-        width, height = image_obj.size
+    def refresh_scene(self):
+        '''Updates the current scene '''
+        width, height = self.pil_image.size
 
-        if image_obj.mode == "RGB":
-            pass
-        elif image_obj.mode == "L":
-            image_obj = image_obj.convert("RGBA")
-        data = image_obj.convert("RGBA").tostring("raw", "RGBA")
-        qim = QtGui.QImage(data, image_obj.size[0], image_obj.size[1], QtGui.QImage.Format_ARGB32)
+        data = self.pil_image.convert("RGBA").tostring("raw", "RGBA")
+        qim = QtGui.QImage(data,
+                           self.pil_image.size[0],
+                           self.pil_image.size[1],
+                           QtGui.QImage.Format_ARGB32)
         pixmap = QtGui.QPixmap.fromImage(qim)
 
-        qscene = QtGui.QGraphicsScene()
-        qscene.addPixmap(pixmap)
+        self.set_dimensions_on_gui(pixmap.width(), pixmap.height())
 
-        #l = QtCore.QLineF(0,0,100,100)
-        #self.__qscene.addLine(l)
+        qscene = QtGui.QGraphicsScene()
+
+        # TODO move to generic configuration
+        machine_width = 200
+        canvas_width  = machine_width
+        canvas_height = 200.0
+
+        bar_height    = 5.0
+
+        qscene.setSceneRect(
+            -(canvas_width/2.0),    # x
+            -(canvas_height/2.0),   # y
+            canvas_width,           # w
+            canvas_height)          # h
+
+        # add pattern and move accordingly to alignment
+        pattern = qscene.addPixmap(pixmap)
+        if self.imageAlignment == 'left':
+            pattern.setPos(
+                (self.start_needle - 100),
+                -(pixmap.height()/2.0))
+        elif self.imageAlignment == 'center':
+            pattern.setPos(
+                -(pixmap.width()/2.0)+((self.start_needle+self.stop_needle)/2) - 100,
+                -(pixmap.height()/2.0))
+        elif self.imageAlignment == 'right':
+            pattern.setPos(
+                (self.stop_needle - 100 - pixmap.width()),
+                -(pixmap.height()/2.0))
+        else:
+            logging.warning("invalid alignment")
+
+        rect_orange = QtGui.QGraphicsRectItem(
+            -(machine_width/2.0),
+            -(pixmap.height()/2.0)-bar_height,
+            (machine_width/2.0),
+            bar_height,
+            None, qscene)
+        rect_orange.setBrush(QtGui.QBrush(QtGui.QColor("orange")))
+        rect_green = QtGui.QGraphicsRectItem(
+            0.0,
+            -(pixmap.height()/2.0)-bar_height,
+            (machine_width/2.0),
+            bar_height,
+            None, qscene)
+        rect_green.setBrush(QtGui.QBrush(QtGui.QColor("green")))
+
+        #self.start_needle = -20
+        #self.stop_needle = 20
+        limit_bar_width = 0.5
+        QtGui.QGraphicsRectItem(
+            self.start_needle - 100,
+            -(pixmap.height()/2.0) - bar_height,
+            limit_bar_width,
+            pixmap.height() + 2*bar_height,
+            None, qscene)
+        QtGui.QGraphicsRectItem(
+            self.stop_needle - 100,
+            -(pixmap.height()/2.0) - bar_height,
+            limit_bar_width,
+            pixmap.height() + 2*bar_height,
+            None, qscene)
 
         qv = self.ui.image_pattern_view
         qv.resetTransform()

@@ -117,6 +117,31 @@ class AyabPluginControl(KnittingPlugin):
     """Sends the updateProgress QtSignal."""
     self.__parent_ui.emit(QtCore.SIGNAL('updateProgress(int,int,int)'), int(percent), int(done), int(total))
 
+  def __emit_needles(self):
+    """Sends the updateNeedles QtSignal."""
+
+    start_needle_text = self.options_ui.start_needle_edit.value()
+    start_needle_color = self.options_ui.start_needle_color.currentText()
+    start_needle = self.readNeedleSettings(
+        start_needle_color,
+        start_needle_text)
+
+    stop_needle_text = self.options_ui.stop_needle_edit.value()
+    stop_needle_color = self.options_ui.stop_needle_color.currentText()
+    stop_needle = self.readNeedleSettings(
+        stop_needle_color,
+        stop_needle_text)
+
+    self.__parent_ui.emit(QtCore.SIGNAL('signalUpdateNeedles(int,int)'),
+        start_needle,
+        stop_needle)
+
+  def __emit_alignment(self):
+    """Sends the updateAlignment QtSignal"""
+    alignment_text = self.options_ui.alignment_combo_box.currentText()
+    self.__parent_ui.emit(QtCore.SIGNAL('signalUpdateAlignment(QString)'),
+                          alignment_text)
+
   def setup_ui(self, parent_ui):
     """Sets up UI elements from ayab_options.Ui_DockWidget in parent_ui."""
     self.set_translator()
@@ -157,10 +182,17 @@ class AyabPluginControl(KnittingPlugin):
     conf_button = self.options_ui.configure_button  # Used instead of findChild(QtGui.QPushButton, "configure_button")
     conf_button.clicked.connect(self.conf_button_function)
 
-
     self.populate_ports()
     refresh_ports = self.options_ui.refresh_ports_button
     refresh_ports.clicked.connect(self.populate_ports)
+
+    start_needle_edit = self.options_ui.start_needle_edit
+    start_needle_edit.valueChanged.connect(self.__emit_needles)
+    stop_needle_edit = self.options_ui.stop_needle_edit
+    stop_needle_edit.valueChanged.connect(self.__emit_needles)
+
+    alignment_combo_box = self.options_ui.alignment_combo_box
+    alignment_combo_box.currentIndexChanged.connect(self.__emit_alignment)
 
   def conf_button_function(self):
     self.configure()
@@ -174,6 +206,13 @@ class AyabPluginControl(KnittingPlugin):
     self.__qw = QtGui.QWidget()
     dock.setWidget(self.__qw)
     self.unset_translator()
+
+  def readNeedleSettings(self, color, needle):
+    '''Reads the Needle Settings UI Elements and normalizes'''
+    if(color == "orange"):
+        return 100 - int(needle)
+    elif(color == "green"):
+        return 99 + int(needle)
 
   def get_configuration_from_ui(self, ui):
     """Creates a configuration dict from the ui elements.
@@ -192,19 +231,16 @@ class AyabPluginControl(KnittingPlugin):
     start_needle_color = ui.findChild(QtGui.QComboBox, "start_needle_color").currentText()
     start_needle_text = ui.findChild(QtGui.QSpinBox, "start_needle_edit").value()
 
-    if(start_needle_color == "orange"):
-      self.conf["start_needle"] = 100 - int(start_needle_text)
-    elif(start_needle_color == "green"):
-      self.conf["start_needle"] = 99 + int(start_needle_text)
+    self.conf["start_needle"] = self.readNeedleSettings(
+        start_needle_color,
+        start_needle_text)
 
     stop_needle_color = ui.findChild(QtGui.QComboBox, "stop_needle_color").currentText()
     stop_needle_text = ui.findChild(QtGui.QSpinBox, "stop_needle_edit").value()
 
-    if(stop_needle_color == "orange"):
-      self.conf["stop_needle"] = 100 - int(stop_needle_text)
-    elif(stop_needle_color == "green"):
-      self.conf["stop_needle"] = 99 + int(stop_needle_text)
-
+    self.conf["stop_needle"] = self.readNeedleSettings(
+        stop_needle_color,
+        stop_needle_text)
 
     alignment_text = ui.findChild(QtGui.QComboBox, "alignment_combo_box").currentText()
     self.conf["alignment"] = alignment_text
