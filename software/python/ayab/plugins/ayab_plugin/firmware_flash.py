@@ -13,6 +13,7 @@ import logging
 import os
 import platform
 import subprocess
+from pprint import pprint
 
 from firmware_flash_ui import Ui_FirmwareFlashFrame
 
@@ -58,31 +59,16 @@ class FirmwareFlash(QFrame):
       self.add_items_from_json_object(self.json_object)
 
     def parse_json(self, json_string):
-      x = """{"KH-910, KH-950(i)": \
-                        {"uno": [{"url": "/", "version": "0.75 (latest)", "file": "kh910_uno_0-75.hex"}, \
-                                {"url": "/", "version": "0.6", "file": "kh910_uno_0-6.hex"}], \
-                        "mega2560": [{"url": "/", "version": "0.75 (latest)", "file": "kh910_mega_0-75.hex"}, \
-                                    {"url": "/", "version": "0.6", "file": "kh910_mega_0-6.hex"}] \
-                        }, \
-              "KH-900, KH-930, KH-965(i), CK-35": \
-                        {"uno": [{"url": "/", "version": "0.75 (latest)", "file": "kh930_uno_0-75.hex"}, \
-                                {"url": "/", "version": "0.6", "file": "kh930_uno_0-6.hex"}], \
-                        "mega2560": [{"url": "/", "version": "0.75 (latest)", "file": "kh930_mega_0-75.hex"}, \
-                                    {"url": "/", "version": "0.6", "file": "kh930_mega_0-6.hex"}] \
-                        }, \
-              "_Hardware Test Firmware": \
-                        {"uno": [{"url": "/", "version": "0.7 (latest)", "file": "hwtest_uno_0-7.hex"}, \
-                                {"url": "/", "version": "0.6", "file": "hwtest_uno_0-6.hex"}], \
-                        "mega2560": [{"url": "/", "version": "0.7 (latest)", "file": "hwtest_mega_0-7.hex"}, \
-                                    {"url": "/", "version": "0.6", "file": "hwtest_mega_0-6.hex"}] \
-                                }}"""
-      json_string = x
-      return json.loads(json_string)
+      path = (os.path.dirname(os.path.realpath(__file__)) + "/firmware/firmware.json")
+      with open(path) as data_file:
+          data = json.load(data_file)
+      return data
 
     def add_items_from_json_object(self, json_object):
       repo = json_object
       for hardware_device in repo:
-        self.add_hardware_to_list(hardware_device)
+        description = repo.get(hardware_device, [])['description']
+        self.add_hardware_to_list(description)
         #for controller in repo.get(hardware_device, []):
           #self.add_controller_to_list(controller)
           #for firmware in repo[hardware_device][controller]:
@@ -91,32 +77,32 @@ class FirmwareFlash(QFrame):
     def hardware_item_activated(self, hardware_qitem):
       '''Signal on hardware_list activated. Triggers loading of controllers.'''
       logging.debug("selected "+hardware_qitem.text())
-      self.load_controllers(hardware_qitem.text())
+      for hardware_device in self.json_object:
+        if self.json_object.get(hardware_device, [])['description'] == hardware_qitem.text():
+          self.chosen_hardware_device = hardware_device
+          self.load_controllers()
 
     def controller_item_activated(self, control_qitem):
       '''Signal on controller_list activated. Triggers loading of firmwares.'''
       logging.debug("selected "+control_qitem.text())
-      hardware_loaded_qitem = self.ui.hardware_list.currentItem()
-      self.load_firmware(hardware_loaded_qitem.text(), control_qitem.text())
+      self.load_firmware(control_qitem.text())
 
     def firmware_item_activated(self, firmware_qitem):
       '''Signal on firmware_list activated.'''
       logging.debug("selected firmware qitem" +firmware_qitem.text())
       self.ui.flash_firmware.setEnabled(True)
 
-    def load_controllers(self, hardware_qstring):
+    def load_controllers(self):
       self.clean_controller_list()
       repo = self.json_object
-      hardware_string = unicode(hardware_qstring)
-      for controller in repo.get(hardware_string, []):
+      for controller in repo.get(self.chosen_hardware_device, []).get("controller", []):
         self.add_controller_to_list(controller)
 
-    def load_firmware(self, hardware_qstring, controller_qstring):
+    def load_firmware(self, controller_qstring):
       self.clean_firmware_list()
-      hardware_key = unicode(hardware_qstring)
       controller_key = unicode(controller_qstring)
       repo = self.json_object
-      for firmware in repo[hardware_key][controller_key]:
+      for firmware in repo[self.chosen_hardware_device]['controller'][controller_key]:
         self.add_firmware_dict_to_list(firmware)
       #print hardware_key
       #print controller_key
@@ -151,18 +137,16 @@ class FirmwareFlash(QFrame):
       os_name = platform.system()
       base_dir = os.path.dirname(__file__)
       port = self.ui.port_combo_box.currentText()
-      hardware_name = unicode(self.ui.hardware_list.currentItem().text())
       controller_name = unicode(self.ui.controller_list.currentItem().text())
       firmware_key = unicode(self.ui.firmware_list.currentItem().text())
       firmware_name = "firmware.hex"
-      for firmware in self.json_object[hardware_name][controller_name]:
+      for firmware in self.json_object[self.chosen_hardware_device]['controller'][controller_name]:
         if firmware.get("version") == firmware_key:
           firmware_name = firmware.get("file")
 
       command = self.generate_command_with_options(base_dir,
                                                    os_name,
                                                    port,
-                                                   hardware_name,
                                                    controller_name,
                                                    firmware_name,
                                                    )
@@ -179,7 +163,7 @@ class FirmwareFlash(QFrame):
         logging.info("Error on flashing firmware.")
         self.display_blocking_pop_up("Error on flashing firmware.", message_type="error")
 
-    def generate_command_with_options(self, base_dir, os_name, port, hardware_name, controller_name, firmware_name):
+    def generate_command_with_options(self, base_dir, os_name, port, controller_name, firmware_name):
       exe_file_dict = {
                         "Windows": os.path.join("firmware", ".\\avrdude.exe"),
                         "Linux": os.path.join("firmware", "avrdude"), #TODO, detect 64bit OS
@@ -189,7 +173,7 @@ class FirmwareFlash(QFrame):
       exe_route = os.path.join(base_dir, exe_file)
       conf_file = os.path.join(base_dir, "firmware","avrdude.conf")
 
-      binary_file = os.path.join(base_dir, "firmware", hardware_name, controller_name, firmware_name)
+      binary_file = os.path.join(base_dir, "firmware", controller_name, firmware_name)
       serial_port = port
       # List of Arduino controllers and their avrdude names.
       device_dict = {
