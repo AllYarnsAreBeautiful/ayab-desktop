@@ -65,7 +65,7 @@ class AyabPluginControl(KnittingPlugin):
     if self.validate_configuration(conf):
       parent_ui.ui.widget_knitcontrol.setEnabled(True)
       parent_ui.ui.knit_button.setEnabled(True)
-      self.__emit_progress(0, 0, self.__image.imgHeight())
+      self.__emit_progress(0, self.__image.imgHeight())
     return
 
   def validate_configuration(self, conf):
@@ -113,9 +113,9 @@ class AyabPluginControl(KnittingPlugin):
     """Sends the display_pop_up_signal QtSignal to main GUI thread, not blocking it."""
     self.__parent_ui.emit(QtCore.SIGNAL('display_pop_up_signal(QString, QString)'), message, message_type)
 
-  def __emit_progress(self, percent, done, total):
+  def __emit_progress(self, row, total = 0):
     """Sends the updateProgress QtSignal."""
-    self.__parent_ui.emit(QtCore.SIGNAL('updateProgress(int,int,int)'), int(percent), int(done), int(total))
+    self.__parent_ui.emit(QtCore.SIGNAL('updateProgress(int,int)'), int(row), int(total))
 
   def __emit_needles(self):
     """Sends the updateNeedles QtSignal."""
@@ -141,6 +141,11 @@ class AyabPluginControl(KnittingPlugin):
     alignment_text = self.options_ui.alignment_combo_box.currentText()
     self.__parent_ui.emit(QtCore.SIGNAL('signalUpdateAlignment(QString)'),
                           alignment_text)
+
+  def __onStartLineChanged(self):
+    """ """
+    start_line_edit = self.options_ui.start_line_edit.value()
+    self.__emit_progress(start_line_edit, 0)
 
   def setup_ui(self, parent_ui):
     """Sets up UI elements from ayab_options.Ui_DockWidget in parent_ui."""
@@ -191,8 +196,17 @@ class AyabPluginControl(KnittingPlugin):
     stop_needle_edit = self.options_ui.stop_needle_edit
     stop_needle_edit.valueChanged.connect(self.__emit_needles)
 
+    start_needle_color = self.options_ui.start_needle_color
+    start_needle_color.currentIndexChanged.connect(self.__emit_needles)
+    stop_needle_color = self.options_ui.stop_needle_color
+    stop_needle_color.currentIndexChanged.connect(self.__emit_needles)
+
     alignment_combo_box = self.options_ui.alignment_combo_box
     alignment_combo_box.currentIndexChanged.connect(self.__emit_alignment)
+
+
+    start_line_edit = self.options_ui.start_line_edit
+    start_line_edit.valueChanged.connect(self.__onStartLineChanged)
 
   def conf_button_function(self):
     self.configure()
@@ -459,7 +473,7 @@ class AyabPluginControl(KnittingPlugin):
               self.__ayabCom.cnf_line(reqestedLine, bytes, 0, crc8)
             else:
               self.__ayabCom.cnf_line(reqestedLine, bytes, lastLine, crc8)
-            
+
             # screen output
             msg = str((self.__image.imageExpanded())[indexToSend])
             msg += ' Image Row: ' + str(imgRow)
@@ -469,8 +483,7 @@ class AyabPluginControl(KnittingPlugin):
             msg += ', lineBlock:' + str(self.__lineBlock) + ')'
             logging.debug(msg)
             #sending line progress to gui
-            progress_int = 100 * float(imgRow)/self.__image.imgHeight()
-            self.__emit_progress(progress_int, imgRow, imgHeight)
+            self.__emit_progress(imgRow, imgHeight)
 
         else:
             logging.error("requested lineNumber out of range")

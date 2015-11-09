@@ -59,6 +59,7 @@ class GuiMain(QMainWindow):
         self.start_needle = 80
         self.stop_needle = 119
         self.imageAlignment = "center"
+        self.var_progress = 0
 
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
@@ -111,10 +112,17 @@ class GuiMain(QMainWindow):
             logging.info("no plugin object loaded")
         return plugin_o
 
-    def updateProgress(self, progress, done=0, total=0):
+    def updateProgress(self, row, total=0):
         '''Updates the Progress Bar.'''
-        self.ui.progressBar.setValue(progress)
-        self.ui.progress_label.setText("{0}/{1}".format(done, total))
+        #Store to local variable
+        self.var_progress = row
+        self.refresh_scene()
+
+        # Update label and progress bar
+        if total != 0:
+            progress = 100 * float(row)/total
+            self.ui.progressBar.setValue(progress)
+            self.ui.progress_label.setText("{0}/{1}".format(row, total))
 
     def update_file_selected_text_field(self, route):
         '''Sets self.image_file_route and ui.filename_lineedit to route.'''
@@ -124,7 +132,7 @@ class GuiMain(QMainWindow):
     def slotUpdateNeedles(self, start_needle, stop_needle):
         '''Updates the position of the start/stop needle visualisation'''
         self.start_needle = start_needle
-        self.stop_needle  = stop_needle
+        self.stop_needle = stop_needle
         self.refresh_scene()
 
     def slotUpdateAlignment(self, alignment):
@@ -166,7 +174,7 @@ class GuiMain(QMainWindow):
         self.ui.actionLoad_AYAB_Firmware.triggered.connect(self.generate_firmware_ui)
         self.ui.image_pattern_view.setDragMode(QtGui.QGraphicsView.ScrollHandDrag)
         # Connecting Signals.
-        self.connect(self, QtCore.SIGNAL("updateProgress(int,int,int)"), self.updateProgress)
+        self.connect(self, QtCore.SIGNAL("updateProgress(int,int)"), self.updateProgress)
         self.connect(self, QtCore.SIGNAL("display_pop_up_signal(QString, QString)"), self.display_blocking_pop_up)
         self.connect(self, QtCore.SIGNAL("signalUpdateNeedles(int,int)"), self.slotUpdateNeedles)
         self.connect(self, QtCore.SIGNAL("signalUpdateAlignment(QString)"), self.slotUpdateAlignment)
@@ -242,6 +250,7 @@ class GuiMain(QMainWindow):
         else:
             logging.warning("invalid alignment")
 
+        # Draw "machine"
         rect_orange = QtGui.QGraphicsRectItem(
             -(machine_width/2.0),
             -(pixmap.height()/2.0)-bar_height,
@@ -257,8 +266,7 @@ class GuiMain(QMainWindow):
             None, qscene)
         rect_green.setBrush(QtGui.QBrush(QtGui.QColor("green")))
 
-        #self.start_needle = -20
-        #self.stop_needle = 20
+        # Draw limiting lines (start/stop needle)
         limit_bar_width = 0.5
         QtGui.QGraphicsRectItem(
             self.start_needle - 100,
@@ -271,6 +279,14 @@ class GuiMain(QMainWindow):
             -(pixmap.height()/2.0) - bar_height,
             limit_bar_width,
             pixmap.height() + 2*bar_height,
+            None, qscene)
+
+        # Draw knitting progress
+        QtGui.QGraphicsRectItem(
+            -(machine_width/2.0),
+            -(pixmap.height()/2.0)+self.var_progress,
+            machine_width,
+            limit_bar_width,
             None, qscene)
 
         qv = self.ui.image_pattern_view
