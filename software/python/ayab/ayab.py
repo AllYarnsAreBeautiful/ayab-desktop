@@ -227,40 +227,34 @@ class GuiMain(QMainWindow):
 
         bar_height    = 5.0
 
-        qscene.setSceneRect(
-            -(canvas_width/2.0),    # x
-            -(canvas_height/2.0),   # y
-            canvas_width,           # w
-            canvas_height)          # h
-
         # add pattern and move accordingly to alignment
         pattern = qscene.addPixmap(pixmap)
         if self.imageAlignment == 'left':
             pattern.setPos(
                 (self.start_needle - 100),
-                -(pixmap.height()/2.0))
+                0)
         elif self.imageAlignment == 'center':
             pattern.setPos(
                 -(pixmap.width()/2.0)+((self.start_needle+self.stop_needle)/2) - 100,
-                -(pixmap.height()/2.0))
+                0)
         elif self.imageAlignment == 'right':
             pattern.setPos(
                 (self.stop_needle - 100 - pixmap.width()),
-                -(pixmap.height()/2.0))
+                0)
         else:
             logging.warning("invalid alignment")
 
         # Draw "machine"
         rect_orange = QtGui.QGraphicsRectItem(
             -(machine_width/2.0),
-            -(pixmap.height()/2.0)-bar_height,
+            -bar_height,
             (machine_width/2.0),
             bar_height,
             None, qscene)
         rect_orange.setBrush(QtGui.QBrush(QtGui.QColor("orange")))
         rect_green = QtGui.QGraphicsRectItem(
             0.0,
-            -(pixmap.height()/2.0)-bar_height,
+            -bar_height,
             (machine_width/2.0),
             bar_height,
             None, qscene)
@@ -270,13 +264,13 @@ class GuiMain(QMainWindow):
         limit_bar_width = 0.5
         QtGui.QGraphicsRectItem(
             self.start_needle - 100,
-            -(pixmap.height()/2.0) - bar_height,
+            -bar_height,
             limit_bar_width,
             pixmap.height() + 2*bar_height,
             None, qscene)
         QtGui.QGraphicsRectItem(
             self.stop_needle - 100,
-            -(pixmap.height()/2.0) - bar_height,
+            -bar_height,
             limit_bar_width,
             pixmap.height() + 2*bar_height,
             None, qscene)
@@ -284,7 +278,7 @@ class GuiMain(QMainWindow):
         # Draw knitting progress
         QtGui.QGraphicsRectItem(
             -(machine_width/2.0),
-            -(pixmap.height()/2.0)+self.var_progress,
+            self.var_progress,
             machine_width,
             limit_bar_width,
             None, qscene)
