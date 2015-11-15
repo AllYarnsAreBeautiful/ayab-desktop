@@ -20,6 +20,7 @@
 
 \RequirePackage{times}      % Loads the Times-Roman Fonts
 \RequirePackage{mathptmx}   % Loads the Times-Roman Math Fonts
+\RequirePackage{upgreek}
 
 %----------------------------------------------------------------------
 %	VARIOUS USEFUL PACKAGES

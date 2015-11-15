@@ -19,11 +19,8 @@
 %----------------------------------------------------------------------------------------
 
 \documentclass[fleqn,10pt]{SelfArx} % Document font size and equations flushed left
-
+%\documentclass{article}
 %\usepackage{lipsum} % Required to insert dummy text. To be removed otherwise
-
-\usepackage[ansinew]{inputenc}
-
 
 %----------------------------------------------------------------------------------------
 %	COLUMNS
@@ -40,12 +37,14 @@
 \definecolor{color2}{RGB}{0,20,20} % Color of the boxes behind the abstract and headings
 
 %----------------------------------------------------------------------------------------
-%	HYPERLINKS
+%	Packages
 %----------------------------------------------------------------------------------------
-
+\usepackage{textgreek} % Required for Omega
+\usepackage{placeins} % Requierd for FloatBarrier
 \usepackage{hyperref} % Required for hyperlinks
 \hypersetup{hidelinks,colorlinks,breaklinks=true,urlcolor=color2,citecolor=color1,linkcolor=color1,bookmarksopen=false,pdftitle={Title},pdfauthor={Author}}
 
+\graphicspath{ {./images/} }
 %----------------------------------------------------------------------------------------
 %	ARTICLE INFORMATION
 %----------------------------------------------------------------------------------------
@@ -110,7 +109,7 @@ und nur durch einen sachkundigen Fachmann erfolgen. Der Baustein/Bausatz darf nu
 \item Das Produkt ist kein Spielzeug und kann für Kinder gefährlich sein! (Verschlucken von Kleinteilen, Stromschlag usw.)
 \item Baugruppen und Bauteile gehören nicht in Kinderhände!
 \item Die Baugruppen dürfen nur unter Aufsicht eines fachkundigen Erwachsenen oder eines Fachmannes in Betrieb genommen werden!
-\item In gewerblichen Einrichtungen sind die Unfallverhütungsvorschriften des Verbandes der gewerblichen Berufsgenossenschaften für elektrische Anlagen und Betriebsmittel zu beachten.
+\item In gewerblichen Einrichtungen sind die Vorschriften zur Unfallverhütung des Verbandes der gewerblichen Berufsgenossenschaften für elektrische Anlagen und Betriebsmittel zu beachten.
 \item Eine Reparatur des Gerätes darf nur vom Fachmann durchgeführt werden!
 \item Dringt irgendeine Flüssigkeit in das Gerät ein, so könnte es dadurch beschädigt werden. Sollten Sie irgendwelche Flüssigkeiten in, oder über die Baugruppe verschüttet haben, so muss das Gerät von einem qualifizierten Fachmann überprüft werden
 
@@ -120,7 +119,7 @@ und nur durch einen sachkundigen Fachmann erfolgen. Der Baustein/Bausatz darf nu
 
 \section{Bestimmungsgemäße Verwendung}
 
-Der bestimmungsgemäße Einsatz des fertiggestellten Bausatzes ist die Steuerung von Brother Heimstrickmaschinen der KH-9xx Serie. Es darf nur als ersatz der vorhandenen Steuerplatine eingesetzt werden. Ein parallelbetrieb mit originalsteuerung ist nicht vorgesehen.
+Der bestimmungsgemäße Einsatz des fertiggestellten Bausatzes ist die Steuerung von Brother Heimstrickmaschinen der KH-9xx Serie. Es darf nur als Ersatz der vorhandenen Steuerplatine eingesetzt werden. Ein parallelbetrieb mit der Originalsteuerung ist nicht vorgesehen.
 
 Ein anderer Einsatz als vorgegeben ist nicht zulässig!
 
@@ -134,11 +133,11 @@ Beim Umgang mit Produkten, die mit elektrischer Spannung in Berührung kommen, m
 \item Bauteile, Baugruppen oder Geräte dürfen nur in Betrieb genommen werden, wenn sie vorher berührungssicher in ein Gehäuse eingebaut wurden. Während des Einbaus müssen sie stromlos sein.
 \item Werkzeuge dürfen an Geräten, Bauteilen oder Baugruppen nur benutzt werden, wenn sichergestellt ist, dass die Geräte von der Versorgungsspannung getrennt sind und elektrische Ladungen, die in den im Gerät befindlichen Bauteilen gespeichert sind, vorher entladen wurden.
 \item Spannungsführende Kabel oder Leitungen, mit denen das Gerät, das Bauteil oder die Baugruppe verbunden ist, müssen stets auf Isolationsfehler oder Bruchstellen untersucht werden. Bei Feststellen eines Fehlers in der Zuleitung muss das Gerät unverzüglich aus dem Betrieb genommen werden, bis die defekte Leitung ausgewechselt worden ist.
-\item Bei Einsatz von Bauelementen oder Baugruppen muss stets auf die strikte Einhaltung der in der zugehörigen Beschreibung genannten Kenndaten für elektrische Größen hingewiesen werden.
+\item Bei Einsatz von Bauelementen oder Baugruppen muss stets auf die strikte Einhaltung der in der zugehörigen Beschreibung genannten Daten für elektrische Größen hingewiesen werden.
 \item Wenn aus einer vorliegenden Beschreibung für den nichtgewerblichen Endverbraucher nicht eindeutig hervorgeht, welche elektrischen Kennwerte für ein Bauteil oder eine Baugruppe gelten, wie eine externe Beschaltung durchzuführen ist oder welche externen Bauteile oder Zusatzgeräte angeschlossen werden dürfen und welche Anschlußwerte diese externen Komponenten haben dürfen, so muss stets ein Fachmann um Auskunft ersucht werden.
 \item Es ist vor der Inbetriebnahme eines Gerätes generell zu prüfen, ob dieses Gerät oder Baugruppe grundsätzlich für den Anwendungsfall, für den es verwendet werden soll, geeignet ist! Im Zweifelsfalle sind unbedingt Rückfragen bei Fachleuten, Sachverständigen oder den Herstellern der verwendeten Baugruppen notwendig!
-\item Bitte beachten Sie, dass Bedien- und Anschlussfehler außerhalb unseres Einflussbereiches liegen. Verständlicherweise können wir für Schäden, die daraus entstehen, keinerlei Haftung übernehmen.
-\item Bausätze sollten bei Nichtfunktion mit einer genauen Fehlerbeschreibung (Angabe dessen, was nicht funktioniert... denn nur eine exakte Fehlerbeschreibung ermöglicht eine einwandfreie Reparatur!) und der zugehörigen Bauanleitung sowie ohne Gehäuse zurückgesandt werden. Zeitaufwendige Montagen oder Demontagen von Gehäusen müssen wir aus verständlichen Gründen zusätzlich berechnen. Bereits aufgebaute Bausätze sind vom Umtausch ausgeschlossen. Bei Installationen und beim Umgang mit Netzspannung sind unbedingt die VDE-Vorschriften zu beachten.
+\item Bitte beachten Sie, dass Bedien- und Anschlussfehler außerhalb unseres Einflussbereiches liegen. \par Verständlicherweise können wir für Schäden, die daraus entstehen, keinerlei Haftung übernehmen.
+\item Bausätze sollten bei Nichtfunktion mit einer genauen Fehlerbeschreibung und der zugehörigen Bauanleitung sowie ohne Gehäuse zurückgesandt werden. Zeitaufwendige Montagen oder Demontagen von Gehäusen müssen wir aus verständlichen Gründen zusätzlich berechnen. Bereits aufgebaute Bausätze sind vom Umtausch ausgeschlossen. Bei Installationen und beim Umgang mit Netzspannung sind unbedingt die VDE-Vorschriften zu beachten.
 \item Geräte, die an einer Spannung über 24 V betrieben werden, dürfen nur vom Fachmann angeschlossen werden.
 \item Die Inbetriebnahme darf grundsätzlich nur erfolgen, wenn die Schaltung absolut berührungssicher in ein Gehäuse eingebaut ist.
 \item Sind Messungen bei geöffnetem Gehäuse unumgänglich, so muss aus Sicherheitsgründen ein Trenntrafo zwischengeschaltet werden, oder, wie bereits erwähnt, die Spannung über ein geeignetes Netzteil, (das den Sicherheitsbestimmungen entspricht) zugeführt werden.
@@ -163,14 +162,14 @@ Der Arduino muss zur Inbetriebnahme mit der aktuellen Version der AYAB Firmware 
 
 Das AYAB Projekt ist freie und offene Soft- und Hardware. Der komplette Quellcode und die Layoutdateien sind frei verfügbar und zur Anpassung an eigene Bedürfnisse freigegeben. Natürlich freut sich das AYAB Team über jegliches Feedback und Mitarbeit am Projekt.
 
-\subsection{Eigenschaften}
+ \subsection*{Eigenschaften}
 
 Unterstützte Modelle: Brother KH-910, Brother KH-930 (weitere Modelle werden demnächst offiziell hinzugefügt)
 Maximale Musterbreite: 200 Nadeln
 Maximale Musterlänge: unbegrenzt
 Maximale Anzahl der Farben: 2 (bis zu 6 experimentell)
 
-\subsection{Hinweis}
+ \subsection*{Hinweis}
 
 Bitte bei der Bestellung auf den richtigen Maschinentyp achten. Nur so kann gewährleistet werden, dass kompatible Steckverbindungen mitgeliefert werden.
 
@@ -178,27 +177,320 @@ Bitte bei der Bestellung auf den richtigen Maschinentyp achten. Nur so kann gew�
 
 \section{Technische Daten}
 
+\begin{tabular}{ll}
+Versorgungsspannung       & 5.0 V              \\ \hline
+Schaltspannung            & 7.5V - 16.0V       \\ \hline
+max. Stromaufnahme        & xxx mA             \\ \hline
+max. Schaltstrom          & xxx mA             \\ \hline
+Abmessungen (l x b x h)   & xxmm x yymm x zzmm
+\end{tabular}
+
+
 %------------------------------------------------
 
 \section{Bevor Sie beginnen}
+
+Bevor Sie mit dem Aufbau beginnen, lesen Sie diese Bauanleitung erst einmal bis zum Ende in Ruhe durch, bevor Sie den Bausatz oder das Gerät in Betrieb nehmen (besonders den Abschnitt über die Fehlermöglichkeiten und deren Beseitigung!) und natürlich die Sicherheitshinweise. Sie wissen dann, worauf es ankommt und was Sie beachten müssen und vermeiden dadurch von vornherein Fehler, die manchmal nur mit viel Aufwand wieder zu beheben sind!
+
+Führen Sie die Lötungen und Verdrahtungen absolut sauber und gewissenhaft aus, verwenden Sie kein säurehaltiges Lötzinn, Lötfett o. ä. Vergewissern Sie sich, dass keine kalte Lötstelle vorhanden ist. Denn eine unsaubere Lötung oder schlechte Lötstelle, ein Wackelkontakt oder schlechter Aufbau bedeuten eine aufwendige und zeitraubende Fehlersuche und unter Umständen eine Zerstörung von Bauelementen, was oft eine Kettenreaktion nach sich zieht und der komplette Bausatz zerstört wird.
+
+Beachten Sie auch, dass Bausätze, die mit säurehaltigem Lötzinn, Lötfett o. ä. gelötet wurden, von uns nicht repariert werden.
+
+Beim Nachbau elektronischer Schaltungen werden Grundkenntnisse über die Behandlung der Bauteile, Löten und der Umgang mit elektronischen bzw. elektrischen Bauteilen vorausgesetzt.
+
+ \subsection*{Allgemeine Hinweise}
+
+Die Möglichkeit, dass nach dem Zusammenbau etwas nicht funktioniert, lässt sich durch einen gewissenhaften und sauberen Aufbau drastisch verringern. Kontrollieren Sie jeden Schritt, jede Lötstelle zweimal, bevor Sie weitergehen! Halten Sie sich an die Bauanleitung! Machen Sie den dort beschriebenen Schritt nicht Bei 90 \% der funktionsuntüchtigen Bausätze handelt es sich um Lötfehler, kalte Lötstellen, falsches Lötzinn usw. Verwenden Sie deshalb beim Löten nur Elektroniklötzinn mit der Bezeichnung “SN 60 Pb” (60 \% Zinn und 40 \% Blei). Dieses Lötzinn hat eine Kolophoniumseele, welche als Flussmittel dient, um die Lötstelle während des Lötens vor dem Oxydieren zu schützen. Andere Flussmittel wie Lötfett, Lötpaste oder Lötwasser dürfen auf keinen Fall verwendet werden, da sie säurehaltig sind. Diese Mittel können die Leiterplatte und Elektronik-Bauteile zerstören, außerdem leiten sie den Strom und verursachen dadurch Kriechströme und Kurzschlüsse.
+
+Dieser Bausatz wurde, bevor er in Produktion ging, viele Male als Prototyp aufgebaut und getestet. Erst wenn eine optimale Qualität hinsichtlich Funktion und Betriebssicherheit erreicht ist, wird er für die Serie freigegeben.
 
 %------------------------------------------------
 
 \section{Montage der Bauelemente auf der Platine}
 
-\subsection{Schritt 1}
+ \subsection*{Hinweis}
 
-\subsection{Schritt 2}
+Beim Aufbau halten Sie sich an die Montageanleitung und werfen nebenbei immer einen Blick auf den Bestückungsplan.
 
-\subsection{Abschließende Kontrolle}
+Besonderes Augenmerk gilt den drei Leuchtdioden, bei denen unbedingt auf richtige Polarität zu achten ist.
+
+Beachten Sie die Markierungskerbe der IC-Gehäuse Fassung. Diese muss mit dem Bestückungsplan übereinstimmen.
+
+Kontrollieren Sie vor Inbetriebnahme der Schaltung die Position aller Bauteile.
+
+Achten Sie beim Einlöten der Bauelemente darauf, daß diese (falls nicht Gegenteiliges vermerkt) ohne Abstand zur Platine eingelötet werden. Alle überstehenden Anschlussdrähte werden direkt über der Lötstelle abgeschnitten.
+
+Da es sich bei diesem Bausatz teilweise um sehr kleine bzw. eng beieinanderliegende Lötpunkte handelt (Gefahr von Lötbrücken), darf hier nur mit einem Lötkolben mit kleiner Lötspitze gelötet werden. Führen Sie die Lötvorgänge und den Aufbau sorgfältig aus.
+
+ \subsection*{Lötanleitung}
+
+Wenn sie mit dem Löten noch nicht so vertraut sind, lesen Sie bitte eine geeignete Lötanleitung für bedrahtete Bauteile durch. Diese können Sie im Internet z.B. unter \url{http:\\example.com} finden.
+
+Achten Sie darauf des es sich bei einigen Bauteilen (insbesondere die ICs) um temperaturempfindliche Bauteile handelt. Achten Sie deshalb auf eine möglichst kurze Aufheizzeit oder verwenden Sie eine IC-Fassung.
+
+ \subsection*{Schritt 1: LEDs}
+
+\begin{tabular}{ll}
+\hline
+\textbf{Name} & \textbf{Farbe} \\ \hline
+LED1          & rot            \\ \hline
+LED2          & gelb           \\ \hline
+LED2          & grün           \\ \hline
+\end{tabular}\\
+
+Platzieren die drei LEDs (rot, gelb, grün) ensprechend der Abbildung \ref{fig:abb1_1} auf der Platine. Achten Sie dabei unbedingt auf die Richtige Polarität. Die Abgeflachte Gehäusekante der LED, bzw das kürzere Beinchen, müssen dabei weg von den Widerständen bzw. hin zum Platinenrand zeigen. Zusätzlich den Platinendruck beachten.
+
+Im Anschluss werden diese von der Unterseite Verlötet.
+
+\begin{figure}[ht]\centering
+\includegraphics[width=\linewidth]{abb1_1}
+\caption{LEDs}
+\label{fig:abb1_1}
+\end{figure}
+
+\FloatBarrier
+
+ \subsection*{Schritt 2: Widerstände}
+
+Der AYAB-Shield Bausatz enthält zwei Widerstandstypen\par
+
+\begin{tabular}{lll}
+\hline
+\textbf{Name} & \textbf{Wert}            & \textbf{Farbskala} \\ \hline
+R1            & 10k\textOmega            & br-sw-or-gd \\ \hline
+R2            & 10k\textOmega            & br-sw-or-gd \\ \hline
+R3            & 150\textOmega            & br-gr-br-gd \\ \hline
+R4            & 150\textOmega            & br-gr-br-gd \\ \hline
+R5            & 150\textOmega            & br-gr-br-gd \\ \hline
+\end{tabular}\\
+
+Formen Sie zunächst alle fünf Widerstände entsprechend der Abbildung \ref{fig:abb2_1}.
+
+\begin{figure}[ht]\centering
+\includegraphics[width=\linewidth]{abb2_1}
+\caption{Biegen der Widerstandsdrähte}
+\label{fig:abb2_1}
+\end{figure}
+
+Anschließend sezen Sie die 150\textOmega-Widerstände entsprechen Abbildung \ref{fig:abb2_2} ein und verlöten Diese. Im nächsten Schritt wiederholen Sie dies mit den 10k\textOmega-Widerständen enstprechend Abbildung \ref{fig:abb2_3}.
+
+\begin{figure}[ht]\centering
+\includegraphics[width=\linewidth]{abb2_2}
+\caption{150\textOmega-Widerstände}
+\label{fig:abb2_2}
+\end{figure}
+
+\begin{figure}[ht]\centering
+\includegraphics[width=\linewidth]{abb2_3}
+\caption{10k\textOmega-Widerstände}
+\label{fig:abb2_3}
+\end{figure}
+
+\FloatBarrier
+
+ \subsection*{Schritt 3: Maschinenstecker}
+
+\textbf{ACHTUNG!} Dieser Abschnitt wird je nach Maschinentyp unterschiedlich behandelt.\par
+
+\textbf{KH-910 / KH-950:} \par
+
+\begin{tabular}{lll}
+\hline
+\textbf{Name} & \textbf{Polzahl}  & \textbf{Typ} \\ \hline
+JP3           & 8                 & gewinkelt    \\ \hline
+JP4           & 10                & gewinkelt    \\ \hline
+JP5           & 10                & gerade       \\ \hline
+JP9           & 4                 & gerade       \\ \hline
+\end{tabular}\\
+
+Verlöten Sie zunächst die Maschinenverbinder JP3, JP4 sowie JP5 entsprechen Abbildung \ref{fig:abb3_1}. Achten Sie dabei darauf JP4 mit etwas Abstand zur Platine zu verlöten (Abbildung \ref{fig:abb3_2}) um das Verbinden mit der Strickmaschine zu erreichtern. Sie konnen dies durch unterlegen eines geeigneten Abstandshalters (z.B. Beilagscheibe) während des Lötvorgangs erleichtern.
+
+\begin{figure}[ht]\centering
+\includegraphics[width=\linewidth]{abb3_1}
+\caption{Maschinenverbinder}
+\label{fig:abb3_1}
+\end{figure}
+
+\begin{figure}[ht]\centering
+\includegraphics[width=\linewidth]{abb3_2}
+\caption{Abstand JP3}
+\label{fig:abb3_2}
+\end{figure}
+
+Das Anbringen des Erweiterungssteckers JP9 (Abbildung \ref{fig:abb3_3}) kann optional vorgenommen werden. Über diesen Anschluss kann die Funktonalität später durch z.B. eine optionale Farbwechslersteuerung o.ä. ergänzt werden. \par
+
+\begin{figure}[ht]\centering
+\includegraphics[width=\linewidth]{abb3_3}
+\caption{Erweiterungsstecker}
+\label{fig:abb3_3}
+\end{figure}
+
+\FloatBarrier
+
+\textbf{KH-930:} \par
+
+tbd.
+
+\FloatBarrier
+
+ \subsection*{Schritt 4: Piepserstecker}
+
+Nun kann der Stecker für den Piepser wie auf Abbildung \ref{fig:abb4_1} verlötet werden. Auch hier unbedingt auf die Polarität achten.
+
+\begin{figure}[ht]\centering
+\includegraphics[width=\linewidth]{abb4_1}
+\caption{Piepserstecker}
+\label{fig:abb4_1}
+\end{figure}
+
+\FloatBarrier
+
+ \subsection*{Schritt 5: Arduino Verbindungsstecker}
+
+\textbf{Arduino nicht im Lieferumfang enthalten}\par
+
+Hierfür benötigen Sie folgende Steckverbinder:\par
+
+\begin{tabular}{lll}
+\hline
+\textbf{Name} & \textbf{Polzahl}  & \textbf{Typ} \\ \hline
+ARD1          & 10                & gerade       \\ \hline
+ARD2          & 8                 & gerade       \\ \hline
+ARD3          & 8                 & gerade       \\ \hline
+ARD4          & 6                 & gerade       \\ \hline
+\end{tabular}\\
+
+
+\textbf{Tipp!} Stecken Sie die vier Verbindungsstecker vor dem Verlöten in die Buchsen des Arduinos (Abbildung \ref{fig:abb5_1}) und legen Sie anschließend das AYAB-Shield zum verlöten darauf (Abbildung \ref{fig:5_2}). Dies erleichtert die Lötarbeit erheblich und garantiert einen sauberen Verbau. Achten Sie jedoch auf eine möglichst kurze Lötdauer um den Arduino nicht zu beschädigen.
+
+\begin{figure}[ht]\centering
+\includegraphics[width=\linewidth]{abb5_1}
+\caption{Löterleichterung}
+\label{fig:abb5_1}
+\end{figure}
+
+\begin{figure}[ht]\centering
+\includegraphics[width=\linewidth]{abb5_2}
+\caption{Arduino Verbindungsstecker}
+\label{fig:abb5_1}
+\end{figure}
+
+\FloatBarrier
+
+ \subsection*{Schritt 6: ICs}
+
+\textbf{Achtung!} Hier unbedingt auf die richtige Orientierung Achten. Die Markierungskerben müssen entsprechend Abbildung \ref{fig:abb6_1} gerichtet sein. Beachten Sie, dass IC1 und IC2 eine andere Orientierung aufweisen als IC3 und IC4. Seien Sie beim einsetzen der ICs behutsam und geduldig. Evtl. müssen die Beinchen sehr vorsichtig etwas nachgebogen werden. Bei zu viel druck können diese leicht brechen. Achten Sie auf eine möglichst kurze Lötdauer um die Bauteile nicht zu überhitzen.\par
+\begin{tabular}{ll}
+\hline
+\textbf{Name} & \textbf{Typ} \\ \hline
+IC1           & ULN 2803 L   \\ \hline
+IC2           & ULN 2803 L   \\ \hline
+IC3           & MCP 23008    \\ \hline
+IC4           & MCP 23008    \\ \hline
+\end{tabular}\\
+
+\begin{figure}[ht]\centering
+\includegraphics[width=\linewidth]{abb6_1}
+\caption{ICs}
+\label{fig:abb6_1}
+\end{figure}
+
+\FloatBarrier
+
+ \subsection*{Schritt 7: Sensorkabel}
+
+\textbf{ACHTUNG!} Dieser Abschnitt wird je nach Maschinentyp unterschiedlich behandelt.\par
+
+\textbf{KH-910 / KH-950:} \par
+
+Isolieren Sie das Mitgelieferte 3-Adrige Flachbandkabel an beiden Enden entsprechend Abbildung \ref{fig:abb7_1} ab.
+
+\begin{figure}[ht]\centering
+\includegraphics[width=\linewidth]{abb7_1}
+\caption{Abisolierung der Kabelenden}
+\label{fig:abb7_1}
+\end{figure}
+
+Verzinnen Sie nun ein Kabelende sowie den 3-poligen Pfostenstecker (Abbildung \ref{fig:abb7_2}) und Verlöten diese anschließend (Abbildung \ref{fig:abb7_3}). Achten Sie hier auf eine gute mechanische Stabilität und prüfen Sie auf evtl. Kurzschlüsse. Sie können zur Verbesserung der Stabilität die offenen Lötstellen einzeln mit Isolierband umwickeln, oder mit einem Schrumpfschlauch fixieren.
+
+\begin{figure}[ht]\centering
+\includegraphics[width=\linewidth]{abb7_2}
+\caption{Verzinnung}
+\label{fig:abb7_2}
+\end{figure}
+
+
+
+Nun verlöten Sie das andere Ende wie auf Abbildung \ref{fig:abb7_4} mit der Platine und markieren die Oberseite des Steckers entsprechend. Dies dient zur erleichterung der Orientierung beim Einbau in die Strickmaschine\par
+
+\begin{figure}[ht]\centering
+\includegraphics[width=\linewidth]{abb7_3}
+\caption{Verlötetes Kabelende}
+\label{fig:abb7_3}
+\end{figure}
+
+\begin{figure}[ht]\centering
+\includegraphics[width=\linewidth]{abb7_4}
+\caption{Verbiundung mit Platine}
+\label{fig:abb7_4}
+\end{figure}
+
+\FloatBarrier
+
+\textbf{KH-930:} \par
+
+tbd.
+
+\FloatBarrier
+
+ \subsection*{Schritt 8: Spannungsversorgung}
+
+\textbf{ACHTUNG!} Dieser Abschnitt wird je nach Maschinentyp unterschiedlich behandelt.\\
+
+\textbf{KH-910 / KH-930 / KH-950 / CK-35:} \par
+
+Bringen Sie den 4-poligen Verbindungstecker entsprechend Abbildung \ref{fig:abb8_1} an und verlöten diesen anschließend. Achten Sie auf eine gleiche höhe der einzelnen Pins und gleichen Sie diese gegebenenfalls vorsichtig aus. Achten Sie darauf, dass die Bodenplatte des Steckers nicht bricht. Durch die dicke der einzelnen Pins, kann es hier etwas länger dauern, bis das Lötzinn sauber verlaufen ist. Verwenden Sie zum halten des Steckers unbedingt eine Zange (Verbrennungsgefahr!).
+
+\begin{figure}[ht]\centering
+\includegraphics[width=\linewidth]{abb8_1}
+\caption{Versorgungsstecker KH-910/930/950 und CK35}
+\label{fig:abb8_1}
+\end{figure}
+
+Im Anschluss müssen die Beinchen an der Unterseite möglichst nahe an der Platine gekürzt werden (Abbildung \ref{fig:abb8_2}) um einen Kurzschluss mit den ISP-Pins des Arduino zu vermeiden.\par
+
+\begin{figure}[ht]\centering
+\includegraphics[width=\linewidth]{abb8_2}
+\caption{Kurzschlussvermeidung}
+\label{fig:abb8_2}
+\end{figure}
+
+\FloatBarrier
+
+\textbf{KH-900 / KH-965:} \par
+
+Verlöten Sie den Hohlstecker entsprechen Abbildung \ref{fig:abb8_3}. \textbf{ACHTUNG!} Die verwendete Polarität trägt den Pluspol an der Außenseite und den Minuspol im Innenleiter. Dies ist die Polarität der original Brother-Netzteile. Bei verwendung von anderen Netzteilen unbedingt auf die richtige Polung achten. Ansonsten kann dies zu Zerstörung von Bauteilen oder gar der Strickmaschine führen.
+
+\begin{figure}[ht]\centering
+\includegraphics[width=\linewidth]{abb8_3}
+\caption{Versorgungsstecker KH-900/965}
+\label{fig:abb8_3}
+\end{figure}
+
+\FloatBarrier
+
+ \subsection*{Abschließende Kontrolle}
+
+Kontrollieren Sie nochmal vor Inbetriebnahme der Schaltung, ob alle Bauteile richtig eingesetzt und gepolt sind. Sehen Sie auf der Lötseite (Leiterbahnseite) nach, ob durch Lötzinnreste Leiterbahnen überbrückt wurden, da dies zu Kurzschlüssen und zur Zerstörung von Bauteilen führen kann. Ferner ist zu kontrollieren, ob abgeschnittene Drahtenden auf oder unter der Platine liegen, da dies ebenfalls zu Kurzschlüssen führen kann.
+Kontrollieren sie alle Lötstellen auf sauberkeit der Ausführung. Kalte Lötstellen oder Lötbrücken beeinträchtigen die Funktion und können zu Zerstörung von Bauteilen oder gar der Strickmaschine führen.
 
 %------------------------------------------------
 
 \section{Funktionstest und Inbetriebnahme}
 
-\subsection{Checkliste}
+ \subsection*{Checkliste}
 
-\subsection{Verhalten bei Störungen}
+ \subsection*{Verhalten bei Störungen}
 
 %------------------------------------------------
 
@@ -208,11 +500,11 @@ Bitte bei der Bestellung auf den richtigen Maschinentyp achten. Nur so kann gew�
 
 \section{Anhang}
 
-\subsection{Bauteile und Bestellnummern}
+ \subsection*{Bauteile und Bestellnummern}
 
-\subsection{Schaltplan}
+ \subsection*{Schaltplan}
 
-\subsection{Bestückungsplan}
+ \subsection*{Bestückungsplan}
 
 %------------------------------------------------
 
@@ -229,6 +521,10 @@ Türkenstraße 21
 80799 München
 
 https://thinkstack.de
+
+\begin{figure}[ht]
+\includegraphics[width=0.3\linewidth]{cc}
+\end{figure}
 
 %----------------------------------------------------------------------------------------
 %	REFERENCE LIST
