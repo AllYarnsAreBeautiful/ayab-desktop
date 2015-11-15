@@ -1,0 +1,242 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Stylish Article
+% LaTeX Template
+% Version 2.0 (13/4/14)
+%
+% This template has been downloaded from:
+% http://www.LaTeXTemplates.com
+%
+% Original author:
+% Mathias Legrand (legrand.mathias@gmail.com)
+%
+% License:
+% CC BY-NC-SA 3.0 (http://creativecommons.org/licenses/by-nc-sa/3.0/)
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+\documentclass[fleqn,10pt]{SelfArx} % Document font size and equations flushed left
+
+%\usepackage{lipsum} % Required to insert dummy text. To be removed otherwise
+
+\usepackage[ansinew]{inputenc}
+
+
+%----------------------------------------------------------------------------------------
+%	COLUMNS
+%----------------------------------------------------------------------------------------
+
+\setlength{\columnsep}{0.55cm} % Distance between the two columns of text
+\setlength{\fboxrule}{0.75pt} % Width of the border around the abstract
+
+%----------------------------------------------------------------------------------------
+%	COLORS
+%----------------------------------------------------------------------------------------
+
+\definecolor{color1}{RGB}{0,0,90} % Color of the article title and sections
+\definecolor{color2}{RGB}{0,20,20} % Color of the boxes behind the abstract and headings
+
+%----------------------------------------------------------------------------------------
+%	HYPERLINKS
+%----------------------------------------------------------------------------------------
+
+\usepackage{hyperref} % Required for hyperlinks
+\hypersetup{hidelinks,colorlinks,breaklinks=true,urlcolor=color2,citecolor=color1,linkcolor=color1,bookmarksopen=false,pdftitle={Title},pdfauthor={Author}}
+
+%----------------------------------------------------------------------------------------
+%	ARTICLE INFORMATION
+%----------------------------------------------------------------------------------------
+
+\JournalInfo{AYAB-Shield Lötanleitung, v0.1, 2015-11-15} % Journal information
+\Archive{CC BY-SA 4.0} % Additional notes (e.g. copyright, DOI, review/research article)
+
+\PaperTitle{AYAB-Shield Lötanleitung} % Article title
+
+\Authors{ayab-knitting.com} % Authors
+%\affiliation{\textsuperscript{1}\textit{Department of Biology, University of Examples, London, United Kingdom}} % Author affiliation
+%\affiliation{\textsuperscript{2}\textit{Department of Chemistry, University of Examples, London, United Kingdom}} % Author affiliation
+%\affiliation{*\textbf{Corresponding author}: john@smith.com} % Corresponding author
+
+\Keywords{} % Keywords - if you don't want any simply remove all the text between the curly brackets
+\newcommand{\keywordname}{Keywords} % Defines the keywords heading name
+
+%----------------------------------------------------------------------------------------
+%	ABSTRACT
+%----------------------------------------------------------------------------------------
+
+\Abstract{
+
+Bei Schäden, die durch Nichtbeachtung der Bedienungsanleitung entstehen, erlischt jeglicher Gewährleistungsanspruch. Für Folgeschäden, die daraus resultieren, übernehmen wir keine Haftung
+
+}
+
+%----------------------------------------------------------------------------------------
+
+\begin{document}
+
+\flushbottom % Makes all text pages the same height
+
+\maketitle % Print the title and abstract box
+
+\tableofcontents % Print the contents section
+
+\thispagestyle{empty} % Removes page numbering from the first page
+
+%----------------------------------------------------------------------------------------
+%	ARTICLE CONTENTS
+%----------------------------------------------------------------------------------------
+
+\section*{Hinweis} % The \section*{} command stops section numbering
+
+%\addcontentsline{toc}{section}{Introduction} % Adds this section to the table of contents
+
+Derjenige, der einen Bausatz fertigstellt oder eine Baugruppe durch Erweiterung bzw. Gehäuseeinbau betriebsbereit macht, gilt nach DIN VDE 0869 als Hersteller und ist verpflichtet, bei der Weitergabe des Gerätes alle Begleitpapiere mitzuliefern und auch seinen Namen und Anschrift anzugeben. Geräte, die aus Bausätzen selbst zusammengestellt werden, sind sicherheitstechnisch wie ein industrielles Produkt zu betrachten.
+
+%------------------------------------------------
+
+\section{Betriebsbedingungen}
+
+\begin{itemize}[noitemsep] % [noitemsep] removes whitespace between the items for a compact look
+\item Dieser Bausatz ist nicht für den Einsatz in Lebenserhaltenden oder lebensrettenden Systemen oder ähnlichen Anwendungen konzipiert! Verwenden Sie das Produkt nicht für Zwecke, bei denen im Falle eines Ausfalls, einer Störung oder einer Fehlfunktion Personen- oder Sachschaden möglich sind.
+\item Wird der Baustein zum Schalten hoher Spannungen (mehr als 24V) verwendet, darf die Elektroinstallation nur in spannungslosem Zustand
+und nur durch einen sachkundigen Fachmann erfolgen. Der Baustein/Bausatz darf nur dann in Betrieb genommen werden, wenn er vorher berührungssicher in ein Gehause eingebaut wurde.
+\item Der Baustein ist ausschließlich für den Einsatz in trockener und sauberer Umgebung geeignet. Die Verwendung in unmittelbarer Umgebung leicht brennbaren Gegenständen, von Wasser, grobem Schmutz oder starker Feuchtigkeit ist gefährlich und unzulässig.
+\item Das Produkt darf nicht in Verbindung oder in der Nähe mit leicht entflammbaren und brennbaren Flüssigkeiten verwendet werden.
+\item überschreiten Sie keinesfalls die elektrischen Grenzwerte, die unter “Technische Daten“ am Ende dieser Anleitung angegeben sind.
+\item In Schulen, Ausbildungseinrichtungen, Hobby- und Selbsthilfewerkstätten ist das Betreiben von Modulen und Bausteinen von geschultem Personal verantwortlich zu Überwachen.
+\item Das Produkt ist kein Spielzeug und kann für Kinder gefährlich sein! (Verschlucken von Kleinteilen, Stromschlag usw.)
+\item Baugruppen und Bauteile gehören nicht in Kinderhände!
+\item Die Baugruppen dürfen nur unter Aufsicht eines fachkundigen Erwachsenen oder eines Fachmannes in Betrieb genommen werden!
+\item In gewerblichen Einrichtungen sind die Unfallverhütungsvorschriften des Verbandes der gewerblichen Berufsgenossenschaften für elektrische Anlagen und Betriebsmittel zu beachten.
+\item Eine Reparatur des Gerätes darf nur vom Fachmann durchgeführt werden!
+\item Dringt irgendeine Flüssigkeit in das Gerät ein, so könnte es dadurch beschädigt werden. Sollten Sie irgendwelche Flüssigkeiten in, oder über die Baugruppe verschüttet haben, so muss das Gerät von einem qualifizierten Fachmann überprüft werden
+
+\end{itemize}
+
+%------------------------------------------------
+
+\section{Bestimmungsgemäße Verwendung}
+
+Der bestimmungsgemäße Einsatz des fertiggestellten Bausatzes ist die Steuerung von Brother Heimstrickmaschinen der KH-9xx Serie. Es darf nur als ersatz der vorhandenen Steuerplatine eingesetzt werden. Ein parallelbetrieb mit originalsteuerung ist nicht vorgesehen.
+
+Ein anderer Einsatz als vorgegeben ist nicht zulässig!
+
+%------------------------------------------------
+
+\section{Sicherheitshinweise}
+
+Beim Umgang mit Produkten, die mit elektrischer Spannung in Berührung kommen, müssen die gültigen VDE-Vorschriften beachtet werden, insbesondere VDE 0100, VDE 0550/0551, VDE 0700, VDE 0711 und VDE 0860.
+\begin{itemize}[noitemsep] % [noitemsep] removes whitespace between the items for a compact look
+\item Vor Öffnen eines Gerätes stets den Netzstecker ziehen oder sicherstellen, daß das Gerät stromlos ist.
+\item Bauteile, Baugruppen oder Geräte dürfen nur in Betrieb genommen werden, wenn sie vorher berührungssicher in ein Gehäuse eingebaut wurden. Während des Einbaus müssen sie stromlos sein.
+\item Werkzeuge dürfen an Geräten, Bauteilen oder Baugruppen nur benutzt werden, wenn sichergestellt ist, dass die Geräte von der Versorgungsspannung getrennt sind und elektrische Ladungen, die in den im Gerät befindlichen Bauteilen gespeichert sind, vorher entladen wurden.
+\item Spannungsführende Kabel oder Leitungen, mit denen das Gerät, das Bauteil oder die Baugruppe verbunden ist, müssen stets auf Isolationsfehler oder Bruchstellen untersucht werden. Bei Feststellen eines Fehlers in der Zuleitung muss das Gerät unverzüglich aus dem Betrieb genommen werden, bis die defekte Leitung ausgewechselt worden ist.
+\item Bei Einsatz von Bauelementen oder Baugruppen muss stets auf die strikte Einhaltung der in der zugehörigen Beschreibung genannten Kenndaten für elektrische Größen hingewiesen werden.
+\item Wenn aus einer vorliegenden Beschreibung für den nichtgewerblichen Endverbraucher nicht eindeutig hervorgeht, welche elektrischen Kennwerte für ein Bauteil oder eine Baugruppe gelten, wie eine externe Beschaltung durchzuführen ist oder welche externen Bauteile oder Zusatzgeräte angeschlossen werden dürfen und welche Anschlußwerte diese externen Komponenten haben dürfen, so muss stets ein Fachmann um Auskunft ersucht werden.
+\item Es ist vor der Inbetriebnahme eines Gerätes generell zu prüfen, ob dieses Gerät oder Baugruppe grundsätzlich für den Anwendungsfall, für den es verwendet werden soll, geeignet ist! Im Zweifelsfalle sind unbedingt Rückfragen bei Fachleuten, Sachverständigen oder den Herstellern der verwendeten Baugruppen notwendig!
+\item Bitte beachten Sie, dass Bedien- und Anschlussfehler außerhalb unseres Einflussbereiches liegen. Verständlicherweise können wir für Schäden, die daraus entstehen, keinerlei Haftung übernehmen.
+\item Bausätze sollten bei Nichtfunktion mit einer genauen Fehlerbeschreibung (Angabe dessen, was nicht funktioniert... denn nur eine exakte Fehlerbeschreibung ermöglicht eine einwandfreie Reparatur!) und der zugehörigen Bauanleitung sowie ohne Gehäuse zurückgesandt werden. Zeitaufwendige Montagen oder Demontagen von Gehäusen müssen wir aus verständlichen Gründen zusätzlich berechnen. Bereits aufgebaute Bausätze sind vom Umtausch ausgeschlossen. Bei Installationen und beim Umgang mit Netzspannung sind unbedingt die VDE-Vorschriften zu beachten.
+\item Geräte, die an einer Spannung über 24 V betrieben werden, dürfen nur vom Fachmann angeschlossen werden.
+\item Die Inbetriebnahme darf grundsätzlich nur erfolgen, wenn die Schaltung absolut berührungssicher in ein Gehäuse eingebaut ist.
+\item Sind Messungen bei geöffnetem Gehäuse unumgänglich, so muss aus Sicherheitsgründen ein Trenntrafo zwischengeschaltet werden, oder, wie bereits erwähnt, die Spannung über ein geeignetes Netzteil, (das den Sicherheitsbestimmungen entspricht) zugeführt werden.
+\item Alle Verdrahtungsarbeiten dürfen nur im spannungslosen Zustand ausgeführt werden.
+
+\end{itemize}
+
+%------------------------------------------------
+
+\section{Produktbeschreibung}
+
+AYAB – all yarns are beautiful ermöglicht es, die bekannten Strickmaschinenmodelle Brother KH-910 und KH-930 (und kompatible) über einen USB Anschluss mit dem Computer zu verbinden. Dadurch eröffnen sich völlig neue Möglichkeiten für die Geräte, denn damit können selbst erstellte Bilddateien direkt an der Maschine ausgestrickt werden. Ein Einlesen von Bildkarten (KH-910/950), oder das manuelle Einprogrammieren von Mustern (KH-930 und andere) entfällt damit.
+
+Zudem werden die Fähigkeiten der Maschine erweitert, denn mit AYAB können Muster über die volle Breite der Maschine (200 Nadeln), anstatt wie bisher nur 60 Nadeln gestrickt werden.
+Vor allem für das relativ kostengünstige Modell KH-910, das aufgrund seiner unzuverlässigen Scannereinheit ein Nischendasein fristet, kommt damit wieder zu neuer Funktion, die den moderneren Modellen mindestens gleichauf ist.
+
+Für das AYAB Shield benötigt man einen handelsüblichen Arduino UNO oder MEGA (nicht im Lieferumfang enthalten). Für die Installation muss das Gehäuse des Gerätes geöffnet werden und lediglich einige der vorhandenen Kabel von der bisherigen Steuereinheit auf das AYAB Shield umgesteckt werden (siehe Anleitungsvideo).
+
+Die Installation von AYAB ist voll reversibel. Werden die Kabel wieder auf die originale Steuereinheit zurückgesteckt, funktioniert die Strickmaschine wieder wie im Originalzustand.
+
+Der Arduino muss zur Inbetriebnahme mit der aktuellen Version der AYAB Firmware bespielt werden. Diese ist [hier] (Modell beachten!) bereits vorkompiliert verfügbar und muss nur noch auf den Arduino übertragen werden (siehe Anleitungsvideo).
+
+Das AYAB Projekt ist freie und offene Soft- und Hardware. Der komplette Quellcode und die Layoutdateien sind frei verfügbar und zur Anpassung an eigene Bedürfnisse freigegeben. Natürlich freut sich das AYAB Team über jegliches Feedback und Mitarbeit am Projekt.
+
+\subsection{Eigenschaften}
+
+Unterstützte Modelle: Brother KH-910, Brother KH-930 (weitere Modelle werden demnächst offiziell hinzugefügt)
+Maximale Musterbreite: 200 Nadeln
+Maximale Musterlänge: unbegrenzt
+Maximale Anzahl der Farben: 2 (bis zu 6 experimentell)
+
+\subsection{Hinweis}
+
+Bitte bei der Bestellung auf den richtigen Maschinentyp achten. Nur so kann gewährleistet werden, dass kompatible Steckverbindungen mitgeliefert werden.
+
+%------------------------------------------------
+
+\section{Technische Daten}
+
+%------------------------------------------------
+
+\section{Bevor Sie beginnen}
+
+%------------------------------------------------
+
+\section{Montage der Bauelemente auf der Platine}
+
+\subsection{Schritt 1}
+
+\subsection{Schritt 2}
+
+\subsection{Abschließende Kontrolle}
+
+%------------------------------------------------
+
+\section{Funktionstest und Inbetriebnahme}
+
+\subsection{Checkliste}
+
+\subsection{Verhalten bei Störungen}
+
+%------------------------------------------------
+
+\section{Gewährleistung}
+
+%------------------------------------------------
+
+\section{Anhang}
+
+\subsection{Bauteile und Bestellnummern}
+
+\subsection{Schaltplan}
+
+\subsection{Bestückungsplan}
+
+%------------------------------------------------
+
+\phantomsection
+\section*{Impressum} % The \section*{} command stops section numbering
+
+\addcontentsline{toc}{section}{Impressum} % Adds this section to the table of contents
+Anschrift:
+
+thinkstack UG
+
+Türkenstraße 21
+
+80799 München
+
+https://thinkstack.de
+
+%----------------------------------------------------------------------------------------
+%	REFERENCE LIST
+%----------------------------------------------------------------------------------------
+\phantomsection
+\bibliographystyle{unsrt}
+%\bibliography{sample}
+
+%----------------------------------------------------------------------------------------
+
+\end{document}
