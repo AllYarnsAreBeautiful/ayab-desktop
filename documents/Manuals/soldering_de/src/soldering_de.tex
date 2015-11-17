@@ -1,7 +1,17 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Stylish Article
+% AYAB-Shield
+% Soldering Manual - German
+% Version 0.1 (17.11.2015)
+%
+% http://www.ayab-knitting.com
+%
+% Original author:
+% Andreas Mueller (andreas.mueller@thinkstack.de)
+%
+% License:
+% CC BY-SA 4.0 (http://creativecommons.org/licenses/by-sa/4.0/)
+%
 % LaTeX Template
-% Version 2.0 (13/4/14)
 %
 % This template has been downloaded from:
 % http://www.LaTeXTemplates.com
@@ -41,6 +51,7 @@
 %----------------------------------------------------------------------------------------
 \usepackage{textgreek} % Required for Omega
 \usepackage{placeins} % Requierd for FloatBarrier
+\usepackage{wasysym} % für die benutzten Symbole
 \usepackage{hyperref} % Required for hyperlinks
 \hypersetup{hidelinks,colorlinks,breaklinks=true,urlcolor=color2,citecolor=color1,linkcolor=color1,bookmarksopen=false,pdftitle={Title},pdfauthor={Author}}
 
@@ -230,6 +241,7 @@ Achten Sie darauf des es sich bei einigen Bauteilen (insbesondere die ICs) um te
 
  \subsection*{Schritt 1: LEDs}
 
+
 \begin{tabular}{ll}
 \hline
 \textbf{Name} & \textbf{Farbe} \\ \hline
@@ -242,7 +254,7 @@ Platzieren die drei LEDs (rot, gelb, grün) ensprechend der Abbildung \ref{fig:a
 
 Im Anschluss werden diese von der Unterseite Verlötet.
 
-\begin{figure}[ht]\centering
+\begin{figure}[tbhp]\centering
 \includegraphics[width=\linewidth]{abb1_1}
 \caption{LEDs}
 \label{fig:abb1_1}
@@ -252,7 +264,7 @@ Im Anschluss werden diese von der Unterseite Verlötet.
 
  \subsection*{Schritt 2: Widerstände}
 
-Der AYAB-Shield Bausatz enthält zwei Widerstandstypen\par
+Der AYAB-Shield Bausatz enthält zwei Widerstandstypen\\
 
 \begin{tabular}{lll}
 \hline
@@ -266,7 +278,7 @@ R5            & 150\textOmega            & br-gr-br-gd \\ \hline
 
 Formen Sie zunächst alle fünf Widerstände entsprechend der Abbildung \ref{fig:abb2_1}.
 
-\begin{figure}[ht]\centering
+\begin{figure}[tbhp]\centering
 \includegraphics[width=\linewidth]{abb2_1}
 \caption{Biegen der Widerstandsdrähte}
 \label{fig:abb2_1}
@@ -274,13 +286,13 @@ Formen Sie zunächst alle fünf Widerstände entsprechend der Abbildung \ref{fig
 
 Anschließend sezen Sie die 150\textOmega-Widerstände entsprechen Abbildung \ref{fig:abb2_2} ein und verlöten Diese. Im nächsten Schritt wiederholen Sie dies mit den 10k\textOmega-Widerständen enstprechend Abbildung \ref{fig:abb2_3}.
 
-\begin{figure}[ht]\centering
+\begin{figure}[tbhp]\centering
 \includegraphics[width=\linewidth]{abb2_2}
 \caption{150\textOmega-Widerstände}
 \label{fig:abb2_2}
 \end{figure}
 
-\begin{figure}[ht]\centering
+\begin{figure}[tbhp]\centering
 \includegraphics[width=\linewidth]{abb2_3}
 \caption{10k\textOmega-Widerstände}
 \label{fig:abb2_3}
@@ -290,9 +302,9 @@ Anschließend sezen Sie die 150\textOmega-Widerstände entsprechen Abbildung \re
 
  \subsection*{Schritt 3: Maschinenstecker}
 
-\textbf{ACHTUNG!} Dieser Abschnitt wird je nach Maschinentyp unterschiedlich behandelt.\par
+\textbf{ACHTUNG!} Dieser Abschnitt wird je nach Maschinentyp unterschiedlich behandelt.\\
 
-\textbf{KH-910 / KH-950:} \par
+\textbf{KH-910 / KH-950:} \\
 
 \begin{tabular}{lll}
 \hline
@@ -305,13 +317,13 @@ JP9           & 4                 & gerade       \\ \hline
 
 Verlöten Sie zunächst die Maschinenverbinder JP3, JP4 sowie JP5 entsprechen Abbildung \ref{fig:abb3_1}. Achten Sie dabei darauf JP4 mit etwas Abstand zur Platine zu verlöten (Abbildung \ref{fig:abb3_2}) um das Verbinden mit der Strickmaschine zu erreichtern. Sie konnen dies durch unterlegen eines geeigneten Abstandshalters (z.B. Beilagscheibe) während des Lötvorgangs erleichtern.
 
-\begin{figure}[ht]\centering
+\begin{figure}[tbhp]\centering
 \includegraphics[width=\linewidth]{abb3_1}
-\caption{Maschinenverbinder}
+\caption{Maschinenverbinder KH-910/KH-950}
 \label{fig:abb3_1}
 \end{figure}
 
-\begin{figure}[ht]\centering
+\begin{figure}[tbhp]\centering
 \includegraphics[width=\linewidth]{abb3_2}
 \caption{Abstand JP3}
 \label{fig:abb3_2}
@@ -319,7 +331,7 @@ Verlöten Sie zunächst die Maschinenverbinder JP3, JP4 sowie JP5 entsprechen Ab
 
 Das Anbringen des Erweiterungssteckers JP9 (Abbildung \ref{fig:abb3_3}) kann optional vorgenommen werden. Über diesen Anschluss kann die Funktonalität später durch z.B. eine optionale Farbwechslersteuerung o.ä. ergänzt werden. \par
 
-\begin{figure}[ht]\centering
+\begin{figure}[tbhp]\centering
 \includegraphics[width=\linewidth]{abb3_3}
 \caption{Erweiterungsstecker}
 \label{fig:abb3_3}
@@ -327,17 +339,35 @@ Das Anbringen des Erweiterungssteckers JP9 (Abbildung \ref{fig:abb3_3}) kann opt
 
 \FloatBarrier
 
-\textbf{KH-930:} \par
+\textbf{KH-930:} \\
 
-tbd.
+\begin{tabular}{lll}
+\hline
+\textbf{Name} & \textbf{Polzahl}  & \textbf{Typ} \\ \hline
+JP3           & 8                 & Molex 2.5mm  \\ \hline
+JP4           & 10                & Molex 2.5mm  \\ \hline
+JP2           & 3                 & Molex 2.5mm  \\ \hline
+JP8           & 5                 & Molex 2.5mm  \\ \hline
+JP9           & 4                 & gerade       \\ \hline
+\end{tabular}\\
+
+Verlöten Sie die Maschinenverbinder JP3, JP4 sowie JP2 und JP8 enstprechend Abbildung \ref{fig:abb3_4}. Achten Sie dabei unbedingt auf die richtige Orientierung der Buchsen (zu erkennen an den dreieckigen Einbuchtungen). Die Einbuchtungen müssen von der roten LED wegzeigen. Achten Sie beim verlöten darauf, dass die Stecker plan auf der Platine aufliegen. Eine nachträgliche Korrektur bei mehrpoligen Steckern gestaltet sich schwierig.
+
+\begin{figure}[tbhp]\centering
+\includegraphics[width=\linewidth]{no}
+\caption{Maschinenverbinder KH-930}
+\label{fig:abb3_4}
+\end{figure}
+
+Das Anbringen des Erweiterungssteckers JP9 (Abbildung \ref{fig:abb3_3}) kann optional vorgenommen werden. Über diesen Anschluss kann die Funktonalität später durch z.B. eine optionale Farbwechslersteuerung o.ä. ergänzt werden. \par
 
 \FloatBarrier
 
  \subsection*{Schritt 4: Piepserstecker}
 
-Nun kann der Stecker für den Piepser wie auf Abbildung \ref{fig:abb4_1} verlötet werden. Auch hier unbedingt auf die Polarität achten.
+Nun kann der Stecker für den Piepser wie auf Abbildung \ref{fig:abb4_1} verlötet werden. Auch hier unbedingt auf die Polarität sowie ein planes aufliegen achten.
 
-\begin{figure}[ht]\centering
+\begin{figure}[tbhp]\centering
 \includegraphics[width=\linewidth]{abb4_1}
 \caption{Piepserstecker}
 \label{fig:abb4_1}
@@ -347,9 +377,9 @@ Nun kann der Stecker für den Piepser wie auf Abbildung \ref{fig:abb4_1} verlöt
 
  \subsection*{Schritt 5: Arduino Verbindungsstecker}
 
-\textbf{Arduino nicht im Lieferumfang enthalten}\par
+\textbf{Arduino nicht im Lieferumfang enthalten}\\
 
-Hierfür benötigen Sie folgende Steckverbinder:\par
+Hierfür benötigen Sie folgende Steckverbinder:\\
 
 \begin{tabular}{lll}
 \hline
@@ -361,25 +391,25 @@ ARD4          & 6                 & gerade       \\ \hline
 \end{tabular}\\
 
 
-\textbf{Tipp!} Stecken Sie die vier Verbindungsstecker vor dem Verlöten in die Buchsen des Arduinos (Abbildung \ref{fig:abb5_1}) und legen Sie anschließend das AYAB-Shield zum verlöten darauf (Abbildung \ref{fig:5_2}). Dies erleichtert die Lötarbeit erheblich und garantiert einen sauberen Verbau. Achten Sie jedoch auf eine möglichst kurze Lötdauer um den Arduino nicht zu beschädigen.
+\textbf{Tipp!} Stecken Sie die vier Verbindungsstecker vor dem Verlöten in die Buchsen des Arduinos (Abbildung \ref{fig:abb5_1}) und legen Sie anschließend das AYAB-Shield zum verlöten darauf (Abbildung \ref{fig:abb5_2}). Dies erleichtert die Lötarbeit erheblich und garantiert einen sauberen Verbau. Achten Sie jedoch auf eine möglichst kurze Lötdauer um den Arduino nicht zu beschädigen.
 
-\begin{figure}[ht]\centering
+\begin{figure}[tbhp]\centering
 \includegraphics[width=\linewidth]{abb5_1}
 \caption{Löterleichterung}
 \label{fig:abb5_1}
 \end{figure}
 
-\begin{figure}[ht]\centering
+\begin{figure}[tbhp]\centering
 \includegraphics[width=\linewidth]{abb5_2}
 \caption{Arduino Verbindungsstecker}
-\label{fig:abb5_1}
+\label{fig:abb5_2}
 \end{figure}
 
 \FloatBarrier
 
  \subsection*{Schritt 6: ICs}
 
-\textbf{Achtung!} Hier unbedingt auf die richtige Orientierung Achten. Die Markierungskerben müssen entsprechend Abbildung \ref{fig:abb6_1} gerichtet sein. Beachten Sie, dass IC1 und IC2 eine andere Orientierung aufweisen als IC3 und IC4. Seien Sie beim einsetzen der ICs behutsam und geduldig. Evtl. müssen die Beinchen sehr vorsichtig etwas nachgebogen werden. Bei zu viel druck können diese leicht brechen. Achten Sie auf eine möglichst kurze Lötdauer um die Bauteile nicht zu überhitzen.\par
+\textbf{Achtung!} Hier unbedingt auf die richtige Orientierung Achten. Die Markierungskerben müssen entsprechend Abbildung \ref{fig:abb6_1} gerichtet sein. Beachten Sie, dass IC1 und IC2 eine andere Orientierung aufweisen als IC3 und IC4. Seien Sie beim einsetzen der ICs behutsam und geduldig. Evtl. müssen die Beinchen sehr vorsichtig etwas nachgebogen werden. Bei zu viel druck können diese leicht brechen. Achten Sie auf eine möglichst kurze Lötdauer um die Bauteile nicht zu überhitzen.\\
 \begin{tabular}{ll}
 \hline
 \textbf{Name} & \textbf{Typ} \\ \hline
@@ -389,7 +419,7 @@ IC3           & MCP 23008    \\ \hline
 IC4           & MCP 23008    \\ \hline
 \end{tabular}\\
 
-\begin{figure}[ht]\centering
+\begin{figure}[tbhp]\centering
 \includegraphics[width=\linewidth]{abb6_1}
 \caption{ICs}
 \label{fig:abb6_1}
@@ -399,47 +429,73 @@ IC4           & MCP 23008    \\ \hline
 
  \subsection*{Schritt 7: Sensorkabel}
 
-\textbf{ACHTUNG!} Dieser Abschnitt wird je nach Maschinentyp unterschiedlich behandelt.\par
+\textbf{ACHTUNG!} Dieser Abschnitt wird je nach Maschinentyp unterschiedlich behandelt.\\
 
-\textbf{KH-910 / KH-950:} \par
+\textbf{KH-910 / KH-950:} \\
 
 Isolieren Sie das Mitgelieferte 3-Adrige Flachbandkabel an beiden Enden entsprechend Abbildung \ref{fig:abb7_1} ab.
 
-\begin{figure}[ht]\centering
+\begin{figure}[tbhp]\centering
 \includegraphics[width=\linewidth]{abb7_1}
-\caption{Abisolierung der Kabelenden}
+\caption{Abisolierung der Kabelenden bei KH-910/KH-950}
 \label{fig:abb7_1}
 \end{figure}
 
 Verzinnen Sie nun ein Kabelende sowie den 3-poligen Pfostenstecker (Abbildung \ref{fig:abb7_2}) und Verlöten diese anschließend (Abbildung \ref{fig:abb7_3}). Achten Sie hier auf eine gute mechanische Stabilität und prüfen Sie auf evtl. Kurzschlüsse. Sie können zur Verbesserung der Stabilität die offenen Lötstellen einzeln mit Isolierband umwickeln, oder mit einem Schrumpfschlauch fixieren.
 
-\begin{figure}[ht]\centering
+\begin{figure}[tbhp]\centering
 \includegraphics[width=\linewidth]{abb7_2}
-\caption{Verzinnung}
+\caption{Verzinnung bei KH-910/KH-950}
 \label{fig:abb7_2}
 \end{figure}
 
-
-
-Nun verlöten Sie das andere Ende wie auf Abbildung \ref{fig:abb7_4} mit der Platine und markieren die Oberseite des Steckers entsprechend. Dies dient zur erleichterung der Orientierung beim Einbau in die Strickmaschine\par
-
-\begin{figure}[ht]\centering
+\begin{figure}[tbhp]\centering
 \includegraphics[width=\linewidth]{abb7_3}
-\caption{Verlötetes Kabelende}
+\caption{Verlötetes Kabelende bei KH-910/KH-950}
 \label{fig:abb7_3}
 \end{figure}
 
-\begin{figure}[ht]\centering
-\includegraphics[width=\linewidth]{abb7_4}
-\caption{Verbiundung mit Platine}
+Nun verlöten Sie das andere Ende wie auf Abbildung \ref{fig:abb7_4} mit der Platine an JP2 und markieren die Oberseite des Steckers entsprechend. Dies dient zur erleichterung der Orientierung beim Einbau in die Strickmaschine\par
+
+\begin{figure}[tbhp]\centering
+\includegraphics[width=\linewidth]{no}
+\caption{Verbindung mit Platine bei KH-910/KH-950}
 \label{fig:abb7_4}
 \end{figure}
 
 \FloatBarrier
 
-\textbf{KH-930:} \par
+\textbf{KH-930:} \\
 
-tbd.
+Isolieren Sie das Mitgelieferte 3-Adrige Flachbandkabel an beiden Enden entsprechend Abbildung \ref{fig:abb7_5} ab.
+
+\begin{figure}[tbhp]\centering
+\includegraphics[width=\linewidth]{no}
+\caption{Abisolierung der Kabelenden bei KH-930}
+\label{fig:abb7_5}
+\end{figure}
+
+Verzinnen Sie nun ein Kabelende sowie den 3-poligen Molex-Stecker (Abbildung \ref{fig:abb7_6}) und Verlöten diese anschließend (Abbildung \ref{fig:abb7_7}). Achten Sie hier auf eine gute mechanische Stabilität und prüfen Sie auf evtl. Kurzschlüsse. Sie können zur Verbesserung der Stabilität die offenen Lötstellen einzeln mit Isolierband umwickeln, oder mit einem Schrumpfschlauch fixieren.
+
+\begin{figure}[tbhp]\centering
+\includegraphics[width=\linewidth]{no}
+\caption{Verzinnung bei KH-930}
+\label{fig:abb7_6}
+\end{figure}
+
+\begin{figure}[tbhp]\centering
+\includegraphics[width=\linewidth]{no}
+\caption{Verlötetes Kabelende bei KH-930}
+\label{fig:abb7_7}
+\end{figure}
+
+Nun verlöten Sie das andere Ende wie auf Abbildung \ref{fig:abb7_8} mit der Platine an JP7. Achten Sie dabei unbedingt auf die richtige Polarität. Das Kabel muss so eingelötet werden, dass von oben der Molex Stecker mit den dreieckigen Einbuchtungen zur roten LED \textbf{hin} zeigt (im Gegensatz zu den anderen Maschinenverbindern).
+
+\begin{figure}[tbhp]\centering
+\includegraphics[width=\linewidth]{no}
+\caption{Verbindung mit Platine bei KH-930}
+\label{fig:abb7_8}
+\end{figure}
 
 \FloatBarrier
 
@@ -447,32 +503,32 @@ tbd.
 
 \textbf{ACHTUNG!} Dieser Abschnitt wird je nach Maschinentyp unterschiedlich behandelt.\\
 
-\textbf{KH-910 / KH-930 / KH-950 / CK-35:} \par
+\textbf{KH-910 / KH-930 / KH-950 / CK-35:} \\
 
 Bringen Sie den 4-poligen Verbindungstecker entsprechend Abbildung \ref{fig:abb8_1} an und verlöten diesen anschließend. Achten Sie auf eine gleiche höhe der einzelnen Pins und gleichen Sie diese gegebenenfalls vorsichtig aus. Achten Sie darauf, dass die Bodenplatte des Steckers nicht bricht. Durch die dicke der einzelnen Pins, kann es hier etwas länger dauern, bis das Lötzinn sauber verlaufen ist. Verwenden Sie zum halten des Steckers unbedingt eine Zange (Verbrennungsgefahr!).
 
-\begin{figure}[ht]\centering
-\includegraphics[width=\linewidth]{abb8_1}
+\begin{figure}[tbhp]\centering
+\includegraphics[width=\linewidth]{no}
 \caption{Versorgungsstecker KH-910/930/950 und CK35}
 \label{fig:abb8_1}
 \end{figure}
 
 Im Anschluss müssen die Beinchen an der Unterseite möglichst nahe an der Platine gekürzt werden (Abbildung \ref{fig:abb8_2}) um einen Kurzschluss mit den ISP-Pins des Arduino zu vermeiden.\par
 
-\begin{figure}[ht]\centering
-\includegraphics[width=\linewidth]{abb8_2}
+\begin{figure}[tbhp]\centering
+\includegraphics[width=\linewidth]{no}
 \caption{Kurzschlussvermeidung}
 \label{fig:abb8_2}
 \end{figure}
 
 \FloatBarrier
 
-\textbf{KH-900 / KH-965:} \par
+\textbf{KH-900 / KH-965:} \\
 
 Verlöten Sie den Hohlstecker entsprechen Abbildung \ref{fig:abb8_3}. \textbf{ACHTUNG!} Die verwendete Polarität trägt den Pluspol an der Außenseite und den Minuspol im Innenleiter. Dies ist die Polarität der original Brother-Netzteile. Bei verwendung von anderen Netzteilen unbedingt auf die richtige Polung achten. Ansonsten kann dies zu Zerstörung von Bauteilen oder gar der Strickmaschine führen.
 
-\begin{figure}[ht]\centering
-\includegraphics[width=\linewidth]{abb8_3}
+\begin{figure}[tbhp]\centering
+\includegraphics[width=\linewidth]{no}
 \caption{Versorgungsstecker KH-900/965}
 \label{fig:abb8_3}
 \end{figure}
@@ -490,11 +546,54 @@ Kontrollieren sie alle Lötstellen auf sauberkeit der Ausführung. Kalte Lötste
 
  \subsection*{Checkliste}
 
+\begin{itemize}[noitemsep] % [noitemsep] removes whitespace between the items for a compact look
+\item[\Square] offener Punkt
+\item[\XBox] angekreuzter Punkt
+\item[\CheckedBox] abgehakter Punkt
+\end{itemize}
+
  \subsection*{Verhalten bei Störungen}
 
 %------------------------------------------------
 
 \section{Gewährleistung}
+
+Da wir keinen Einfluss auf den richtigen und sachgemäßen Aufbau haben, können wir aus verständlichen Gründen bei Bausätzen nur die Gewähr der Vollständigkeit und einwandfreien Beschaffenheit der Bauteile übernehmen.
+
+Garantiert wird eine den Kennwerten entsprechende Funktion der Bauelemente im uneingebautem Zustand und die Einhaltung der technischen Daten der Schaltung bei entsprechend der Lötvorschrift,
+fachgerechter Verarbeitung und vorgeschriebener Inbetriebnahme und Betriebsweise.
+
+Weitergehende Ansprüche sind ausgeschlossen.
+
+Wir übernehmen weder eine Gewähr noch irgendwelche Haftung für Schäden oder Folgeschäden im Zusammenhang mit diesem Produkt.
+
+Wir behalten uns eine Reparatur, Nachbesserung, Ersatzteillieferung oder Rückerstattung des Kaufpreises vor.
+
+Bei folgenden Kriterien erfolgt keine Reparatur bzw. es erlischt der Gewährleistungsanspruch:
+
+\begin{itemize}[noitemsep] % [noitemsep] removes whitespace between the items for a compact look
+\item wenn zum Löten säurehaltiges Lötzinn, Lötfett oder säurehaltiges Flussmittel u. ä. verwendet wurde.
+\item wenn der Bausatz unsachgemäß gelötet und aufgebaut wurde.
+\item bei Veränderung und Reparaturversuchen am Gerät
+\item bei eigenmächtiger Abänderung der Schaltung
+\item bei der Konstruktion nicht vorgesehene, unsachgemäße Auslagerung von Bauteilen, Freiverdrahtung von Bauteilen wie Schalter, Potis,
+Buchsen usw.
+\item Verwendung anderer, nicht original zum Bausatz gehörender Bauteile
+\item bei Zerstörung von Leiterbahnen oder Lötaugen
+\item bei falscher Bestückung und den sich daraus ergebenden Folgeschäden
+\item bei Überlastung der Baugruppe
+\item bei Schäden durch Eingriffe fremder Personen
+\item bei Schäden durch Nichtbeachtung der Bedienungsanleitung und des Anschlussplanes
+\item bei Anschluss an eine falsche Spannung oder Stromart
+\item bei Falschpolung der Baugruppe
+\item bei Fehlbedienung oder Schäden durch fahrlässige Behandlung oder Mißbrauch
+\item bei Defekten, die durch überbrückte Sicherungen oder durch Einsatz falscher Sicherungen entstehen
+\end{itemize}
+
+In all diesen Fällen erfolgt die Rücksendung des Bausatzes zu Ihren Lasten.
+
+Beim Umgang mit Produkten, die mit elektrischer Spannung in Berührung kommen, müssen die güitigen VDE-Vorschriften beachtet werden, insbesondere VDE 0100, VDE055010551, VDE 0700, VDE 0711
+und VDE 0860.
 
 %------------------------------------------------
 
@@ -512,7 +611,12 @@ Kontrollieren sie alle Lötstellen auf sauberkeit der Ausführung. Kalte Lötste
 \section*{Impressum} % The \section*{} command stops section numbering
 
 \addcontentsline{toc}{section}{Impressum} % Adds this section to the table of contents
-Anschrift:
+
+\begin{figure}[tbhp]
+\includegraphics[width=0.3\linewidth]{cc}
+\end{figure}
+
+\textbf{Anschrift:}
 
 thinkstack UG
 
@@ -522,9 +626,7 @@ Türkenstraße 21
 
 https://thinkstack.de
 
-\begin{figure}[ht]
-\includegraphics[width=0.3\linewidth]{cc}
-\end{figure}
+
 
 %----------------------------------------------------------------------------------------
 %	REFERENCE LIST
