@@ -285,7 +285,7 @@ class AyabPluginControl(KnittingPlugin):
     # KnittingPlugin.__init__(self)
 
     #Copying from ayab_control
-    self.__API_VERSION = 0x03
+    self.__API_VERSION = 0x04
     self.__ayabCom = AyabCommunication()
 
     self.__formerRequest = 0
@@ -326,6 +326,10 @@ class AyabPluginControl(KnittingPlugin):
             elif msgId == 0x82:  # reqLine
                 # print "> reqLine: " + str(ord(line[1]))
                 return ("reqLine", ord(line[1]))
+
+            elif msgId == 0x84:
+                logging.debug("indInit " + str(ord(line[1])))
+                return ("indInit", ord(line[1]))
 
             else:
                 logging.warning("unknown message: " + line[:])  # drop crlf
@@ -525,13 +529,20 @@ class AyabPluginControl(KnittingPlugin):
 
               if rcvMsg == 'cnfInfo':
                   if rcvParam == API_VERSION:
-                      curState = 's_start'
-                      self.__wait_for_user_action("Please init machine. (Set the carriage to mode KC-I or KC-II and move the carriage over the left turn mark).")
+                      curState = 's_waitForInit'                      
+                      #self.__wait_for_user_action("Please init machine. (Set the carriage to mode KC-I or KC-II and move the carriage over the left turn mark).")
                   else:
                       self.__notify_user("Wrong API.")
                       logging.error("wrong API version: " + str(rcvParam)
                                         + (" (expected: )") + str(API_VERSION))
                       return
+
+          if curState == 's_waitForInit':
+              if rcvMsg == "indInit":
+                if rcvParam == 1:
+                    curState = 's_start'
+                else:
+                    logging.debug("nope")
 
           if curState == 's_start':
               if oldState != curState:
