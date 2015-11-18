@@ -284,7 +284,7 @@ class AyabPluginControl(KnittingPlugin):
     # KnittingPlugin.__init__(self)
 
     #Copying from ayab_control
-    self.__API_VERSION = 0x03
+    self.__API_VERSION = 0x04
     self.__ayabCom = AyabCommunication()
 
     self.__formerRequest = 0
@@ -319,7 +319,10 @@ class AyabPluginControl(KnittingPlugin):
 
         elif msgId == 0xC3:  # cnfInfo
             # print "> cnfInfo: Version=" + str(ord(line[1]))
-            logging.debug("Detected device with API v" + str(ord(line[1])))
+            logging.info("Detected device with API v" + str(ord(line[1])))
+            if ord(line[1]) >= 4:
+                logging.info("FW Version: " 
+                             + str(ord(line[2])) + "." + str(ord(line[3])))
             return ("cnfInfo", ord(line[1]))
 
         elif msgId == 0x82:  # reqLine
@@ -529,7 +532,7 @@ class AyabPluginControl(KnittingPlugin):
                 else:
                     self.__notify_user("Wrong API.")
                     logging.error("wrong API version: " + str(rcvParam)
-                                  + (" (expected: )") + str(API_VERSION))
+                                  + (" (expected: ") + str(API_VERSION) + ")")
                     return
 
         if curState == 's_start':
