@@ -122,12 +122,17 @@ class GuiMain(QMainWindow):
         if total != 0:
             progress = 100 * float(row)/total
             self.ui.progressBar.setValue(progress)
-            self.ui.progress_label.setText("{0}/{1}".format(row, total))
+            self.ui.notification_label.setText("{0}/{1}".format(row, total))
 
     def update_file_selected_text_field(self, route):
         '''Sets self.image_file_route and ui.filename_lineedit to route.'''
         self.ui.filename_lineedit.setText(route)
         self.image_file_route = route
+
+    def slotUpdateNotification(self, text):
+        '''Updates the Notification field'''
+        self.ui.notification_label.setText(text)
+        logging.debug(text)
 
     def slotUpdateNeedles(self, start_needle, stop_needle):
         '''Updates the position of the start/stop needle visualisation'''
@@ -175,6 +180,7 @@ class GuiMain(QMainWindow):
         self.ui.image_pattern_view.setDragMode(QtGui.QGraphicsView.ScrollHandDrag)
         # Connecting Signals.
         self.connect(self, QtCore.SIGNAL("updateProgress(int,int)"), self.updateProgress)
+        self.connect(self, QtCore.SIGNAL("signalUpdateNotification(QString)"), self.slotUpdateNotification)
         self.connect(self, QtCore.SIGNAL("display_pop_up_signal(QString, QString)"), self.display_blocking_pop_up)
         self.connect(self, QtCore.SIGNAL("signalUpdateNeedles(int,int)"), self.slotUpdateNeedles)
         self.connect(self, QtCore.SIGNAL("signalUpdateAlignment(QString)"), self.slotUpdateAlignment)
@@ -192,7 +198,7 @@ class GuiMain(QMainWindow):
 
     def load_image_from_string(self, image_str):
         '''Loads an image into self.ui.image_pattern_view using a temporary QGraphicsScene'''
-        
+
         # TODO Check for maximum width before loading the image
         self.pil_image = Image.open(image_str)
         if self.pil_image.mode == "RGB":
