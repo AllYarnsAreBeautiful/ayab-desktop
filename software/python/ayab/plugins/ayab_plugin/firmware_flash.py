@@ -81,11 +81,14 @@ class FirmwareFlash(QFrame):
         if self.json_object.get(hardware_device, [])['description'] == hardware_qitem.text():
           self.chosen_hardware_device = hardware_device
           self.load_controllers()
+          self.ui.flash_firmware.setEnabled(False)
+          self.clean_firmware_list()
 
     def controller_item_activated(self, control_qitem):
       '''Signal on controller_list activated. Triggers loading of firmwares.'''
       logging.debug("selected "+control_qitem.text())
       self.load_firmware(control_qitem.text())
+      self.ui.flash_firmware.setEnabled(False)
 
     def firmware_item_activated(self, firmware_qitem):
       '''Signal on firmware_list activated.'''
