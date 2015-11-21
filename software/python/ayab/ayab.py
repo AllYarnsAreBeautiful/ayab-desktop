@@ -56,10 +56,12 @@ class GuiMain(QMainWindow):
         self.image_file_route = None
         self.enabled_plugin = None
 
+        self.pil_image = None
         self.start_needle = 80
         self.stop_needle = 119
         self.imageAlignment = "center"
         self.var_progress = 0
+        self.zoomlevel = 3
 
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
@@ -144,6 +146,16 @@ class GuiMain(QMainWindow):
         '''Updates the alignment of the image between start/stop needle'''
         self.imageAlignment = alignment
         self.refresh_scene()
+
+    def wheelEvent(self, event):
+        if self.pil_image is not None:
+            self.zoomlevel = self.zoomlevel + event.delta()/120
+            if self.zoomlevel <= 1:
+                self.zoomlevel = 1
+            elif self.zoomlevel >= 5:
+                self.zoomlevel = 5
+            logging.debug(self.zoomlevel)
+            self.refresh_scene()
 
     def start_knitting_process(self):
         # Disable everythin which should not be touched
@@ -290,7 +302,7 @@ class GuiMain(QMainWindow):
 
         qv = self.ui.image_pattern_view
         qv.resetTransform()
-        qv.scale(2.0, 2.0)
+        qv.scale(self.zoomlevel, self.zoomlevel)
         qv.setScene(qscene)
 
     def set_dimensions_on_gui(self, width, height):
