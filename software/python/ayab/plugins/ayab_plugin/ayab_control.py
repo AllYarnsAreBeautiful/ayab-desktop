@@ -337,6 +337,9 @@ class AyabPluginControl(KnittingPlugin):
                 # print "> reqLine: " + str(ord(line[1]))
                 return ("reqLine", ord(line[1]))
 
+            elif msgId == 0xC4:  # cnfTest
+                logging.debug("cnfTest")
+
             elif msgId == 0x84:
                 return ("indState", ord(line[1]))
 
