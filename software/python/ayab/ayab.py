@@ -131,8 +131,8 @@ class GuiMain(QMainWindow):
 
     def slotUpdateNotification(self, text):
         '''Updates the Notification field'''
+        logging.info("Notification: " + text)
         self.ui.notification_label.setText(text)
-        logging.debug(text)
 
     def slotUpdateNeedles(self, start_needle, stop_needle):
         '''Updates the position of the start/stop needle visualisation'''
@@ -347,11 +347,11 @@ class GuiMain(QMainWindow):
 
     def rotate_left(self):
         '''Public rotate left current Image function.'''
-        self.apply_image_transform("rotate", -90.0)
+        self.apply_image_transform("rotate", 90.0)
 
     def rotate_right(self):
         '''Public rotate right current Image function.'''
-        self.apply_image_transform("rotate", 90.0)
+        self.apply_image_transform("rotate", -90.0)
 
     def smart_resize(self):
       '''Executes the smart resize process including dialog .'''
@@ -387,7 +387,7 @@ class GuiMain(QMainWindow):
 
         # Update the view
         self.pil_image = image
-        self.load_pil_image_on_scene(self.pil_image)
+        self.refresh_scene()
 
     def __smart_resize_image(self, image, args):
       '''Implement the smart resize processing. Ratio sent as a tuple of horizontal and vertical values.'''
