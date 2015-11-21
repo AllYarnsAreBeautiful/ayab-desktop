@@ -283,7 +283,7 @@ class GuiMain(QMainWindow):
         # Draw knitting progress
         QtGui.QGraphicsRectItem(
             -(machine_width/2.0),
-            self.var_progress,
+            pixmap.height() - self.var_progress,
             machine_width,
             limit_bar_width,
             None, qscene)
