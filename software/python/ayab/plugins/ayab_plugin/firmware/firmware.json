@@ -5,7 +5,12 @@
         "uno":[
             {
                 "url":"/",
-                "version":"0.75 (latest)",
+                "version":"0.80 (latest)",
+                "file":"kh910_uno_0-80.hex"
+            },
+            {
+                "url":"/",
+                "version":"0.75",
                 "file":"kh910_uno_0-75.hex"
             },
             {
@@ -17,7 +22,12 @@
         "mega2560":[
             {
                 "url":"/",
-                "version":"0.75 (latest)",
+                "version":"0.80 (latest)",
+                "file":"kh910_mega_0-80.hex"
+            },
+            {
+                "url":"/",
+                "version":"0.75",
                 "file":"kh910_mega_0-75.hex"
             },
             {
@@ -34,7 +44,12 @@
             "uno":[
                 {
                     "url":"/",
-                    "version":"0.75 (latest)",
+                    "version":"0.80 (latest)",
+                    "file":"kh930_uno_0-80.hex"
+                },
+                {
+                    "url":"/",
+                    "version":"0.75",
                     "file":"kh930_uno_0-75.hex"
                 },
                 {
@@ -46,7 +61,12 @@
             "mega2560":[
                 {
                     "url":"/",
-                    "version":"0.75 (latest)",
+                    "version":"0.80 (latest)",
+                    "file":"kh930_mega_0-80.hex"
+                },
+                {
+                    "url":"/",
+                    "version":"0.75",
                     "file":"kh930_mega_0-75.hex"
                 },
                 {
@@ -63,7 +83,12 @@
             "uno":[
                 {
                     "url":"/",
-                    "version":"0.7 (latest)",
+                    "version":"0.80 (latest)",
+                    "file":"hwtest_uno_0-80.hex"
+                },
+                {
+                    "url":"/",
+                    "version":"0.7",
                     "file":"hwtest_uno_0-7.hex"
                 },
                 {
@@ -75,7 +100,12 @@
             "mega2560":[
                 {
                     "url":"/",
-                    "version":"0.7 (latest)",
+                    "version":"0.80 (latest)",
+                    "file":"hwtest_mega_0-80.hex"
+                },
+                {
+                    "url":"/",
+                    "version":"0.7",
                     "file":"hwtest_mega_0-7.hex"
                 },
                 {
