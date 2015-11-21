@@ -90,8 +90,8 @@ class AyabPluginControl(KnittingPlugin):
     self.__parent_ui.emit(QtCore.SIGNAL('updateProgress(int,int,int)'), 0, 0, 0)
 
   def cancel(self):
+    self.__updateNotification("Knitting cancelled")
     self._knitImage = False
-    #self.finish()
 
   def __close_serial(self):
     try:
