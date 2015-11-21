@@ -113,6 +113,10 @@ class AyabPluginControl(KnittingPlugin):
     """Sends the display_pop_up_signal QtSignal to main GUI thread, not blocking it."""
     self.__parent_ui.emit(QtCore.SIGNAL('display_pop_up_signal(QString, QString)'), message, message_type)
 
+  def __updateNotification(self, message=""):
+    """Sends the signalUpdateNotification signal"""
+    self.__parent_ui.emit(QtCore.SIGNAL('signalUpdateNotification(QString)'), message)
+
   def __emit_progress(self, row, total = 0):
     """Sends the updateProgress QtSignal."""
     self.__parent_ui.emit(QtCore.SIGNAL('updateProgress(int,int)'), int(row), int(total))
@@ -529,8 +533,8 @@ class AyabPluginControl(KnittingPlugin):
 
               if rcvMsg == 'cnfInfo':
                   if rcvParam == API_VERSION:
-                      curState = 's_waitForInit'                      
-                      #self.__wait_for_user_action("Please init machine. (Set the carriage to mode KC-I or KC-II and move the carriage over the left turn mark).")
+                      curState = 's_waitForInit'
+                      self.__updateNotification("Please init machine. (Set the carriage to mode KC-I or KC-II and move the carriage over the left turn mark).")
                   else:
                       self.__notify_user("Wrong API.")
                       logging.error("wrong API version: " + str(rcvParam)
@@ -552,8 +556,9 @@ class AyabPluginControl(KnittingPlugin):
               if rcvMsg == 'cnfStart':
                   if rcvParam == 1:
                       curState = 's_operate'
-                      self.__wait_for_user_action("Ready to Operate")
+                      self.__updateNotification("Please Knit")
                   else:
+                      self.__updateNotification()
                       self.__wait_for_user_action("Device not ready, configure and try again.")
                       logging.error("device not ready")
                       return
@@ -565,6 +570,7 @@ class AyabPluginControl(KnittingPlugin):
                       curState = 's_finished'
 
           if curState == 's_finished':
+              self.__updateNotification()
               self.__wait_for_user_action("Image transmission finished. Please knit until you hear the double beep sound.")
               return
 
