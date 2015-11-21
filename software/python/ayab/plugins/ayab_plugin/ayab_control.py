@@ -576,8 +576,7 @@ class AyabPluginControl(KnittingPlugin):
                       curState = 's_finished'
 
           if curState == 's_finished':
-              self.__updateNotification()
-              self.__wait_for_user_action("Image transmission finished. Please knit until you hear the double beep sound.")
+              self.__updateNotification("Image transmission finished. Please knit until you hear the double beep sound.")
               return
 
           oldState = curState
