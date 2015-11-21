@@ -338,7 +338,7 @@ class AyabPluginControl(KnittingPlugin):
                 return ("reqLine", ord(line[1]))
 
             elif msgId == 0x84:
-                return ("indInit", ord(line[1]))
+                return ("indState", ord(line[1]))
 
             else:
                 logging.warning("unknown message: " + line[:])  # drop crlf
@@ -372,7 +372,7 @@ class AyabPluginControl(KnittingPlugin):
             lineNumber = lineNumber \
                 + (self.__lineBlock * 256)
 
-            # when knitting infinitely, keep the requested 
+            # when knitting infinitely, keep the requested
             # lineNumber in its limits
             if self.__infRepeat:
               lineNumber = lineNumber % imgHeight
@@ -504,7 +504,7 @@ class AyabPluginControl(KnittingPlugin):
         if lastLine:
           if self.__infRepeat:
               self.__lineBlock = 0
-              return 0 # keep knitting
+              return 0  # keep knitting
           else:
               return 1  # image finished
         else:
@@ -547,7 +547,7 @@ class AyabPluginControl(KnittingPlugin):
                       return
 
           if curState == 's_waitForInit':
-              if rcvMsg == "indInit":
+              if rcvMsg == "indState":
                 if rcvParam == 1:
                     curState = 's_start'
                 else:
