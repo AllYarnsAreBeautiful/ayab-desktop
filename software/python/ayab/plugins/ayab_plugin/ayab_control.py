@@ -338,7 +338,6 @@ class AyabPluginControl(KnittingPlugin):
                 return ("reqLine", ord(line[1]))
 
             elif msgId == 0x84:
-                logging.debug("indInit " + str(ord(line[1])))
                 return ("indInit", ord(line[1]))
 
             else:

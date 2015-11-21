@@ -148,13 +148,14 @@ class GuiMain(QMainWindow):
         self.refresh_scene()
 
     def wheelEvent(self, event):
+        '''Using mouse wheel events to zoom the pattern view'''
         if self.pil_image is not None:
             self.zoomlevel = self.zoomlevel + event.delta()/120
             if self.zoomlevel <= 1:
                 self.zoomlevel = 1
             elif self.zoomlevel >= 5:
                 self.zoomlevel = 5
-            logging.debug(self.zoomlevel)
+
             self.refresh_scene()
 
     def start_knitting_process(self):
