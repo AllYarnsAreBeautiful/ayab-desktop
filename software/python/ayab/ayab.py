@@ -201,10 +201,9 @@ class GuiMain(QMainWindow):
 
         # TODO Check for maximum width before loading the image
         self.pil_image = Image.open(image_str)
-        if self.pil_image.mode == "RGB":
-            pass
-        elif self.pil_image.mode == "L":
-            self.pil_image = self.pil_image.convert("RGBA")
+
+        logging.debug(self.pil_image.mode)
+        self.pil_image = self.pil_image.convert("RGBA")
 
         self.refresh_scene()
         # Enable plugin elements after first load of image
@@ -390,12 +389,12 @@ class GuiMain(QMainWindow):
         self.refresh_scene()
 
     def __smart_resize_image(self, image, args):
-      '''Implement the smart resize processing. Ratio sent as a tuple of horizontal and vertical values.'''
-      import knit_aware_resize
-      wratio, hratio = args[0]  # Unpacks the first argument.
-      logging.debug("resizing image with args: {0}".format(args))
-      resized_image = knit_aware_resize.resize_image(image, wratio, hratio)
-      return resized_image
+        '''Implement the smart resize processing. Ratio sent as a tuple of horizontal and vertical values.'''
+        import knit_aware_resize
+        wratio, hratio = args[0]  # Unpacks the first argument.
+        logging.debug("resizing image with args: {0}".format(args))
+        resized_image = knit_aware_resize.resize_image(image, wratio, hratio)
+        return resized_image
 
     def __rotate_image(self, image, args):
         if not args:
@@ -406,8 +405,15 @@ class GuiMain(QMainWindow):
         return rotated_image
 
     def __invert_image(self, image, args):
-        import PIL.ImageChops
-        inverted_image = PIL.ImageChops.invert(image)
+        import PIL.ImageOps
+
+        if image.mode == 'RGBA':
+            r, g, b, a = image.split()
+            rgb_image = Image.merge('RGB', (r, g, b))
+            inverted_image = PIL.ImageOps.invert(rgb_image)
+        else:
+            inverted_image = PIL.ImageOps.invert(image)
+
         return inverted_image
 
     def __mirror_image(self, image, args):
