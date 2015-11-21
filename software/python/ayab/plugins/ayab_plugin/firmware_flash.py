@@ -76,7 +76,6 @@ class FirmwareFlash(QFrame):
 
     def hardware_item_activated(self, hardware_qitem):
       '''Signal on hardware_list activated. Triggers loading of controllers.'''
-      logging.debug("selected "+hardware_qitem.text())
       for hardware_device in self.json_object:
         if self.json_object.get(hardware_device, [])['description'] == hardware_qitem.text():
           self.chosen_hardware_device = hardware_device
@@ -86,13 +85,11 @@ class FirmwareFlash(QFrame):
 
     def controller_item_activated(self, control_qitem):
       '''Signal on controller_list activated. Triggers loading of firmwares.'''
-      logging.debug("selected "+control_qitem.text())
       self.load_firmware(control_qitem.text())
       self.ui.flash_firmware.setEnabled(False)
 
     def firmware_item_activated(self, firmware_qitem):
       '''Signal on firmware_list activated.'''
-      logging.debug("selected firmware qitem" +firmware_qitem.text())
       self.ui.flash_firmware.setEnabled(True)
 
     def load_controllers(self):
@@ -123,17 +120,14 @@ class FirmwareFlash(QFrame):
       qlistw.clear()
 
     def add_hardware_to_list(self, hardware_device):
-      logging.debug("Hardware Device "+ hardware_device)
       self.ui.hardware_list.addItem(hardware_device)
 
     def add_controller_to_list(self, controller):
-      logging.debug("Controller "+ controller)
       self.ui.controller_list.addItem(controller)
 
     def add_firmware_dict_to_list(self, firmware):
       ## Could add more info to display, such as date.
       version = firmware.get("version", "unspecified version")
-      logging.debug("firmware" + firmware.get("version"))
       self.ui.firmware_list.addItem(version)
 
     def execute_flash_command(self):
