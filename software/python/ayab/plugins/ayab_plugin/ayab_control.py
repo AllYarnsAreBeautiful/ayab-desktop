@@ -324,7 +324,13 @@ class AyabPluginControl(KnittingPlugin):
 
             elif msgId == 0xC3:  # cnfInfo
                 # print "> cnfInfo: Version=" + str(ord(line[1]))
-                logging.debug("Detected device with API v" + str(ord(line[1])))
+                api = ord(line[1])
+                msg = "API v" + str(api)
+
+                if api >= 4:
+                    msg += ", FW v" + str(ord(line[2])) + "." + str(ord(line[3]))
+
+                logging.info(msg)
                 return ("cnfInfo", ord(line[1]))
 
             elif msgId == 0x82:  # reqLine
