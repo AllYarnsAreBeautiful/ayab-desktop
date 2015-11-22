@@ -87,6 +87,10 @@ class AyabCommunication(object):
       # print "< reqInfo"
       self.__ser.write(chr(0x03) + '\n\r')
 
+  def req_test(self):
+      """"""
+      self.__ser.write(chr(0x04) + '\n\r')
+
   def cnf_line(self, lineNumber, lineData, flags, crc8):
       """Sends a line of data via the serial port.
 

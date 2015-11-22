@@ -241,6 +241,12 @@ class AyabPluginControl(KnittingPlugin):
     """
 
     self.conf = {}
+    tab_widget = ui.findChild(QtGui.QTabWidget, "tabWidget")
+    if tab_widget.currentIndex() == 1:
+        self.conf["testmode"] = True
+    else:
+        self.conf["testmode"] = False
+
     color_line_text = ui.findChild(QtGui.QSpinBox, "color_edit").value()
     self.conf["num_colors"] = int(color_line_text)
     start_line_text = ui.findChild(QtGui.QSpinBox, "start_line_edit").value()
@@ -338,9 +344,21 @@ class AyabPluginControl(KnittingPlugin):
                 return ("reqLine", ord(line[1]))
 
             elif msgId == 0xC4:  # cnfTest
-                logging.debug("cnfTest")
+                return ("cnfTest", ord(line[1]))
 
             elif msgId == 0x84:
+                hall_l = (ord(line[2]) << 8) + ord(line[3])
+                hall_r = (ord(line[4]) << 8) + ord(line[5])
+
+                self.options_ui.progress_hall_l.setValue(hall_l)
+                self.options_ui.progress_hall_r.setValue(hall_r)
+                self.options_ui.slider_position.setValue(ord(line[7]))
+                carriage = ord(line[6])
+                if carriage == 1:
+                    self.options_ui.label_carriage.setText("K Carriage")
+                elif carriage == 2:
+                    self.options_ui.label_carriage.setText("L Carriage")
+
                 return ("indState", ord(line[1]))
 
             else:
@@ -541,8 +559,11 @@ class AyabPluginControl(KnittingPlugin):
 
               if rcvMsg == 'cnfInfo':
                   if rcvParam == API_VERSION:
-                      curState = 's_waitForInit'
-                      self.__updateNotification("Please init machine. (Set the carriage to mode KC-I or KC-II and move the carriage over the left turn mark).")
+                      if pOptions["testmode"]:
+                        curState = 's_start'
+                      else:
+                        curState = 's_waitForInit'
+                        self.__updateNotification("Please init machine. (Set the carriage to mode KC-I or KC-II and move the carriage over the left turn mark).")
                   else:
                       self.__notify_user("Wrong API.")
                       logging.error("wrong API version: " + str(rcvParam)
@@ -554,12 +575,23 @@ class AyabPluginControl(KnittingPlugin):
                 if rcvParam == 1:
                     curState = 's_start'
                 else:
-                    logging.debug("nope")
+                    logging.debug("init failed")
 
           if curState == 's_start':
               if oldState != curState:
-                  self.__ayabCom.req_start(self.__image.knitStartNeedle(),
-                                           self.__image.knitStopNeedle())
+                if pOptions["testmode"]:
+                    self.__ayabCom.req_test()
+                else:
+                    self.__ayabCom.req_start(self.__image.knitStartNeedle(),
+                                             self.__image.knitStopNeedle())
+
+              if rcvMsg == 'cnfTest':
+                if rcvParam == 1:
+                    self.__updateNotification("Testmode")
+                else:
+                    self.__updateNotification()
+                    logging.error("Starting Testmode failed")
+                    return
 
               if rcvMsg == 'cnfStart':
                   if rcvParam == 1:
@@ -583,4 +615,5 @@ class AyabPluginControl(KnittingPlugin):
 
           oldState = curState
 
+      self.options_ui.label_carriage.setText("No carriage detected")
       return
