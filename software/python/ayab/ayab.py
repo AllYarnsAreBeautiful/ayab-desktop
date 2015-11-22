@@ -215,7 +215,6 @@ class GuiMain(QMainWindow):
         # TODO Check for maximum width before loading the image
         self.pil_image = Image.open(image_str)
 
-        logging.debug(self.pil_image.mode)
         self.pil_image = self.pil_image.convert("RGBA")
 
         self.refresh_scene()
