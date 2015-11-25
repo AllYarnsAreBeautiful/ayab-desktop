@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'ayab_options.ui'
 #
-# Created: Sun Nov 22 20:18:08 2015
-#      by: PyQt4 UI code generator 4.11.2
+# Created: Wed Nov 25 21:43:24 2015
+#      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -26,23 +26,25 @@ except AttributeError:
 class Ui_DockWidget(object):
     def setupUi(self, DockWidget):
         DockWidget.setObjectName(_fromUtf8("DockWidget"))
-        DockWidget.resize(240, 525)
+        DockWidget.resize(240, 581)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(DockWidget.sizePolicy().hasHeightForWidth())
         DockWidget.setSizePolicy(sizePolicy)
-        DockWidget.setMinimumSize(QtCore.QSize(240, 525))
-        DockWidget.setMaximumSize(QtCore.QSize(240, 525))
+        DockWidget.setMinimumSize(QtCore.QSize(240, 581))
+        DockWidget.setMaximumSize(QtCore.QSize(240, 581))
         DockWidget.setFeatures(QtGui.QDockWidget.NoDockWidgetFeatures)
+        DockWidget.setWindowTitle(_fromUtf8(""))
         self.ayab_config = QtGui.QWidget()
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Preferred)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.ayab_config.sizePolicy().hasHeightForWidth())
         self.ayab_config.setSizePolicy(sizePolicy)
         self.ayab_config.setObjectName(_fromUtf8("ayab_config"))
         self.verticalLayout = QtGui.QVBoxLayout(self.ayab_config)
+        self.verticalLayout.setContentsMargins(-1, 0, -1, -1)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
         self.groupBox = QtGui.QGroupBox(self.ayab_config)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed)
@@ -68,7 +70,7 @@ class Ui_DockWidget(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.tabWidget.sizePolicy().hasHeightForWidth())
         self.tabWidget.setSizePolicy(sizePolicy)
-        self.tabWidget.setMinimumSize(QtCore.QSize(180, 375))
+        self.tabWidget.setMinimumSize(QtCore.QSize(180, 430))
         self.tabWidget.setMaximumSize(QtCore.QSize(1000000, 16777215))
         self.tabWidget.setObjectName(_fromUtf8("tabWidget"))
         self.tab_knit = QtGui.QWidget()
@@ -79,7 +81,7 @@ class Ui_DockWidget(object):
         self.tab_knit.setSizePolicy(sizePolicy)
         self.tab_knit.setObjectName(_fromUtf8("tab_knit"))
         self.verticalLayoutWidget = QtGui.QWidget(self.tab_knit)
-        self.verticalLayoutWidget.setGeometry(QtCore.QRect(-1, -1, 221, 361))
+        self.verticalLayoutWidget.setGeometry(QtCore.QRect(-1, -1, 221, 402))
         self.verticalLayoutWidget.setObjectName(_fromUtf8("verticalLayoutWidget"))
         self.verticalLayout_3 = QtGui.QVBoxLayout(self.verticalLayoutWidget)
         self.verticalLayout_3.setMargin(6)
@@ -229,7 +231,6 @@ class Ui_DockWidget(object):
         QtCore.QMetaObject.connectSlotsByName(DockWidget)
 
     def retranslateUi(self, DockWidget):
-        DockWidget.setWindowTitle(_translate("DockWidget", "AYAB", None))
         self.groupBox.setTitle(_translate("DockWidget", "Port Selection", None))
         self.refresh_ports_button.setText(_translate("DockWidget", "Refresh", None))
         self.label_6.setText(_translate("DockWidget", "Colors", None))
