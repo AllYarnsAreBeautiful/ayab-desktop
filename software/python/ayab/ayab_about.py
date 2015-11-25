@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ayab_about.ui'
 #
-# Created: Mon Feb 23 22:10:37 2015
+# Created: Wed Nov 25 21:45:22 2015
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,7 +26,7 @@ except AttributeError:
 class Ui_AboutForm(object):
     def setupUi(self, AboutForm):
         AboutForm.setObjectName(_fromUtf8("AboutForm"))
-        AboutForm.resize(583, 312)
+        AboutForm.resize(583, 354)
         AboutForm.setAutoFillBackground(False)
         AboutForm.setStyleSheet(_fromUtf8("background-color: rgb(255, 255, 255);"))
         self.verticalLayout = QtGui.QVBoxLayout(AboutForm)
@@ -59,6 +59,6 @@ class Ui_AboutForm(object):
         AboutForm.setWindowTitle(_translate("AboutForm", "About AYAB", None))
         self.label_2.setText(_translate("AboutForm", "All Yarns Are Beautiful", None))
         self.label_4.setText(_translate("AboutForm", "<html><head/><body><p><a href=\"http://ayab-knitting.com\"><span style=\" text-decoration: underline; color:#0000ff;\">http://ayab-knitting.com</span></a></p></body></html>", None))
-        self.label_3.setText(_translate("AboutForm", "Version 0.75", None))
+        self.label_3.setText(_translate("AboutForm", "Version 0.80", None))
 
 import resources_rc

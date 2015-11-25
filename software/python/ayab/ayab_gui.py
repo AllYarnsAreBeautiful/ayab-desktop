@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ayab_gui.ui'
 #
-# Created: Sat Nov 21 17:41:43 2015
+# Created: Wed Nov 25 21:45:12 2015
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,7 +26,7 @@ except AttributeError:
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
-        MainWindow.resize(1008, 856)
+        MainWindow.resize(1008, 900)
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
         self.gridLayout = QtGui.QGridLayout(self.centralwidget)
