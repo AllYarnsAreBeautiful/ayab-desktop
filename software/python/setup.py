@@ -126,12 +126,8 @@ setup(
         'translations/*',
         ## FIXME: check alternatives for this nasty manual include
         ## http://objectmix.com/python/115674-py2exe-distutils-how-include-tree-files.html
-        'plugins/ayab_plugin/firmware/hardware_test/mega2560/*',
-        'plugins/ayab_plugin/firmware/hardware_test/uno/*',
-        'plugins/ayab_plugin/firmware/kh910/mega2560/*',
-        'plugins/ayab_plugin/firmware/kh910/uno/*',
-        'plugins/ayab_plugin/firmware/kh930/mega2560/*',
-        'plugins/ayab_plugin/firmware/kh930/uno/*',
+        'plugins/ayab_plugin/firmware/mega2560/*',
+        'plugins/ayab_plugin/firmware/uno/*',
         ]),
     install_requires=[read_requirements("requirements.txt")],
     cmdclass={'test': PyTest},
