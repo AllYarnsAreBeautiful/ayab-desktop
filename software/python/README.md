@@ -57,6 +57,30 @@ Download and install PyQt4 from
 
 ## Release Notes
 
+### 0.80 (November 2015)
+
+#### Firmware
+
+* API v4
+* Added Test Mode
+* Added Auto-Init functionality
+* Added FW Version Define
+* Fixed reset of needles out of active needle area
+* Added support for I2C port expander on shield v1.3TH (MCP23008)
+
+#### GUI
+
+* requires APIv4
+* Basic visualisation of pattern position
+* Mouse wheel zooming of pattern
+* Visualisation of Test Mode data
+* Auto-Init functionality (no need to click OK several times when starting to knit)
+* Firmware database moved to external JSON file
+* Fix pattern rotation direction
+* Fix pattern inversion
+* Fix growth of image when rotating
+* Fix unlocking of knit controls after image manipulation
+
 ### 0.75 (February 2015)
 
 #### Firmware
