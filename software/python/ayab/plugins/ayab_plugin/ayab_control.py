@@ -368,6 +368,7 @@ class AyabPluginControl(KnittingPlugin):
 
   def __cnfLine(self, lineNumber):
         imgHeight = self.__image.imgHeight()
+        lenImgExpanded = len(self.__image.imageExpanded())
         color = 0
         indexToSend = 0
         sendBlankLine = False
@@ -431,7 +432,6 @@ class AyabPluginControl(KnittingPlugin):
                 # 0 1 2 3 4 5 6 7 8 9 .. (lineNumber)
                 # | |  X  | |  X  | |
                 # 0 1 3 2 4 5 7 6 8 9 .. (imageExpanded)
-                lenImgExpanded = len(self.__image.imageExpanded())
                 indexToSend = self.__startLine * 2
 
                 # TODO more beautiful algo
@@ -473,6 +473,27 @@ class AyabPluginControl(KnittingPlugin):
                 if imgRow == imgHeight - 1 \
                         and (indexToSend == lenImgExpanded - 1):
                     lastLine = 0x01
+
+            elif self.__machineType == 'circular' \
+                    and self.__numColors == 2:
+
+                imgRow = int(lineNumber / 4) + self.__startLine
+
+                # Color      A B  A B  A B
+                # ImgRow     0-0- 1-1- 2-2-
+                # Index2Send 0 1  2 3  4 5
+                # LineNumber 0123 4567 8911
+                #                        01
+
+                if (lineNumber % 2) == 1:
+                    sendBlankLine = True
+                else:
+                    indexToSend = self.__startLine * 4
+                    indexToSend += lineNumber / 2
+
+                if lineNumber == (lenImgExpanded - 1):
+                    lastLine = 0x01
+
             #########################
 
             # assign pixeldata

@@ -328,6 +328,11 @@
              <string>ribber</string>
             </property>
            </item>
+           <item>
+            <property name="text">
+             <string>circular</string>
+            </property>
+           </item>
           </widget>
          </item>
          <item>

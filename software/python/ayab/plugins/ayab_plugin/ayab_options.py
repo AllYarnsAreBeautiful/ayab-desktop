@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'ayab_options.ui'
 #
-# Created: Wed Nov 25 21:43:24 2015
-#      by: PyQt4 UI code generator 4.10.4
+# Created: Sun Nov 29 02:32:03 2015
+#      by: PyQt4 UI code generator 4.11.2
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -165,6 +165,7 @@ class Ui_DockWidget(object):
         self.machine_type_box.setObjectName(_fromUtf8("machine_type_box"))
         self.machine_type_box.addItem(_fromUtf8(""))
         self.machine_type_box.addItem(_fromUtf8(""))
+        self.machine_type_box.addItem(_fromUtf8(""))
         self.verticalLayout_3.addWidget(self.machine_type_box)
         self.label_3 = QtGui.QLabel(self.verticalLayoutWidget)
         self.label_3.setObjectName(_fromUtf8("label_3"))
@@ -246,6 +247,7 @@ class Ui_DockWidget(object):
         self.label_4.setText(_translate("DockWidget", "Machine Type", None))
         self.machine_type_box.setItemText(0, _translate("DockWidget", "single", None))
         self.machine_type_box.setItemText(1, _translate("DockWidget", "ribber", None))
+        self.machine_type_box.setItemText(2, _translate("DockWidget", "circular", None))
         self.label_3.setText(_translate("DockWidget", "Alignment", None))
         self.alignment_combo_box.setItemText(0, _translate("DockWidget", "center", None))
         self.alignment_combo_box.setItemText(1, _translate("DockWidget", "left", None))
