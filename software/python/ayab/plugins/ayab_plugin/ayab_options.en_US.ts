@@ -28,22 +28,22 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="ayab_options.ui" line="336"/>
+        <location filename="ayab_options.ui" line="341"/>
         <source>Alignment</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ayab_options.ui" line="355"/>
+        <location filename="ayab_options.ui" line="360"/>
         <source>left</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ayab_options.ui" line="350"/>
+        <location filename="ayab_options.ui" line="355"/>
         <source>center</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ayab_options.ui" line="360"/>
+        <location filename="ayab_options.ui" line="365"/>
         <source>right</source>
         <translation></translation>
     </message>
@@ -83,7 +83,7 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="ayab_options.ui" line="466"/>
+        <location filename="ayab_options.ui" line="471"/>
         <source>2. Configure</source>
         <translation></translation>
     </message>
@@ -98,34 +98,39 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="ayab_options.ui" line="388"/>
+        <location filename="ayab_options.ui" line="393"/>
         <source>Hall Left</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ayab_options.ui" line="427"/>
+        <location filename="ayab_options.ui" line="432"/>
         <source>%p%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ayab_options.ui" line="411"/>
+        <location filename="ayab_options.ui" line="416"/>
         <source>Hall Right</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ayab_options.ui" line="434"/>
+        <location filename="ayab_options.ui" line="439"/>
         <source>Position</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ayab_options.ui" line="454"/>
+        <location filename="ayab_options.ui" line="459"/>
         <source>No carriage detected</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ayab_options.ui" line="370"/>
+        <location filename="ayab_options.ui" line="375"/>
         <source>Test</source>
         <translation></translation>
+    </message>
+    <message>
+        <location filename="ayab_options.ui" line="333"/>
+        <source>circular</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>
