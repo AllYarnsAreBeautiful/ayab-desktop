@@ -237,7 +237,7 @@ Da es sich bei diesem Bausatz teilweise um sehr kleine bzw. eng beieinanderliege
 
 Wenn sie mit dem Löten noch nicht so vertraut sind, lesen Sie bitte eine geeignete Lötanleitung für bedrahtete Bauteile durch. Diese können Sie im Internet oder auf unserer Homepage finden.
 
-\url{http:\\ayab-knitting.com}
+\url{http://ayab-knitting.com}
 
 Achten Sie darauf des es sich bei einigen Bauteilen (insbesondere die ICs) um temperaturempfindliche Bauteile handelt. Achten Sie deshalb auf eine möglichst kurze Aufheizzeit oder verwenden Sie eine IC-Fassung.
 
@@ -356,7 +356,7 @@ JP9           & 4                 & gerade       \\ \hline
 Verlöten Sie die Maschinenverbinder JP3, JP4 sowie JP2 und JP8 enstprechend Abbildung \ref{fig:abb3_4}. Achten Sie dabei unbedingt auf die richtige Orientierung der Buchsen (zu erkennen an den dreieckigen Einbuchtungen). Die Einbuchtungen müssen von der roten LED wegzeigen. Achten Sie beim verlöten darauf, dass die Stecker plan auf der Platine aufliegen. Eine nachträgliche Korrektur bei mehrpoligen Steckern gestaltet sich schwierig.
 
 \begin{figure}[tbhp]\centering
-\includegraphics[width=\linewidth]{no}
+\includegraphics[width=\linewidth]{abb3_4}
 \caption{Maschinenverbinder KH-930}
 \label{fig:abb3_4}
 \end{figure}
@@ -478,31 +478,19 @@ Nun verlöten Sie das andere Ende wie auf Abbildung \ref{fig:abb7_4} mit der Pla
 Isolieren Sie das Mitgelieferte 3-Adrige Flachbandkabel an beiden Enden entsprechend Abbildung \ref{fig:abb7_6} ab.
 
 \begin{figure}[tbhp]\centering
-\includegraphics[width=\linewidth]{no}
+\includegraphics[width=\linewidth]{abb7_6}
 \caption{Abisolierung der Kabelenden bei KH-930}
 \label{fig:abb7_6}
 \end{figure}
 
-Verzinnen Sie nun ein Kabelende sowie den 3-poligen Molex-Stecker (Abbildung \ref{fig:abb7_7}) und Verlöten diese anschließend (Abbildung \ref{fig:abb7_8}). Achten Sie hier auf eine gute mechanische Stabilität und prüfen Sie auf evtl. Kurzschlüsse. Sie können zur Verbesserung der Stabilität die offenen Lötstellen einzeln mit Isolierband umwickeln, oder mit einem Schrumpfschlauch fixieren.
+Verzinnen Sie nun ein Kabelende sowie den 3-poligen Molex-Stecker und verlöten diese anschließend. Achten Sie hier auf eine gute mechanische Stabilität und prüfen Sie auf evtl. Kurzschlüsse. Sie können zur Verbesserung der Stabilität die offenen Lötstellen einzeln mit Isolierband umwickeln, oder mit einem Schrumpfschlauch fixieren.
+
+Nun verlöten Sie das andere Ende wie auf Abbildung \ref{fig:abb7_7} mit der Platine an JP7. Achten Sie dabei unbedingt auf die richtige Polarität. Das Kabel muss so eingelötet werden, dass von oben der Molex Stecker mit den dreieckigen Einbuchtungen zur roten LED \textbf{hin} zeigt (im Gegensatz zu den anderen Maschinenverbindern).
 
 \begin{figure}[tbhp]\centering
-\includegraphics[width=\linewidth]{no}
-\caption{Verzinnung bei KH-930}
-\label{fig:abb7_7}
-\end{figure}
-
-\begin{figure}[tbhp]\centering
-\includegraphics[width=\linewidth]{no}
-\caption{Verlötetes Kabelende bei KH-930}
-\label{fig:abb7_8}
-\end{figure}
-
-Nun verlöten Sie das andere Ende wie auf Abbildung \ref{fig:abb7_9} mit der Platine an JP7. Achten Sie dabei unbedingt auf die richtige Polarität. Das Kabel muss so eingelötet werden, dass von oben der Molex Stecker mit den dreieckigen Einbuchtungen zur roten LED \textbf{hin} zeigt (im Gegensatz zu den anderen Maschinenverbindern).
-
-\begin{figure}[tbhp]\centering
-\includegraphics[width=\linewidth]{no}
+\includegraphics[width=\linewidth]{abb7_7}
 \caption{Verbindung mit Platine bei KH-930}
-\label{fig:abb7_9}
+\label{fig:abb7_7}
 \end{figure}
 
 \FloatBarrier
@@ -575,7 +563,7 @@ Falls Nein, ist vermutlich ein Kurzschluss oder eine kalte Lötstelle verantwort
 
 Falls Ja, können Sie mit dem Einbau und der Inbetriebnahme entsprechend der Anleitungsvideos auf
 
-\url{http:\\ayab-knitting.com}
+\url{http://ayab-knitting.com}
 
 fortfahren.
 
@@ -689,8 +677,6 @@ JP8                & 2.5mm Molex         & 5-polig        \\ \hline
 Verlängerungskabel & 30cm Flachband      & 3-polig        \\ \hline
 \end{tabular}\\
 
- \subsection*{Bestückungsplan}
-
  \begin{figure}[tbhp]\centering
  \includegraphics[width=\linewidth]{shield}
  \caption{Bestückungsplan}
@@ -698,7 +684,12 @@ Verlängerungskabel & 30cm Flachband      & 3-polig        \\ \hline
 
  \FloatBarrier
 
- \subsection*{Schaltplan}
+ \begin{figure*}[tbhp]\centering % Using \begin{figure*} makes the figure take up the entire width of the page
+ \includegraphics[width=0.9\linewidth]{schaltplan}
+ \caption{Schaltplan}
+ \end{figure*}
+
+\FloatBarrier
 %------------------------------------------------
 
 \phantomsection
@@ -718,9 +709,7 @@ Türkenstraße 21
 
 80799 München
 
-https://thinkstack.de
-
-
+\url{http://thinkstack.de}
 
 %----------------------------------------------------------------------------------------
 %	REFERENCE LIST
