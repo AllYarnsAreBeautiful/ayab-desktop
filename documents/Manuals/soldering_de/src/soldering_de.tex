@@ -191,9 +191,9 @@ Bitte bei der Bestellung auf den richtigen Maschinentyp achten. Nur so kann gew�
 \begin{tabular}{ll}
 Versorgungsspannung       & 5.0 V              \\ \hline
 Schaltspannung            & 7.5V - 16.0V       \\ \hline
-max. Stromaufnahme        & xxx mA             \\ \hline
-max. Schaltstrom          & xxx mA             \\ \hline
-Abmessungen (l x b x h)   & xxmm x yymm x zzmm
+max. Stromaufnahme        & 500 mA             \\ \hline
+max. Schaltstrom          & 1500 mA            \\ \hline
+Abmessungen (l x b x h)   & 69 mm x 54 mm x 20 mm
 \end{tabular}
 
 
@@ -235,7 +235,9 @@ Da es sich bei diesem Bausatz teilweise um sehr kleine bzw. eng beieinanderliege
 
  \subsection*{Lötanleitung}
 
-Wenn sie mit dem Löten noch nicht so vertraut sind, lesen Sie bitte eine geeignete Lötanleitung für bedrahtete Bauteile durch. Diese können Sie im Internet z.B. unter \url{http:\\example.com} finden.
+Wenn sie mit dem Löten noch nicht so vertraut sind, lesen Sie bitte eine geeignete Lötanleitung für bedrahtete Bauteile durch. Diese können Sie im Internet oder auf unserer Homepage finden.
+
+\url{http:\\ayab-knitting.com}
 
 Achten Sie darauf des es sich bei einigen Bauteilen (insbesondere die ICs) um temperaturempfindliche Bauteile handelt. Achten Sie deshalb auf eine möglichst kurze Aufheizzeit oder verwenden Sie eine IC-Fassung.
 
@@ -455,46 +457,52 @@ Verzinnen Sie nun ein Kabelende sowie den 3-poligen Pfostenstecker (Abbildung \r
 \label{fig:abb7_3}
 \end{figure}
 
-Nun verlöten Sie das andere Ende wie auf Abbildung \ref{fig:abb7_4} mit der Platine an JP2 und markieren die Oberseite des Steckers entsprechend. Dies dient zur erleichterung der Orientierung beim Einbau in die Strickmaschine\par
+Nun verlöten Sie das andere Ende wie auf Abbildung \ref{fig:abb7_4} mit der Platine an JP2 und markieren die Oberseite des Steckers entsprechend Abbildung \ref{fig:abb7_5}. Dies dient zur erleichterung der Orientierung beim Einbau in die Strickmaschine\par
 
 \begin{figure}[tbhp]\centering
-\includegraphics[width=\linewidth]{no}
+\includegraphics[width=\linewidth]{abb7_4}
 \caption{Verbindung mit Platine bei KH-910/KH-950}
 \label{fig:abb7_4}
+\end{figure}
+
+\begin{figure}[tbhp]\centering
+\includegraphics[width=\linewidth]{abb7_5}
+\caption{Markierung des Sensorsteckers bei KH-910/KH-950}
+\label{fig:abb7_5}
 \end{figure}
 
 \FloatBarrier
 
 \textbf{KH-930:} \\
 
-Isolieren Sie das Mitgelieferte 3-Adrige Flachbandkabel an beiden Enden entsprechend Abbildung \ref{fig:abb7_5} ab.
+Isolieren Sie das Mitgelieferte 3-Adrige Flachbandkabel an beiden Enden entsprechend Abbildung \ref{fig:abb7_6} ab.
 
 \begin{figure}[tbhp]\centering
 \includegraphics[width=\linewidth]{no}
 \caption{Abisolierung der Kabelenden bei KH-930}
-\label{fig:abb7_5}
+\label{fig:abb7_6}
 \end{figure}
 
-Verzinnen Sie nun ein Kabelende sowie den 3-poligen Molex-Stecker (Abbildung \ref{fig:abb7_6}) und Verlöten diese anschließend (Abbildung \ref{fig:abb7_7}). Achten Sie hier auf eine gute mechanische Stabilität und prüfen Sie auf evtl. Kurzschlüsse. Sie können zur Verbesserung der Stabilität die offenen Lötstellen einzeln mit Isolierband umwickeln, oder mit einem Schrumpfschlauch fixieren.
+Verzinnen Sie nun ein Kabelende sowie den 3-poligen Molex-Stecker (Abbildung \ref{fig:abb7_7}) und Verlöten diese anschließend (Abbildung \ref{fig:abb7_8}). Achten Sie hier auf eine gute mechanische Stabilität und prüfen Sie auf evtl. Kurzschlüsse. Sie können zur Verbesserung der Stabilität die offenen Lötstellen einzeln mit Isolierband umwickeln, oder mit einem Schrumpfschlauch fixieren.
 
 \begin{figure}[tbhp]\centering
 \includegraphics[width=\linewidth]{no}
 \caption{Verzinnung bei KH-930}
-\label{fig:abb7_6}
+\label{fig:abb7_7}
 \end{figure}
 
 \begin{figure}[tbhp]\centering
 \includegraphics[width=\linewidth]{no}
 \caption{Verlötetes Kabelende bei KH-930}
-\label{fig:abb7_7}
+\label{fig:abb7_8}
 \end{figure}
 
-Nun verlöten Sie das andere Ende wie auf Abbildung \ref{fig:abb7_8} mit der Platine an JP7. Achten Sie dabei unbedingt auf die richtige Polarität. Das Kabel muss so eingelötet werden, dass von oben der Molex Stecker mit den dreieckigen Einbuchtungen zur roten LED \textbf{hin} zeigt (im Gegensatz zu den anderen Maschinenverbindern).
+Nun verlöten Sie das andere Ende wie auf Abbildung \ref{fig:abb7_9} mit der Platine an JP7. Achten Sie dabei unbedingt auf die richtige Polarität. Das Kabel muss so eingelötet werden, dass von oben der Molex Stecker mit den dreieckigen Einbuchtungen zur roten LED \textbf{hin} zeigt (im Gegensatz zu den anderen Maschinenverbindern).
 
 \begin{figure}[tbhp]\centering
 \includegraphics[width=\linewidth]{no}
 \caption{Verbindung mit Platine bei KH-930}
-\label{fig:abb7_8}
+\label{fig:abb7_9}
 \end{figure}
 
 \FloatBarrier
@@ -508,51 +516,85 @@ Nun verlöten Sie das andere Ende wie auf Abbildung \ref{fig:abb7_8} mit der Pla
 Bringen Sie den 4-poligen Verbindungstecker entsprechend Abbildung \ref{fig:abb8_1} an und verlöten diesen anschließend. Achten Sie auf eine gleiche höhe der einzelnen Pins und gleichen Sie diese gegebenenfalls vorsichtig aus. Achten Sie darauf, dass die Bodenplatte des Steckers nicht bricht. Durch die dicke der einzelnen Pins, kann es hier etwas länger dauern, bis das Lötzinn sauber verlaufen ist. Verwenden Sie zum halten des Steckers unbedingt eine Zange (Verbrennungsgefahr!).
 
 \begin{figure}[tbhp]\centering
-\includegraphics[width=\linewidth]{no}
+\includegraphics[width=\linewidth]{abb8_1}
 \caption{Versorgungsstecker KH-910/930/950 und CK35}
 \label{fig:abb8_1}
 \end{figure}
 
-Im Anschluss müssen die Beinchen an der Unterseite möglichst nahe an der Platine gekürzt werden (Abbildung \ref{fig:abb8_2}) um einen Kurzschluss mit den ISP-Pins des Arduino zu vermeiden.\par
+Im Anschluss müssen die Beinchen an der Unterseite möglichst nahe an der Platine gekürzt werden (Abbildung \ref{fig:abb8_2} und \ref{fig:abb8_2b}) um einen Kurzschluss mit den ISP-Pins des Arduino zu vermeiden.\par
 
 \begin{figure}[tbhp]\centering
-\includegraphics[width=\linewidth]{no}
+\includegraphics[width=\linewidth]{abb8_2}
 \caption{Kurzschlussvermeidung}
 \label{fig:abb8_2}
+\end{figure}
+
+\begin{figure}[tbhp]\centering
+\includegraphics[width=\linewidth]{abb8_2b}
+\caption{Kurzschlussvermeidung}
+\label{fig:abb8_2b}
 \end{figure}
 
 \FloatBarrier
 
 \textbf{KH-900 / KH-965:} \\
 
-Verlöten Sie den Hohlstecker entsprechen Abbildung \ref{fig:abb8_3}. \textbf{ACHTUNG!} Die verwendete Polarität trägt den Pluspol an der Außenseite und den Minuspol im Innenleiter. Dies ist die Polarität der original Brother-Netzteile. Bei verwendung von anderen Netzteilen unbedingt auf die richtige Polung achten. Ansonsten kann dies zu Zerstörung von Bauteilen oder gar der Strickmaschine führen.
+Aktuell ist das Shield noch nicht für KH-900 und KH-965 verfügbar.
+%Verlöten Sie den Hohlstecker entsprechen Abbildung \ref{fig:abb8_3}. \textbf{ACHTUNG!} Die verwendete Polarität trägt den Pluspol an der Außenseite und den Minuspol im Innenleiter. Dies ist die Polarität der original Brother-Netzteile. Bei verwendung von anderen Netzteilen unbedingt auf die richtige Polung achten. Ansonsten kann dies zu Zerstörung von Bauteilen oder gar der Strickmaschine führen.
 
-\begin{figure}[tbhp]\centering
-\includegraphics[width=\linewidth]{no}
-\caption{Versorgungsstecker KH-900/965}
-\label{fig:abb8_3}
-\end{figure}
+%\begin{figure}[tbhp]\centering
+%\includegraphics[width=\linewidth]{no}
+%\caption{Versorgungsstecker KH-900/965}
+%\label{fig:abb8_3}
+%\end{figure}
 
-\FloatBarrier
+%\FloatBarrier
 
- \subsection*{Abschließende Kontrolle}
+\subsection*{Abschließende Kontrolle}
 
 Kontrollieren Sie nochmal vor Inbetriebnahme der Schaltung, ob alle Bauteile richtig eingesetzt und gepolt sind. Sehen Sie auf der Lötseite (Leiterbahnseite) nach, ob durch Lötzinnreste Leiterbahnen überbrückt wurden, da dies zu Kurzschlüssen und zur Zerstörung von Bauteilen führen kann. Ferner ist zu kontrollieren, ob abgeschnittene Drahtenden auf oder unter der Platine liegen, da dies ebenfalls zu Kurzschlüssen führen kann.
-Kontrollieren sie alle Lötstellen auf sauberkeit der Ausführung. Kalte Lötstellen oder Lötbrücken beeinträchtigen die Funktion und können zu Zerstörung von Bauteilen oder gar der Strickmaschine führen.
+Kontrollieren sie alle Lötstellen auf Sauberkeit der Ausführung. Kalte Lötstellen oder Lötbrücken beeinträchtigen die Funktion und können zu Zerstörung von Bauteilen oder gar der Strickmaschine führen.
 
 %------------------------------------------------
 
 \section{Funktionstest und Inbetriebnahme}
 
- \subsection*{Checkliste}
+\subsection*{Checkliste}
 
 \begin{itemize}[noitemsep] % [noitemsep] removes whitespace between the items for a compact look
-\item[\Square] offener Punkt
-\item[\XBox] angekreuzter Punkt
-\item[\CheckedBox] abgehakter Punkt
+\item[\CheckedBox] Alle Bauteile (Insbesondere die ICs und Verbindungsstecker) sind richtig eingesetzt.
+\item[\CheckedBox] Keine Lötzinnreste vorhanden.
+\item[\CheckedBox] Keine Kabelreste auf der Platine.
+\item[\CheckedBox] Keine Lötbrücken vorhanden.
+\item[\CheckedBox] Lötstellen sauber ausgeführt.
 \end{itemize}
 
- \subsection*{Verhalten bei Störungen}
+Wenn all diese Punkte erfüllt sind, können Sie die Platine testweise in den Arduino stecken und das USB-Kabel mit dem Rechner verbinden. Nun sollte die rote LED leuchten sowie die LEDs des Arduino.
+
+Falls Nein, ist vermutlich ein Kurzschluss oder eine kalte Lötstelle verantwortlich. Bitte überprüfen Sie nochmal sorgfältig die Platine.
+
+Falls Ja, können Sie mit dem Einbau und der Inbetriebnahme entsprechend der Anleitungsvideos auf
+
+\url{http:\\ayab-knitting.com}
+
+fortfahren.
+
+\subsection*{Verhalten bei Störungen}
+
+Ist anzunehmen, daß ein gefahrloser Betrieb nicht mehr möglich ist, so ist das Gerät außer Betrieb zu setzen und gegen unbeabsichtigten Betrieb zu sichern.
+
+Das trifft zu:
+
+\begin{itemize}[noitemsep] % [noitemsep] removes whitespace between the items for a compact look
+\item Wenn das Gerät sichtbare Beschädigungen aufweist.
+\item Wenn das Gerät nicht mehr funktionsfähig ist.
+\item Wenn Teile des Gerätes lose oder locker sind
+\item Wenn die Verbindungsleitungen sichtbare Schäden aufweisen.
+\end{itemize}
+
+Falls das Gerät repariert werden muß, dürfen nur Original-Ersatzteile verwendet werden! Die Verwendung abweichender Ersatzteile kann zu ernsthaften Sach- und Personenschäden führen!
+
+Eine Reparatur des Gerätes darf nur vom Fachmann durchgeführt werden!
 
 %------------------------------------------------
 
@@ -599,12 +641,64 @@ und VDE 0860.
 
 \section{Anhang}
 
- \subsection*{Bauteile und Bestellnummern}
+\subsection*{Bauteilliste}
 
- \subsection*{Schaltplan}
+\subsubsection*{Basisshield}
+
+Im Basisshield sind alle Bauteile enthalten, welche keine Maschinenspezifischen Unterschiede aufweisen.
+
+ \begin{tabular}{lll}
+ \hline
+ \textbf{Name}      & \textbf{Typ}        & \textbf{Wert}  \\ \hline
+ Platine            & -                   & -              \\ \hline
+ R1/R2              & Widerstand 5\%      & 10k\textOmega  \\ \hline
+ R3/R4/R5           & Widerstand 5\%      & 150\textOmega  \\ \hline
+ LED1               & LED bedrahtet       & rot            \\ \hline
+ LED2               & LED bedrahtet       & gelb           \\ \hline
+ LED2               & LED bedrahtet       & grün           \\ \hline
+ IC1/IC2            & Darlington Array    & ULN2803        \\ \hline
+ IC3/IC4            & Darlington Array    & ULN2803        \\ \hline
+ JP6                & Molex               & 2-polig        \\ \hline
+ JP9                & 2.54mm Stiftleiste  & 4-polig        \\ \hline
+ Beeper             & Piezo-Summer        & 4-8V           \\ \hline
+ Arduino-Verbinder  & 2.54mm Stiftleisten & -              \\ \hline
+ \end{tabular}\\
+
+ \subsubsection*{Steckerset KH-910/KH-930}
+
+\begin{tabular}{lll}
+\hline
+\textbf{Name}      & \textbf{Typ}        & \textbf{Wert}  \\ \hline
+JP1                & Spannungsversorgung & Sonderstecker  \\ \hline
+JP2                & 2.5mm Stiftleiste   & 3-polig        \\ \hline
+JP3                & 2.5mm Stiftleiste   & 8-polig        \\ \hline
+JP4/JP5            & 2.5mm Stiftleiste   & 10-polig       \\ \hline
+Verlängerungskabel & 30cm Flachband      & 3-polig        \\ \hline
+\end{tabular}\\
+
+\subsubsection*{Steckerset KH-930}
+
+\begin{tabular}{lll}
+\hline
+\textbf{Name}      & \textbf{Typ}        & \textbf{Wert}  \\ \hline
+JP1                & Spannungsversorgung & Sonderstecker  \\ \hline
+JP2/JP7            & 2.5mm Molex         & 3-polig        \\ \hline
+JP3                & 2.5mm Molex         & 8-polig        \\ \hline
+JP4                & 2.5mm Molex         & 10-polig       \\ \hline
+JP8                & 2.5mm Molex         & 5-polig        \\ \hline
+Verlängerungskabel & 30cm Flachband      & 3-polig        \\ \hline
+\end{tabular}\\
 
  \subsection*{Bestückungsplan}
 
+ \begin{figure}[tbhp]\centering
+ \includegraphics[width=\linewidth]{shield}
+ \caption{Bestückungsplan}
+ \end{figure}
+
+ \FloatBarrier
+
+ \subsection*{Schaltplan}
 %------------------------------------------------
 
 \phantomsection
