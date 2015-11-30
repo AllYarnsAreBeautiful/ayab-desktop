@@ -491,7 +491,7 @@ class AyabPluginControl(KnittingPlugin):
                     indexToSend = self.__startLine * 4
                     indexToSend += lineNumber / 2
 
-                if lineNumber == (lenImgExpanded - 1):
+                if lineNumber == (lenImgExpanded*2) - 1:
                     lastLine = 0x01
 
             #########################
@@ -530,13 +530,17 @@ class AyabPluginControl(KnittingPlugin):
               self.__ayabCom.cnf_line(reqestedLine, bytes, lastLine, crc8)
 
             # screen output
-            msg = str((self.__image.imageExpanded())[indexToSend])
-            msg += ' Image Row: ' + str(imgRow)
-            msg += ' (indexToSend: ' + str(indexToSend)
-            msg += ', reqLine: ' + str(reqestedLine)
-            msg += ', lineNumber: ' + str(lineNumber)
-            msg += ', lineBlock:' + str(self.__lineBlock) + ')'
+            msg = str(self.__lineBlock) # Block
+            msg += ' ' + str(lineNumber) # Total Line Number
+            msg += ' reqLine: ' + str(reqestedLine)
+            msg += ' imgRow: ' + str(imgRow)
+            if sendBlankLine == True:
+                msg += ' BLANK LINE'
+            else:
+                msg += ' indexToSend: ' + str(indexToSend)
+                msg += ' ' + str((self.__image.imageExpanded())[indexToSend])
             logging.debug(msg)
+
             #sending line progress to gui
             self.__emit_progress(imgRow, imgHeight)
 
