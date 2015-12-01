@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1008</width>
-    <height>856</height>
+    <height>900</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -219,9 +219,9 @@
        <widget class="QGraphicsView" name="image_pattern_view"/>
       </item>
       <item>
-       <widget class="QLabel" name="progress_label">
+       <widget class="QLabel" name="notification_label">
         <property name="text">
-         <string notr="true"/>
+         <string/>
         </property>
         <property name="alignment">
          <set>Qt::AlignCenter</set>
@@ -245,7 +245,7 @@
      <x>0</x>
      <y>0</y>
      <width>1008</width>
-     <height>25</height>
+     <height>27</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

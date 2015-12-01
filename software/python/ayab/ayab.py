@@ -56,6 +56,13 @@ class GuiMain(QMainWindow):
         self.image_file_route = None
         self.enabled_plugin = None
 
+        self.pil_image = None
+        self.start_needle = 80
+        self.stop_needle = 119
+        self.imageAlignment = "center"
+        self.var_progress = 0
+        self.zoomlevel = 3
+
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self.plugins_init()
@@ -107,15 +114,49 @@ class GuiMain(QMainWindow):
             logging.info("no plugin object loaded")
         return plugin_o
 
-    def updateProgress(self, progress, done=0, total=0):
+    def updateProgress(self, row, total=0):
         '''Updates the Progress Bar.'''
-        self.ui.progressBar.setValue(progress)
-        self.ui.progress_label.setText("{0}/{1}".format(done, total))
+        #Store to local variable
+        self.var_progress = row
+        self.refresh_scene()
+
+        # Update label and progress bar
+        if total != 0:
+            progress = 100 * float(row)/total
+            self.ui.progressBar.setValue(progress)
+            self.ui.notification_label.setText("{0}/{1}".format(row, total))
 
     def update_file_selected_text_field(self, route):
-        ''''Sets self.image_file_route and ui.filename_lineedit to route.'''
+        '''Sets self.image_file_route and ui.filename_lineedit to route.'''
         self.ui.filename_lineedit.setText(route)
         self.image_file_route = route
+
+    def slotUpdateNotification(self, text):
+        '''Updates the Notification field'''
+        logging.info("Notification: " + text)
+        self.ui.notification_label.setText(text)
+
+    def slotUpdateNeedles(self, start_needle, stop_needle):
+        '''Updates the position of the start/stop needle visualisation'''
+        self.start_needle = start_needle
+        self.stop_needle = stop_needle
+        self.refresh_scene()
+
+    def slotUpdateAlignment(self, alignment):
+        '''Updates the alignment of the image between start/stop needle'''
+        self.imageAlignment = alignment
+        self.refresh_scene()
+
+    def wheelEvent(self, event):
+        '''Using mouse wheel events to zoom the pattern view'''
+        if self.pil_image is not None:
+            self.zoomlevel = self.zoomlevel + event.delta()/120
+            if self.zoomlevel <= 1:
+                self.zoomlevel = 1
+            elif self.zoomlevel >= 5:
+                self.zoomlevel = 5
+
+            self.refresh_scene()
 
     def start_knitting_process(self):
         # Disable everythin which should not be touched
@@ -151,8 +192,11 @@ class GuiMain(QMainWindow):
         self.ui.actionLoad_AYAB_Firmware.triggered.connect(self.generate_firmware_ui)
         self.ui.image_pattern_view.setDragMode(QtGui.QGraphicsView.ScrollHandDrag)
         # Connecting Signals.
-        self.connect(self, QtCore.SIGNAL("updateProgress(int,int,int)"), self.updateProgress)
+        self.connect(self, QtCore.SIGNAL("updateProgress(int,int)"), self.updateProgress)
+        self.connect(self, QtCore.SIGNAL("signalUpdateNotification(QString)"), self.slotUpdateNotification)
         self.connect(self, QtCore.SIGNAL("display_pop_up_signal(QString, QString)"), self.display_blocking_pop_up)
+        self.connect(self, QtCore.SIGNAL("signalUpdateNeedles(int,int)"), self.slotUpdateNeedles)
+        self.connect(self, QtCore.SIGNAL("signalUpdateAlignment(QString)"), self.slotUpdateAlignment)
         # This blocks the other thread until signal is done
         self.connect(self, QtCore.SIGNAL("display_blocking_pop_up_signal(QString, QString)"), self.display_blocking_pop_up, QtCore.Qt.BlockingQueuedConnection)
         self.connect(self, QtCore.SIGNAL("display_blocking_pop_up_signal(QString)"), self.display_blocking_pop_up, QtCore.Qt.BlockingQueuedConnection)
@@ -166,31 +210,100 @@ class GuiMain(QMainWindow):
         self.ui.actionSmart_Resize.triggered.connect(self.smart_resize)
 
     def load_image_from_string(self, image_str):
-        """Loads an image into self.ui.image_pattern_view using a temporary QGraphicsScene"""
+        '''Loads an image into self.ui.image_pattern_view using a temporary QGraphicsScene'''
+
+        # TODO Check for maximum width before loading the image
         self.pil_image = Image.open(image_str)
-        self.load_pil_image_on_scene(self.pil_image)
+
+        self.pil_image = self.pil_image.convert("RGBA")
+
+        self.refresh_scene()
+        # Enable plugin elements after first load of image
         self.ui.widget_optionsdock.setEnabled(True)
         self.ui.menuImage_Actions.setEnabled(True)
 
-    def load_pil_image_on_scene(self, image_obj):
-        '''Loads the PIL image on a QtScene and sets it as the current scene on the Image View.'''
-        width, height = image_obj.size
-        self.__qt_image = ImageQt.ImageQt(image_obj)
-        self.__qpixmap = QtGui.QPixmap.fromImage(self.__qt_image)
-        self.__qscene = QtGui.QGraphicsScene()
-        self.__qscene.addPixmap(self.__qpixmap)
+    def refresh_scene(self):
+        '''Updates the current scene '''
+        width, height = self.pil_image.size
 
-        #l = QtCore.QLineF(0,0,100,100)
-        #self.__qscene.addLine(l)
+        data = self.pil_image.convert("RGBA").tostring("raw", "RGBA")
+        qim = QtGui.QImage(data,
+                           self.pil_image.size[0],
+                           self.pil_image.size[1],
+                           QtGui.QImage.Format_ARGB32)
+        pixmap = QtGui.QPixmap.fromImage(qim)
 
-        self.set_dimensions_on_gui(width, height)
+        self.set_dimensions_on_gui(pixmap.width(), pixmap.height())
 
+        qscene = QtGui.QGraphicsScene()
 
+        # TODO move to generic configuration
+        machine_width = 200
+        canvas_width  = machine_width
+        canvas_height = 200.0
+
+        bar_height    = 5.0
+
+        # add pattern and move accordingly to alignment
+        pattern = qscene.addPixmap(pixmap)
+        if self.imageAlignment == 'left':
+            pattern.setPos(
+                (self.start_needle - 100),
+                0)
+        elif self.imageAlignment == 'center':
+            pattern.setPos(
+                -(pixmap.width()/2.0)+((self.start_needle+self.stop_needle)/2) - 100,
+                0)
+        elif self.imageAlignment == 'right':
+            pattern.setPos(
+                (self.stop_needle - 100 - pixmap.width()),
+                0)
+        else:
+            logging.warning("invalid alignment")
+
+        # Draw "machine"
+        rect_orange = QtGui.QGraphicsRectItem(
+            -(machine_width/2.0),
+            -bar_height,
+            (machine_width/2.0),
+            bar_height,
+            None, qscene)
+        rect_orange.setBrush(QtGui.QBrush(QtGui.QColor("orange")))
+        rect_green = QtGui.QGraphicsRectItem(
+            0.0,
+            -bar_height,
+            (machine_width/2.0),
+            bar_height,
+            None, qscene)
+        rect_green.setBrush(QtGui.QBrush(QtGui.QColor("green")))
+
+        # Draw limiting lines (start/stop needle)
+        limit_bar_width = 0.5
+        QtGui.QGraphicsRectItem(
+            self.start_needle - 100,
+            -bar_height,
+            limit_bar_width,
+            pixmap.height() + 2*bar_height,
+            None, qscene)
+        QtGui.QGraphicsRectItem(
+            self.stop_needle - 100,
+            -bar_height,
+            limit_bar_width,
+            pixmap.height() + 2*bar_height,
+            None, qscene)
+
+        # Draw knitting progress
+        QtGui.QGraphicsRectItem(
+            -(machine_width/2.0),
+            pixmap.height() - self.var_progress,
+            machine_width,
+            limit_bar_width,
+            None, qscene)
 
         qv = self.ui.image_pattern_view
         qv.resetTransform()
-        qv.scale(2.0, 2.0)
-        qv.setScene(self.__qscene)
+        qv.scale(self.zoomlevel, self.zoomlevel)
+        qv.setScene(qscene)
 
     def set_dimensions_on_gui(self, width, height):
         text = u"{} - {}".format(width, height)
@@ -245,11 +358,11 @@ class GuiMain(QMainWindow):
 
     def rotate_left(self):
         '''Public rotate left current Image function.'''
-        self.apply_image_transform("rotate", -90.0)
+        self.apply_image_transform("rotate", 90.0)
 
     def rotate_right(self):
         '''Public rotate right current Image function.'''
-        self.apply_image_transform("rotate", 90.0)
+        self.apply_image_transform("rotate", -90.0)
 
     def smart_resize(self):
       '''Executes the smart resize process including dialog .'''
@@ -285,15 +398,15 @@ class GuiMain(QMainWindow):
 
         # Update the view
         self.pil_image = image
-        self.load_pil_image_on_scene(self.pil_image)
+        self.refresh_scene()
 
     def __smart_resize_image(self, image, args):
-      '''Implement the smart resize processing. Ratio sent as a tuple of horizontal and vertical values.'''
-      import knit_aware_resize
-      wratio, hratio = args[0]  # Unpacks the first argument.
-      logging.debug("resizing image with args: {0}".format(args))
-      resized_image = knit_aware_resize.resize_image(image, wratio, hratio)
-      return resized_image
+        '''Implement the smart resize processing. Ratio sent as a tuple of horizontal and vertical values.'''
+        import knit_aware_resize
+        wratio, hratio = args[0]  # Unpacks the first argument.
+        logging.debug("resizing image with args: {0}".format(args))
+        resized_image = knit_aware_resize.resize_image(image, wratio, hratio)
+        return resized_image
 
     def __rotate_image(self, image, args):
         if not args:
@@ -304,8 +417,15 @@ class GuiMain(QMainWindow):
         return rotated_image
 
     def __invert_image(self, image, args):
-        import PIL.ImageChops
-        inverted_image = PIL.ImageChops.invert(image)
+        import PIL.ImageOps
+
+        if image.mode == 'RGBA':
+            r, g, b, a = image.split()
+            rgb_image = Image.merge('RGB', (r, g, b))
+            inverted_image = PIL.ImageOps.invert(rgb_image)
+        else:
+            inverted_image = PIL.ImageOps.invert(image)
+
         return inverted_image
 
     def __mirror_image(self, image, args):
