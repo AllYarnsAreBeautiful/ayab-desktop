@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'ayab/ayab_gui.ui'
+# Form implementation generated from reading ui file 'ayab_gui.ui'
 #
-# Created: Mon Feb  9 22:25:25 2015
+# Created: Wed Nov 25 21:45:12 2015
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,7 +26,7 @@ except AttributeError:
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
-        MainWindow.resize(1008, 856)
+        MainWindow.resize(1008, 900)
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
         self.gridLayout = QtGui.QGridLayout(self.centralwidget)
@@ -148,11 +148,11 @@ class Ui_MainWindow(object):
         self.image_pattern_view = QtGui.QGraphicsView(self.centralwidget)
         self.image_pattern_view.setObjectName(_fromUtf8("image_pattern_view"))
         self.image_side_panel.addWidget(self.image_pattern_view)
-        self.progress_label = QtGui.QLabel(self.centralwidget)
-        self.progress_label.setText(_fromUtf8(""))
-        self.progress_label.setAlignment(QtCore.Qt.AlignCenter)
-        self.progress_label.setObjectName(_fromUtf8("progress_label"))
-        self.image_side_panel.addWidget(self.progress_label)
+        self.notification_label = QtGui.QLabel(self.centralwidget)
+        self.notification_label.setText(_fromUtf8(""))
+        self.notification_label.setAlignment(QtCore.Qt.AlignCenter)
+        self.notification_label.setObjectName(_fromUtf8("notification_label"))
+        self.image_side_panel.addWidget(self.notification_label)
         self.progressBar = QtGui.QProgressBar(self.centralwidget)
         self.progressBar.setProperty("value", 0)
         self.progressBar.setObjectName(_fromUtf8("progressBar"))
@@ -160,7 +160,7 @@ class Ui_MainWindow(object):
         self.gridLayout.addLayout(self.image_side_panel, 0, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1008, 25))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1008, 27))
         self.menubar.setObjectName(_fromUtf8("menubar"))
         self.menuFile = QtGui.QMenu(self.menubar)
         self.menuFile.setObjectName(_fromUtf8("menuFile"))

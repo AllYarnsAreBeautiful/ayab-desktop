@@ -14,7 +14,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with AYAB.  If not, see <http://www.gnu.org/licenses/>.
 #
-#    Copyright 2013, 2014 Sebastian Oliva, Christian Obersteiner, Andreas Müller
+#    Copyright 2013, 2014 Sebastian Oliva, Christian Obersteiner, Andreas MÃ¼ller
 #    https://bitbucket.org/chris007de/ayab-apparat/
 
 from ayab_communication import AyabCommunication
@@ -65,7 +65,7 @@ class AyabPluginControl(KnittingPlugin):
     if self.validate_configuration(conf):
       parent_ui.ui.widget_knitcontrol.setEnabled(True)
       parent_ui.ui.knit_button.setEnabled(True)
-      self.__emit_progress(0, 0, self.__image.imgHeight())
+      self.__emit_progress(0, self.__image.imgHeight())
     return
 
   def validate_configuration(self, conf):
@@ -90,8 +90,8 @@ class AyabPluginControl(KnittingPlugin):
     self.__parent_ui.emit(QtCore.SIGNAL('updateProgress(int,int,int)'), 0, 0, 0)
 
   def cancel(self):
+    self.__updateNotification("Knitting cancelled")
     self._knitImage = False
-    #self.finish()
 
   def __close_serial(self):
     try:
@@ -113,9 +113,43 @@ class AyabPluginControl(KnittingPlugin):
     """Sends the display_pop_up_signal QtSignal to main GUI thread, not blocking it."""
     self.__parent_ui.emit(QtCore.SIGNAL('display_pop_up_signal(QString, QString)'), message, message_type)
 
-  def __emit_progress(self, percent, done, total):
+  def __updateNotification(self, message=""):
+    """Sends the signalUpdateNotification signal"""
+    self.__parent_ui.emit(QtCore.SIGNAL('signalUpdateNotification(QString)'), message)
+
+  def __emit_progress(self, row, total = 0):
     """Sends the updateProgress QtSignal."""
-    self.__parent_ui.emit(QtCore.SIGNAL('updateProgress(int,int,int)'), int(percent), int(done), int(total))
+    self.__parent_ui.emit(QtCore.SIGNAL('updateProgress(int,int)'), int(row), int(total))
+
+  def __emit_needles(self):
+    """Sends the updateNeedles QtSignal."""
+
+    start_needle_text = self.options_ui.start_needle_edit.value()
+    start_needle_color = self.options_ui.start_needle_color.currentText()
+    start_needle = self.readNeedleSettings(
+        start_needle_color,
+        start_needle_text)
+
+    stop_needle_text = self.options_ui.stop_needle_edit.value()
+    stop_needle_color = self.options_ui.stop_needle_color.currentText()
+    stop_needle = self.readNeedleSettings(
+        stop_needle_color,
+        stop_needle_text)
+
+    self.__parent_ui.emit(QtCore.SIGNAL('signalUpdateNeedles(int,int)'),
+        start_needle,
+        stop_needle)
+
+  def __emit_alignment(self):
+    """Sends the updateAlignment QtSignal"""
+    alignment_text = self.options_ui.alignment_combo_box.currentText()
+    self.__parent_ui.emit(QtCore.SIGNAL('signalUpdateAlignment(QString)'),
+                          alignment_text)
+
+  def __onStartLineChanged(self):
+    """ """
+    start_line_edit = self.options_ui.start_line_edit.value()
+    self.__emit_progress(start_line_edit, 0)
 
   def setup_ui(self, parent_ui):
     """Sets up UI elements from ayab_options.Ui_DockWidget in parent_ui."""
@@ -157,10 +191,26 @@ class AyabPluginControl(KnittingPlugin):
     conf_button = self.options_ui.configure_button  # Used instead of findChild(QtGui.QPushButton, "configure_button")
     conf_button.clicked.connect(self.conf_button_function)
 
-
     self.populate_ports()
     refresh_ports = self.options_ui.refresh_ports_button
-    refresh_ports.click.connect(self.populate_ports)
+    refresh_ports.clicked.connect(self.populate_ports)
+
+    start_needle_edit = self.options_ui.start_needle_edit
+    start_needle_edit.valueChanged.connect(self.__emit_needles)
+    stop_needle_edit = self.options_ui.stop_needle_edit
+    stop_needle_edit.valueChanged.connect(self.__emit_needles)
+
+    start_needle_color = self.options_ui.start_needle_color
+    start_needle_color.currentIndexChanged.connect(self.__emit_needles)
+    stop_needle_color = self.options_ui.stop_needle_color
+    stop_needle_color.currentIndexChanged.connect(self.__emit_needles)
+
+    alignment_combo_box = self.options_ui.alignment_combo_box
+    alignment_combo_box.currentIndexChanged.connect(self.__emit_alignment)
+
+
+    start_line_edit = self.options_ui.start_line_edit
+    start_line_edit.valueChanged.connect(self.__onStartLineChanged)
 
   def conf_button_function(self):
     self.configure()
@@ -175,6 +225,13 @@ class AyabPluginControl(KnittingPlugin):
     dock.setWidget(self.__qw)
     self.unset_translator()
 
+  def readNeedleSettings(self, color, needle):
+    '''Reads the Needle Settings UI Elements and normalizes'''
+    if(color == "orange"):
+        return 100 - int(needle)
+    elif(color == "green"):
+        return 99 + int(needle)
+
   def get_configuration_from_ui(self, ui):
     """Creates a configuration dict from the ui elements.
 
@@ -184,6 +241,12 @@ class AyabPluginControl(KnittingPlugin):
     """
 
     self.conf = {}
+    tab_widget = ui.findChild(QtGui.QTabWidget, "tabWidget")
+    if tab_widget.currentIndex() == 1:
+        self.conf["testmode"] = True
+    else:
+        self.conf["testmode"] = False
+
     color_line_text = ui.findChild(QtGui.QSpinBox, "color_edit").value()
     self.conf["num_colors"] = int(color_line_text)
     start_line_text = ui.findChild(QtGui.QSpinBox, "start_line_edit").value()
@@ -192,19 +255,16 @@ class AyabPluginControl(KnittingPlugin):
     start_needle_color = ui.findChild(QtGui.QComboBox, "start_needle_color").currentText()
     start_needle_text = ui.findChild(QtGui.QSpinBox, "start_needle_edit").value()
 
-    if(start_needle_color == "orange"):
-      self.conf["start_needle"] = 100 - int(start_needle_text)
-    elif(start_needle_color == "green"):
-      self.conf["start_needle"] = 99 + int(start_needle_text)
+    self.conf["start_needle"] = self.readNeedleSettings(
+        start_needle_color,
+        start_needle_text)
 
     stop_needle_color = ui.findChild(QtGui.QComboBox, "stop_needle_color").currentText()
     stop_needle_text = ui.findChild(QtGui.QSpinBox, "stop_needle_edit").value()
 
-    if(stop_needle_color == "orange"):
-      self.conf["stop_needle"] = 100 - int(stop_needle_text)
-    elif(stop_needle_color == "green"):
-      self.conf["stop_needle"] = 99 + int(stop_needle_text)
-
+    self.conf["stop_needle"] = self.readNeedleSettings(
+        stop_needle_color,
+        stop_needle_text)
 
     alignment_text = ui.findChild(QtGui.QComboBox, "alignment_combo_box").currentText()
     self.conf["alignment"] = alignment_text
@@ -235,7 +295,7 @@ class AyabPluginControl(KnittingPlugin):
     # KnittingPlugin.__init__(self)
 
     #Copying from ayab_control
-    self.__API_VERSION = 0x03
+    self.__API_VERSION = 0x04
     self.__ayabCom = AyabCommunication()
 
     self.__formerRequest = 0
@@ -270,20 +330,45 @@ class AyabPluginControl(KnittingPlugin):
 
             elif msgId == 0xC3:  # cnfInfo
                 # print "> cnfInfo: Version=" + str(ord(line[1]))
-                logging.debug("Detected device with API v" + str(ord(line[1])))
+                api = ord(line[1])
+                msg = "API v" + str(api)
+
+                if api >= 4:
+                    msg += ", FW v" + str(ord(line[2])) + "." + str(ord(line[3]))
+
+                logging.info(msg)
                 return ("cnfInfo", ord(line[1]))
 
             elif msgId == 0x82:  # reqLine
                 # print "> reqLine: " + str(ord(line[1]))
                 return ("reqLine", ord(line[1]))
 
+            elif msgId == 0xC4:  # cnfTest
+                return ("cnfTest", ord(line[1]))
+
+            elif msgId == 0x84:
+                hall_l = (ord(line[2]) << 8) + ord(line[3])
+                hall_r = (ord(line[4]) << 8) + ord(line[5])
+
+                self.options_ui.progress_hall_l.setValue(hall_l)
+                self.options_ui.progress_hall_r.setValue(hall_r)
+                self.options_ui.slider_position.setValue(ord(line[7]))
+                carriage = ord(line[6])
+                if carriage == 1:
+                    self.options_ui.label_carriage.setText("K Carriage")
+                elif carriage == 2:
+                    self.options_ui.label_carriage.setText("L Carriage")
+
+                return ("indState", ord(line[1]))
+
             else:
-                self.__printError("unknown message: " + line[:])  # drop crlf
+                logging.warning("unknown message: " + line[:])  # drop crlf
                 return ("unknown", 0)
         return("none", 0)
 
   def __cnfLine(self, lineNumber):
         imgHeight = self.__image.imgHeight()
+        lenImgExpanded = len(self.__image.imageExpanded())
         color = 0
         indexToSend = 0
         sendBlankLine = False
@@ -309,7 +394,7 @@ class AyabPluginControl(KnittingPlugin):
             lineNumber = lineNumber \
                 + (self.__lineBlock * 256)
 
-            # when knitting infinitely, keep the requested 
+            # when knitting infinitely, keep the requested
             # lineNumber in its limits
             if self.__infRepeat:
               lineNumber = lineNumber % imgHeight
@@ -337,7 +422,7 @@ class AyabPluginControl(KnittingPlugin):
                     lastLine = 0x01
 
             # doublebed, 2 color
-            elif self.__machineType == 'double' \
+            elif self.__machineType == 'ribber' \
                     and self.__numColors == 2:
 
                 # calculate imgRow
@@ -347,7 +432,6 @@ class AyabPluginControl(KnittingPlugin):
                 # 0 1 2 3 4 5 6 7 8 9 .. (lineNumber)
                 # | |  X  | |  X  | |
                 # 0 1 3 2 4 5 7 6 8 9 .. (imageExpanded)
-                lenImgExpanded = len(self.__image.imageExpanded())
                 indexToSend = self.__startLine * 2
 
                 # TODO more beautiful algo
@@ -371,7 +455,7 @@ class AyabPluginControl(KnittingPlugin):
                         lastLine = 0x01
 
             # doublebed, multicolor
-            elif self.__machineType == 'double' \
+            elif self.__machineType == 'ribber' \
                     and self.__numColors > 2:
 
                 # calculate imgRow
@@ -389,6 +473,27 @@ class AyabPluginControl(KnittingPlugin):
                 if imgRow == imgHeight - 1 \
                         and (indexToSend == lenImgExpanded - 1):
                     lastLine = 0x01
+
+            elif self.__machineType == 'circular' \
+                    and self.__numColors == 2:
+
+                imgRow = int(lineNumber / 4) + self.__startLine
+
+                # Color      A B  A B  A B
+                # ImgRow     0-0- 1-1- 2-2-
+                # Index2Send 0 1  2 3  4 5
+                # LineNumber 0123 4567 8911
+                #                        01
+
+                if (lineNumber % 2) == 1:
+                    sendBlankLine = True
+                else:
+                    indexToSend = self.__startLine * 4
+                    indexToSend += lineNumber / 2
+
+                if lineNumber == (lenImgExpanded*2) - 1:
+                    lastLine = 0x01
+
             #########################
 
             # assign pixeldata
@@ -402,7 +507,7 @@ class AyabPluginControl(KnittingPlugin):
 
             # set the bitarray
             if color == 0 \
-                    and self.__machineType == 'double':
+                    and self.__machineType == 'ribber':
                 for col in range(0, 200):
                     if col < imgStartNeedle \
                             or col > imgStopNeedle:
@@ -423,18 +528,21 @@ class AyabPluginControl(KnittingPlugin):
               self.__ayabCom.cnf_line(reqestedLine, bytes, 0, crc8)
             else:
               self.__ayabCom.cnf_line(reqestedLine, bytes, lastLine, crc8)
-            
+
             # screen output
-            msg = str((self.__image.imageExpanded())[indexToSend])
-            msg += ' Image Row: ' + str(imgRow)
-            msg += ' (indexToSend: ' + str(indexToSend)
-            msg += ', reqLine: ' + str(reqestedLine)
-            msg += ', lineNumber: ' + str(lineNumber)
-            msg += ', lineBlock:' + str(self.__lineBlock) + ')'
+            msg = str(self.__lineBlock) # Block
+            msg += ' ' + str(lineNumber) # Total Line Number
+            msg += ' reqLine: ' + str(reqestedLine)
+            msg += ' imgRow: ' + str(imgRow)
+            if sendBlankLine == True:
+                msg += ' BLANK LINE'
+            else:
+                msg += ' indexToSend: ' + str(indexToSend)
+                msg += ' ' + str((self.__image.imageExpanded())[indexToSend])
             logging.debug(msg)
+
             #sending line progress to gui
-            progress_int = 100 * float(imgRow)/self.__image.imgHeight()
-            self.__emit_progress(progress_int, imgRow, imgHeight)
+            self.__emit_progress(imgRow, imgHeight)
 
         else:
             logging.error("requested lineNumber out of range")
@@ -442,7 +550,7 @@ class AyabPluginControl(KnittingPlugin):
         if lastLine:
           if self.__infRepeat:
               self.__lineBlock = 0
-              return 0 # keep knitting
+              return 0  # keep knitting
           else:
               return 1  # image finished
         else:
@@ -476,24 +584,46 @@ class AyabPluginControl(KnittingPlugin):
 
               if rcvMsg == 'cnfInfo':
                   if rcvParam == API_VERSION:
-                      curState = 's_start'
-                      self.__wait_for_user_action("Please init machine. (Set the carriage to mode KC-I or KC-II and move the carriage over the left turn mark).")
+                      if pOptions["testmode"]:
+                        curState = 's_start'
+                      else:
+                        curState = 's_waitForInit'
+                        self.__updateNotification("Please init machine. (Set the carriage to mode KC-I or KC-II and move the carriage over the left turn mark).")
                   else:
                       self.__notify_user("Wrong API.")
                       logging.error("wrong API version: " + str(rcvParam)
                                         + (" (expected: )") + str(API_VERSION))
                       return
 
+          if curState == 's_waitForInit':
+              if rcvMsg == "indState":
+                if rcvParam == 1:
+                    curState = 's_start'
+                else:
+                    logging.debug("init failed")
+
           if curState == 's_start':
               if oldState != curState:
-                  self.__ayabCom.req_start(self.__image.knitStartNeedle(),
-                                           self.__image.knitStopNeedle())
+                if pOptions["testmode"]:
+                    self.__ayabCom.req_test()
+                else:
+                    self.__ayabCom.req_start(self.__image.knitStartNeedle(),
+                                             self.__image.knitStopNeedle())
+
+              if rcvMsg == 'cnfTest':
+                if rcvParam == 1:
+                    self.__updateNotification("Testmode")
+                else:
+                    self.__updateNotification()
+                    logging.error("Starting Testmode failed")
+                    return
 
               if rcvMsg == 'cnfStart':
                   if rcvParam == 1:
                       curState = 's_operate'
-                      self.__wait_for_user_action("Ready to Operate")
+                      self.__updateNotification("Please Knit")
                   else:
+                      self.__updateNotification()
                       self.__wait_for_user_action("Device not ready, configure and try again.")
                       logging.error("device not ready")
                       return
@@ -505,9 +635,10 @@ class AyabPluginControl(KnittingPlugin):
                       curState = 's_finished'
 
           if curState == 's_finished':
-              self.__wait_for_user_action("Image transmission finished. Please knit until you hear the double beep sound.")
+              self.__updateNotification("Image transmission finished. Please knit until you hear the double beep sound.")
               return
 
           oldState = curState
 
+      self.options_ui.label_carriage.setText("No carriage detected")
       return
