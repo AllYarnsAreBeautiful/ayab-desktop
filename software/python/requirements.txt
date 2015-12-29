@@ -1,4 +1,4 @@
-Pillow>=2.5.2
+Pillow==2.6.1
 pyserial>=2.7
 #wsgiref==0.1.2
 fysom>=1.1.0
