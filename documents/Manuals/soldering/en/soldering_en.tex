@@ -225,7 +225,7 @@ While working, please stick to this manual and always keep an eye on the assembl
 
 Please pay attention to the polarity/orientation of the three LEDs.
 
-Please pay attention to the marking notch of the ICs. The orienation has to match with the assembly diagram.
+Please pay attention to the marking notch of the ICs. The orientation has to match with the assembly diagram.
 
 Double check the position and orientation of all parts before initial operation.
 
@@ -235,7 +235,7 @@ Because there are some small soldering joints to do, this kit may only be solder
 
  \subsection*{Solder instruction}
 
-If you are not used to solder wired components, please read a solder guid for wired components. You can find such in the Internet or on our homepage.
+If you are not used to solder wired components, please read a solder guide for wired components. You can find such in the Internet or on our homepage.
 
 \url{http://ayab-knitting.com}
 
@@ -252,7 +252,8 @@ LED2          & yellow          \\ \hline
 LED2          & green           \\ \hline
 \end{tabular}\\
 
-Place the three LEDs (red, yellow, green) according to the figure \ref{fig:abb1_1} on the board. Please double check the polarity and have a look at the silkscreen.
+Place the three LEDs (red, yellow, green) according to the figure \ref{fig:abb1_1} on the board. Please double check the polarity and have a look at the silkscreen. The top of the LED has a flat side
+and a round side. Flat side goes facing the word "LED", round side with long leg next to the holes for the resistor.
 
 After placing the LEDs, please solder them on the bottom side of the board.
 
@@ -266,7 +267,7 @@ After placing the LEDs, please solder them on the bottom side of the board.
 
  \subsection*{Step 2: Resistors}
 
-The AYAB shield kit contains to types of resistors\\
+The AYAB shield kit contains two types of resistors\\
 
 \begin{tabular}{lll}
 \hline
@@ -317,7 +318,7 @@ JP5           & 10                & straight     \\ \hline
 JP9           & 4                 & straight     \\ \hline
 \end{tabular}\\
 
-Please solder connectors JP3, JP4 and JP5 according to figure \ref{fig:abb3_1}. Please take care to solder JP4 with a small gap (figure \ref{fig:abb3_2}), to ease the connection with the knitting machine. You can help yourself by putting a washer below the connector while soldering.
+Please solder connectors JP3, JP4 and JP5 according to figure \ref{fig:abb3_1}. Please take care to solder JP3 with a small gap (figure \ref{fig:abb3_2}), to ease the connection with the knitting machine. You can help yourself by putting a washer below the connector while soldering.
 
 \begin{figure}[tbhp]\centering
 \includegraphics[width=\linewidth]{abb3_1}
@@ -558,7 +559,7 @@ Please double check the orientation and polarity of all parts. Check for short-c
 
 If all of these points are ok, you can put the shield into the Arduino and connect the Arduino to the USB port of a computer. Now, the red LED on the shield should light up.
 
-If no, it is likely that there is a short-circuit or a broken soldering joint - please double check your soldering.
+If not, it is likely that there is a short-circuit or a broken soldering joint - please double check your soldering.
 
 If yes, you can start with the installation of the shield according to the videos on
 
@@ -638,7 +639,7 @@ The basic shield contains all parts which are not related to specific machine mo
  LED2               & LED wired           & yellow         \\ \hline
  LED2               & LED wired           & green          \\ \hline
  IC1/IC2            & Darlington Array    & ULN2803        \\ \hline
- IC3/IC4            & Darlington Array    & ULN2803        \\ \hline
+ IC3/IC4            & I2C Port Expander   & MCP23008       \\ \hline
  JP6                & Molex               & 2-Pin          \\ \hline
  JP9                & 2.54mm Pin Header   & 4-Pin          \\ \hline
  Beeper             & Piezo Beeper        & 4-8V           \\ \hline
@@ -700,7 +701,9 @@ thinkstack UG
 
 Tuerkenstrasse 21
 
-80799 Muenchen
+80799 Munich
+
+GERMANY
 
 \url{http://thinkstack.de}
 

@@ -211,7 +211,7 @@ Beim Nachbau elektronischer Schaltungen werden Grundkenntnisse über die Behandl
 
  \subsection*{Allgemeine Hinweise}
 
-Die Möglichkeit, dass nach dem Zusammenbau etwas nicht funktioniert, lässt sich durch einen gewissenhaften und sauberen Aufbau drastisch verringern. Kontrollieren Sie jeden Schritt, jede Lötstelle zweimal, bevor Sie weitergehen! Halten Sie sich an die Bauanleitung! Machen Sie den dort beschriebenen Schritt nicht Bei 90 \% der funktionsuntüchtigen Bausätze handelt es sich um Lötfehler, kalte Lötstellen, falsches Lötzinn usw. Verwenden Sie deshalb beim Löten nur Elektroniklötzinn mit der Bezeichnung “SN 60 Pb” (60 \% Zinn und 40 \% Blei). Dieses Lötzinn hat eine Kolophoniumseele, welche als Flussmittel dient, um die Lötstelle während des Lötens vor dem Oxydieren zu schützen. Andere Flussmittel wie Lötfett, Lötpaste oder Lötwasser dürfen auf keinen Fall verwendet werden, da sie säurehaltig sind. Diese Mittel können die Leiterplatte und Elektronik-Bauteile zerstören, außerdem leiten sie den Strom und verursachen dadurch Kriechströme und Kurzschlüsse.
+Die Möglichkeit, dass nach dem Zusammenbau etwas nicht funktioniert, lässt sich durch einen gewissenhaften und sauberen Aufbau drastisch verringern. Kontrollieren Sie jeden Schritt, jede Lötstelle zweimal, bevor Sie weitermachen! Halten Sie sich an die Bauanleitung! Bei 90 \% der funktionsuntüchtigen Bausätze handelt es sich um Lötfehler, kalte Lötstellen, falsches Lötzinn usw. Verwenden Sie deshalb beim Löten nur Elektroniklötzinn mit der Bezeichnung “SN 60 Pb” (60 \% Zinn und 40 \% Blei). Dieses Lötzinn hat eine Kolophoniumseele, welche als Flussmittel dient, um die Lötstelle während des Lötens vor dem Oxydieren zu schützen. Andere Flussmittel wie Lötfett, Lötpaste oder Lötwasser dürfen auf keinen Fall verwendet werden, da sie säurehaltig sind. Diese Mittel können die Leiterplatte und Elektronik-Bauteile zerstören, außerdem leiten sie den Strom und verursachen dadurch Kriechströme und Kurzschlüsse.
 
 Dieser Bausatz wurde, bevor er in Produktion ging, viele Male als Prototyp aufgebaut und getestet. Erst wenn eine optimale Qualität hinsichtlich Funktion und Betriebssicherheit erreicht ist, wird er für die Serie freigegeben.
 
@@ -317,7 +317,7 @@ JP5           & 10                & gerade       \\ \hline
 JP9           & 4                 & gerade       \\ \hline
 \end{tabular}\\
 
-Verlöten Sie zunächst die Maschinenverbinder JP3, JP4 sowie JP5 entsprechen Abbildung \ref{fig:abb3_1}. Achten Sie dabei darauf JP4 mit etwas Abstand zur Platine zu verlöten (Abbildung \ref{fig:abb3_2}) um das Verbinden mit der Strickmaschine zu erreichtern. Sie konnen dies durch unterlegen eines geeigneten Abstandshalters (z.B. Beilagscheibe) während des Lötvorgangs erleichtern.
+Verlöten Sie zunächst die Maschinenverbinder JP3, JP4 sowie JP5 entsprechen Abbildung \ref{fig:abb3_1}. Achten Sie dabei darauf JP3 mit etwas Abstand zur Platine zu verlöten (Abbildung \ref{fig:abb3_2}) um das Verbinden mit der Strickmaschine zu erreichtern. Sie konnen dies durch unterlegen eines geeigneten Abstandshalters (z.B. Beilagscheibe) während des Lötvorgangs erleichtern.
 
 \begin{figure}[tbhp]\centering
 \includegraphics[width=\linewidth]{abb3_1}
@@ -645,7 +645,7 @@ Im Basisshield sind alle Bauteile enthalten, welche keine Maschinenspezifischen 
  LED2               & LED bedrahtet       & gelb           \\ \hline
  LED2               & LED bedrahtet       & grün           \\ \hline
  IC1/IC2            & Darlington Array    & ULN2803        \\ \hline
- IC3/IC4            & Darlington Array    & ULN2803        \\ \hline
+ IC3/IC4            & I2C Port Expander   & MCP23008       \\ \hline
  JP6                & Molex               & 2-polig        \\ \hline
  JP9                & 2.54mm Stiftleiste  & 4-polig        \\ \hline
  Beeper             & Piezo-Summer        & 4-8V           \\ \hline
