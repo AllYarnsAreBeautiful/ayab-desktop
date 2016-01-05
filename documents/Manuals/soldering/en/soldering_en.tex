@@ -162,7 +162,7 @@ When working with products which are powered by electrical energy, you shall fol
 
 The goal of the AYAB project is to provide an alternative way to control the famous Brother KH-9xx range of knitting machines, e.g. KH-910 and KH-930.
 
-Normally, the KH-910 is programmed using semi-transparent picture cards which are scanned by the machine line by line. Using this information, the machine sets the needles accordingly to achieve the knitting of the picture shown on the picture card.
+Normally, the KH-910 is programmed using semi transparent picture cards which are scanned by the machine line by line. Using this information, the machine sets the needles accordingly to achieve the knitting of the picture shown on the picture card.
 Probably due to memory restrictions (the machines are quite old today), the machine only supports pictures with a max of 60 needles (= pixels) width, although the machine has a total width of 200 needles. But at least, it is possible to “copy and paste” the scanned image multiple times to achieve a banner-like usage of the scanned data (useful for Norwegian patterns).
 
 The control of the needles and the needed identification of the current position and direction of movement of the knitting carriage are supplied by a cheap and well-known Arduino microcontroller, combined with a custom developed shield (the name for an “interface” in the Arduino world) for the knitting machine.
@@ -170,16 +170,18 @@ You actually only need to open up one part of your knitting machine (warranty is
 
 The installation of AYAB is fully reversible. By installing the original control board again, the knitting machine is back in original state.
 
-The Arduino has to be flashed with the current version of the AYAB firmware. A precompiled version of the firmware is shipped with the AYAB GUI and is also available [here] (choose the right Arduino type). For flashing instructions, check the tutorial video.
+The Arduino has to be flashed with the current version of the AYAB firmware. A precompiled version of the firmware is shipped with the AYAB GUI (choose the right Arduino type). For flashing instructions, check the tutorial video.
 
 The AYAB project is free and open source soft- and hardware. Source code and schematics are available freely available and free for customization. Of course, we are always happy about feedback and participation in the project!
 
  \subsection*{Properties}
 
 Supported Models: Brother KH-910, Brother KH-930 (further models will be officially added soon)
-Maximum Pattern Width: 200 Needles
-Maximum Pattern Length: unlimited
-Maximum Colors: 2 (up to 6 experimental)
+\begin{itemize}[noitemsep] % [noitemsep] removes whitespace between the items for a compact look
+\item Maximum Pattern Width: 200 Needles
+\item Maximum Pattern Length: unlimited
+\item Maximum Colors: 2 (up to 6 experimental)
+\end{itemize}
 
  \subsection*{Note}
 
@@ -211,7 +213,7 @@ For assembling this kit, basic knowledge about handling of electrical parts and 
  \subsection*{General Notes}
 
 You can reduce the possibility of a malfunction drastically by doing a clean and precise assembly. Please double check each solder joint and working step before proceeding. Please stick to this manual!
-90% of malfunctions are caused by erroneous soldering.
+90\% of malfunctions are caused by erroneous soldering.
 
 This kit was built and tested many times before going into production.
 
@@ -272,8 +274,8 @@ The AYAB shield kit contains two types of resistors\\
 \begin{tabular}{lll}
 \hline
 \textbf{Name} & \textbf{Value}           & \textbf{Colors} \\ \hline
-R1            & 10k\textOmega            & br-sw-or-gd \\ \hline
-R2            & 10k\textOmega            & br-sw-or-gd \\ \hline
+R1            & 10k\textOmega            & br-bk-or-gd \\ \hline
+R2            & 10k\textOmega            & br-bk-or-gd \\ \hline
 R3            & 150\textOmega            & br-gr-br-gd \\ \hline
 R4            & 150\textOmega            & br-gr-br-gd \\ \hline
 R5            & 150\textOmega            & br-gr-br-gd \\ \hline
@@ -412,7 +414,7 @@ ARD4          & 6                 & straight       \\ \hline
 
  \subsection*{Step 6: ICs}
 
-\textbf{WARNING!} Please double check the orientation of the ICs. The markings have to be oriented according to \ref{fig:abb6_1}. Pay attention that IC1 and IC2 have different orientation as IC3 and IC4! Be careful when inserting the ICs into the board. Do not overheat the ICs!\\
+\textbf{WARNING!} Please double check the orientation of the ICs. The markings have to be oriented according to figure \ref{fig:abb6_1}. Pay attention that IC1 and IC2 have different orientation as IC3 and IC4! Be careful when inserting the ICs into the board. Do not overheat the ICs!\\
 \begin{tabular}{ll}
 \hline
 \textbf{Name} & \textbf{Type} \\ \hline
@@ -476,7 +478,7 @@ Now solder the other end of the ribbon cable like shown in figure \ref{fig:abb7_
 
 \textbf{KH-930:} \\
 
-Strip the insulation of the ribbon cable according to figure \ref{fig:abb7_6} ab.
+Strip the insulation of the ribbon cable according to figure \ref{fig:abb7_6}.
 
 \begin{figure}[tbhp]\centering
 \includegraphics[width=\linewidth]{abb7_6}
