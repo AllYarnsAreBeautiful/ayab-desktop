@@ -595,7 +595,11 @@ class AyabPluginControl(KnittingPlugin):
                         curState = 's_waitForInit'
                         self.__updateNotification("Please init machine. (Set the carriage to mode KC-I or KC-II and move the carriage over the left turn mark).")
                   else:
-                      self.__notify_user("Wrong API.")
+                      self.__notify_user("Wrong Arduino Firmware Version. "
+                                         + "Please check if you have flashed "
+                                         + "the latest version. ("
+                                         + str(rcvParam) + "/"
+                                         + str(API_VERSION) + ")")
                       logging.error("wrong API version: " + str(rcvParam)
                                         + (" (expected: )") + str(API_VERSION))
                       return
