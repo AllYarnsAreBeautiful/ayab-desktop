@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'ayab_options.ui'
+# Form implementation generated from reading ui file 'ayab/plugins/ayab_plugin/ayab_options.ui'
 #
-# Created: Sun Nov 29 02:32:03 2015
+# Created: Sat Nov 26 21:25:39 2016
 #      by: PyQt4 UI code generator 4.11.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -109,8 +109,9 @@ class Ui_DockWidget(object):
         sizePolicy.setHeightForWidth(self.start_line_edit.sizePolicy().hasHeightForWidth())
         self.start_line_edit.setSizePolicy(sizePolicy)
         self.start_line_edit.setSuffix(_fromUtf8(""))
-        self.start_line_edit.setMinimum(0)
-        self.start_line_edit.setMaximum(256)
+        self.start_line_edit.setPrefix(_fromUtf8(""))
+        self.start_line_edit.setMinimum(1)
+        self.start_line_edit.setMaximum(99999)
         self.start_line_edit.setObjectName(_fromUtf8("start_line_edit"))
         self.verticalLayout_3.addWidget(self.start_line_edit)
         self.infRepeat_checkbox = QtGui.QCheckBox(self.verticalLayoutWidget)
@@ -236,7 +237,6 @@ class Ui_DockWidget(object):
         self.refresh_ports_button.setText(_translate("DockWidget", "Refresh", None))
         self.label_6.setText(_translate("DockWidget", "Colors", None))
         self.label_5.setText(_translate("DockWidget", "Start Line", None))
-        self.start_line_edit.setPrefix(_translate("DockWidget", "line ", None))
         self.infRepeat_checkbox.setText(_translate("DockWidget", "Infinite Repeat", None))
         self.gbox_startneedle.setTitle(_translate("DockWidget", "Start Needle", None))
         self.start_needle_color.setItemText(0, _translate("DockWidget", "orange", None))

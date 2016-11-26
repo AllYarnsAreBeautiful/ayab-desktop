@@ -146,6 +146,10 @@ class AyabPluginControl(KnittingPlugin):
     self.__parent_ui.emit(QtCore.SIGNAL('signalUpdateAlignment(QString)'),
                           alignment_text)
 
+  def slotSetStartLineMaximum(self, maxStartLine):
+    """Updates the maximum value of the Start Line UI element"""
+    self.options_ui.start_line_edit.setMaximum(maxStartLine)
+
   def __onStartLineChanged(self):
     """ """
     start_line_edit = self.options_ui.start_line_edit.value()
@@ -249,8 +253,9 @@ class AyabPluginControl(KnittingPlugin):
 
     color_line_text = ui.findChild(QtGui.QSpinBox, "color_edit").value()
     self.conf["num_colors"] = int(color_line_text)
+    # Internally, we start counting from zero (for easier handling of arrays)
     start_line_text = ui.findChild(QtGui.QSpinBox, "start_line_edit").value()
-    self.conf["start_line"] = int(start_line_text)
+    self.conf["start_line"] = int(start_line_text)-1
 
     start_needle_color = ui.findChild(QtGui.QComboBox, "start_needle_color").currentText()
     start_needle_text = ui.findChild(QtGui.QSpinBox, "start_needle_edit").value()

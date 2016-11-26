@@ -221,6 +221,9 @@ class GuiMain(QMainWindow):
         # Enable plugin elements after first load of image
         self.ui.widget_optionsdock.setEnabled(True)
         self.ui.menuImage_Actions.setEnabled(True)
+        # Tell loaded plugin elements about changed parameters
+        width, height = self.pil_image.size
+        self.enabled_plugin.plugin_object.slotSetStartLineMaximum(height - 1)
 
     def refresh_scene(self):
         '''Updates the current scene '''
