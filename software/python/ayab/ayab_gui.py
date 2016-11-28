@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'ayab_gui.ui'
+# Form implementation generated from reading ui file 'ayab/ayab_gui.ui'
 #
-# Created: Wed Nov 25 21:45:12 2015
-#      by: PyQt4 UI code generator 4.10.4
+# Created: Mon Nov 28 22:36:12 2016
+#      by: PyQt4 UI code generator 4.11.2
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -82,7 +82,7 @@ class Ui_MainWindow(object):
         self.load_file_button = QtGui.QPushButton(self.widget_imgload)
         self.load_file_button.setObjectName(_fromUtf8("load_file_button"))
         self.verticalLayout.addWidget(self.load_file_button)
-        self.verticalLayout_5.addWidget(self.widget_imgload)
+        self.verticalLayout_5.addWidget(self.widget_imgload, QtCore.Qt.AlignHCenter)
         self.widget_optionsdock = QtGui.QWidget(self.dockWidgetContents)
         self.widget_optionsdock.setEnabled(False)
         self.widget_optionsdock.setObjectName(_fromUtf8("widget_optionsdock"))
@@ -106,7 +106,7 @@ class Ui_MainWindow(object):
         self.dockWidgetContents_2.setObjectName(_fromUtf8("dockWidgetContents_2"))
         self.knitting_options_dock.setWidget(self.dockWidgetContents_2)
         self.verticalLayout_2.addWidget(self.knitting_options_dock)
-        self.verticalLayout_5.addWidget(self.widget_optionsdock)
+        self.verticalLayout_5.addWidget(self.widget_optionsdock, QtCore.Qt.AlignHCenter)
         self.line_2 = QtGui.QFrame(self.dockWidgetContents)
         self.line_2.setFrameShape(QtGui.QFrame.HLine)
         self.line_2.setFrameShadow(QtGui.QFrame.Sunken)
@@ -127,7 +127,7 @@ class Ui_MainWindow(object):
         self.cancel_button.setEnabled(False)
         self.cancel_button.setObjectName(_fromUtf8("cancel_button"))
         self.verticalLayout_3.addWidget(self.cancel_button)
-        self.verticalLayout_5.addWidget(self.widget_knitcontrol)
+        self.verticalLayout_5.addWidget(self.widget_knitcontrol, QtCore.Qt.AlignHCenter)
         self.assistant_dock.setWidget(self.dockWidgetContents)
         self.gridLayout.addWidget(self.assistant_dock, 0, 1, 3, 1)
         self.image_side_panel = QtGui.QVBoxLayout()
@@ -153,14 +153,10 @@ class Ui_MainWindow(object):
         self.notification_label.setAlignment(QtCore.Qt.AlignCenter)
         self.notification_label.setObjectName(_fromUtf8("notification_label"))
         self.image_side_panel.addWidget(self.notification_label)
-        self.progressBar = QtGui.QProgressBar(self.centralwidget)
-        self.progressBar.setProperty("value", 0)
-        self.progressBar.setObjectName(_fromUtf8("progressBar"))
-        self.image_side_panel.addWidget(self.progressBar)
         self.gridLayout.addLayout(self.image_side_panel, 0, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1008, 27))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1008, 19))
         self.menubar.setObjectName(_fromUtf8("menubar"))
         self.menuFile = QtGui.QMenu(self.menubar)
         self.menuFile.setObjectName(_fromUtf8("menuFile"))
