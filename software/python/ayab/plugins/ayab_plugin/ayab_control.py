@@ -284,7 +284,7 @@ class AyabPluginControl(KnittingPlugin):
     self.conf["portname"] = str(serial_port_text)
     # getting file location from textbox
     filename_text = ui.findChild(QtGui.QLineEdit, "filename_lineedit").text()
-    self.conf["filename"] = str(filename_text)
+    self.conf["filename"] = unicode(filename_text)
     logging.debug(self.conf)
     ## Add more config options.
     return self.conf
