@@ -437,27 +437,25 @@ class AyabPluginControl(KnittingPlugin):
                 # 0 1 2 3 4 5 6 7 8 9 .. (lineNumber)
                 # | |  X  | |  X  | |
                 # 0 1 3 2 4 5 7 6 8 9 .. (imageExpanded)
+                # A B B A A B B A A B .. (color)
                 indexToSend = self.__startLine * 2
 
-                # TODO more beautiful algo
+                color = 0  # A
                 if lineNumber % 4 == 1 or lineNumber % 4 == 2:
-                    color = 1
-                else:
-                    color = 0
+                    color = 1  # B
 
-                if (lineNumber - 2) % 4 == 0:
+                # Decide if lineNumber has to be switched or not
+                if lineNumber % 4 == 2:
                     indexToSend += lineNumber + 1
-
-                elif (lineNumber - 2) % 4 == 1:
+                elif lineNumber % 4 == 3:
                     indexToSend += lineNumber - 1
-                    if (imgRow == imgHeight - 1) \
-                            and (indexToSend == lenImgExpanded - 2):
-                        lastLine = 0x01
                 else:
                     indexToSend += lineNumber
-                    if (imgRow == imgHeight - 1) \
-                            and (indexToSend == lenImgExpanded - 1):
-                        lastLine = 0x01
+
+                # Decide whether to send lastLine Flag
+                if (imgRow == imgHeight - 1) \
+                        and (lineNumber % 4 == 1 or lineNumber % 4 == 3):
+                    lastLine = 0x01
 
             # doublebed, multicolor
             elif self.__machineType == 'ribber' \
