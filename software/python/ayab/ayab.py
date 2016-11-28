@@ -122,8 +122,6 @@ class GuiMain(QMainWindow):
 
         # Update label and progress bar
         if total != 0:
-            progress = 100 * float(row)/total
-            self.ui.progressBar.setValue(progress)
             self.ui.notification_label.setText("{0}/{1}".format(row, total))
 
     def update_file_selected_text_field(self, route):
