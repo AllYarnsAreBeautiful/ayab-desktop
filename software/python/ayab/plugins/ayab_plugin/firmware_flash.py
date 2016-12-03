@@ -173,12 +173,14 @@ class FirmwareFlash(QFrame):
 
         if os_name == "Windows":
             exe_route = os.path.join(base_dir, "firmware", ".\\avrdude.exe")
+            exe_route = "\"" + exe_route + "\""
         elif os_name == "Linux":
             # We assume avrdude is available in path
             exe_route = "avrdude"
 
         binary_file = os.path.join(base_dir, "firmware",
                                    controller_name, firmware_name)
+
         serial_port = port
         # List of Arduino controllers and their avrdude names.
         device_dict = {
