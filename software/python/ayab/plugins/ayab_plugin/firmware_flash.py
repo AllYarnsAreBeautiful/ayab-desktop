@@ -4,7 +4,6 @@
 
 from PyQt4 import QtGui
 from PyQt4.QtGui import QFrame
-from PyQt4 import QtCore
 
 import serial
 import serial.tools.list_ports
@@ -13,7 +12,7 @@ import logging
 import os
 import platform
 import subprocess
-from pprint import pprint
+from subprocess import Popen, PIPE, STDOUT
 
 from firmware_flash_ui import Ui_FirmwareFlashFrame
 
@@ -145,16 +144,27 @@ class FirmwareFlash(QFrame):
                                                      )
 
         try:
-            value = subprocess.call(command, shell=True)
-            if value == 0:
+            p = Popen(command,
+                      stdout=PIPE, stderr=STDOUT, shell=True)
+
+            rc = p.poll()
+            while rc != 0:
+                while True:
+                    line = p.stdout.readline()
+                    logging.info
+                    if not line:
+                        break
+                rc = p.poll()
+
+            if rc == 0:
                 logging.info("Flashing Done!")
                 self.display_blocking_pop_up("Flashing Done!")
             else:
                 logging.info("Error on flashing firmware.")
                 self.display_blocking_pop_up("Error on flashing firmware.",
                                              message_type="error")
-        except e:
-            logging.info("Error on flashing firmware.")
+        except Exception as e:
+            logging.info("Error on flashing firmware." + e)
             self.display_blocking_pop_up("Error on flashing firmware.",
                                          message_type="error")
 
