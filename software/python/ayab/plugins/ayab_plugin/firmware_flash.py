@@ -160,38 +160,38 @@ class FirmwareFlash(QFrame):
         logging.info("Error on flashing firmware.")
         self.display_blocking_pop_up("Error on flashing firmware.", message_type="error")
 
-    def generate_command_with_options(self, base_dir, os_name, port, controller_name, firmware_name):
-      exe_file_dict = {
-                        "Windows": os.path.join("firmware", ".\\avrdude.exe"),
-                        "Linux": os.path.join("firmware", "avrdude"), #TODO, detect 64bit OS
-                      }
-      ## If unknown OS we assume avrdude is installed and on the PATH.
-      exe_file = exe_file_dict.get(os_name, "avrdude")
-      exe_route = os.path.join(base_dir, exe_file)
-      conf_file = os.path.join(base_dir, "firmware","avrdude.conf")
+    def generate_command_with_options(self, base_dir, os_name, port,
+                                      controller_name, firmware_name):
 
-      binary_file = os.path.join(base_dir, "firmware", controller_name, firmware_name)
-      serial_port = port
-      # List of Arduino controllers and their avrdude names.
-      device_dict = {
-          "mega2560": "m2560",
-          "uno": "atmega328p",
-      }
-      device = device_dict.get(controller_name)
+        if os_name == "Windows":
+            exe_route = os.path.join(base_dir, "firmware", ".\\avrdude.exe")
+        elif os_name == "Linux":
+            # We assume avrdude is available in path
+            exe_route = "avrdude"
 
-      programmer_dict = {
-          "uno": "arduino",
-          "mega2560": "wiring",
-      }
-      programmer = programmer_dict.get(controller_name, "wiring")
+        binary_file = os.path.join(base_dir, "firmware",
+                                   controller_name, firmware_name)
+        serial_port = port
+        # List of Arduino controllers and their avrdude names.
+        device_dict = {
+            "mega2560": "m2560",
+            "uno": "atmega328p",
+        }
+        device = device_dict.get(controller_name)
 
-      ## avrdude command.
-      ## http://www.ladyada.net/learn/avr/avrdude.html
-      ## http://sharats.me/the-ever-useful-and-neat-subprocess-module.html
-      exec_command = """{0} -v -p {1} -C "{2}" -c {3} -P {4} -b115200 -D -Uflash:w:"{5}":i """.format(
-                     exe_route, device, conf_file, programmer, serial_port, binary_file)
-      logging.debug(exec_command)
-      return exec_command
+        programmer_dict = {
+            "uno": "arduino",
+            "mega2560": "wiring",
+        }
+        programmer = programmer_dict.get(controller_name, "wiring")
+
+        ## avrdude command.
+        ## http://www.ladyada.net/learn/avr/avrdude.html
+        ## http://sharats.me/the-ever-useful-and-neat-subprocess-module.html
+        exec_command = """{0} -v -p {1} -c {2} -P {3} -b115200 -D -Uflash:w:"{4}":i """.format(
+                       exe_route, device, programmer, serial_port, binary_file)
+        logging.debug(exec_command)
+        return exec_command
 
     def load_ports(self):
       ports_list = self.getSerialPorts()
