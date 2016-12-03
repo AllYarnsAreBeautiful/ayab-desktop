@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'ayab/plugins/ayab_plugin/ayab_options.ui'
+# Form implementation generated from reading ui file 'ayab_options.ui'
 #
-# Created: Sat Nov 26 21:25:39 2016
+# Created: Sun Dec  4 00:19:02 2016
 #      by: PyQt4 UI code generator 4.11.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -129,7 +129,9 @@ class Ui_DockWidget(object):
         self.start_needle_color.setGeometry(QtCore.QRect(60, 20, 81, 31))
         self.start_needle_color.setObjectName(_fromUtf8("start_needle_color"))
         self.start_needle_color.addItem(_fromUtf8(""))
+        self.start_needle_color.setItemText(0, _fromUtf8("orange"))
         self.start_needle_color.addItem(_fromUtf8(""))
+        self.start_needle_color.setItemText(1, _fromUtf8("green"))
         self.start_needle_edit = QtGui.QSpinBox(self.gbox_startneedle)
         self.start_needle_edit.setGeometry(QtCore.QRect(10, 20, 51, 31))
         self.start_needle_edit.setPrefix(_fromUtf8(""))
@@ -145,7 +147,9 @@ class Ui_DockWidget(object):
         self.stop_needle_color.setGeometry(QtCore.QRect(60, 20, 81, 31))
         self.stop_needle_color.setObjectName(_fromUtf8("stop_needle_color"))
         self.stop_needle_color.addItem(_fromUtf8(""))
+        self.stop_needle_color.setItemText(0, _fromUtf8("green"))
         self.stop_needle_color.addItem(_fromUtf8(""))
+        self.stop_needle_color.setItemText(1, _fromUtf8("orange"))
         self.stop_needle_edit = QtGui.QSpinBox(self.gbox_stopneedle)
         self.stop_needle_edit.setGeometry(QtCore.QRect(10, 20, 51, 31))
         self.stop_needle_edit.setPrefix(_fromUtf8(""))
@@ -165,8 +169,11 @@ class Ui_DockWidget(object):
         self.machine_type_box.setSizePolicy(sizePolicy)
         self.machine_type_box.setObjectName(_fromUtf8("machine_type_box"))
         self.machine_type_box.addItem(_fromUtf8(""))
+        self.machine_type_box.setItemText(0, _fromUtf8("single"))
         self.machine_type_box.addItem(_fromUtf8(""))
+        self.machine_type_box.setItemText(1, _fromUtf8("ribber"))
         self.machine_type_box.addItem(_fromUtf8(""))
+        self.machine_type_box.setItemText(2, _fromUtf8("circular"))
         self.verticalLayout_3.addWidget(self.machine_type_box)
         self.label_3 = QtGui.QLabel(self.verticalLayoutWidget)
         self.label_3.setObjectName(_fromUtf8("label_3"))
@@ -179,8 +186,11 @@ class Ui_DockWidget(object):
         self.alignment_combo_box.setSizePolicy(sizePolicy)
         self.alignment_combo_box.setObjectName(_fromUtf8("alignment_combo_box"))
         self.alignment_combo_box.addItem(_fromUtf8(""))
+        self.alignment_combo_box.setItemText(0, _fromUtf8("center"))
         self.alignment_combo_box.addItem(_fromUtf8(""))
+        self.alignment_combo_box.setItemText(1, _fromUtf8("left"))
         self.alignment_combo_box.addItem(_fromUtf8(""))
+        self.alignment_combo_box.setItemText(2, _fromUtf8("right"))
         self.verticalLayout_3.addWidget(self.alignment_combo_box)
         self.tabWidget.addTab(self.tab_knit, _fromUtf8(""))
         self.tab_test = QtGui.QWidget()
@@ -239,19 +249,9 @@ class Ui_DockWidget(object):
         self.label_5.setText(_translate("DockWidget", "Start Line", None))
         self.infRepeat_checkbox.setText(_translate("DockWidget", "Infinite Repeat", None))
         self.gbox_startneedle.setTitle(_translate("DockWidget", "Start Needle", None))
-        self.start_needle_color.setItemText(0, _translate("DockWidget", "orange", None))
-        self.start_needle_color.setItemText(1, _translate("DockWidget", "green", None))
         self.gbox_stopneedle.setTitle(_translate("DockWidget", "Stop Needle", None))
-        self.stop_needle_color.setItemText(0, _translate("DockWidget", "green", None))
-        self.stop_needle_color.setItemText(1, _translate("DockWidget", "orange", None))
         self.label_4.setText(_translate("DockWidget", "Machine Type", None))
-        self.machine_type_box.setItemText(0, _translate("DockWidget", "single", None))
-        self.machine_type_box.setItemText(1, _translate("DockWidget", "ribber", None))
-        self.machine_type_box.setItemText(2, _translate("DockWidget", "circular", None))
         self.label_3.setText(_translate("DockWidget", "Alignment", None))
-        self.alignment_combo_box.setItemText(0, _translate("DockWidget", "center", None))
-        self.alignment_combo_box.setItemText(1, _translate("DockWidget", "left", None))
-        self.alignment_combo_box.setItemText(2, _translate("DockWidget", "right", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_knit), _translate("DockWidget", "Knit", None))
         self.label.setText(_translate("DockWidget", "Hall Left", None))
         self.progress_hall_l.setFormat(_translate("DockWidget", "%p%", None))

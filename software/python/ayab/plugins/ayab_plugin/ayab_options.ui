@@ -215,12 +215,12 @@
             </property>
             <item>
              <property name="text">
-              <string>orange</string>
+              <string notr="true">orange</string>
              </property>
             </item>
             <item>
              <property name="text">
-              <string>green</string>
+              <string notr="true">green</string>
              </property>
             </item>
            </widget>
@@ -270,12 +270,12 @@
             </property>
             <item>
              <property name="text">
-              <string>green</string>
+              <string notr="true">green</string>
              </property>
             </item>
             <item>
              <property name="text">
-              <string>orange</string>
+              <string notr="true">orange</string>
              </property>
             </item>
            </widget>
@@ -320,17 +320,17 @@
            </property>
            <item>
             <property name="text">
-             <string>single</string>
+             <string notr="true">single</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>ribber</string>
+             <string notr="true">ribber</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>circular</string>
+             <string notr="true">circular</string>
             </property>
            </item>
           </widget>
@@ -352,17 +352,17 @@
            </property>
            <item>
             <property name="text">
-             <string>center</string>
+             <string notr="true">center</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>left</string>
+             <string notr="true">left</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>right</string>
+             <string notr="true">right</string>
             </property>
            </item>
           </widget>
