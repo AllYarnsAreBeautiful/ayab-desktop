@@ -227,7 +227,7 @@ class GuiMain(QMainWindow):
         '''Updates the current scene '''
         width, height = self.pil_image.size
 
-        data = self.pil_image.convert("RGBA").tostring("raw", "RGBA")
+        data = self.pil_image.convert("RGBA").tobytes("raw", "RGBA")
         qim = QtGui.QImage(data,
                            self.pil_image.size[0],
                            self.pil_image.size[1],
