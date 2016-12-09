@@ -11,7 +11,7 @@ import json
 import logging
 import os
 import platform
-import subprocess
+import pprint
 from subprocess import Popen, PIPE, STDOUT
 
 from firmware_flash_ui import Ui_FirmwareFlashFrame
@@ -31,10 +31,10 @@ class FirmwareFlash(QFrame):
         self.load_ports()
         self.load_json()
 
-        self.ui.hardware_list.itemClicked[QtGui.QListWidgetItem].connect(self.hardware_item_activated)
         self.ui.controller_list.itemClicked[QtGui.QListWidgetItem].connect(self.controller_item_activated)
-        self.ui.firmware_list.itemClicked[QtGui.QListWidgetItem].connect(self.firmware_item_activated)
         self.ui.flash_firmware.clicked.connect(self.execute_flash_command)
+
+        self.ui.flash_firmware.setEnabled(False)
 
     def display_blocking_pop_up(self, message="", message_type="info"):
         logging.debug("message emited: '{}'".format(message))
@@ -56,7 +56,7 @@ class FirmwareFlash(QFrame):
 
     def load_json(self):
         self.json_object = self.parse_json("")
-        self.add_items_from_json_object(self.json_object)
+        self.load_controllers(self.json_object)
 
     def parse_json(self, json_string):
         path = (os.path.dirname(os.path.realpath(__file__))
@@ -65,83 +65,39 @@ class FirmwareFlash(QFrame):
             data = json.load(data_file)
         return data
 
-    def add_items_from_json_object(self, json_object):
-        repo = json_object
-        for hardware_device in repo:
-            description = repo.get(hardware_device, [])['description']
-            self.add_hardware_to_list(description)
-
-    def hardware_item_activated(self, hardware_qitem):
-        '''Signal on hardware_list activated. Triggers loading of controllers.'''
-        for hardware_device in self.json_object:
-            if self.json_object.get(hardware_device, [])['description'] == hardware_qitem.text():
-                self.chosen_hardware_device = hardware_device
-                self.load_controllers()
-                self.ui.flash_firmware.setEnabled(False)
-                self.clean_firmware_list()
-
     def controller_item_activated(self, control_qitem):
-        '''Signal on controller_list activated. Triggers loading of firmwares.'''
-        self.load_firmware(control_qitem.text())
-        self.ui.flash_firmware.setEnabled(False)
-
-    def firmware_item_activated(self, firmware_qitem):
-        '''Signal on firmware_list activated.'''
+        '''Signal on controller_list activated. Enable Flash button.'''
         self.ui.flash_firmware.setEnabled(True)
 
-    def load_controllers(self):
+    def load_controllers(self, json_object):
         self.clean_controller_list()
-        repo = self.json_object
-        for controller in repo.get(self.chosen_hardware_device, []).get("controller", []):
-            self.add_controller_to_list(controller)
-
-    def load_firmware(self, controller_qstring):
-        self.clean_firmware_list()
-        controller_key = unicode(controller_qstring)
-        repo = self.json_object
-        for firmware in repo[self.chosen_hardware_device]['controller'][controller_key]:
-            self.add_firmware_dict_to_list(firmware)
-
-    def clean_hardware_list(self):
-        self.__clean_QListWidget(self.ui.hardware_list)
+        for controller in json_object['controller']:
+            self.add_controller_to_list(controller['device'])
 
     def clean_controller_list(self):
         self.__clean_QListWidget(self.ui.controller_list)
 
-    def clean_firmware_list(self):
-        self.__clean_QListWidget(self.ui.firmware_list)
-
     def __clean_QListWidget(self, qlistw):
         qlistw.clear()
 
-    def add_hardware_to_list(self, hardware_device):
-        self.ui.hardware_list.addItem(hardware_device)
-
     def add_controller_to_list(self, controller):
         self.ui.controller_list.addItem(controller)
-
-    def add_firmware_dict_to_list(self, firmware):
-        ## Could add more info to display, such as date.
-        version = firmware.get("version", "unspecified version")
-        self.ui.firmware_list.addItem(version)
 
     def execute_flash_command(self):
         os_name = platform.system()
         base_dir = os.path.dirname(__file__)
         port = self.ui.port_combo_box.currentText()
-        controller_name = unicode(self.ui.controller_list.currentItem().text())
-        firmware_key = unicode(self.ui.firmware_list.currentItem().text())
-        firmware_name = "firmware.hex"
-        for firmware in self.json_object[self.chosen_hardware_device]['controller'][controller_name]:
-            if firmware.get("version") == firmware_key:
-                firmware_name = firmware.get("file")
+        controller_id = self.ui.controller_list.currentRow()
+        controller_name = unicode(self.json_object['controller'][controller_id]['device'])
+        logging.warning(controller_id)
+        logging.warning(controller_name)
+        firmware_name = self.json_object['controller'][controller_id]['file']
 
         command = self.generate_command_with_options(base_dir,
                                                      os_name,
                                                      port,
                                                      controller_name,
-                                                     firmware_name,
-                                                     )
+                                                     firmware_name)
 
         try:
             p = Popen(command,
@@ -168,8 +124,12 @@ class FirmwareFlash(QFrame):
             self.display_blocking_pop_up("Error on flashing firmware.",
                                          message_type="error")
 
-    def generate_command_with_options(self, base_dir, os_name, port,
-                                      controller_name, firmware_name):
+    def generate_command_with_options(self, 
+                                      base_dir,
+                                      os_name,
+                                      port,
+                                      controller_name,
+                                      firmware_name):
 
         if os_name == "Windows":
             exe_route = os.path.join(base_dir, "firmware", ".\\avrdude.exe")
