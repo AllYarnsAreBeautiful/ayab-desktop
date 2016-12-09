@@ -221,7 +221,8 @@ class GuiMain(QMainWindow):
         self.ui.menuImage_Actions.setEnabled(True)
         # Tell loaded plugin elements about changed parameters
         width, height = self.pil_image.size
-        self.enabled_plugin.plugin_object.slotSetStartLineMaximum(height - 1)
+        self.enabled_plugin.plugin_object.slotSetImageDimensions(width,
+                                                                 height)
 
     def refresh_scene(self):
         '''Updates the current scene '''
@@ -281,7 +282,7 @@ class GuiMain(QMainWindow):
         # Draw limiting lines (start/stop needle)
         limit_bar_width = 0.5
         QtGui.QGraphicsRectItem(
-            self.start_needle - 100,
+            self.start_needle - 101,
             -bar_height,
             limit_bar_width,
             pixmap.height() + 2*bar_height,
