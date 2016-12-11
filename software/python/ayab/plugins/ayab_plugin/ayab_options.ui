@@ -83,6 +83,32 @@
      </widget>
     </item>
     <item>
+     <widget class="QLabel" name="label_machine_type">
+      <property name="text">
+       <string>Machine Type</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QComboBox" name="machineType_combo_box">
+      <item>
+       <property name="text">
+        <string>KH-910, KH-950(i)</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>KH-900, KH-930, KH-965(i), CK-35</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Diag Mode</string>
+       </property>
+      </item>
+     </widget>
+    </item>
+    <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="sizePolicy">
        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -306,12 +332,12 @@
          <item>
           <widget class="QLabel" name="label_4">
            <property name="text">
-            <string>Machine Type</string>
+            <string>Bed Type</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QComboBox" name="machine_type_box">
+          <widget class="QComboBox" name="bed_type_box">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
              <horstretch>0</horstretch>

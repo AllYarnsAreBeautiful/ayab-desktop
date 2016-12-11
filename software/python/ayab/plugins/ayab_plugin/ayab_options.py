@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'ayab_options.ui'
+# Form implementation generated from reading ui file 'ayab/plugins/ayab_plugin/ayab_options.ui'
 #
-# Created: Sun Dec  4 00:19:02 2016
+# Created: Sun Dec 11 13:42:19 2016
 #      by: PyQt4 UI code generator 4.11.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -64,6 +64,15 @@ class Ui_DockWidget(object):
         self.refresh_ports_button.setObjectName(_fromUtf8("refresh_ports_button"))
         self.horizontalLayout_3.addWidget(self.refresh_ports_button)
         self.verticalLayout.addWidget(self.groupBox)
+        self.label_machine_type = QtGui.QLabel(self.ayab_config)
+        self.label_machine_type.setObjectName(_fromUtf8("label_machine_type"))
+        self.verticalLayout.addWidget(self.label_machine_type)
+        self.machineType_combo_box = QtGui.QComboBox(self.ayab_config)
+        self.machineType_combo_box.setObjectName(_fromUtf8("machineType_combo_box"))
+        self.machineType_combo_box.addItem(_fromUtf8(""))
+        self.machineType_combo_box.addItem(_fromUtf8(""))
+        self.machineType_combo_box.addItem(_fromUtf8(""))
+        self.verticalLayout.addWidget(self.machineType_combo_box)
         self.tabWidget = QtGui.QTabWidget(self.ayab_config)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.MinimumExpanding, QtGui.QSizePolicy.MinimumExpanding)
         sizePolicy.setHorizontalStretch(0)
@@ -161,20 +170,20 @@ class Ui_DockWidget(object):
         self.label_4 = QtGui.QLabel(self.verticalLayoutWidget)
         self.label_4.setObjectName(_fromUtf8("label_4"))
         self.verticalLayout_3.addWidget(self.label_4)
-        self.machine_type_box = QtGui.QComboBox(self.verticalLayoutWidget)
+        self.bed_type_box = QtGui.QComboBox(self.verticalLayoutWidget)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.machine_type_box.sizePolicy().hasHeightForWidth())
-        self.machine_type_box.setSizePolicy(sizePolicy)
-        self.machine_type_box.setObjectName(_fromUtf8("machine_type_box"))
-        self.machine_type_box.addItem(_fromUtf8(""))
-        self.machine_type_box.setItemText(0, _fromUtf8("single"))
-        self.machine_type_box.addItem(_fromUtf8(""))
-        self.machine_type_box.setItemText(1, _fromUtf8("ribber"))
-        self.machine_type_box.addItem(_fromUtf8(""))
-        self.machine_type_box.setItemText(2, _fromUtf8("circular"))
-        self.verticalLayout_3.addWidget(self.machine_type_box)
+        sizePolicy.setHeightForWidth(self.bed_type_box.sizePolicy().hasHeightForWidth())
+        self.bed_type_box.setSizePolicy(sizePolicy)
+        self.bed_type_box.setObjectName(_fromUtf8("bed_type_box"))
+        self.bed_type_box.addItem(_fromUtf8(""))
+        self.bed_type_box.setItemText(0, _fromUtf8("single"))
+        self.bed_type_box.addItem(_fromUtf8(""))
+        self.bed_type_box.setItemText(1, _fromUtf8("ribber"))
+        self.bed_type_box.addItem(_fromUtf8(""))
+        self.bed_type_box.setItemText(2, _fromUtf8("circular"))
+        self.verticalLayout_3.addWidget(self.bed_type_box)
         self.label_3 = QtGui.QLabel(self.verticalLayoutWidget)
         self.label_3.setObjectName(_fromUtf8("label_3"))
         self.verticalLayout_3.addWidget(self.label_3)
@@ -245,12 +254,16 @@ class Ui_DockWidget(object):
     def retranslateUi(self, DockWidget):
         self.groupBox.setTitle(_translate("DockWidget", "Port Selection", None))
         self.refresh_ports_button.setText(_translate("DockWidget", "Refresh", None))
+        self.label_machine_type.setText(_translate("DockWidget", "Machine Type", None))
+        self.machineType_combo_box.setItemText(0, _translate("DockWidget", "KH-910, KH-950(i)", None))
+        self.machineType_combo_box.setItemText(1, _translate("DockWidget", "KH-900, KH-930, KH-965(i), CK-35", None))
+        self.machineType_combo_box.setItemText(2, _translate("DockWidget", "Diag Mode", None))
         self.label_6.setText(_translate("DockWidget", "Colors", None))
         self.label_5.setText(_translate("DockWidget", "Start Line", None))
         self.infRepeat_checkbox.setText(_translate("DockWidget", "Infinite Repeat", None))
         self.gbox_startneedle.setTitle(_translate("DockWidget", "Start Needle", None))
         self.gbox_stopneedle.setTitle(_translate("DockWidget", "Stop Needle", None))
-        self.label_4.setText(_translate("DockWidget", "Machine Type", None))
+        self.label_4.setText(_translate("DockWidget", "Bed Type", None))
         self.label_3.setText(_translate("DockWidget", "Alignment", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_knit), _translate("DockWidget", "Knit", None))
         self.label.setText(_translate("DockWidget", "Hall Left", None))

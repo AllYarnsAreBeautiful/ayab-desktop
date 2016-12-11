@@ -248,11 +248,21 @@ class AyabPluginControl(KnittingPlugin):
     """
 
     self.conf = {}
-    tab_widget = ui.findChild(QtGui.QTabWidget, "tabWidget")
-    if tab_widget.currentIndex() == 1:
-        self.conf["testmode"] = True
+
+    machineType = ui.findChild(QtGui.QComboBox,
+                               "machineType_combo_box").currentIndex()
+    # 0 - KH-910
+    # 1 - KH-930
+    # 2 - DiagMode (Testmode)
+    # Translating Combobox Idx to Enum from firmware/settings.h
+    if machineType == 0:
+        self.conf["machine_type"] = 1
+    elif machineType == 1:
+        self.conf["machine_type"] = 2
+    elif machineType == 2:
+        self.conf["machine_type"] = 0xFF
     else:
-        self.conf["testmode"] = False
+        logging.error("Trying to configure unknown machine type " + machineType)
 
     color_line_text = ui.findChild(QtGui.QSpinBox, "color_edit").value()
     self.conf["num_colors"] = int(color_line_text)
@@ -280,8 +290,8 @@ class AyabPluginControl(KnittingPlugin):
     self.conf["inf_repeat"] = \
         int(ui.findChild(QtGui.QCheckBox, "infRepeat_checkbox").isChecked())
 
-    machine_type_text = ui.findChild(QtGui.QComboBox, "machine_type_box").currentText()
-    self.conf["machine_type"] = str(machine_type_text)
+    bed_type_text = ui.findChild(QtGui.QComboBox, "bed_type_box").currentText()
+    self.conf["bed_type"] = str(bed_type_text)
 
     serial_port_text = ui.findChild(QtGui.QComboBox, "serial_port_dropdown").currentText()
     self.conf["portname"] = str(serial_port_text)
@@ -410,7 +420,7 @@ class AyabPluginControl(KnittingPlugin):
             #########################
             # decide which line to send according to machine type and amount of colors
             # singlebed, 2 color
-            if self.__machineType == 'single' \
+            if self.__bedType == 'single' \
                     and self.__numColors == 2:
 
                 # color is always 0 in singlebed,
@@ -430,7 +440,7 @@ class AyabPluginControl(KnittingPlugin):
                     lastLine = 0x01
 
             # doublebed, 2 color
-            elif self.__machineType == 'ribber' \
+            elif self.__bedType == 'ribber' \
                     and self.__numColors == 2:
 
                 # calculate imgRow
@@ -461,7 +471,7 @@ class AyabPluginControl(KnittingPlugin):
                     lastLine = 0x01
 
             # doublebed, multicolor
-            elif self.__machineType == 'ribber' \
+            elif self.__bedType == 'ribber' \
                     and self.__numColors > 2:
 
                 # calculate imgRow
@@ -480,7 +490,7 @@ class AyabPluginControl(KnittingPlugin):
                         and (indexToSend == lenImgExpanded - 1):
                     lastLine = 0x01
 
-            elif self.__machineType == 'circular' \
+            elif self.__bedType == 'circular' \
                     and self.__numColors == 2:
 
                 imgRow = int(lineNumber / 4) + self.__startLine
@@ -513,7 +523,7 @@ class AyabPluginControl(KnittingPlugin):
 
             # set the bitarray
             if color == 0 \
-                    and self.__machineType == 'ribber':
+                    and self.__bedType == 'ribber':
                 for col in range(0, 200):
                     if col < imgStartNeedle \
                             or col > imgStopNeedle:
@@ -567,8 +577,9 @@ class AyabPluginControl(KnittingPlugin):
       self.__image = pImage
       self.__startLine = pImage.startLine()
 
-      self.__numColors = pOptions["num_colors"]
       self.__machineType = pOptions["machine_type"]
+      self.__numColors = pOptions["num_colors"]
+      self.__bedType = pOptions["bed_type"]
       self.__infRepeat = pOptions["inf_repeat"]
 
       API_VERSION = self.__API_VERSION
@@ -590,7 +601,8 @@ class AyabPluginControl(KnittingPlugin):
 
               if rcvMsg == 'cnfInfo':
                   if rcvParam == API_VERSION:
-                      if pOptions["testmode"]:
+                      if self.__machineType == 0xFF:
+                        # In Diag Mode we do not need to init the machine
                         curState = 's_start'
                       else:
                         curState = 's_waitForInit'
@@ -614,19 +626,9 @@ class AyabPluginControl(KnittingPlugin):
 
           if curState == 's_start':
               if oldState != curState:
-                if pOptions["testmode"]:
-                    self.__ayabCom.req_test()
-                else:
-                    self.__ayabCom.req_start(self.__image.knitStartNeedle(),
-                                             self.__image.knitStopNeedle())
-
-              if rcvMsg == 'cnfTest':
-                if rcvParam == 1:
-                    self.__updateNotification("Testmode")
-                else:
-                    self.__updateNotification()
-                    logging.error("Starting Testmode failed")
-                    return
+                self.__ayabCom.req_start(self.__machineType,
+                                         self.__image.knitStartNeedle(),
+                                         self.__image.knitStopNeedle())
 
               if rcvMsg == 'cnfStart':
                   if rcvParam == 1:
