@@ -23,12 +23,11 @@ import sys
 import os
 import logging
 
-from PyQt4 import QtGui, QtCore
-from PyQt4.QtGui import QMainWindow
-from PyQt4.QtCore import QThread
+from PyQt5 import QtWidgets, QtGui, QtCore
+from PyQt5.QtWidgets import QMainWindow
+from PyQt5.QtCore import QThread, pyqtSignal, pyqtSlot
 
 from yapsy import PluginManager
-from PIL import ImageQt
 from PIL import Image
 from fysom import FysomError
 
@@ -49,6 +48,13 @@ class GuiMain(QMainWindow):
 
     GuiMain inherits from QMainWindow and instanciates a window with the form components form ayab_gui.UiForm.
     """
+
+    signalUpdateProgress = pyqtSignal(int, int)
+    signalUpdateNotification = pyqtSignal('QString')
+    signalDisplayPopUp = pyqtSignal('QString', 'QString')
+    signalUpdateNeedles = pyqtSignal(int, int)
+    signalUpdateAlignment = pyqtSignal('QString')
+    signalDisplayBlockingPopUp = pyqtSignal('QString', 'QString')
 
     def __init__(self):
         super(GuiMain, self).__init__(None)
@@ -159,7 +165,7 @@ class GuiMain(QMainWindow):
             self.refresh_scene()
 
     def start_knitting_process(self):
-        # Disable everythin which should not be touched
+        # Disable everything which should not be touched
         # during knitting
         self.ui.menuTools.setEnabled(False)
         self.ui.widget_imgload.setEnabled(False)
@@ -190,16 +196,17 @@ class GuiMain(QMainWindow):
         self.ui.knit_button.clicked.connect(self.start_knitting_process)
         self.ui.cancel_button.clicked.connect(self.cancel_knitting_process)
         self.ui.actionLoad_AYAB_Firmware.triggered.connect(self.generate_firmware_ui)
-        self.ui.image_pattern_view.setDragMode(QtGui.QGraphicsView.ScrollHandDrag)
+        self.ui.image_pattern_view.setDragMode(QtWidgets.QGraphicsView.ScrollHandDrag)
         # Connecting Signals.
-        self.connect(self, QtCore.SIGNAL("updateProgress(int,int)"), self.updateProgress)
-        self.connect(self, QtCore.SIGNAL("signalUpdateNotification(QString)"), self.slotUpdateNotification)
-        self.connect(self, QtCore.SIGNAL("display_pop_up_signal(QString, QString)"), self.display_blocking_pop_up)
-        self.connect(self, QtCore.SIGNAL("signalUpdateNeedles(int,int)"), self.slotUpdateNeedles)
-        self.connect(self, QtCore.SIGNAL("signalUpdateAlignment(QString)"), self.slotUpdateAlignment)
+        self.signalUpdateProgress.connect(self.updateProgress)
+        self.signalUpdateNotification.connect(self.slotUpdateNotification)
+        self.signalDisplayPopUp.connect(self.display_blocking_pop_up)
+        self.signalUpdateNeedles.connect(self.slotUpdateNeedles)
+        self.signalUpdateAlignment.connect(self.slotUpdateAlignment)
+
         # This blocks the other thread until signal is done
-        self.connect(self, QtCore.SIGNAL("display_blocking_pop_up_signal(QString, QString)"), self.display_blocking_pop_up, QtCore.Qt.BlockingQueuedConnection)
-        self.connect(self, QtCore.SIGNAL("display_blocking_pop_up_signal(QString)"), self.display_blocking_pop_up, QtCore.Qt.BlockingQueuedConnection)
+        self.signalDisplayBlockingPopUp.connect(self.display_blocking_pop_up)
+
         self.ui.actionQuit.triggered.connect(QtCore.QCoreApplication.instance().quit)
         self.ui.actionAbout.triggered.connect(self.open_about_ui)
         self.ui.actionMirror.triggered.connect(self.mirror_image)
@@ -235,14 +242,11 @@ class GuiMain(QMainWindow):
 
         self.set_dimensions_on_gui(pixmap.width(), pixmap.height())
 
-        qscene = QtGui.QGraphicsScene()
+        qscene = QtWidgets.QGraphicsScene()
 
         # TODO move to generic configuration
         machine_width = 200
-        canvas_width  = machine_width
-        canvas_height = 200.0
-
-        bar_height    = 5.0
+        bar_height = 5.0
 
         # add pattern and move accordingly to alignment
         pattern = qscene.addPixmap(pixmap)
@@ -262,43 +266,41 @@ class GuiMain(QMainWindow):
             logging.warning("invalid alignment")
 
         # Draw "machine"
-        rect_orange = QtGui.QGraphicsRectItem(
+        rect_orange = QtWidgets.QGraphicsRectItem(
             -(machine_width/2.0),
             -bar_height,
             (machine_width/2.0),
-            bar_height,
-            None, qscene)
+            bar_height)
         rect_orange.setBrush(QtGui.QBrush(QtGui.QColor("orange")))
-        rect_green = QtGui.QGraphicsRectItem(
+        rect_green = QtWidgets.QGraphicsRectItem(
             0.0,
             -bar_height,
             (machine_width/2.0),
-            bar_height,
-            None, qscene)
+            bar_height)
         rect_green.setBrush(QtGui.QBrush(QtGui.QColor("green")))
+
+        qscene.addItem(rect_orange)
+        qscene.addItem(rect_green)
 
         # Draw limiting lines (start/stop needle)
         limit_bar_width = 0.5
-        QtGui.QGraphicsRectItem(
-            self.start_needle - 100,
-            -bar_height,
-            limit_bar_width,
-            pixmap.height() + 2*bar_height,
-            None, qscene)
-        QtGui.QGraphicsRectItem(
-            self.stop_needle - 100,
-            -bar_height,
-            limit_bar_width,
-            pixmap.height() + 2*bar_height,
-            None, qscene)
+        qscene.addItem(
+            QtWidgets.QGraphicsRectItem(self.start_needle - 100,
+                                        -bar_height,
+                                        limit_bar_width,
+                                        pixmap.height() + 2*bar_height))
+        qscene.addItem(
+            QtWidgets.QGraphicsRectItem(self.stop_needle - 100,
+                                        -bar_height,
+                                        limit_bar_width,
+                                        pixmap.height() + 2*bar_height))
 
         # Draw knitting progress
-        QtGui.QGraphicsRectItem(
-            -(machine_width/2.0),
-            pixmap.height() - self.var_progress,
-            machine_width,
-            limit_bar_width,
-            None, qscene)
+        qscene.addItem(
+            QtWidgets.QGraphicsRectItem(-(machine_width/2.0),
+                                        pixmap.height() - self.var_progress,
+                                        machine_width,
+                                        limit_bar_width))
 
         qv = self.ui.image_pattern_view
         qv.resetTransform()
@@ -330,13 +332,13 @@ class GuiMain(QMainWindow):
         self.enabled_plugin.plugin_object.configure(self)
 
     def file_select_dialog(self):
-        file_selected_route = QtGui.QFileDialog.getOpenFileName(self)
+        file_selected_route, _ = QtWidgets.QFileDialog.getOpenFileName(self)
         self.update_file_selected_text_field(file_selected_route)
         self.load_image_from_string(str(file_selected_route))
 
     def generate_firmware_ui(self):
-      self.__flash_ui = FirmwareFlash(self)
-      self.__flash_ui.show()
+        self.__flash_ui = FirmwareFlash(self)
+        self.__flash_ui.show()
 
     def open_about_ui(self):
         self.__AboutForm = QtGui.QFrame()
@@ -564,14 +566,14 @@ def get_route():
 
 
 def run():
-  translator = QtCore.QTranslator()
-  ## Loading ayab_gui main translator.
-  translator.load(QtCore.QLocale.system(), "ayab_gui", ".", os.path.join(get_route(), "translations"), ".qm")
-  app = QtGui.QApplication(sys.argv)
-  app.installTranslator(translator)
-  window = GuiMain()
-  window.show()
-  sys.exit(app.exec_())
+    translator = QtCore.QTranslator()
+    ## Loading ayab_gui main translator.
+    translator.load(QtCore.QLocale.system(), "ayab_gui", ".", os.path.join(get_route(), "translations"), ".qm")
+    app = QtWidgets.QApplication(sys.argv)
+    app.installTranslator(translator)
+    window = GuiMain()
+    window.show()
+    sys.exit(app.exec_())
 
 if __name__ == '__main__':
-  run()
+    run()

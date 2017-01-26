@@ -53,7 +53,9 @@ Move to the software/python/ folder and install the required dependencies.
 
 #### Development Dependencies for Linux
 
-pyqt4-dev-tools 
+pyqt5
+python-pyqt5
+qttools5-dev-tools
 
 #### Development Dependencies for Windows
 
@@ -61,7 +63,7 @@ Download and install Python 2.7.x from
     https://www.python.org/downloads/windows/
 Download and install pip from
     https://pip.pypa.io/en/latest/installing.html
-Download and install PyQt4 from
+Download and install PyQt5 from
     http://www.riverbankcomputing.co.uk/software/pyqt/download
 
 ## Release Notes

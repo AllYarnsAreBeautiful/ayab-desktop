@@ -2,9 +2,8 @@
 # This file is part of AYAB.
 
 
-from PyQt4 import QtGui
-from PyQt4.QtGui import QFrame
-from PyQt4 import QtCore
+from PyQt5 import QtGui, QtWidgets
+from PyQt5.QtWidgets import QFrame
 
 import serial
 import serial.tools.list_ports
@@ -13,7 +12,6 @@ import logging
 import os
 import platform
 import subprocess
-from pprint import pprint
 
 from firmware_flash_ui import Ui_FirmwareFlashFrame
 
@@ -32,9 +30,9 @@ class FirmwareFlash(QFrame):
       self.load_ports()
       self.load_json()
 
-      self.ui.hardware_list.itemClicked[QtGui.QListWidgetItem].connect(self.hardware_item_activated)
-      self.ui.controller_list.itemClicked[QtGui.QListWidgetItem].connect(self.controller_item_activated)
-      self.ui.firmware_list.itemClicked[QtGui.QListWidgetItem].connect(self.firmware_item_activated)
+      self.ui.hardware_list.itemClicked[QtWidgets.QListWidgetItem].connect(self.hardware_item_activated)
+      self.ui.controller_list.itemClicked[QtWidgets.QListWidgetItem].connect(self.controller_item_activated)
+      self.ui.firmware_list.itemClicked[QtWidgets.QListWidgetItem].connect(self.firmware_item_activated)
       self.ui.flash_firmware.clicked.connect(self.execute_flash_command)
 
     def display_blocking_pop_up(self, message="", message_type="info"):
