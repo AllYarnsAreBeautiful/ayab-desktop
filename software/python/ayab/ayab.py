@@ -550,9 +550,6 @@ class GenericThread(QThread):
             self.function(*self.args, **self.kwargs)
         except FysomError as fe:
             logging.error(fe)
-            parent = self.kwargs["parent_window"]
-            parent.emit(QtCore.SIGNAL('display_blocking_pop_up_signal(QString, QString)'), QtGui.QApplication.translate("Form",
-                        "Error on plugin action, be sure to configure before starting Knitting.", None), "error")
         return
 
 
