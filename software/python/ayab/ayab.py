@@ -312,20 +312,22 @@ class GuiMain(QMainWindow):
         self.ui.dimensions_label.setText(text)
 
     def display_blocking_pop_up(self, message="", message_type="info"):
-        logging.debug("message emited: '{}'".format(message))
+        logging.debug("MessageBox {}: '{}'".format(message_type, message))
         box_function = {
-            "info": QtWidgets.QMessageBox.information,
-            "warning": QtWidgets.QMessageBox.warning,
             "error": QtWidgets.QMessageBox.critical,
+            "info": QtWidgets.QMessageBox.information,
+            "question": QtWidgets.QMessageBox.question,
+            "warning": QtWidgets.QMessageBox.warning
         }
-        message_box_function = box_function.get(message_type, QtWidgets.QMessageBox.warning)
+        message_box_function = box_function.get(message_type)
+
         ret = message_box_function(
             self,
             "AYAB",
             message,
-            QtWidgets.QMessageBox.AcceptRole,
-            QtWidgets.QMessageBox.AcceptRole)
-        if ret == QtWidgets.QMessageBox.AcceptRole:
+            QtWidgets.QMessageBox.Ok,
+            QtWidgets.QMessageBox.Ok)
+        if ret == QtWidgets.QMessageBox.Ok:
             return True
 
     def conf_button_function(self):
