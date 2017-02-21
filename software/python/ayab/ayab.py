@@ -79,20 +79,20 @@ class GuiMain(QMainWindow):
         logging.getLogger('yapsy').setLevel(logging.WARNING)
 
         if is_reloading:
-          logging.info("Deactivating All Plugins")
-          for pluginInfo in self.pm.getAllPlugins():
-            self.pm.deactivatePluginByName(pluginInfo.name)
+            logging.info("Deactivating All Plugins")
+            for pluginInfo in self.pm.getAllPlugins():
+                self.pm.deactivatePluginByName(pluginInfo.name)
         route = get_route()
         self.pm = PluginManager.PluginManager(directories_list=[os.path.join(route, "plugins")],)
 
         self.pm.collectPlugins()
         for pluginInfo in self.pm.getAllPlugins():
-          ## This stops the plugins marked as Disabled from being activated.
-          if (not pluginInfo.details.has_option("Core", "Disabled")):
-            plugin_name = pluginInfo.name
-            self.pm.activatePluginByName(plugin_name)
-            self.add_plugin_name_on_module_dropdown(plugin_name)
-            logging.info("Plugin {0} activated".format(plugin_name))
+            ## This stops the plugins marked as Disabled from being activated.
+            if (not pluginInfo.details.has_option("Core", "Disabled")):
+                plugin_name = pluginInfo.name
+                self.pm.activatePluginByName(plugin_name)
+                self.add_plugin_name_on_module_dropdown(plugin_name)
+                logging.info("Plugin {0} activated".format(plugin_name))
         ## Setting AYAB as the default value
         ## TODO: better way of setting ayab as default plugin.
         self.set_enabled_plugin("AYAB")
@@ -103,10 +103,10 @@ class GuiMain(QMainWindow):
     def set_enabled_plugin(self, plugin_name=None):
         """Enables plugin, sets up gui and returns the plugin_object from the plugin selected on module_dropdown."""
         try:
-          if self.enabled_plugin:
-            self.enabled_plugin.plugin_object.cleanup_ui(self)
+            if self.enabled_plugin:
+                self.enabled_plugin.plugin_object.cleanup_ui(self)
         except:
-          pass
+            pass
 
         if not plugin_name:
             plugin_name = self.ui.module_dropdown.currentText()
@@ -369,10 +369,10 @@ class GuiMain(QMainWindow):
         self.apply_image_transform("rotate", -90.0)
 
     def smart_resize(self):
-      '''Executes the smart resize process including dialog .'''
-      dialog_result = self.__launch_get_start_smart_resize_dialog_result(self)
-      if dialog_result:
-        self.apply_image_transform("smart_resize", dialog_result)
+        '''Executes the smart resize process including dialog .'''
+        dialog_result = self.__launch_get_start_smart_resize_dialog_result(self)
+        if dialog_result:
+            self.apply_image_transform("smart_resize", dialog_result)
 
     def apply_image_transform(self, transform_type, *args):
         '''Executes an image transform specified by key and args.
@@ -393,9 +393,9 @@ class GuiMain(QMainWindow):
             return
         # Executes the transform function
         try:
-          image = transform(image, args)
+            image = transform(image, args)
         except:
-          logging.error("Error on executing transform")
+            logging.error("Error on executing transform")
 
         # Disable Knit Controls
         self.ui.widget_knitcontrol.setEnabled(False)
@@ -456,59 +456,59 @@ class GuiMain(QMainWindow):
         dialog.ui.setupUi(dialog)
 
         def calculate_ratio_value(height, width):
-          '''Calculates the ratio value with given height and width.'''
-          try:
-            return height / width
-          except:
-            return 0.0
+            '''Calculates the ratio value with given height and width.'''
+            try:
+                return height / width
+            except:
+                return 0.0
 
         def set_ratio_list(ratio):
-          '''Sets the dialog ratio list to a list of aproximations of rational ratios that match it.'''
-          dialog.ui.ratios_list.clear()
-          self.ratio_list = knit_aware_resize.get_rational_ratios(ratio)
-          for ratio in self.ratio_list:
-            ratio_string = "{0:.0f} - {1:.0f}".format(ratio[0], ratio[1])
-            dialog.ui.ratios_list.addItem(ratio_string)
+            '''Sets the dialog ratio list to a list of aproximations of rational ratios that match it.'''
+            dialog.ui.ratios_list.clear()
+            self.ratio_list = knit_aware_resize.get_rational_ratios(ratio)
+            for ratio in self.ratio_list:
+                ratio_string = "{0:.0f} - {1:.0f}".format(ratio[0], ratio[1])
+                dialog.ui.ratios_list.addItem(ratio_string)
 
         def set_ratio_value(ratio):
-          dialog.ui.ratio_label.setText(u"{0:.2f}".format(ratio))
-          set_ratio_list(ratio)
+            dialog.ui.ratio_label.setText(u"{0:.2f}".format(ratio))
+            set_ratio_list(ratio)
 
         def recalculate_ratio():
-          ratio = calculate_ratio_value(self.physical_height, self.physical_width)
-          set_ratio_value(ratio)
-          logging.debug("Set Ratio to {}".format(ratio))
+            ratio = calculate_ratio_value(self.physical_height, self.physical_width)
+            set_ratio_value(ratio)
+            logging.debug("Set Ratio to {}".format(ratio))
 
         def set_height_ratio(height_string):
-          self.physical_height = float(height_string)
-          recalculate_ratio()
+            self.physical_height = float(height_string)
+            recalculate_ratio()
 
         def set_width_ratio(width_string):
-          self.physical_width = float(width_string)
-          recalculate_ratio()
+            self.physical_width = float(width_string)
+            recalculate_ratio()
 
         def get_ratios_list_item_value(selected_value):
-          '''Gets the value of the tuple corresponding to the selected ratio list.'''
-          try:
-            self.ratio_tuple = self.ratio_list[selected_value]
-            recalculate_real_size(self.ratio_tuple)
-            logging.debug(self.ratio_tuple)
-          except IndexError:
-            pass
+            '''Gets the value of the tuple corresponding to the selected ratio list.'''
+            try:
+                self.ratio_tuple = self.ratio_list[selected_value]
+                recalculate_real_size(self.ratio_tuple)
+                logging.debug(self.ratio_tuple)
+            except IndexError:
+                pass
 
         def recalculate_real_size(ratio_tuple):
-          '''Updates the calculations on the Resize dialog.'''
-          try:
-            h, w = self.pil_image.size
-            h_ratio, w_ratio = ratio_tuple
-            horizontal_size_text, vertical_size_text = u"{0:.2f}".format(h * h_ratio), u"{0:.2f}".format(w * w_ratio)
-            dialog.ui.horizontal_stitches_label.setText(horizontal_size_text)
-            dialog.ui.vertical_stitches_label.setText(vertical_size_text)
-            real_width_text, real_height_text = unicode(self.physical_height * h_ratio), unicode(self.physical_width * w_ratio)
-            dialog.ui.calculated_width_label.setText(real_width_text)
-            dialog.ui.calculated_height_label.setText(real_height_text)
-          except:
-            pass
+            '''Updates the calculations on the Resize dialog.'''
+            try:
+                h, w = self.pil_image.size
+                h_ratio, w_ratio = ratio_tuple
+                horizontal_size_text, vertical_size_text = u"{0:.2f}".format(h * h_ratio), u"{0:.2f}".format(w * w_ratio)
+                dialog.ui.horizontal_stitches_label.setText(horizontal_size_text)
+                dialog.ui.vertical_stitches_label.setText(vertical_size_text)
+                real_width_text, real_height_text = unicode(self.physical_height * h_ratio), unicode(self.physical_width * w_ratio)
+                dialog.ui.calculated_width_label.setText(real_width_text)
+                dialog.ui.calculated_height_label.setText(real_height_text)
+            except:
+                pass
 
         dialog.ui.height_spinbox.valueChanged[unicode].connect(set_height_ratio)
         dialog.ui.width_spinbox.valueChanged[unicode].connect(set_width_ratio)
@@ -519,17 +519,17 @@ class GuiMain(QMainWindow):
 
         logging.debug(dialog_ok)
         if dialog_ok:
-          print ratio
-          return self.ratio_tuple
-          #set variables to parent
+            print ratio
+            return self.ratio_tuple
+            #set variables to parent
         else:
-          return False
+            return False
 
     def getSerialPorts(self):
-      """
-      Returns a list of all USB Serial Ports
-      """
-      return list(serial.tools.list_ports.grep("USB"))
+        """
+        Returns a list of all USB Serial Ports
+        """
+        return list(serial.tools.list_ports.grep("USB"))
 
 
 class GenericThread(QThread):
