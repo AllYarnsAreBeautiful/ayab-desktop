@@ -87,7 +87,7 @@ class AyabPluginControl(KnittingPlugin):
     logging.info("Finished Knitting.")
     self.__close_serial()
     self.__parent_ui.resetUI()
-    self.__parent_ui.signalUpdateProgress.emit(0, 0, 0)
+    self.__parent_ui.signalUpdateProgress.emit(0, 0)
 
   def cancel(self):
     self.__updateNotification("Knitting cancelled")

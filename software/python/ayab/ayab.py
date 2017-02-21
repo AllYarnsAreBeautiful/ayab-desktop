@@ -233,7 +233,7 @@ class GuiMain(QMainWindow):
         '''Updates the current scene '''
         width, height = self.pil_image.size
 
-        data = self.pil_image.convert("RGBA").tostring("raw", "RGBA")
+        data = self.pil_image.convert("RGBA").tobytes("raw", "RGBA")
         qim = QtGui.QImage(data,
                            self.pil_image.size[0],
                            self.pil_image.size[1],
@@ -314,18 +314,18 @@ class GuiMain(QMainWindow):
     def display_blocking_pop_up(self, message="", message_type="info"):
         logging.debug("message emited: '{}'".format(message))
         box_function = {
-            "info": QtGui.QMessageBox.information,
-            "warning": QtGui.QMessageBox.warning,
-            "error": QtGui.QMessageBox.critical,
+            "info": QtWidgets.QMessageBox.information,
+            "warning": QtWidgets.QMessageBox.warning,
+            "error": QtWidgets.QMessageBox.critical,
         }
-        message_box_function = box_function.get(message_type, QtGui.QMessageBox.warning)
+        message_box_function = box_function.get(message_type, QtWidgets.QMessageBox.warning)
         ret = message_box_function(
             self,
             "AYAB",
             message,
-            QtGui.QMessageBox.AcceptRole,
-            QtGui.QMessageBox.AcceptRole)
-        if ret == QtGui.QMessageBox.AcceptRole:
+            QtWidgets.QMessageBox.AcceptRole,
+            QtWidgets.QMessageBox.AcceptRole)
+        if ret == QtWidgets.QMessageBox.AcceptRole:
             return True
 
     def conf_button_function(self):
