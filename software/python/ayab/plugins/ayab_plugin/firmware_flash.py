@@ -154,7 +154,7 @@ class FirmwareFlash(QFrame):
         else:
           logging.info("Error on flashing firmware.")
           self.display_blocking_pop_up("Error on flashing firmware.", message_type="error")
-      except e:
+      except:
         logging.info("Error on flashing firmware.")
         self.display_blocking_pop_up("Error on flashing firmware.", message_type="error")
 
