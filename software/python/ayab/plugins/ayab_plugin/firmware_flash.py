@@ -38,18 +38,18 @@ class FirmwareFlash(QFrame):
     def display_blocking_pop_up(self, message="", message_type="info"):
       logging.debug("message emited: '{}'".format(message))
       box_function = {
-          "info": QtGui.QMessageBox.information,
-          "warning": QtGui.QMessageBox.warning,
-          "error": QtGui.QMessageBox.critical,
+          "info": QtWidgets.QMessageBox.information,
+          "warning": QtWidgets.QMessageBox.warning,
+          "error": QtWidgets.QMessageBox.critical,
       }
-      message_box_function = box_function.get(message_type, QtGui.QMessageBox.warning)
+      message_box_function = box_function.get(message_type, QtWidgets.QMessageBox.warning)
       ret = message_box_function(
           self,
           "AYAB",
           message,
-          QtGui.QMessageBox.AcceptRole,
-          QtGui.QMessageBox.AcceptRole)
-      if ret == QtGui.QMessageBox.AcceptRole:
+          QtWidgets.QMessageBox.Ok,
+          QtWidgets.QMessageBox.Ok)
+      if ret == QtWidgets.QMessageBox.Ok:
           return True
 
     def load_json(self):
@@ -162,6 +162,7 @@ class FirmwareFlash(QFrame):
       exe_file_dict = {
                         "Windows": os.path.join("firmware", ".\\avrdude.exe"),
                         "Linux": os.path.join("firmware", "avrdude"), #TODO, detect 64bit OS
+                        "Darwin": os.path.join("firmware", "avrdude_mac"), #MacOS support
                       }
       ## If unknown OS we assume avrdude is installed and on the PATH.
       exe_file = exe_file_dict.get(os_name, "avrdude")
