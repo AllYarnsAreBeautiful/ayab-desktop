@@ -150,7 +150,7 @@ class FirmwareFlash(QFrame):
             while rc != 0:
                 while True:
                     line = p.stdout.readline()
-                    logging.info
+                    logging.debug(line)
                     if not line:
                         break
                 rc = p.poll()
@@ -175,6 +175,10 @@ class FirmwareFlash(QFrame):
             exe_route = "\"" + exe_route + "\""
         elif os_name == "Linux":
             # We assume avrdude is available in path
+            try:
+                subprocess.call(["which avrdude"])
+            except:
+                logging.error("avrdude not found in path")
             exe_route = "avrdude"
         elif os_name == "Darwin":  # macOS
             exe_route = os.path.join(base_dir, "firmware", "avrdude_mac")
