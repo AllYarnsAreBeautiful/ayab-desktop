@@ -2,14 +2,14 @@
 
 # Resource object code
 #
-# Created: Sat Feb 7 20:54:16 2015
-#      by: The Resource Compiler for PyQt (Qt v4.8.6)
+# Created: Thu Jan 26 21:54:37 2017
+#      by: The Resource Compiler for PyQt (Qt v5.3.2)
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt4 import QtCore
+from PyQt5 import QtCore
 
-qt_resource_data = "\
+qt_resource_data = b"\
 \x00\x00\x7f\x55\
 \xff\
 \xd8\xff\xe0\x00\x10\x4a\x46\x49\x46\x00\x01\x01\x02\x00\x59\x00\
@@ -2052,14 +2052,14 @@ qt_resource_data = "\
 \x00\x00\xff\xd9\
 "
 
-qt_resource_name = "\
+qt_resource_name = b"\
 \x00\x0d\
 \x04\x51\x5c\xa7\
 \x00\x61\
 \x00\x79\x00\x61\x00\x62\x00\x5f\x00\x6c\x00\x6f\x00\x67\x00\x6f\x00\x2e\x00\x6a\x00\x70\x00\x67\
 "
 
-qt_resource_struct = "\
+qt_resource_struct = b"\
 \x00\x00\x00\x00\x00\x02\x00\x00\x00\x01\x00\x00\x00\x01\
 \x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\x00\x00\x00\x00\
 "

@@ -2,8 +2,8 @@
 # This file is part of AYAB.
 
 
-from PyQt4 import QtGui
-from PyQt4.QtGui import QFrame
+from PyQt5 import QtGui, QtWidgets
+from PyQt5.QtWidgets import QFrame
 
 import serial
 import serial.tools.list_ports
@@ -31,27 +31,26 @@ class FirmwareFlash(QFrame):
         self.load_ports()
         self.load_json()
 
-        self.ui.hardware_list.itemClicked[QtGui.QListWidgetItem].connect(self.hardware_item_activated)
-        self.ui.controller_list.itemClicked[QtGui.QListWidgetItem].connect(self.controller_item_activated)
-        self.ui.firmware_list.itemClicked[QtGui.QListWidgetItem].connect(self.firmware_item_activated)
+        self.ui.hardware_list.itemClicked[QtWidgets.QListWidgetItem].connect(self.hardware_item_activated)
+        self.ui.controller_list.itemClicked[QtWidgets.QListWidgetItem].connect(self.controller_item_activated)
+        self.ui.firmware_list.itemClicked[QtWidgets.QListWidgetItem].connect(self.firmware_item_activated)
         self.ui.flash_firmware.clicked.connect(self.execute_flash_command)
 
     def display_blocking_pop_up(self, message="", message_type="info"):
         logging.debug("message emited: '{}'".format(message))
         box_function = {
-            "info": QtGui.QMessageBox.information,
-            "warning": QtGui.QMessageBox.warning,
-            "error": QtGui.QMessageBox.critical,
+            "info": QtWidgets.QMessageBox.information,
+            "warning": QtWidgets.QMessageBox.warning,
+            "error": QtWidgets.QMessageBox.critical,
         }
-        message_box_function = box_function.get(message_type,
-                                                QtGui.QMessageBox.warning)
+        message_box_function = box_function.get(message_type, QtWidgets.QMessageBox.warning)
         ret = message_box_function(
             self,
             "AYAB",
             message,
-            QtGui.QMessageBox.AcceptRole,
-            QtGui.QMessageBox.AcceptRole)
-        if ret == QtGui.QMessageBox.AcceptRole:
+            QtWidgets.QMessageBox.Ok,
+            QtWidgets.QMessageBox.Ok)
+        if ret == QtWidgets.QMessageBox.Ok:
             return True
 
     def load_json(self):
@@ -177,6 +176,8 @@ class FirmwareFlash(QFrame):
         elif os_name == "Linux":
             # We assume avrdude is available in path
             exe_route = "avrdude"
+        elif os_name == "Darwin":  # macOS
+            exe_route = os.path.join(base_dir, "firmware", "avrdude_mac")
 
         binary_file = os.path.join(base_dir, "firmware",
                                    controller_name, firmware_name)

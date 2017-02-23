@@ -8,16 +8,21 @@ This is the GUI interface for AYAB.
 
 ### Linux
 
+### Running from Source & Development
+
 #### Prerequisites
+
+You need Python 2.7 and PyQt5 from your package manager's repository.
+The other main dependencies can be found in requirements.txt
 
 *For Debian/Ubuntu*
 
-    sudo apt-get install python-pip python-qt4 python-dev
+    sudo apt-get install python-pip python-qt5 python-dev
 
 *For openSUSE*
 
     # openSUSE
-    sudo zypper install python-pip python-qt4 python-virtualenv
+    sudo zypper install python-pip python-qt5 python-virtualenv
 
 *All Distributions*
 To be able to communicate with your Arduino, it might be necessary to add the rights for USB communication by adding your user to some groups.
@@ -26,6 +31,8 @@ To be able to communicate with your Arduino, it might be necessary to add the ri
     sudo usermod -a -G dialout [userName]
 
 #### Setup
+
+To install the development version you can checkout the git repository.
 
 Create a virtual enviroment (e.g. in $HOME/ayab/) and install ayab with
 
@@ -39,30 +46,39 @@ Start ayab with
 Note: If running ayab fails with "IOError: [Errno 13] Permission denied: '/usr/local/lib/python2.7/dist-packages/oauthlib-0.6.0-py2.7.egg/EGG-INFO/top_level.txt" or similar, try to change the permissions of the file using
     sudo chmod o+r /usr/local/lib/python2.7/dist-packages/oauthlib-0.6.0-py2.7.egg/EGG-INFO/top_level.txt
 
+#### Development
+
+To be able to work on GUI elements and translation files, the Qt Dev tools are needed also:
+
+    qttools5-dev-tools
+
 ### Windows
 
-The Windows version which is available at http://ayab-knitting.com has been packed with py2exe and should not require
-any additional dependencies. Just unzip the archive to C:\ayab-apparat-0.7 and
+#### Release Version
+
+The Windows version which is available at http://ayab-knitting.com has been packed with py2exe and should not require any additional dependencies. Just unzip the archive to C:\ayab-apparat and run
 start ayab.exe
 
-### Development
+#### Running from source & Development
 
-To install the development version you can checkout the git repository. You need Python 2.7 and PyQt from your package manager's repository.
-The other main dependencies are: Pillow >= 2.4, pyserial >= 2.7, fysom >= 1.1 and Yapsy >= 1.10
-Move to the software/python/ folder and install the required dependencies.
+You need Python Version 2.7.13 (Important: the 64 bit version!) and PyQt5 ().
 
-#### Development Dependencies for Linux
-
-pyqt4-dev-tools 
-
-#### Development Dependencies for Windows
-
-Download and install Python 2.7.x from
+Download and install Python 2.7.13 (64 bit) (pip is already contained in this installer) from
     https://www.python.org/downloads/windows/
-Download and install pip from
-    https://pip.pypa.io/en/latest/installing.html
-Download and install PyQt4 from
-    http://www.riverbankcomputing.co.uk/software/pyqt/download
+
+Then install the remaining prerequisites with
+
+    pip install -r requirements.txt
+    pip install python-qt5
+
+and you should be ready to go>
+
+
+    python ayab_devel_launch.py
+
+### macOS
+
+**TODO**
 
 ## Release Notes
 

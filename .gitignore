@@ -11,5 +11,3 @@ eagle.epf
 # Binaries
 *.o
 *.hex
-# Patterns
-/patterns/*
