@@ -340,8 +340,9 @@ class GuiMain(QMainWindow):
 
     def file_select_dialog(self):
         file_selected_route, _ = QtWidgets.QFileDialog.getOpenFileName(self)
-        self.update_file_selected_text_field(file_selected_route)
-        self.load_image_from_string(unicode(file_selected_route))
+        if file_selected_route:
+            self.update_file_selected_text_field(file_selected_route)
+            self.load_image_from_string(unicode(file_selected_route))
 
     def generate_firmware_ui(self):
         self.__flash_ui = FirmwareFlash(self)
