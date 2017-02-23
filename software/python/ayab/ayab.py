@@ -128,8 +128,6 @@ class GuiMain(QMainWindow):
 
         # Update label and progress bar
         if total != 0:
-            progress = 100 * float(row)/total
-            self.ui.progressBar.setValue(progress)
             self.ui.notification_label.setText("{0}/{1}".format(row, total))
 
     def update_file_selected_text_field(self, route):
@@ -228,6 +226,10 @@ class GuiMain(QMainWindow):
         # Enable plugin elements after first load of image
         self.ui.widget_optionsdock.setEnabled(True)
         self.ui.menuImage_Actions.setEnabled(True)
+        # Tell loaded plugin elements about changed parameters
+        width, height = self.pil_image.size
+        self.enabled_plugin.plugin_object.slotSetImageDimensions(width,
+                                                                 height)
 
     def refresh_scene(self):
         '''Updates the current scene '''
@@ -284,8 +286,9 @@ class GuiMain(QMainWindow):
 
         # Draw limiting lines (start/stop needle)
         limit_bar_width = 0.5
+
         qscene.addItem(
-            QtWidgets.QGraphicsRectItem(self.start_needle - 100,
+            QtWidgets.QGraphicsRectItem(self.start_needle - 101,
                                         -bar_height,
                                         limit_bar_width,
                                         pixmap.height() + 2*bar_height))
@@ -336,7 +339,7 @@ class GuiMain(QMainWindow):
     def file_select_dialog(self):
         file_selected_route, _ = QtWidgets.QFileDialog.getOpenFileName(self)
         self.update_file_selected_text_field(file_selected_route)
-        self.load_image_from_string(str(file_selected_route))
+        self.load_image_from_string(unicode(file_selected_route))
 
     def generate_firmware_ui(self):
         self.__flash_ui = FirmwareFlash(self)

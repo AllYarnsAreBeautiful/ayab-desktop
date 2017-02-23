@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'ayab_gui.ui'
+# Form implementation generated from reading ui file 'ayab/ayab_gui.ui'
 #
 # Created: Thu Jan 26 21:51:43 2017
 #      by: PyQt5 UI code generator 5.3.2
@@ -139,14 +139,10 @@ class Ui_MainWindow(object):
         self.notification_label.setAlignment(QtCore.Qt.AlignCenter)
         self.notification_label.setObjectName("notification_label")
         self.image_side_panel.addWidget(self.notification_label)
-        self.progressBar = QtWidgets.QProgressBar(self.centralwidget)
-        self.progressBar.setProperty("value", 0)
-        self.progressBar.setObjectName("progressBar")
-        self.image_side_panel.addWidget(self.progressBar)
         self.gridLayout.addLayout(self.image_side_panel, 0, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1008, 27))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1008, 19))
         self.menubar.setObjectName("menubar")
         self.menuFile = QtWidgets.QMenu(self.menubar)
         self.menuFile.setObjectName("menuFile")

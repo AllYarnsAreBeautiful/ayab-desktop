@@ -143,6 +143,13 @@ class AyabPluginControl(KnittingPlugin):
     alignment_text = self.options_ui.alignment_combo_box.currentText()
     self.__parent_ui.signalUpdateAlignment.emit(alignment_text)
 
+  def slotSetImageDimensions(self, width, height):
+    """Called by Main UI on loading of an image to set Start/Stop needle
+    to image width. Updates the maximum value of the Start Line UI element"""
+    self.options_ui.start_needle_edit.setValue(width /2)
+    self.options_ui.stop_needle_edit.setValue(width /2)
+    self.options_ui.start_line_edit.setMaximum(height -1)
+
   def __onStartLineChanged(self):
     """ """
     start_line_edit = self.options_ui.start_line_edit.value()
@@ -247,6 +254,8 @@ class AyabPluginControl(KnittingPlugin):
 
     color_line_text = ui.findChild(QtWidgets.QSpinBox, "color_edit").value()
     self.conf["num_colors"] = int(color_line_text)
+
+    # Internally, we start counting from zero (for easier handling of arrays)
     start_line_text = ui.findChild(QtWidgets.QSpinBox, "start_line_edit").value()
     self.conf["start_line"] = int(start_line_text)
 
@@ -275,9 +284,11 @@ class AyabPluginControl(KnittingPlugin):
 
     serial_port_text = ui.findChild(QtWidgets.QComboBox, "serial_port_dropdown").currentText()
     self.conf["portname"] = str(serial_port_text)
+    
     # getting file location from textbox
     filename_text = ui.findChild(QtWidgets.QLineEdit, "filename_lineedit").text()
     self.conf["filename"] = str(filename_text)
+
     logging.debug(self.conf)
     ## Add more config options.
     return self.conf
@@ -430,27 +441,25 @@ class AyabPluginControl(KnittingPlugin):
                 # 0 1 2 3 4 5 6 7 8 9 .. (lineNumber)
                 # | |  X  | |  X  | |
                 # 0 1 3 2 4 5 7 6 8 9 .. (imageExpanded)
+                # A B B A A B B A A B .. (color)
                 indexToSend = self.__startLine * 2
 
-                # TODO more beautiful algo
+                color = 0  # A
                 if lineNumber % 4 == 1 or lineNumber % 4 == 2:
-                    color = 1
-                else:
-                    color = 0
+                    color = 1  # B
 
-                if (lineNumber - 2) % 4 == 0:
+                # Decide if lineNumber has to be switched or not
+                if lineNumber % 4 == 2:
                     indexToSend += lineNumber + 1
-
-                elif (lineNumber - 2) % 4 == 1:
+                elif lineNumber % 4 == 3:
                     indexToSend += lineNumber - 1
-                    if (imgRow == imgHeight - 1) \
-                            and (indexToSend == lenImgExpanded - 2):
-                        lastLine = 0x01
                 else:
                     indexToSend += lineNumber
-                    if (imgRow == imgHeight - 1) \
-                            and (indexToSend == lenImgExpanded - 1):
-                        lastLine = 0x01
+
+                # Decide whether to send lastLine Flag
+                if (imgRow == imgHeight - 1) \
+                        and (lineNumber % 4 == 1 or lineNumber % 4 == 3):
+                    lastLine = 0x01
 
             # doublebed, multicolor
             elif self.__machineType == 'ribber' \
@@ -588,7 +597,11 @@ class AyabPluginControl(KnittingPlugin):
                         curState = 's_waitForInit'
                         self.__updateNotification("Please init machine. (Set the carriage to mode KC-I or KC-II and move the carriage over the left turn mark).")
                   else:
-                      self.__notify_user("Wrong API.")
+                      self.__notify_user("Wrong Arduino Firmware Version. "
+                                         + "Please check if you have flashed "
+                                         + "the latest version. ("
+                                         + str(rcvParam) + "/"
+                                         + str(API_VERSION) + ")")
                       logging.error("wrong API version: " + str(rcvParam)
                                         + (" (expected: )") + str(API_VERSION))
                       return
