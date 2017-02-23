@@ -23,7 +23,7 @@ import time
 import logging
 import os
 from ayab.plugins.knitting_plugin import KnittingPlugin
-from PyQt4 import QtGui, QtCore
+from PyQt5 import QtGui, QtWidgets, QtCore
 
 from ayab_options import Ui_DockWidget
 import serial.tools.list_ports
@@ -87,7 +87,7 @@ class AyabPluginControl(KnittingPlugin):
     logging.info("Finished Knitting.")
     self.__close_serial()
     self.__parent_ui.resetUI()
-    self.__parent_ui.emit(QtCore.SIGNAL('updateProgress(int,int,int)'), 0, 0, 0)
+    self.__parent_ui.signalUpdateProgress.emit(0, 0)
 
   def cancel(self):
     self.__updateNotification("Knitting cancelled")
@@ -95,10 +95,10 @@ class AyabPluginControl(KnittingPlugin):
 
   def __close_serial(self):
     try:
-      self.__ayabCom.close_serial()
-      logging.debug("Closing Serial port successful.")
+        self.__ayabCom.close_serial()
+        logging.debug("Closing Serial port successful.")
     except:
-      logging.debug("Closing Serial port failed. Was it ever open?")
+        logging.debug("Closing Serial port failed. Was it ever open?")
 
   def onerror(self, e):
     #TODO add message info from event
@@ -107,19 +107,19 @@ class AyabPluginControl(KnittingPlugin):
 
   def __wait_for_user_action(self, message="", message_type="info"):
     """Sends the display_blocking_pop_up_signal QtSignal to main GUI thread, blocking it."""
-    self.__parent_ui.emit(QtCore.SIGNAL('display_blocking_pop_up_signal(QString, QString)'), message, message_type)
+    self.__parent_ui.signalDisplayBlockingPopUp.emit(message, message_type)
 
   def __notify_user(self, message="", message_type="info"):
     """Sends the display_pop_up_signal QtSignal to main GUI thread, not blocking it."""
-    self.__parent_ui.emit(QtCore.SIGNAL('display_pop_up_signal(QString, QString)'), message, message_type)
+    self.__parent_ui.signalDisplayPopUp.emit(message, message_type)
 
   def __updateNotification(self, message=""):
     """Sends the signalUpdateNotification signal"""
-    self.__parent_ui.emit(QtCore.SIGNAL('signalUpdateNotification(QString)'), message)
+    self.__parent_ui.signalUpdateNotification.emit(message)
 
   def __emit_progress(self, row, total = 0):
     """Sends the updateProgress QtSignal."""
-    self.__parent_ui.emit(QtCore.SIGNAL('updateProgress(int,int)'), int(row), int(total))
+    self.__parent_ui.signalUpdateProgress.emit(int(row), int(total))
 
   def __emit_needles(self):
     """Sends the updateNeedles QtSignal."""
@@ -136,15 +136,12 @@ class AyabPluginControl(KnittingPlugin):
         stop_needle_color,
         stop_needle_text)
 
-    self.__parent_ui.emit(QtCore.SIGNAL('signalUpdateNeedles(int,int)'),
-        start_needle,
-        stop_needle)
+    self.__parent_ui.signalUpdateNeedles.emit(start_needle, stop_needle)
 
   def __emit_alignment(self):
     """Sends the updateAlignment QtSignal"""
     alignment_text = self.options_ui.alignment_combo_box.currentText()
-    self.__parent_ui.emit(QtCore.SIGNAL('signalUpdateAlignment(QString)'),
-                          alignment_text)
+    self.__parent_ui.signalUpdateAlignment.emit(alignment_text)
 
   def slotSetImageDimensions(self, width, height):
     """Called by Main UI on loading of an image to set Start/Stop needle
@@ -180,16 +177,17 @@ class AyabPluginControl(KnittingPlugin):
 
   def populate_ports(self, combo_box=None, port_list=None):
     if not combo_box:
-      combo_box = self.__parent_ui.findChild(QtGui.QComboBox, "serial_port_dropdown")
+        combo_box = self.__parent_ui.findChild(QtWidgets.QComboBox,
+                                               "serial_port_dropdown")
     if not port_list:
-      port_list = self.getSerialPorts()
+        port_list = self.getSerialPorts()
 
     combo_box.clear()
 
     def populate(combo_box, port_list):
-      for item in port_list:
-        #TODO: should display the info of the device.
-        combo_box.addItem(item[0])
+        for item in port_list:
+          #TODO: should display the info of the device.
+          combo_box.addItem(item[0])
     populate(combo_box, port_list)
 
 
@@ -248,55 +246,58 @@ class AyabPluginControl(KnittingPlugin):
     """
 
     self.conf = {}
-    tab_widget = ui.findChild(QtGui.QTabWidget, "tabWidget")
+    tab_widget = ui.findChild(QtWidgets.QTabWidget, "tabWidget")
     if tab_widget.currentIndex() == 1:
         self.conf["testmode"] = True
     else:
         self.conf["testmode"] = False
 
-    color_line_text = ui.findChild(QtGui.QSpinBox, "color_edit").value()
+    color_line_text = ui.findChild(QtWidgets.QSpinBox, "color_edit").value()
     self.conf["num_colors"] = int(color_line_text)
-    # Internally, we start counting from zero (for easier handling of arrays)
-    start_line_text = ui.findChild(QtGui.QSpinBox, "start_line_edit").value()
-    self.conf["start_line"] = int(start_line_text)-1
 
-    start_needle_color = ui.findChild(QtGui.QComboBox, "start_needle_color").currentText()
-    start_needle_text = ui.findChild(QtGui.QSpinBox, "start_needle_edit").value()
+    # Internally, we start counting from zero (for easier handling of arrays)
+    start_line_text = ui.findChild(QtWidgets.QSpinBox, "start_line_edit").value()
+    self.conf["start_line"] = int(start_line_text)
+
+    start_needle_color = ui.findChild(QtWidgets.QComboBox, "start_needle_color").currentText()
+    start_needle_text = ui.findChild(QtWidgets.QSpinBox, "start_needle_edit").value()
 
     self.conf["start_needle"] = self.readNeedleSettings(
         start_needle_color,
         start_needle_text)
 
-    stop_needle_color = ui.findChild(QtGui.QComboBox, "stop_needle_color").currentText()
-    stop_needle_text = ui.findChild(QtGui.QSpinBox, "stop_needle_edit").value()
+    stop_needle_color = ui.findChild(QtWidgets.QComboBox, "stop_needle_color").currentText()
+    stop_needle_text = ui.findChild(QtWidgets.QSpinBox, "stop_needle_edit").value()
 
     self.conf["stop_needle"] = self.readNeedleSettings(
         stop_needle_color,
         stop_needle_text)
 
-    alignment_text = ui.findChild(QtGui.QComboBox, "alignment_combo_box").currentText()
+    alignment_text = ui.findChild(QtWidgets.QComboBox, "alignment_combo_box").currentText()
     self.conf["alignment"] = alignment_text
 
     self.conf["inf_repeat"] = \
-        int(ui.findChild(QtGui.QCheckBox, "infRepeat_checkbox").isChecked())
+        int(ui.findChild(QtWidgets.QCheckBox, "infRepeat_checkbox").isChecked())
 
-    machine_type_text = ui.findChild(QtGui.QComboBox, "machine_type_box").currentText()
+    machine_type_text = ui.findChild(QtWidgets.QComboBox, "machine_type_box").currentText()
     self.conf["machine_type"] = str(machine_type_text)
 
-    serial_port_text = ui.findChild(QtGui.QComboBox, "serial_port_dropdown").currentText()
+    serial_port_text = ui.findChild(QtWidgets.QComboBox, "serial_port_dropdown").currentText()
     self.conf["portname"] = str(serial_port_text)
+    
     # getting file location from textbox
-    filename_text = ui.findChild(QtGui.QLineEdit, "filename_lineedit").text()
-    self.conf["filename"] = unicode(filename_text)
+    filename_text = ui.findChild(QtWidgets.QLineEdit, "filename_lineedit").text()
+    self.conf["filename"] = str(filename_text)
+
     logging.debug(self.conf)
     ## Add more config options.
     return self.conf
 
   def getSerialPorts(self):
-      """
-      Returns a list of all USB Serial Ports
-      """
-      return list(serial.tools.list_ports.grep("USB"))
+        """
+        Returns a list of all USB Serial Ports
+        """
+        return list(serial.tools.list_ports.grep("USB"))
 
   def __init__(self):
     super(AyabPluginControl, self).__init__({})

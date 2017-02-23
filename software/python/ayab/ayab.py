@@ -23,12 +23,11 @@ import sys
 import os
 import logging
 
-from PyQt4 import QtGui, QtCore
-from PyQt4.QtGui import QMainWindow
-from PyQt4.QtCore import QThread
+from PyQt5 import QtWidgets, QtGui, QtCore
+from PyQt5.QtWidgets import QMainWindow
+from PyQt5.QtCore import QThread, pyqtSignal, pyqtSlot
 
 from yapsy import PluginManager
-from PIL import ImageQt
 from PIL import Image
 from fysom import FysomError
 
@@ -49,6 +48,13 @@ class GuiMain(QMainWindow):
 
     GuiMain inherits from QMainWindow and instanciates a window with the form components form ayab_gui.UiForm.
     """
+
+    signalUpdateProgress = pyqtSignal(int, int)
+    signalUpdateNotification = pyqtSignal('QString')
+    signalDisplayPopUp = pyqtSignal('QString', 'QString')
+    signalUpdateNeedles = pyqtSignal(int, int)
+    signalUpdateAlignment = pyqtSignal('QString')
+    signalDisplayBlockingPopUp = pyqtSignal('QString', 'QString')
 
     def __init__(self):
         super(GuiMain, self).__init__(None)
@@ -73,20 +79,20 @@ class GuiMain(QMainWindow):
         logging.getLogger('yapsy').setLevel(logging.WARNING)
 
         if is_reloading:
-          logging.info("Deactivating All Plugins")
-          for pluginInfo in self.pm.getAllPlugins():
-            self.pm.deactivatePluginByName(pluginInfo.name)
+            logging.info("Deactivating All Plugins")
+            for pluginInfo in self.pm.getAllPlugins():
+                self.pm.deactivatePluginByName(pluginInfo.name)
         route = get_route()
         self.pm = PluginManager.PluginManager(directories_list=[os.path.join(route, "plugins")],)
 
         self.pm.collectPlugins()
         for pluginInfo in self.pm.getAllPlugins():
-          ## This stops the plugins marked as Disabled from being activated.
-          if (not pluginInfo.details.has_option("Core", "Disabled")):
-            plugin_name = pluginInfo.name
-            self.pm.activatePluginByName(plugin_name)
-            self.add_plugin_name_on_module_dropdown(plugin_name)
-            logging.info("Plugin {0} activated".format(plugin_name))
+            ## This stops the plugins marked as Disabled from being activated.
+            if (not pluginInfo.details.has_option("Core", "Disabled")):
+                plugin_name = pluginInfo.name
+                self.pm.activatePluginByName(plugin_name)
+                self.add_plugin_name_on_module_dropdown(plugin_name)
+                logging.info("Plugin {0} activated".format(plugin_name))
         ## Setting AYAB as the default value
         ## TODO: better way of setting ayab as default plugin.
         self.set_enabled_plugin("AYAB")
@@ -97,10 +103,10 @@ class GuiMain(QMainWindow):
     def set_enabled_plugin(self, plugin_name=None):
         """Enables plugin, sets up gui and returns the plugin_object from the plugin selected on module_dropdown."""
         try:
-          if self.enabled_plugin:
-            self.enabled_plugin.plugin_object.cleanup_ui(self)
+            if self.enabled_plugin:
+                self.enabled_plugin.plugin_object.cleanup_ui(self)
         except:
-          pass
+            pass
 
         if not plugin_name:
             plugin_name = self.ui.module_dropdown.currentText()
@@ -157,7 +163,7 @@ class GuiMain(QMainWindow):
             self.refresh_scene()
 
     def start_knitting_process(self):
-        # Disable everythin which should not be touched
+        # Disable everything which should not be touched
         # during knitting
         self.ui.menuTools.setEnabled(False)
         self.ui.widget_imgload.setEnabled(False)
@@ -188,16 +194,17 @@ class GuiMain(QMainWindow):
         self.ui.knit_button.clicked.connect(self.start_knitting_process)
         self.ui.cancel_button.clicked.connect(self.cancel_knitting_process)
         self.ui.actionLoad_AYAB_Firmware.triggered.connect(self.generate_firmware_ui)
-        self.ui.image_pattern_view.setDragMode(QtGui.QGraphicsView.ScrollHandDrag)
+        self.ui.image_pattern_view.setDragMode(QtWidgets.QGraphicsView.ScrollHandDrag)
         # Connecting Signals.
-        self.connect(self, QtCore.SIGNAL("updateProgress(int,int)"), self.updateProgress)
-        self.connect(self, QtCore.SIGNAL("signalUpdateNotification(QString)"), self.slotUpdateNotification)
-        self.connect(self, QtCore.SIGNAL("display_pop_up_signal(QString, QString)"), self.display_blocking_pop_up)
-        self.connect(self, QtCore.SIGNAL("signalUpdateNeedles(int,int)"), self.slotUpdateNeedles)
-        self.connect(self, QtCore.SIGNAL("signalUpdateAlignment(QString)"), self.slotUpdateAlignment)
+        self.signalUpdateProgress.connect(self.updateProgress)
+        self.signalUpdateNotification.connect(self.slotUpdateNotification)
+        self.signalDisplayPopUp.connect(self.display_blocking_pop_up)
+        self.signalUpdateNeedles.connect(self.slotUpdateNeedles)
+        self.signalUpdateAlignment.connect(self.slotUpdateAlignment)
+
         # This blocks the other thread until signal is done
-        self.connect(self, QtCore.SIGNAL("display_blocking_pop_up_signal(QString, QString)"), self.display_blocking_pop_up, QtCore.Qt.BlockingQueuedConnection)
-        self.connect(self, QtCore.SIGNAL("display_blocking_pop_up_signal(QString)"), self.display_blocking_pop_up, QtCore.Qt.BlockingQueuedConnection)
+        self.signalDisplayBlockingPopUp.connect(self.display_blocking_pop_up)
+
         self.ui.actionQuit.triggered.connect(QtCore.QCoreApplication.instance().quit)
         self.ui.actionAbout.triggered.connect(self.open_about_ui)
         self.ui.actionMirror.triggered.connect(self.mirror_image)
@@ -237,14 +244,11 @@ class GuiMain(QMainWindow):
 
         self.set_dimensions_on_gui(pixmap.width(), pixmap.height())
 
-        qscene = QtGui.QGraphicsScene()
+        qscene = QtWidgets.QGraphicsScene()
 
         # TODO move to generic configuration
         machine_width = 200
-        canvas_width  = machine_width
-        canvas_height = 200.0
-
-        bar_height    = 5.0
+        bar_height = 5.0
 
         # add pattern and move accordingly to alignment
         pattern = qscene.addPixmap(pixmap)
@@ -264,43 +268,42 @@ class GuiMain(QMainWindow):
             logging.warning("invalid alignment")
 
         # Draw "machine"
-        rect_orange = QtGui.QGraphicsRectItem(
+        rect_orange = QtWidgets.QGraphicsRectItem(
             -(machine_width/2.0),
             -bar_height,
             (machine_width/2.0),
-            bar_height,
-            None, qscene)
+            bar_height)
         rect_orange.setBrush(QtGui.QBrush(QtGui.QColor("orange")))
-        rect_green = QtGui.QGraphicsRectItem(
+        rect_green = QtWidgets.QGraphicsRectItem(
             0.0,
             -bar_height,
             (machine_width/2.0),
-            bar_height,
-            None, qscene)
+            bar_height)
         rect_green.setBrush(QtGui.QBrush(QtGui.QColor("green")))
+
+        qscene.addItem(rect_orange)
+        qscene.addItem(rect_green)
 
         # Draw limiting lines (start/stop needle)
         limit_bar_width = 0.5
-        QtGui.QGraphicsRectItem(
-            self.start_needle - 101,
-            -bar_height,
-            limit_bar_width,
-            pixmap.height() + 2*bar_height,
-            None, qscene)
-        QtGui.QGraphicsRectItem(
-            self.stop_needle - 100,
-            -bar_height,
-            limit_bar_width,
-            pixmap.height() + 2*bar_height,
-            None, qscene)
+
+        qscene.addItem(
+            QtWidgets.QGraphicsRectItem(self.start_needle - 101,
+                                        -bar_height,
+                                        limit_bar_width,
+                                        pixmap.height() + 2*bar_height))
+        qscene.addItem(
+            QtWidgets.QGraphicsRectItem(self.stop_needle - 100,
+                                        -bar_height,
+                                        limit_bar_width,
+                                        pixmap.height() + 2*bar_height))
 
         # Draw knitting progress
-        QtGui.QGraphicsRectItem(
-            -(machine_width/2.0),
-            pixmap.height() - self.var_progress,
-            machine_width,
-            limit_bar_width,
-            None, qscene)
+        qscene.addItem(
+            QtWidgets.QGraphicsRectItem(-(machine_width/2.0),
+                                        pixmap.height() - self.var_progress,
+                                        machine_width,
+                                        limit_bar_width))
 
         qv = self.ui.image_pattern_view
         qv.resetTransform()
@@ -312,33 +315,35 @@ class GuiMain(QMainWindow):
         self.ui.dimensions_label.setText(text)
 
     def display_blocking_pop_up(self, message="", message_type="info"):
-        logging.debug("message emited: '{}'".format(message))
+        logging.debug("MessageBox {}: '{}'".format(message_type, message))
         box_function = {
-            "info": QtGui.QMessageBox.information,
-            "warning": QtGui.QMessageBox.warning,
-            "error": QtGui.QMessageBox.critical,
+            "error": QtWidgets.QMessageBox.critical,
+            "info": QtWidgets.QMessageBox.information,
+            "question": QtWidgets.QMessageBox.question,
+            "warning": QtWidgets.QMessageBox.warning
         }
-        message_box_function = box_function.get(message_type, QtGui.QMessageBox.warning)
+        message_box_function = box_function.get(message_type)
+
         ret = message_box_function(
             self,
             "AYAB",
             message,
-            QtGui.QMessageBox.AcceptRole,
-            QtGui.QMessageBox.AcceptRole)
-        if ret == QtGui.QMessageBox.AcceptRole:
+            QtWidgets.QMessageBox.Ok,
+            QtWidgets.QMessageBox.Ok)
+        if ret == QtWidgets.QMessageBox.Ok:
             return True
 
     def conf_button_function(self):
         self.enabled_plugin.plugin_object.configure(self)
 
     def file_select_dialog(self):
-        file_selected_route = QtGui.QFileDialog.getOpenFileName(self)
+        file_selected_route, _ = QtWidgets.QFileDialog.getOpenFileName(self)
         self.update_file_selected_text_field(file_selected_route)
         self.load_image_from_string(unicode(file_selected_route))
 
     def generate_firmware_ui(self):
-      self.__flash_ui = FirmwareFlash(self)
-      self.__flash_ui.show()
+        self.__flash_ui = FirmwareFlash(self)
+        self.__flash_ui.show()
 
     def open_about_ui(self):
         self.__AboutForm = QtGui.QFrame()
@@ -367,10 +372,10 @@ class GuiMain(QMainWindow):
         self.apply_image_transform("rotate", -90.0)
 
     def smart_resize(self):
-      '''Executes the smart resize process including dialog .'''
-      dialog_result = self.__launch_get_start_smart_resize_dialog_result(self)
-      if dialog_result:
-        self.apply_image_transform("smart_resize", dialog_result)
+        '''Executes the smart resize process including dialog .'''
+        dialog_result = self.__launch_get_start_smart_resize_dialog_result(self)
+        if dialog_result:
+            self.apply_image_transform("smart_resize", dialog_result)
 
     def apply_image_transform(self, transform_type, *args):
         '''Executes an image transform specified by key and args.
@@ -391,9 +396,9 @@ class GuiMain(QMainWindow):
             return
         # Executes the transform function
         try:
-          image = transform(image, args)
+            image = transform(image, args)
         except:
-          logging.error("Error on executing transform")
+            logging.error("Error on executing transform")
 
         # Disable Knit Controls
         self.ui.widget_knitcontrol.setEnabled(False)
@@ -454,59 +459,59 @@ class GuiMain(QMainWindow):
         dialog.ui.setupUi(dialog)
 
         def calculate_ratio_value(height, width):
-          '''Calculates the ratio value with given height and width.'''
-          try:
-            return height / width
-          except:
-            return 0.0
+            '''Calculates the ratio value with given height and width.'''
+            try:
+                return height / width
+            except:
+                return 0.0
 
         def set_ratio_list(ratio):
-          '''Sets the dialog ratio list to a list of aproximations of rational ratios that match it.'''
-          dialog.ui.ratios_list.clear()
-          self.ratio_list = knit_aware_resize.get_rational_ratios(ratio)
-          for ratio in self.ratio_list:
-            ratio_string = "{0:.0f} - {1:.0f}".format(ratio[0], ratio[1])
-            dialog.ui.ratios_list.addItem(ratio_string)
+            '''Sets the dialog ratio list to a list of aproximations of rational ratios that match it.'''
+            dialog.ui.ratios_list.clear()
+            self.ratio_list = knit_aware_resize.get_rational_ratios(ratio)
+            for ratio in self.ratio_list:
+                ratio_string = "{0:.0f} - {1:.0f}".format(ratio[0], ratio[1])
+                dialog.ui.ratios_list.addItem(ratio_string)
 
         def set_ratio_value(ratio):
-          dialog.ui.ratio_label.setText(u"{0:.2f}".format(ratio))
-          set_ratio_list(ratio)
+            dialog.ui.ratio_label.setText(u"{0:.2f}".format(ratio))
+            set_ratio_list(ratio)
 
         def recalculate_ratio():
-          ratio = calculate_ratio_value(self.physical_height, self.physical_width)
-          set_ratio_value(ratio)
-          logging.debug("Set Ratio to {}".format(ratio))
+            ratio = calculate_ratio_value(self.physical_height, self.physical_width)
+            set_ratio_value(ratio)
+            logging.debug("Set Ratio to {}".format(ratio))
 
         def set_height_ratio(height_string):
-          self.physical_height = float(height_string)
-          recalculate_ratio()
+            self.physical_height = float(height_string)
+            recalculate_ratio()
 
         def set_width_ratio(width_string):
-          self.physical_width = float(width_string)
-          recalculate_ratio()
+            self.physical_width = float(width_string)
+            recalculate_ratio()
 
         def get_ratios_list_item_value(selected_value):
-          '''Gets the value of the tuple corresponding to the selected ratio list.'''
-          try:
-            self.ratio_tuple = self.ratio_list[selected_value]
-            recalculate_real_size(self.ratio_tuple)
-            logging.debug(self.ratio_tuple)
-          except IndexError:
-            pass
+            '''Gets the value of the tuple corresponding to the selected ratio list.'''
+            try:
+                self.ratio_tuple = self.ratio_list[selected_value]
+                recalculate_real_size(self.ratio_tuple)
+                logging.debug(self.ratio_tuple)
+            except IndexError:
+                pass
 
         def recalculate_real_size(ratio_tuple):
-          '''Updates the calculations on the Resize dialog.'''
-          try:
-            h, w = self.pil_image.size
-            h_ratio, w_ratio = ratio_tuple
-            horizontal_size_text, vertical_size_text = u"{0:.2f}".format(h * h_ratio), u"{0:.2f}".format(w * w_ratio)
-            dialog.ui.horizontal_stitches_label.setText(horizontal_size_text)
-            dialog.ui.vertical_stitches_label.setText(vertical_size_text)
-            real_width_text, real_height_text = unicode(self.physical_height * h_ratio), unicode(self.physical_width * w_ratio)
-            dialog.ui.calculated_width_label.setText(real_width_text)
-            dialog.ui.calculated_height_label.setText(real_height_text)
-          except:
-            pass
+            '''Updates the calculations on the Resize dialog.'''
+            try:
+                h, w = self.pil_image.size
+                h_ratio, w_ratio = ratio_tuple
+                horizontal_size_text, vertical_size_text = u"{0:.2f}".format(h * h_ratio), u"{0:.2f}".format(w * w_ratio)
+                dialog.ui.horizontal_stitches_label.setText(horizontal_size_text)
+                dialog.ui.vertical_stitches_label.setText(vertical_size_text)
+                real_width_text, real_height_text = unicode(self.physical_height * h_ratio), unicode(self.physical_width * w_ratio)
+                dialog.ui.calculated_width_label.setText(real_width_text)
+                dialog.ui.calculated_height_label.setText(real_height_text)
+            except:
+                pass
 
         dialog.ui.height_spinbox.valueChanged[unicode].connect(set_height_ratio)
         dialog.ui.width_spinbox.valueChanged[unicode].connect(set_width_ratio)
@@ -517,17 +522,17 @@ class GuiMain(QMainWindow):
 
         logging.debug(dialog_ok)
         if dialog_ok:
-          print ratio
-          return self.ratio_tuple
-          #set variables to parent
+            print ratio
+            return self.ratio_tuple
+            #set variables to parent
         else:
-          return False
+            return False
 
     def getSerialPorts(self):
-      """
-      Returns a list of all USB Serial Ports
-      """
-      return list(serial.tools.list_ports.grep("USB"))
+        """
+        Returns a list of all USB Serial Ports
+        """
+        return list(serial.tools.list_ports.grep("USB"))
 
 
 class GenericThread(QThread):
@@ -548,9 +553,6 @@ class GenericThread(QThread):
             self.function(*self.args, **self.kwargs)
         except FysomError as fe:
             logging.error(fe)
-            parent = self.kwargs["parent_window"]
-            parent.emit(QtCore.SIGNAL('display_blocking_pop_up_signal(QString, QString)'), QtGui.QApplication.translate("Form",
-                        "Error on plugin action, be sure to configure before starting Knitting.", None), "error")
         return
 
 
@@ -566,14 +568,14 @@ def get_route():
 
 
 def run():
-  translator = QtCore.QTranslator()
-  ## Loading ayab_gui main translator.
-  translator.load(QtCore.QLocale.system(), "ayab_gui", ".", os.path.join(get_route(), "translations"), ".qm")
-  app = QtGui.QApplication(sys.argv)
-  app.installTranslator(translator)
-  window = GuiMain()
-  window.show()
-  sys.exit(app.exec_())
+    translator = QtCore.QTranslator()
+    ## Loading ayab_gui main translator.
+    translator.load(QtCore.QLocale.system(), "ayab_gui", ".", os.path.join(get_route(), "translations"), ".qm")
+    app = QtWidgets.QApplication(sys.argv)
+    app.installTranslator(translator)
+    window = GuiMain()
+    window.show()
+    sys.exit(app.exec_())
 
 if __name__ == '__main__':
-  run()
+    run()

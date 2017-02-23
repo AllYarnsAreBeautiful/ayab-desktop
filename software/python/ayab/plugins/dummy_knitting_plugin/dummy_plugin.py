@@ -18,7 +18,7 @@
 #    https://bitbucket.org/chris007de/ayab-apparat/
 
 import time
-from PyQt4 import QtGui, QtCore
+from PyQt5 import QtGui, QtCore
 from ayab.plugins.knitting_plugin import KnittingPlugin
 import logging
 
