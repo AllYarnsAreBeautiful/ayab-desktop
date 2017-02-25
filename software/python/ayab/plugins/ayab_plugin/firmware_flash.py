@@ -203,7 +203,7 @@ class FirmwareFlash(QFrame):
         ## avrdude command.
         ## http://www.ladyada.net/learn/avr/avrdude.html
         ## http://sharats.me/the-ever-useful-and-neat-subprocess-module.html
-        exec_command = """{0} -v -p {1} -c {2} -P {3} -b115200 -D -Uflash:w:"{4}":i """.format(
+        exec_command = """{0} -p {1} -c {2} -P {3} -b115200 -D -Uflash:w:"{4}":i """.format(
                        exe_route, device, programmer, serial_port, binary_file)
         if os_name == "Windows":
             exec_command += " -C " + os.path.join(base_dir,
