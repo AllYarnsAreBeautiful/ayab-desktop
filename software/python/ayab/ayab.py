@@ -349,7 +349,7 @@ class GuiMain(QMainWindow):
         self.__flash_ui.show()
 
     def open_about_ui(self):
-        self.__AboutForm = QtGui.QFrame()
+        self.__AboutForm = QtWidgets.QFrame()
         self.__about_ui = Ui_AboutForm()
         self.__about_ui.setupUi(self.__AboutForm)
         self.__AboutForm.show()
@@ -457,7 +457,7 @@ class GuiMain(QMainWindow):
         self.physical_width, self.physical_height = 0.0, 0.0
         self.ratio_tuple = 1.0, 1.0
         ratio = 0.0
-        dialog = QtGui.QDialog()
+        dialog = QtWidgets.QDialog()
         dialog.ui = smart_resize.Ui_Dialog()
         dialog.ui.setupUi(dialog)
 
