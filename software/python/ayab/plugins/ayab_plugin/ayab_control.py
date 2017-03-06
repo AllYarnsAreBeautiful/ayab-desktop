@@ -50,22 +50,23 @@ class AyabPluginControl(KnittingPlugin):
     #TODO: detect if previous conf had the same image to avoid re-generating.
 
     try:
-      self.__image = ayab_image.ayabImage(pil_image, self.conf["num_colors"])
+        self.__image = ayab_image.ayabImage(pil_image, self.conf["num_colors"])
     except:
-      self.__notify_user("You need to set an image.", "error")
-      return
-
-    if conf.get("start_needle") and conf.get("stop_needle"):
-      self.__image.setKnitNeedles(conf.get("start_needle"), conf.get("stop_needle"))
-      if conf.get("alignment"):
-        self.__image.setImagePosition(conf.get("alignment"))
-    if conf.get("start_line"):
-      self.__image.setStartLine(conf.get("start_line"))
+        self.__notify_user("You need to set an image.", "error")
+        return
 
     if self.validate_configuration(conf):
-      parent_ui.ui.widget_knitcontrol.setEnabled(True)
-      parent_ui.ui.knit_button.setEnabled(True)
-      self.__emit_progress(0, self.__image.imgHeight())
+        parent_ui.ui.widget_knitcontrol.setEnabled(True)
+        parent_ui.ui.knit_button.setEnabled(True)
+
+        if conf.get("start_needle") and conf.get("stop_needle"):
+            self.__image.setKnitNeedles(conf.get("start_needle"), conf.get("stop_needle"))
+        if conf.get("alignment"):
+            self.__image.setImagePosition(conf.get("alignment"))
+        if conf.get("start_line"):
+            self.__image.setStartLine(conf.get("start_line"))
+            self.__emit_progress(conf.get("start_line")+1,
+                                 self.__image.imgHeight())
     return
 
   def validate_configuration(self, conf):
@@ -148,7 +149,7 @@ class AyabPluginControl(KnittingPlugin):
     to image width. Updates the maximum value of the Start Line UI element"""
     self.options_ui.start_needle_edit.setValue(width /2)
     self.options_ui.stop_needle_edit.setValue(width /2)
-    self.options_ui.start_line_edit.setMaximum(height -1)
+    self.options_ui.start_line_edit.setMaximum(height)
 
   def __onStartLineChanged(self):
     """ """
@@ -213,7 +214,6 @@ class AyabPluginControl(KnittingPlugin):
     alignment_combo_box = self.options_ui.alignment_combo_box
     alignment_combo_box.currentIndexChanged.connect(self.__emit_alignment)
 
-
     start_line_edit = self.options_ui.start_line_edit
     start_line_edit.valueChanged.connect(self.__onStartLineChanged)
 
@@ -257,7 +257,7 @@ class AyabPluginControl(KnittingPlugin):
 
     # Internally, we start counting from zero (for easier handling of arrays)
     start_line_text = ui.findChild(QtWidgets.QSpinBox, "start_line_edit").value()
-    self.conf["start_line"] = int(start_line_text)
+    self.conf["start_line"] = int(start_line_text) - 1
 
     start_needle_color = ui.findChild(QtWidgets.QComboBox, "start_needle_color").currentText()
     start_needle_text = ui.findChild(QtWidgets.QSpinBox, "start_needle_edit").value()
@@ -406,8 +406,7 @@ class AyabPluginControl(KnittingPlugin):
             # when knitting infinitely, keep the requested
             # lineNumber in its limits
             if self.__infRepeat:
-              lineNumber = lineNumber % imgHeight
-
+                lineNumber = lineNumber % imgHeight
             #########################
             # decide which line to send according to machine type and amount of colors
             # singlebed, 2 color
@@ -419,13 +418,12 @@ class AyabPluginControl(KnittingPlugin):
                 color = 0
 
                 # calculate imgRow
-                imgRow = lineNumber + self.__startLine
+                imgRow = (lineNumber + self.__startLine) % imgHeight
 
                 # 0   1   2   3   4 .. (imgRow)
                 # |   |   |   |   |
                 # 0 1 2 3 4 5 6 7 8 .. (imageExpanded)
                 indexToSend = imgRow * 2
-
                 # Check if the last line of the image was requested
                 if imgRow == imgHeight - 1:
                     lastLine = 0x01
@@ -506,11 +504,11 @@ class AyabPluginControl(KnittingPlugin):
             # assign pixeldata
             imgStartNeedle = self.__image.imgStartNeedle()
             if imgStartNeedle < 0:
-              imgStartNeedle = 0
+                imgStartNeedle = 0
 
             imgStopNeedle = self.__image.imgStopNeedle()
             if imgStopNeedle > 199:
-              imgStopNeedle = 199
+                imgStopNeedle = 199
 
             # set the bitarray
             if color == 0 \
@@ -549,7 +547,7 @@ class AyabPluginControl(KnittingPlugin):
             logging.debug(msg)
 
             #sending line progress to gui
-            self.__emit_progress(imgRow, imgHeight)
+            self.__emit_progress(imgRow+1, imgHeight)
 
         else:
             logging.error("requested lineNumber out of range")
