@@ -147,8 +147,9 @@ class AyabPluginControl(KnittingPlugin):
   def slotSetImageDimensions(self, width, height):
     """Called by Main UI on loading of an image to set Start/Stop needle
     to image width. Updates the maximum value of the Start Line UI element"""
-    self.options_ui.start_needle_edit.setValue(width /2)
-    self.options_ui.stop_needle_edit.setValue(width /2)
+    right_side = width/2
+    self.options_ui.start_needle_edit.setValue(width - right_side)
+    self.options_ui.stop_needle_edit.setValue(right_side)
     self.options_ui.start_line_edit.setMaximum(height)
 
   def __onStartLineChanged(self):
