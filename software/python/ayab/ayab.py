@@ -225,6 +225,7 @@ class GuiMain(QMainWindow):
         self.pil_image = self.pil_image.convert("RGBA")
 
         self.refresh_scene()
+        self.statusBar().showMessage(image_str)
         # Enable plugin elements after first load of image
         self.ui.widget_optionsdock.setEnabled(True)
         self.ui.menuImage_Actions.setEnabled(True)
