@@ -40,7 +40,8 @@ import serial
 import serial.tools.list_ports
 
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(filename='ayab_log.txt', level=logging.DEBUG)
+logging.getLogger().addHandler(logging.StreamHandler())
 
 
 class GuiMain(QMainWindow):
