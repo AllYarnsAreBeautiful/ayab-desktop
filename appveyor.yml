@@ -1,0 +1,21 @@
+# see https://packaging.python.org/appveyor/#adding-appveyor-support-to-your-project
+environment:
+  # For Python versions available on Appveyor, see
+  # http://www.appveyor.com/docs/installed-software#python
+  # The list here is complete (excluding Python 2.6, which
+  # isn't covered by this document) at the time of writing.
+  PYTHON: "C:\\Python27-x64"
+
+
+install:
+  - "%PYTHON%\\python.exe -m pip install virtualenv python-qt5"
+  - "virtualenv --system-site-packages venv/"
+  - "venv\Scripts\activate"
+  - "pip install -r requirements.txt"
+  
+build_script:
+  - "PyInstaller -y ayab.spec"
+
+artifacts:
+- path: dist/ayab/*
+  name: standalone
