@@ -9,8 +9,6 @@ environment:
 
 install:
   - "%PYTHON%\\python.exe -m pip install virtualenv python-qt5 pyinstaller"
-  - "virtualenv --system-site-packages venv/"
-  - "venv\\Scripts\\activate"
   - "pip install -r requirements.txt"
   
 build_script:
