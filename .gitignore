@@ -11,3 +11,4 @@ eagle.epf
 # Binaries
 *.o
 *.hex
+documents/
