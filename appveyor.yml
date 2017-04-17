@@ -13,7 +13,8 @@ install:
   
 build_script:
   - "%PYTHON%\\python.exe -m PyInstaller -y ayab.spec"
+  - 7z a -tzip dist/ayab.zip "dist/ayab/*"
 
 artifacts:
-- path: dist/ayab/*
+- path: dist/ayab.zip
   name: standalone
