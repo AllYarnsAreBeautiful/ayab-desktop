@@ -12,3 +12,4 @@ eagle.epf
 *.o
 *.hex
 documents/
+patterns/
