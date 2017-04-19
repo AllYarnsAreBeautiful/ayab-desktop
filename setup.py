@@ -53,7 +53,7 @@ def read(*filenames, **kwargs):
 
 
 def read_requirements(file_name):
-    file_ob = file(file_name)
+    file_ob = open(file_name, "r")
     raw_requirements_list = file_ob.readlines()
     requirements_list = []
     for line in raw_requirements_list:
