@@ -13,14 +13,14 @@ TAG_NAME="`./tag_name`"
 cd ..
 
 echo "# build the distribution"
-python setup.py sdist
+python2 setup.py sdist
 
 ls dist
 
 echo "# show the versions"
 echo -n "setup.py --version: "
-python setup.py --version
+python2 setup.py --version
 echo -n "requirements: "
-python setup.py requirements
+python2 setup.py requirements
 echo "Package version $PACKAGE_VERSION with possible tag name $TAG_NAME"
 
