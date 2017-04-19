@@ -1,0 +1,27 @@
+language: python
+cache:
+  # https://docs.travis-ci.com/user/caching/
+  directories:
+    # https://github.com/Homebrew/brew/blob/master/share/doc/homebrew/FAQ.md#where-does-stuff-get-downloaded
+    - /Library/Caches/Homebrew
+    - $HOME/.cache/pip
+
+# see https://docs.travis-ci.com/user/multi-os/
+matrix:
+  include:
+    - os: linux
+      python: 2.7
+    - os: osx
+      language: generic
+  allow_failures:
+    - os: osx
+
+install:
+  - if [ "$TRAVIS_OS_NAME" == "osx"   ] ; then   mac-build/install.sh ; fi
+  - if [ "$TRAVIS_OS_NAME" == "linux" ] ; then linux-build/install.sh ; fi
+
+before_deploy:
+  - if [ "$TRAVIS_OS_NAME" == "osx"   ] ; then cp mac-build/dist/KnitEditor.dmg /Users/travis/KnitEditor.dmg ; fi
+
+before_cache:
+  - rm -f $HOME/.cache/pip/log/debug.log
