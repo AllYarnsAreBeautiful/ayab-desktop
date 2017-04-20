@@ -20,7 +20,8 @@ ls
 
 echo "# build the app"
 # see https://pythonhosted.org/PyInstaller/usage.html
-python -m PyInstaller -d -y ayab.spec
+cd ..
+python -m PyInstaller -d -y mac-build/ayab.spec
 
 echo "# create the .dmg file"
 # see http://stackoverflow.com/a/367826/1320237
