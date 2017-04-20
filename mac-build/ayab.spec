@@ -1,13 +1,7 @@
 # -*- mode: python -*-
 import sys
-site_packages = [path for path in sys.path if path.rstrip("/\\").endswith('site-packages')]
-print("site_packages:", site_packages)
 
 block_cipher = None
-
-added_files = [(site_packages_, ".") for site_packages_ in site_packages]
-
-kwargs["datas"] = added_files
 
 a = Analysis(['ayab/ayab.py'],
              pathex=['./ayab'],
@@ -19,8 +13,7 @@ a = Analysis(['ayab/ayab.py'],
              excludes=[],
              win_no_prefer_redirects=False,
              win_private_assemblies=False,
-             cipher=block_cipher,
-             **kwargs)
+             cipher=block_cipher)
 pyz = PYZ(a.pure, a.zipped_data,
              cipher=block_cipher)
 exe = EXE(pyz,
