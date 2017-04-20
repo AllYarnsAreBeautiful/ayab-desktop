@@ -13,8 +13,6 @@ brew --cache
 echo "# brew update"
 brew update
 
-echo "# install python2.7"
-brew install python
 echo -n "Python version: "
 python --version
 python -m pip install --upgrade pip
