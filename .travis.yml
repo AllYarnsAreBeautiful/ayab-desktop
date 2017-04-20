@@ -26,7 +26,7 @@ script:
   - ls dist
 
 before_deploy:
-  - if [ "$TRAVIS_OS_NAME" == "osx"   ] ; then cp mac-build/dist/KnitEditor.dmg /Users/travis/KnitEditor.dmg ; fi
+  - if [ "$TRAVIS_OS_NAME" == "osx"   ] ; then cp dist/AYAB.dmg /Users/travis/AYAB.dmg ; fi
 
 before_cache:
   - rm -f $HOME/.cache/pip/log/debug.log
