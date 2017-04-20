@@ -16,9 +16,11 @@ matrix:
   allow_failures:
     - os: osx
 
-install:
+before_install:
   - if [ "$TRAVIS_OS_NAME" == "osx"   ] ; then   mac-build/install.sh ; fi
   - if [ "$TRAVIS_OS_NAME" == "linux" ] ; then linux-build/install.sh ; fi
+
+install: true
 
 before_deploy:
   - if [ "$TRAVIS_OS_NAME" == "osx"   ] ; then cp mac-build/dist/KnitEditor.dmg /Users/travis/KnitEditor.dmg ; fi
