@@ -3,7 +3,7 @@ import sys
 
 block_cipher = None
 
-a = Analysis(['ayab/ayab.py'],
+a = Analysis(['../ayab/ayab.py'],
              pathex=['./ayab'],
              hiddenimports=[],
              binaries=[],
