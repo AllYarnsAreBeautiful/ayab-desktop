@@ -11,9 +11,6 @@ cd "$HERE"
 (
   cd ..
 
-  echo "# removing old installation of kniteditor"
-  python -m pip uninstall -y kniteditor || true
-
   echo "# build the distribution"
   python setup.py sdist
 )

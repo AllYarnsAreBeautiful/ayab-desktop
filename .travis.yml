@@ -22,6 +22,9 @@ before_install:
 
 install: true
 
+script:
+  - ls dist
+
 before_deploy:
   - if [ "$TRAVIS_OS_NAME" == "osx"   ] ; then cp mac-build/dist/KnitEditor.dmg /Users/travis/KnitEditor.dmg ; fi
 

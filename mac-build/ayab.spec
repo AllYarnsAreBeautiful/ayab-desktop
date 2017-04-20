@@ -7,7 +7,6 @@ block_cipher = None
 
 added_files = [(site_packages_, ".") for site_packages_ in site_packages]
 
-kwargs = get_deps_all()
 kwargs["datas"] = added_files
 
 a = Analysis(['ayab/ayab.py'],
