@@ -18,5 +18,5 @@ build_script:
 artifacts:
 - path: ayab-windows.zip
   name: standalone
-- path: dist/Installer/AYABInstaller.exe
+- path: windows-build/AYABInstaller.exe
   name: installer
