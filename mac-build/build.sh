@@ -19,8 +19,10 @@ pwd
 ls
 
 echo "# build the app"
+cp ayab.spec ../
+cd ..
 # see https://pythonhosted.org/PyInstaller/usage.html
-python -m PyInstaller -d -y mac-build/ayab.spec
+python -m PyInstaller -d -y ayab.spec
 
 echo "# create the .dmg file"
 # see http://stackoverflow.com/a/367826/1320237
