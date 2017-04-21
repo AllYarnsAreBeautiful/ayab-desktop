@@ -6,15 +6,17 @@ environment:
   # isn't covered by this document) at the time of writing.
   PYTHON: "C:\\Python27-x64"
 
-
 install:
   - "%PYTHON%\\python.exe -m pip install virtualenv python-qt5 pyinstaller"
   - "pip install -r requirements.txt"
   
 build_script:
   - "%PYTHON%\\python.exe -m PyInstaller -y ayab.spec"
-  - 7z a -tzip dist/ayab.zip "dist/ayab/*"
+  - 7z a -tzip ayab-windows.zip "dist/ayab/*"
+  - "windows-build\\Inno Setup 5\\ISCC.exe" windows-build\\ayab.iss
 
 artifacts:
-- path: dist/ayab.zip
+- path: ayab-windows.zip
   name: standalone
+- path: dist/Installer/AYABInstaller.exe
+  name: installer
