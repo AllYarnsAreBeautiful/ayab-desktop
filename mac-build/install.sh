@@ -15,13 +15,13 @@ brew update
 
 echo -n "Python version: "
 python --version
-#python -m pip install --upgrade pip
+python -m pip install --upgrade pip
 
 echo "# install requirements"
-#python -m pip install $USER -r ../requirements.txt
-#python -m pip install $USER PyInstaller
-pip install $USER -r ../requirements.txt
-pip install $USER PyInstaller
+python -m pip install $USER -r ../requirements.txt
+python -m pip install $USER PyInstaller
+#pip install $USER -r ../requirements.txt
+#pip install $USER PyInstaller
 
 ./build.sh $USER
 
