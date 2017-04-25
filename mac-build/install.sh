@@ -16,7 +16,9 @@ brew update
 ./install_pyqt5.sh
 
 echo -n "Python version: "
+which python
 python --version
+sudo easy_install pip
 python -m pip install --upgrade pip
 
 echo "# install requirements"
