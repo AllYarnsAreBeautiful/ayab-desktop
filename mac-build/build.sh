@@ -12,7 +12,7 @@ cd "$HERE"
   cd ..
 
   echo "# build the distribution"
-  python setup.py sdist
+  python3 setup.py sdist
 )
 
 pwd
@@ -22,7 +22,7 @@ echo "# build the app"
 cp ayab.spec ../
 cd ..
 # see https://pythonhosted.org/PyInstaller/usage.html
-python -m PyInstaller -d -y ayab.spec
+python3 -m PyInstaller -d -y ayab.spec
 
 echo "# create the .dmg file"
 # see http://stackoverflow.com/a/367826/1320237

@@ -12,18 +12,18 @@ echo "# brew --cache"
 brew --cache
 echo "# brew update"
 brew update
-
-./install_pyqt5.sh
+echo "# install Python3"
+brew install python3
+echo "# install PyQt5"
+brew install PyQt5
 
 echo -n "Python version: "
-which python
-python --version
-sudo easy_install pip
-python -m pip install --upgrade pip
+python3 --version
+python3 -m pip install --upgrade pip
 
 echo "# install requirements"
-python -m pip install $USER -r ../requirements.txt
-python -m pip install $USER PyInstaller
+python3 -m pip install $USER -r ../requirements.txt
+python3 -m pip install $USER PyInstaller
 
 ./build.sh $USER
 

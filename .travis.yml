@@ -9,7 +9,6 @@ matrix:
     python: 3.4	
   - os: osx
     language: generic
-    osx_image: xcode6.4
 before_install:
 - if [ "$TRAVIS_OS_NAME" == "osx"   ] ; then   mac-build/install.sh ; fi
 - if [ "$TRAVIS_OS_NAME" == "linux" ] ; then linux-build/install.sh ; fi
