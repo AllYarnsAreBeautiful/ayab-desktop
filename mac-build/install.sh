@@ -12,8 +12,11 @@ echo "# brew --cache"
 brew --cache
 echo "# brew update"
 brew update
-echo "# install Python3"
-brew install python3
+echo "# install pyenv"
+brew install pyenv
+echo "# pyenv 3.5.0"
+pyenv install 3.5.0
+pyenv global 3.5.0
 echo "# install PyQt5"
 brew install PyQt5
 
