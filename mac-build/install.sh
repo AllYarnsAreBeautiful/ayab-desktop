@@ -13,6 +13,8 @@ brew --cache
 echo "# brew update"
 brew update
 
+./install_pyqt5.sh
+
 echo -n "Python version: "
 python --version
 python -m pip install --upgrade pip
