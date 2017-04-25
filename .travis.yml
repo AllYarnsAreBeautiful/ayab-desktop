@@ -5,7 +5,10 @@ cache:
   - "$HOME/.cache/pip"
 matrix:
   include:
+  - os: linux
+    python: 2.7	
   - os: osx
+    language: generic
     osx_image: xcode7.3
 before_install:
 - if [ "$TRAVIS_OS_NAME" == "osx"   ] ; then   mac-build/install.sh ; fi
