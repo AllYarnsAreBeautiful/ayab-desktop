@@ -13,6 +13,7 @@ brew --cache
 echo "# brew update"
 brew update
 echo "# install pyenv"
+brew unlink pyenv
 brew install pyenv
 echo "# pyenv 3.5.0"
 pyenv install 3.5.0
