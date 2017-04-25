@@ -4,11 +4,11 @@ environment:
   # http://www.appveyor.com/docs/installed-software#python
   # The list here is complete (excluding Python 2.6, which
   # isn't covered by this document) at the time of writing.
-  PYTHON: "C:\\Python27-x64"
+  PYTHON: "C:\\Python35-x64"
 
 install:
-  - "%PYTHON%\\python.exe -m pip install virtualenv python-qt5 pyinstaller"
-  - "pip install -r requirements.txt"
+  - "%PYTHON%\\python.exe -m pip install pyqt5 pyinstaller"
+  - "%PYTHON%\\python.exe -m pip install -r requirements.txt"
   
 build_script:
   - "%PYTHON%\\python.exe -m PyInstaller -y ayab.spec"
