@@ -16,7 +16,7 @@ echo "# install pyenv"
 brew unlink pyenv
 brew install pyenv
 echo "# pyenv 3.5.0"
-pyenv install 3.5.0
+env PYTHON_CONFIGURE_OPTS="--enable-framework" pyenv install 3.5.0
 pyenv global 3.5.0
 echo "# install PyQt5"
 brew install PyQt5
