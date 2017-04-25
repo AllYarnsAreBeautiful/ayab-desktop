@@ -31,9 +31,9 @@ from yapsy import PluginManager
 from PIL import Image
 from fysom import FysomError
 
-from ayab_gui import Ui_MainWindow
-from plugins.ayab_plugin.firmware_flash import FirmwareFlash
-from ayab_about import Ui_AboutForm
+from .ayab_gui import Ui_MainWindow
+from .plugins.ayab_plugin.firmware_flash import FirmwareFlash
+from .ayab_about import Ui_AboutForm
 
 ## Temporal serial imports.
 import serial
@@ -315,7 +315,7 @@ class GuiMain(QMainWindow):
         qv.setScene(qscene)
 
     def set_dimensions_on_gui(self, width, height):
-        text = u"{} - {}".format(width, height)
+        text = "{} - {}".format(width, height)
         self.ui.dimensions_label.setText(text)
 
     def display_blocking_pop_up(self, message="", message_type="info"):
@@ -344,7 +344,7 @@ class GuiMain(QMainWindow):
         file_selected_route, _ = QtWidgets.QFileDialog.getOpenFileName(self)
         if file_selected_route:
             self.update_file_selected_text_field(file_selected_route)
-            self.load_image_from_string(unicode(file_selected_route))
+            self.load_image_from_string(str(file_selected_route))
 
     def generate_firmware_ui(self):
         self.__flash_ui = FirmwareFlash(self)
@@ -414,7 +414,7 @@ class GuiMain(QMainWindow):
 
     def __smart_resize_image(self, image, args):
         '''Implement the smart resize processing. Ratio sent as a tuple of horizontal and vertical values.'''
-        import knit_aware_resize
+        from . import knit_aware_resize
         wratio, hratio = args[0]  # Unpacks the first argument.
         logging.debug("resizing image with args: {0}".format(args))
         resized_image = knit_aware_resize.resize_image(image, wratio, hratio)
@@ -452,8 +452,8 @@ class GuiMain(QMainWindow):
 
     def __launch_get_start_smart_resize_dialog_result(self, parent):
         '''Processes dialog and returns a ratio tuple or False.'''
-        import smart_resize
-        import knit_aware_resize
+        from . import smart_resize
+        from . import knit_aware_resize
         ##TODO: create smart_resize dialog
         ## Show dialog
         self.physical_width, self.physical_height = 0.0, 0.0
@@ -479,7 +479,7 @@ class GuiMain(QMainWindow):
                 dialog.ui.ratios_list.addItem(ratio_string)
 
         def set_ratio_value(ratio):
-            dialog.ui.ratio_label.setText(u"{0:.2f}".format(ratio))
+            dialog.ui.ratio_label.setText("{0:.2f}".format(ratio))
             set_ratio_list(ratio)
 
         def recalculate_ratio():
@@ -509,17 +509,17 @@ class GuiMain(QMainWindow):
             try:
                 h, w = self.pil_image.size
                 h_ratio, w_ratio = ratio_tuple
-                horizontal_size_text, vertical_size_text = u"{0:.2f}".format(h * h_ratio), u"{0:.2f}".format(w * w_ratio)
+                horizontal_size_text, vertical_size_text = "{0:.2f}".format(h * h_ratio), "{0:.2f}".format(w * w_ratio)
                 dialog.ui.horizontal_stitches_label.setText(horizontal_size_text)
                 dialog.ui.vertical_stitches_label.setText(vertical_size_text)
-                real_width_text, real_height_text = unicode(self.physical_height * h_ratio), unicode(self.physical_width * w_ratio)
+                real_width_text, real_height_text = str(self.physical_height * h_ratio), str(self.physical_width * w_ratio)
                 dialog.ui.calculated_width_label.setText(real_width_text)
                 dialog.ui.calculated_height_label.setText(real_height_text)
             except:
                 pass
 
-        dialog.ui.height_spinbox.valueChanged[unicode].connect(set_height_ratio)
-        dialog.ui.width_spinbox.valueChanged[unicode].connect(set_width_ratio)
+        dialog.ui.height_spinbox.valueChanged[str].connect(set_height_ratio)
+        dialog.ui.width_spinbox.valueChanged[str].connect(set_width_ratio)
         dialog.ui.ratios_list.currentRowChanged[int].connect(get_ratios_list_item_value)
 
         dialog_ok = dialog.exec_()
@@ -527,7 +527,7 @@ class GuiMain(QMainWindow):
 
         logging.debug(dialog_ok)
         if dialog_ok:
-            print ratio
+            print(ratio)
             return self.ratio_tuple
             #set variables to parent
         else:

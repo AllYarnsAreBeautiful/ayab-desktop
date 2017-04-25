@@ -14,7 +14,7 @@ import platform
 import subprocess
 from subprocess import Popen, PIPE, STDOUT
 
-from firmware_flash_ui import Ui_FirmwareFlashFrame
+from .firmware_flash_ui import Ui_FirmwareFlashFrame
 
 
 class FirmwareFlash(QFrame):
@@ -96,7 +96,7 @@ class FirmwareFlash(QFrame):
 
     def load_firmware(self, controller_qstring):
         self.clean_firmware_list()
-        controller_key = unicode(controller_qstring)
+        controller_key = str(controller_qstring)
         repo = self.json_object
         for firmware in repo[self.chosen_hardware_device]['controller'][controller_key]:
             self.add_firmware_dict_to_list(firmware)
@@ -128,8 +128,8 @@ class FirmwareFlash(QFrame):
         os_name = platform.system()
         base_dir = os.path.dirname(__file__)
         port = self.ui.port_combo_box.currentText()
-        controller_name = unicode(self.ui.controller_list.currentItem().text())
-        firmware_key = unicode(self.ui.firmware_list.currentItem().text())
+        controller_name = str(self.ui.controller_list.currentItem().text())
+        firmware_key = str(self.ui.firmware_list.currentItem().text())
         firmware_name = "firmware.hex"
         for firmware in self.json_object[self.chosen_hardware_device]['controller'][controller_name]:
             if firmware.get("version") == firmware_key:

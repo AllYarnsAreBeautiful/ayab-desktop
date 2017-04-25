@@ -18,7 +18,7 @@
 #    Copyright 2014 Sebastian Oliva, Christian Obersteiner, Andreas Müller,
 #    https://bitbucket.org/chris007de/ayab-apparat/
 
-from __future__ import print_function
+
 from setuptools import setup, find_packages
 from setuptools.command.test import test as TestCommand
 import io
@@ -87,7 +87,7 @@ setup(
     version=ayab.__version__,
     url='http://ayab-knitting.com/',
     license='GNU GPLv3+',
-    author=u'Christian Obersteiner, Andreas Müller, Sebastian Oliva',
+    author='Christian Obersteiner, Andreas Müller, Sebastian Oliva',
     scripts=['bin/ayab'],
     windows=['bin/ayab'],
     skip_archive=True,

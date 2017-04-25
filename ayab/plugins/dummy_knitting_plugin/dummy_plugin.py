@@ -46,7 +46,7 @@ class DummyKnittingPlugin(KnittingPlugin):
     # Simulating a blocking task.
     for i in range(self._cycle_ammount):
       percent = (i / float(self._cycle_ammount))*100
-      print percent
+      print(percent)
       self.parent_ui.emit(QtCore.SIGNAL('updateProgress(int)'), int(percent))
       time.sleep(0.1)
     self.finish()

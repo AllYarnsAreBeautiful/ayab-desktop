@@ -38,32 +38,32 @@ def setPixel(bytearray,pixel):
 # ACTIONS
 #
 def a_reqInfo():
-    print "< reqInfo"
+    print("< reqInfo")
     ser.write(chr(0x03) + '\n\r')
 
 def a_reqStart( ):
-    startNeedle = raw_input("Start Needle: ")
-    stopNeedle  = raw_input("Stop Needle : ")
+    startNeedle = eval(input("Start Needle: "))
+    stopNeedle  = eval(input("Stop Needle : "))
 
     msg = chr(0x01)                     #msg id
     msg += chr(int(startNeedle))
     msg += chr(int(stopNeedle))
-    print "< reqStart"
+    print("< reqStart")
     ser.write(msg + '\n\r')
 
 
 def a_cnfLine():
-    lineNumber = raw_input("Line Number    : ")
+    lineNumber = eval(input("Line Number    : "))
     lineNumber = int(lineNumber)
 
     lineData = ''
     while len(lineData) != 25:
-        lineData = raw_input("Line Data      : ")
+        lineData = eval(input("Line Data      : "))
 
-    lastLine   = raw_input("Last Line (0/1): ")
+    lastLine   = eval(input("Last Line (0/1): "))
     flags      = int(lastLine)
     crc8 = 0x00
-    print type(lineData)
+    print((type(lineData)))
     cnfLine(lineNumber, lineData, flags, crc8)
 
 
@@ -71,7 +71,7 @@ def a_printImage():
     msg = chr(0x01)       #msg id
     msg += chr(int(0))
     msg += chr(int(199))
-    print "< reqStart"
+    print("< reqStart")
     ser.write(msg + '\n\r')
     while True:
         checkSerial( True )
@@ -86,7 +86,7 @@ def a_showImage():
                 msg += "#"
             else:
                 msg += '-'
-        print msg
+        print(msg)
 
 
 def sendLine(lineNumber):
@@ -100,7 +100,7 @@ def sendLine(lineNumber):
                 setPixel(bytes,x)
             else:
                 msg += '-'
-        print msg + str(lineNumber)
+        print((msg + str(lineNumber)))
 
         if lineNumber == imageH-1:
             lastLine = 0x01
@@ -116,7 +116,7 @@ def cnfLine(lineNumber, lineData, flags, crc8):
     msg += lineData                     # line data
     msg += chr(flags)                   # flags
     msg += chr(crc8)                    # crc8
-    print "< cnfLine"
+    print("< cnfLine")
     ser.write(msg + '\n\r')
 
 
@@ -133,46 +133,46 @@ def checkSerial( printMode ):
                 msg += "success"
             else:
                 msg += "failed"
-            print msg
+            print(msg)
 
         elif msgId == 0xC3: # cnfInfo
             msg = "> cnfInfo: Version="
             msg += str(ord(line[1]))
-            print msg
+            print(msg)
 
         elif msgId == 0x82: #reqLine            
             
             msg = "> reqLine: "
             msg += str(ord(line[1]))
-            print msg
+            print(msg)
             if printMode:
                 sendLine(ord(line[1]))
         else:
-            print line[:-2] #drop crlf
+            print((line[:-2])) #drop crlf
 
 
 def no_such_action():
-    print "Please make a valid selection"
+    print("Please make a valid selection")
 
 
 def print_menu():
-    print "==================="
-    print "=    AYAB TEST    ="
-    print "==================="    
-    print "= andz & chris007 ="
-    print "=       v1        ="
-    print "==================="
-    print "Image: " + filename  
-    print img.format, img.size, img.mode
-    print ""
-    print "1 - reqInfo"
-    print "2 - reqStart"
-    print "3 - cnfLine"
-    print ""
-    print "4 - show image"
-    print "5 - print image"
-    print ""
-    print "0 - Exit"
+    print("===================")
+    print("=    AYAB TEST    =")
+    print("===================")    
+    print("= andz & chris007 =")
+    print("=       v1        =")
+    print("===================")
+    print(("Image: " + filename))  
+    print((img.format, img.size, img.mode))
+    print("")
+    print("1 - reqInfo")
+    print("2 - reqStart")
+    print("3 - cnfLine")
+    print("")
+    print("4 - show image")
+    print("5 - print image")
+    print("")
+    print("0 - Exit")
 
 
 def mainFunction():   
@@ -180,9 +180,9 @@ def mainFunction():
     actions = {"1": a_reqInfo, "2": a_reqStart, "3": a_cnfLine, "4": a_showImage, "5": a_printImage}
     print_menu()
     while True:
-        print ""    
-        selection = raw_input("Your selection: ")
-        print ""
+        print("")    
+        selection = eval(input("Your selection: "))
+        print("")
         if "0" == selection:
             ser.close()
             exit()
