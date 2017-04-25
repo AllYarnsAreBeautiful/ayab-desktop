@@ -27,19 +27,12 @@ import os
 import glob
 import sys
 
-try:
-    import py2exe
-except:
-    #TODO: notify of missing functionality.
-    pass
-
 import ayab
 
 here = os.path.abspath(os.path.dirname(__file__))
 
 ## Useful Docs
-## https://wiki.python.org/moin/Distutils/Tutorial
-## https://pythonhosted.org/setuptools/setuptools.html
+## https://packaging.python.org/distributing/#requirements-for-packaging-and-distributing
 
 
 def read(*filenames, **kwargs):
@@ -53,7 +46,7 @@ def read(*filenames, **kwargs):
 
 
 def read_requirements(file_name):
-    file_ob = file(file_name)
+    file_ob = open(file_name, "r")
     raw_requirements_list = file_ob.readlines()
     requirements_list = []
     for line in raw_requirements_list:
@@ -64,19 +57,6 @@ def read_requirements(file_name):
 
 ## This builds the long description from Readme file, should be rst.
 long_description = read('README.md')  # TODO: Add 'CHANGES.txt'
-
-
-class PyTest(TestCommand):
-    def finalize_options(self):
-        TestCommand.finalize_options(self)
-        self.test_args = []
-        self.test_suite = True
-
-    def run_tests(self):
-        import pytest
-        errcode = pytest.main(self.test_args)
-        sys.exit(errcode)
-
 
 def find_data_files(source, target, patterns):
     """Locates the specified data-files and returns the matches
@@ -111,11 +91,6 @@ setup(
     scripts=['bin/ayab'],
     windows=['bin/ayab'],
     skip_archive=True,
-    tests_require=['pytest'],
-    options={"py2exe": {
-        "includes": ["sip"],
-        "skip_archive": True
-        }},
     data_files=find_data_files('ayab', 'ayab', [
         'README.md',
         'patterns/*',
@@ -130,7 +105,6 @@ setup(
         'plugins/ayab_plugin/firmware/uno/*',
         ]),
     install_requires=[read_requirements("requirements.txt")],
-    cmdclass={'test': PyTest},
     author_email='info@ayab-knitting.com',
     description='GUI for Machine assisted Knitting. Reference implementation for AYAB.',
     long_description=long_description,
@@ -146,6 +120,5 @@ setup(
         'Programming Language :: Python',
         'Development Status :: 4 - Beta',
         'Natural Language :: English',
-        ],
-    extras_require={'testing': ['pytest']}
+        ]
 )
