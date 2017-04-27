@@ -40,5 +40,4 @@ Name: "{commonprograms}\AYAB"; Filename: "{app}\ayab.exe"
 Name: "{commondesktop}\AYAB"; Filename: "{app}\ayab.exe"; Tasks: desktopicon
 
 [Run]
-Filename: "{app}\ayab.exe"; Description: "{cm:LaunchProgram,KnitEditor}"; Flags: nowait postinstall skipifsilent
-
+Filename: "{app}\ayab.exe"; Description: "{cm:LaunchProgram,AYAB}"; Flags: nowait postinstall skipifsilent
