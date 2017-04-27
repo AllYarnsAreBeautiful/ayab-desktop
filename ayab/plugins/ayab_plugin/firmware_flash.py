@@ -66,6 +66,8 @@ class FirmwareFlash(QFrame):
             path = (os.path.dirname(os.path.realpath(__file__)) +
                     "/firmware/firmware.json")
 
+        logging.debug(path)
+
         with open(path) as data_file:
             data = json.load(data_file)
         return data
