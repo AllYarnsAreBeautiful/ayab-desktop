@@ -10,6 +10,7 @@ import serial.tools.list_ports
 import json
 import logging
 import os
+import sys
 import platform
 import subprocess
 from subprocess import Popen, PIPE, STDOUT
@@ -60,13 +61,21 @@ class FirmwareFlash(QFrame):
     def parse_json(self, json_string):
         os_name = platform.system()
         if os_name == "Windows":
-            path = (os.path.dirname(os.path.realpath(__file__)) +
-                    "\\firmware\\firmware.json")
+            # determine if application is a script file or frozen exe
+            if getattr(sys, 'frozen', False):
+                path = (os.path.dirname(sys.executable) +
+                        "\\plugins\\ayab_plugin\\firmware\\firmware.json")
+            elif __file__:
+                path = (os.path.dirname(os.path.realpath(__file__)) +
+                        "/firmware/firmware.json")
         else:
             path = (os.path.dirname(os.path.realpath(__file__)) +
                     "/firmware/firmware.json")
 
+
+
         logging.debug(path)
+        logging.debug(os.path.abspath("."))
 
         with open(path) as data_file:
             data = json.load(data_file)
