@@ -17,15 +17,15 @@
 #    Copyright 2013, 2014 Sebastian Oliva, Christian Obersteiner, Andreas MÃ¼ller
 #    https://bitbucket.org/chris007de/ayab-apparat/
 
-from .ayab_communication import AyabCommunication
-from . import ayab_image
+from ayab.ayab_communication import AyabCommunication
+from ayab import ayab_image
 import time
 import logging
 import os
 from ayab.plugins.knitting_plugin import KnittingPlugin
 from PyQt5 import QtGui, QtWidgets, QtCore
 
-from .ayab_options import Ui_DockWidget
+from ayab_options import Ui_DockWidget
 import serial.tools.list_ports
 
 
@@ -285,7 +285,7 @@ class AyabPluginControl(KnittingPlugin):
 
     serial_port_text = ui.findChild(QtWidgets.QComboBox, "serial_port_dropdown").currentText()
     self.conf["portname"] = str(serial_port_text)
-    
+
     # getting file location from textbox
     filename_text = ui.findChild(QtWidgets.QLineEdit, "filename_lineedit").text()
     self.conf["filename"] = str(filename_text)
