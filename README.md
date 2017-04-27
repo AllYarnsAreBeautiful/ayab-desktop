@@ -10,7 +10,7 @@ This is the GUI interface for AYAB.
 
 #### Prerequisites
 
-You need Python 2.7 and PyQt5 from your package manager's repository.
+You need Python 3.5 and PyQt5 from your package manager's repository.
 The other main dependencies can be found in requirements.txt
 
 *For Debian/Ubuntu*
@@ -26,7 +26,7 @@ To be able to communicate with your Arduino, it might be necessary to add the ri
 
     sudo usermod -a -G tty [userName]
     sudo usermod -a -G dialout [userName]
-    
+
 #### Release Version
 
 This will install the latest release version from PyPi
@@ -34,7 +34,7 @@ This will install the latest release version from PyPi
     virtualenv --system-site-packages venv/
     source venv/bin/activate
     pip install ayab
-    
+
 Now, you can start the software with
 
     ayab
@@ -46,10 +46,11 @@ To install the development version you can checkout the git repository
     git clone https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
 Create a virtual enviroment in the cloned repository
-    
+
     cd ayab-desktop
     virtualenv --system-site-packages venv/
     source venv/bin/activate
+    pip install -r requirements.txt
 
 Now start ayab with
 
@@ -80,13 +81,13 @@ Download and install Python 2.7.13 (64 bit) (pip is already contained in this in
 and additionally run
 
     pip install virtualenv python-qt5
-    
+
 You can checkout the git repository with
 
     git clone https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
 Create a virtual enviroment in the cloned repository
-    
+
     cd ayab-desktop
     virtualenv --system-site-packages venv/
     venv\Scripts\activate

@@ -58,6 +58,7 @@ class FirmwareFlash(QFrame):
         self.add_items_from_json_object(self.json_object)
 
     def parse_json(self, json_string):
+        os_name = platform.system()
         if os_name == "Windows":
             path = (os.path.dirname(os.path.realpath(__file__)) +
                     "\\firmware\\firmware.json")
