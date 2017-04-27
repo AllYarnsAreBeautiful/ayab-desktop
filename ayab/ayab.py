@@ -31,9 +31,9 @@ from yapsy import PluginManager
 from PIL import Image
 from fysom import FysomError
 
-from ayab_gui import Ui_MainWindow
-from plugins.ayab_plugin.firmware_flash import FirmwareFlash
-from ayab_about import Ui_AboutForm
+from ayab.ayab_gui import Ui_MainWindow
+from ayab.plugins.ayab_plugin.firmware_flash import FirmwareFlash
+from ayab.ayab_about import Ui_AboutForm
 
 # Temporal serial imports.
 import serial

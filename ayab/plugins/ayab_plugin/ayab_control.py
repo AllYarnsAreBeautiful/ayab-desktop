@@ -17,15 +17,15 @@
 #    Copyright 2013, 2014 Sebastian Oliva, Christian Obersteiner, Andreas MÃ¼ller
 #    https://bitbucket.org/chris007de/ayab-apparat/
 
-from ayab.ayab_communication import AyabCommunication
-from ayab import ayab_image
+from .ayab_communication import AyabCommunication
+from . import ayab_image
 import time
 import logging
 import os
 from ayab.plugins.knitting_plugin import KnittingPlugin
 from PyQt5 import QtGui, QtWidgets, QtCore
 
-from ayab_options import Ui_DockWidget
+from .ayab_options import Ui_DockWidget
 import serial.tools.list_ports
 
 

@@ -14,7 +14,7 @@ import platform
 import subprocess
 from subprocess import Popen, PIPE, STDOUT
 
-from firmware_flash_ui import Ui_FirmwareFlashFrame
+from .firmware_flash_ui import Ui_FirmwareFlashFrame
 
 
 class FirmwareFlash(QFrame):
