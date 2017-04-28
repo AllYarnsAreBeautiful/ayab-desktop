@@ -31,7 +31,7 @@ To be able to communicate with your Arduino, it might be necessary to add the ri
 
 This will install the latest release version from PyPi
 
-    virtualenv --system-site-packages venv/
+    virtualenv -p python3 --system-site-packages venv/
     source venv/bin/activate
     pip install ayab
 
@@ -48,16 +48,13 @@ To install the development version you can checkout the git repository
 Create a virtual enviroment in the cloned repository
 
     cd ayab-desktop
-    virtualenv --system-site-packages venv/
+    virtualenv -p python3 --system-site-packages venv/
     source venv/bin/activate
-    pip install -r requirements.txt
+    pip3 install -r requirements.txt
 
 Now start ayab with
 
-    ayab_devel_launch.py
-
-Note: If running ayab fails with "IOError: [Errno 13] Permission denied: '/usr/local/lib/python2.7/dist-packages/oauthlib-0.6.0-py2.7.egg/EGG-INFO/top_level.txt" or similar, try to change the permissions of the file using
-    sudo chmod o+r /usr/local/lib/python2.7/dist-packages/oauthlib-0.6.0-py2.7.egg/EGG-INFO/top_level.txt
+    python3 ayab_devel_launch.py
 
 To be able to work on GUI elements and translation files, the Qt Dev tools are needed also:
 
@@ -67,20 +64,24 @@ To be able to work on GUI elements and translation files, the Qt Dev tools are n
 
 #### Release Version
 
-The Windows version which is available at http://ayab-knitting.com has been packed with py2exe and should not require any additional dependencies. Just unzip the archive to C:\ayab-apparat and run
+The Windows version which is available at http://ayab-knitting.com has been packed with
+PyInstaller and should not require any additional dependencies.
+Just unzip the archive or use the Installer and run
 
     ayab.exe
 
 #### Running from source & Development (Tested on Win10)
 
-You need Python Version 2.7.13 (Important: the 64 bit version!) and PyQt5 (we used 5.3.2).
+You need Python Version 3.5.3 (Important: the 64 bit version!) and PyQt5 (we used 5.3.2).
 
-Download and install Python 2.7.13 (64 bit) (pip is already contained in this installer) from
-    https://www.python.org/downloads/windows/
+Download and install Python 3.5.3 (64 bit) (pip is already contained in this installer) from
+    https://www.python.org/downloads/windows/ (https://www.python.org/ftp/python/3.5.3/python-3.5.3-amd64.exe)
 
-and additionally run
+You may also need PyWin32 (https://sourceforge.net/projects/pywin32/files/pywin32/).
 
-    pip install virtualenv python-qt5
+Now, use pip to install further dependencies
+
+    pip install virtualenv pyqt5
 
 You can checkout the git repository with
 
@@ -98,7 +99,7 @@ Then install the remaining prerequisites with
 
 Now start ayab with
 
-    ayab_devel_launch.py
+    python ayab_devel_launch.py
 
 ### macOS
 
