@@ -79,17 +79,20 @@ class AyabCommunication(object):
       msg = chr(0x01)  # msg id
       msg += chr(int(startNeedle))
       msg += chr(int(stopNeedle))
+      msg += '\n\r'
       # print "< reqStart"
-      self.__ser.write(msg + '\n\r')
+      self.__ser.write(msg.encode())
 
   def req_info(self):
       """Sends a request for information to controller."""
       # print "< reqInfo"
-      self.__ser.write(chr(0x03) + '\n\r')
+      msg = chr(0x03) + '\n\r'
+      self.__ser.write(msg.encode())
 
   def req_test(self):
       """"""
-      self.__ser.write(chr(0x04) + '\n\r')
+      msg = chr(0x04) + '\n\r'
+      self.__ser.write(msg.encode())
 
   def cnf_line(self, lineNumber, lineData, flags, crc8):
       """Sends a line of data via the serial port.
@@ -108,12 +111,13 @@ class AyabCommunication(object):
 
       msg = chr(0x42)                    # msg id
       msg += chr(lineNumber)              # line number
-      msg += lineData                     # line data
+      msg += str(lineData)                # line data
       msg += chr(flags)                   # flags
       msg += chr(crc8)                    # crc8
+      msg += '\n\r'
       # print "< cnfLine"
       # print lineData
-      self.__ser.write(msg + '\n\r')
+      self.__ser.write(msg.encode())
 
 
 class CommunicationException(Exception):

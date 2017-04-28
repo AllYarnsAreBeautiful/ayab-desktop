@@ -318,7 +318,7 @@ class AyabPluginControl(KnittingPlugin):
 #####################################
 
   def __setBit(self, int_type, offset):
-      mask = 1 << offset
+      mask = 1 << int(offset)
       return(int_type | mask)
 
   def __setPixel(self, bytearray, pixel):
@@ -332,44 +332,44 @@ class AyabPluginControl(KnittingPlugin):
 
         line = self.__ayabCom.read_line()
 
-        if line != '':
-            msgId = ord(line[0])
+        if len(line) > 0:
+            msgId = line[0]
             if msgId == 0xC1:    # cnfStart
                 # print "> cnfStart: " + str(ord(line[1]))
-                return ("cnfStart", ord(line[1]))
+                return ("cnfStart", line[1])
 
             elif msgId == 0xC3:  # cnfInfo
                 # print "> cnfInfo: Version=" + str(ord(line[1]))
-                api = ord(line[1])
+                api = line[1]
                 msg = "API v" + str(api)
 
                 if api >= 4:
-                    msg += ", FW v" + str(ord(line[2])) + "." + str(ord(line[3]))
+                    msg += ", FW v" + str(line[2]) + "." + str(line[3])
 
                 logging.info(msg)
-                return ("cnfInfo", ord(line[1]))
+                return ("cnfInfo", line[1])
 
             elif msgId == 0x82:  # reqLine
                 # print "> reqLine: " + str(ord(line[1]))
-                return ("reqLine", ord(line[1]))
+                return ("reqLine", line[1])
 
             elif msgId == 0xC4:  # cnfTest
-                return ("cnfTest", ord(line[1]))
+                return ("cnfTest", line[1])
 
             elif msgId == 0x84:
-                hall_l = (ord(line[2]) << 8) + ord(line[3])
-                hall_r = (ord(line[4]) << 8) + ord(line[5])
+                hall_l = (line[2] << 8) + line[3]
+                hall_r = (line[4] << 8) + line[5]
 
                 self.options_ui.progress_hall_l.setValue(hall_l)
                 self.options_ui.progress_hall_r.setValue(hall_r)
-                self.options_ui.slider_position.setValue(ord(line[7]))
-                carriage = ord(line[6])
+                self.options_ui.slider_position.setValue(line[7])
+                carriage = line[6]
                 if carriage == 1:
                     self.options_ui.label_carriage.setText("K Carriage")
                 elif carriage == 2:
                     self.options_ui.label_carriage.setText("L Carriage")
 
-                return ("indState", ord(line[1]))
+                return ("indState", line[1])
 
             else:
                 logging.warning("unknown message: " + line[:])  # drop crlf
