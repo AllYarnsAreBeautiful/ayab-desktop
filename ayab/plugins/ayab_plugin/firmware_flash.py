@@ -183,7 +183,7 @@ class FirmwareFlash(QFrame):
         if os_name == "Windows":
             # determine if application is a script file or frozen exe
             if getattr(sys, 'frozen', False):
-                path = (os.path.dirname(sys.executable) +
+                exe_route = (os.path.dirname(sys.executable) +
                         "\\plugins\\ayab_plugin\\firmware\\avrdude.exe")
             else:
                 exe_route = os.path.join(base_dir, "firmware", "avrdude.exe")
