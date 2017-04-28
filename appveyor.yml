@@ -11,10 +11,10 @@ install:
   - "echo %PATH%"
   - "%PYTHON%\\python.exe -m pip install pyqt5 pyinstaller"
   - "%PYTHON%\\python.exe -m pip install -r requirements.txt"
-  - git clone https://github.com/AllYarnsAreBeautiful/ayab-patterns patterns
 
 build_script:
   - "%PYTHON%\\python.exe -m PyInstaller -y ayab.spec"
+  - git clone https://github.com/AllYarnsAreBeautiful/ayab-patterns dist\\ayab\\patterns
   - 7z a -tzip ayab-windows.zip "dist/ayab/*"
   - cmd: cmd /c "windows-build\\Inno Setup 5\\ISCC.exe" windows-build\\ayab.iss
 
