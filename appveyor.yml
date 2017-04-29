@@ -23,3 +23,29 @@ artifacts:
   name: standalone
 - path: windows-build/AYABInstaller.exe
   name: installer
+
+deploy:
+- provider: GitHub
+  # http://www.appveyor.com/docs/deployment/github
+  tag: $(APPVEYOR_REPO_TAG_NAME)
+  description: "Release $(APPVEYOR_REPO_TAG_NAME)"
+  auth_token:
+    secure: TZdJy8VQd+dRNFbFaDSYARdGg6Ca8+SfigFuvIxWwVzKBmL6qpT/XPxMCS6sRiQp
+  artifact: installer
+  force_update: true
+  draft: false
+  prerelease: true
+  on:
+    appveyor_repo_tag: true        # deploy on tag push only
+- provider: GitHub
+  # http://www.appveyor.com/docs/deployment/github
+  tag: $(APPVEYOR_REPO_TAG_NAME)
+  description: "Release $(APPVEYOR_REPO_TAG_NAME)"
+  auth_token:
+    secure: TZdJy8VQd+dRNFbFaDSYARdGg6Ca8+SfigFuvIxWwVzKBmL6qpT/XPxMCS6sRiQp
+  artifact: standalone
+  force_update: true
+  draft: false
+  prerelease: true
+  on:
+    appveyor_repo_tag: true        # deploy on tag push only
