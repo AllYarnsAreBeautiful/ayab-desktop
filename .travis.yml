@@ -29,7 +29,7 @@ deploy:
   skip_cleanup: true
   on:
     tags: true
-    condition: "\"$TRAVIS_OS_NAME\" == \"linux\""
+    condition: "$TRAVIS_OS_NAME == linux"
 
   provider: releases
   api_key:
@@ -39,4 +39,4 @@ deploy:
   skip_cleanup: true
   on:
     tags: true
-    condition: "\"$TRAVIS_OS_NAME\" == \"osx\""
+    condition: "$TRAVIS_OS_NAME == osx"
