@@ -66,6 +66,9 @@ class FirmwareFlash(QFrame):
             if getattr(sys, 'frozen', False):
                 path = (os.path.dirname(sys.executable) +
                         "\\plugins\\ayab_plugin\\firmware\\firmware.json")
+            else:
+                path = (os.path.dirname(os.path.realpath(__file__)) +
+                    "/firmware/firmware.json")
         else:
             path = (os.path.dirname(os.path.realpath(__file__)) +
                     "/firmware/firmware.json")
