@@ -108,16 +108,16 @@ class AyabCommunication(object):
         crc8 (bytes, optional): The CRC-8 checksum for transmission.
 
       """
-
       msg = chr(0x42)                    # msg id
       msg += chr(lineNumber)              # line number
-      msg += str(lineData)                # line data
-      msg += chr(flags)                   # flags
+      self.__ser.write(msg.encode())
+      self.__ser.write(lineData)
+      msg = chr(flags)                   # flags
       msg += chr(crc8)                    # crc8
       msg += '\n\r'
+      self.__ser.write(msg.encode())
       # print "< cnfLine"
       # print lineData
-      self.__ser.write(msg.encode())
 
 
 class CommunicationException(Exception):
