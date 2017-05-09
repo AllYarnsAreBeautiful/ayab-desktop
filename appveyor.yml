@@ -15,13 +15,13 @@ install:
 build_script:
   - "%PYTHON%\\python.exe -m PyInstaller -y ayab.spec"
   - git clone https://github.com/AllYarnsAreBeautiful/ayab-patterns dist\\ayab\\patterns
-  - 7z a -tzip ayab-windows.zip "dist/ayab/*"
+  - 7z a -tzip AYAB-Windows10.zip "dist/ayab/*"
   - cmd: cmd /c "windows-build\\Inno Setup 5\\ISCC.exe" windows-build\\ayab.iss
 
 artifacts:
-- path: ayab-windows.zip
+- path: AYAB-Windows10.zip
   name: standalone
-- path: windows-build/AYABInstaller.exe
+- path: windows-build/AYAB-Windows10-Setup.exe
   name: installer
 
 deploy:
