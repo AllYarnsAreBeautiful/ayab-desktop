@@ -22,12 +22,23 @@ script:
 before_cache:
 - rm -f $HOME/.cache/pip/log/debug.log
 deploy:
-  provider: releases
-  api_key:
-    secure: PEEOBJp94cyGZgL5GjiGWeg9OXKv3cGmrSW8QiDmbHl4Go7oYvbk+ixXorT7L3/hZPcsjLzvIhZp3HLY5Xm2VPLNi9OWvggqtWlETgU6pOn24XlhujpMUm1e0JSYQwyL6CWmXxjDB5R1mzaVLj4dVeczBY+qDABmiUHTjPGJg3B9GezrM3lB/M5in3PkwmrC207IPEZi6uy8ZYFA/i290E2z3D/j4ITsHiKLLwUmWpZ1jP2JXtEvE6rPFv84/7310y7yNdCu8j+7E41n08phbPEhk3/hWcfDp8tR+Bb3SKZ70w2wpTPd7NxmVQ2iv0yzHDlKJmuaokxGTIDu/JcTYn2VBc9tzHB4nmYzeRDkbz6jl9kMTM/L2PzlPa5IdtNgm8v+veWo52fYFz65KC81vOJSYtC95S1j/ykZglmmfi0IcKOvl0zenXtgKaIKQ9p7of1ZUyKkXF1gfolZCLL1w69H7lCBpaBv37KxBixcCZLu5XDj7OU6BB3HwFLqFoAEEgCTjJNfEN7FOsg6PgGQARcNrNLqNV/R6VA9WNozNIdcGJbjVSquu/Z/VpmTmfasDRSAUrK80Za+NvFHiswJYadhjz1L6Qb8Xukf1UWwtxr3kFLvu69AcS3Tq4IHTIUxBdDIb3t8djgaSb0yg2jZ1EHxTL9RfLau3rhi9NOIhfg=
-  file:
-    - $DEPLOY_FILE
-  skip_cleanup: true
-  overwrite: true
-  on:
-    tags: true
+  - provider: s3
+    access_key_id: AKIAJG44N63GE4VUX45A
+    secret_access_key:
+      secure: bG9lkLndcELbSNLGdwrp3SqD1WKpsIggM4pTf8oiJsUtJRsKmhsaCZ9B90u5/En2WHqYoYEuwdoF2AYmrq8sXXD0yhbMbw254cGZRoPgYA2i6Tv3nRi5x3vN5e3ATlXG1DHDM8YF3HwL4AB3j2jiy3rrBE3QqF11j12OFb8R3hiP81p1wqGoqwNwQItB0ptieVl5up/YmigsqmPT4Lk2XSnPAh4qQrBHw+vPcftOG3xFMhBosWj724G4iEAb/9O926BYkWEGixJXhukYTIpqnAWNJpwuRILLeXXnZTm7AtZhuBJE9vdCSlzqNuNGwrV+J+fP9H1Bs49f3XlywLw8N8rokOpbVMpIl5ZrDD0tt8K3PfQrAmsk5fYKaShs1t9kweqSHrxTlwRCdRiJC2CMfGOCtjIZGgS929H7lQhrwGob1hsNrGgKbLFodIrBuAGXqElexn4xBxyjMtxpqbdJSrPwFNocDgZYrAkq4wh8snUuF1cbF16jgmGR3z4YZVySluhOt60r3lSFFtpab91J/uzvsjAyfia8pKdfzYapfrurEljhTYR1u1JFseHcfTgUOH8XrHbLO1sCyzrvwj2NOy7aCRvDY8X4gdJLfMIxzMbfWNuRgLV7hoVShk0wn5uC1+WAkBFXaIaPRotskDnNDKEBXkfCRQvKYhQbrlFAzYE=
+    bucket: ayab-debug
+    acl: public_read
+    skip_cleanup: true
+    file: $DEPLOY_FILE
+    overwrite: true
+    on:
+      repo: AllYarnsAreBeautiful/ayab-desktop
+      branch: python3
+  - provider: releases
+    api_key:
+      secure: PEEOBJp94cyGZgL5GjiGWeg9OXKv3cGmrSW8QiDmbHl4Go7oYvbk+ixXorT7L3/hZPcsjLzvIhZp3HLY5Xm2VPLNi9OWvggqtWlETgU6pOn24XlhujpMUm1e0JSYQwyL6CWmXxjDB5R1mzaVLj4dVeczBY+qDABmiUHTjPGJg3B9GezrM3lB/M5in3PkwmrC207IPEZi6uy8ZYFA/i290E2z3D/j4ITsHiKLLwUmWpZ1jP2JXtEvE6rPFv84/7310y7yNdCu8j+7E41n08phbPEhk3/hWcfDp8tR+Bb3SKZ70w2wpTPd7NxmVQ2iv0yzHDlKJmuaokxGTIDu/JcTYn2VBc9tzHB4nmYzeRDkbz6jl9kMTM/L2PzlPa5IdtNgm8v+veWo52fYFz65KC81vOJSYtC95S1j/ykZglmmfi0IcKOvl0zenXtgKaIKQ9p7of1ZUyKkXF1gfolZCLL1w69H7lCBpaBv37KxBixcCZLu5XDj7OU6BB3HwFLqFoAEEgCTjJNfEN7FOsg6PgGQARcNrNLqNV/R6VA9WNozNIdcGJbjVSquu/Z/VpmTmfasDRSAUrK80Za+NvFHiswJYadhjz1L6Qb8Xukf1UWwtxr3kFLvu69AcS3Tq4IHTIUxBdDIb3t8djgaSb0yg2jZ1EHxTL9RfLau3rhi9NOIhfg=
+    file: $DEPLOY_FILE
+    skip_cleanup: true
+    overwrite: true
+    on:
+      tags: true
