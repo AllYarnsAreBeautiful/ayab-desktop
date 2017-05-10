@@ -15,7 +15,7 @@ cd ..
 echo "# build the distribution"
 python setup.py sdist
 mkdir -p dist/release
-mv dist/*.tar.gz dist/release/
+mv dist/ayab*.tar.gz dist/release/
 ls dist/release/
 
 echo "# show the versions"
