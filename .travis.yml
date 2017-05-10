@@ -28,9 +28,9 @@ deploy:
       secure: bG9lkLndcELbSNLGdwrp3SqD1WKpsIggM4pTf8oiJsUtJRsKmhsaCZ9B90u5/En2WHqYoYEuwdoF2AYmrq8sXXD0yhbMbw254cGZRoPgYA2i6Tv3nRi5x3vN5e3ATlXG1DHDM8YF3HwL4AB3j2jiy3rrBE3QqF11j12OFb8R3hiP81p1wqGoqwNwQItB0ptieVl5up/YmigsqmPT4Lk2XSnPAh4qQrBHw+vPcftOG3xFMhBosWj724G4iEAb/9O926BYkWEGixJXhukYTIpqnAWNJpwuRILLeXXnZTm7AtZhuBJE9vdCSlzqNuNGwrV+J+fP9H1Bs49f3XlywLw8N8rokOpbVMpIl5ZrDD0tt8K3PfQrAmsk5fYKaShs1t9kweqSHrxTlwRCdRiJC2CMfGOCtjIZGgS929H7lQhrwGob1hsNrGgKbLFodIrBuAGXqElexn4xBxyjMtxpqbdJSrPwFNocDgZYrAkq4wh8snUuF1cbF16jgmGR3z4YZVySluhOt60r3lSFFtpab91J/uzvsjAyfia8pKdfzYapfrurEljhTYR1u1JFseHcfTgUOH8XrHbLO1sCyzrvwj2NOy7aCRvDY8X4gdJLfMIxzMbfWNuRgLV7hoVShk0wn5uC1+WAkBFXaIaPRotskDnNDKEBXkfCRQvKYhQbrlFAzYE=
     bucket: ayab-debug
     acl: public_read
-    skip_cleanup: true
-    file: $DEPLOY_FILE
+    local_dir: dist/release
     overwrite: true
+    region: eu-central-1
     on:
       repo: AllYarnsAreBeautiful/ayab-desktop
       branch: python3
