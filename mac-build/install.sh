@@ -19,15 +19,15 @@ echo "# pyenv 3.5.0"
 env PYTHON_CONFIGURE_OPTS="--enable-framework" pyenv install 3.5.0
 pyenv global 3.5.0
 echo "# install PyQt5"
-brew install PyQt5
+~/.pyenv/shims/pip3 install PyQt5
 
 echo -n "Python version: "
 ~/.pyenv/shims/python3 --version
-~/.pyenv/shims/python3 -m pip install --upgrade pip
+~/.pyenv/shims/pip3 install --upgrade pip
 
 echo "# install requirements"
-~/.pyenv/shims/python3 -m pip install $USER -r ../requirements.txt
-~/.pyenv/shims/python3 -m pip install $USER PyInstaller
+~/.pyenv/shims/pip3 install $USER -r ../requirements.txt
+~/.pyenv/shims/pip3 install $USER PyInstaller
 
 ./build.sh $USER
 
