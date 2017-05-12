@@ -407,15 +407,16 @@ class AyabPluginControl(KnittingPlugin):
             lineNumber = lineNumber \
                 + (self.__lineBlock * 256)
 
-            # when knitting infinitely, keep the requested
-            # lineNumber in its limits
-            if self.__infRepeat:
-                lineNumber = lineNumber % imgHeight
             #########################
             # decide which line to send according to machine type and amount of colors
             # singlebed, 2 color
             if self.__machineType == 'single' \
                     and self.__numColors == 2:
+
+                # when knitting infinitely, keep the requested
+                # lineNumber in its limits
+                if self.__infRepeat:
+                    lineNumber = lineNumber % imgHeight
 
                 # color is always 0 in singlebed,
                 # because both colors are knitted at once
@@ -435,6 +436,11 @@ class AyabPluginControl(KnittingPlugin):
             # doublebed, 2 color
             elif self.__machineType == 'ribber' \
                     and self.__numColors == 2:
+
+                # when knitting infinitely, keep the requested
+                # lineNumber in its limits
+                if self.__infRepeat:
+                    lineNumber = lineNumber % (lenImgExpanded-1)
 
                 # calculate imgRow
                 imgRow = int(lineNumber / 2) + self.__startLine
@@ -467,6 +473,11 @@ class AyabPluginControl(KnittingPlugin):
             elif self.__machineType == 'ribber' \
                     and self.__numColors > 2:
 
+                # when knitting infinitely, keep the requested
+                # lineNumber in its limits
+                if self.__infRepeat:
+                    lineNumber = lineNumber % (lenImgExpanded-1)
+
                 # calculate imgRow
                 imgRow = int(
                     lineNumber / (self.__numColors * 2)) + self.__startLine
@@ -485,6 +496,11 @@ class AyabPluginControl(KnittingPlugin):
 
             elif self.__machineType == 'circular' \
                     and self.__numColors == 2:
+
+                # when knitting infinitely, keep the requested
+                # lineNumber in its limits
+                if self.__infRepeat:
+                    lineNumber = lineNumber % (lenImgExpanded-1)
 
                 imgRow = int(lineNumber / 4) + self.__startLine
 
