@@ -72,6 +72,7 @@ class GuiMain(QMainWindow):
 
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+        self.showMaximized()
         self.plugins_init()
         self.setupBehaviour()
 
