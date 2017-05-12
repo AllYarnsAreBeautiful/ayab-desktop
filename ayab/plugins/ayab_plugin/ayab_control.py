@@ -28,6 +28,7 @@ from PyQt5 import QtGui, QtWidgets, QtCore
 from .ayab_options import Ui_DockWidget
 import serial.tools.list_ports
 
+import pprint
 
 class AyabPluginControl(KnittingPlugin):
 
@@ -372,7 +373,9 @@ class AyabPluginControl(KnittingPlugin):
                 return ("indState", line[1])
 
             else:
-                logging.warning("unknown message: " + line[:])  # drop crlf
+                logging.debug("unknown message: ") # drop crlf
+                pp = pprint.PrettyPrinter(indent=4)
+                pp.pprint(line)
                 return ("unknown", 0)
         return("none", 0)
 
