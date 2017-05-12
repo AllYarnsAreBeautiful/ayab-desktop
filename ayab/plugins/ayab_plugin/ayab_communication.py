@@ -28,6 +28,7 @@ import time
 import serial
 
 import logging
+import struct
 
 
 class AyabCommunication(object):
@@ -75,24 +76,21 @@ class AyabCommunication(object):
 
   def req_start(self, startNeedle, stopNeedle):
       """Sends a start message to the controller."""
-
-      msg = chr(0x01)  # msg id
-      msg += chr(int(startNeedle))
-      msg += chr(int(stopNeedle))
-      msg += '\n\r'
-      # print "< reqStart"
-      self.__ser.write(msg.encode())
+      self.__ser.write(struct.pack('!B',0x01))
+      self.__ser.write(struct.pack('!B',startNeedle))
+      self.__ser.write(struct.pack('!B',stopNeedle))
+      self.__ser.write("\n\r".encode())
 
   def req_info(self):
       """Sends a request for information to controller."""
       # print "< reqInfo"
-      msg = chr(0x03) + '\n\r'
-      self.__ser.write(msg.encode())
+      self.__ser.write(struct.pack('!B',0x03))
+      self.__ser.write("\n\r".encode())
 
   def req_test(self):
       """"""
-      msg = chr(0x04) + '\n\r'
-      self.__ser.write(msg.encode())
+      self.__ser.write(struct.pack('!B',0x04))
+      self.__ser.write("\n\r".encode())
 
   def cnf_line(self, lineNumber, lineData, flags, crc8):
       """Sends a line of data via the serial port.
@@ -108,14 +106,12 @@ class AyabCommunication(object):
         crc8 (bytes, optional): The CRC-8 checksum for transmission.
 
       """
-      msg = chr(0x42)                    # msg id
-      msg += chr(lineNumber)              # line number
-      self.__ser.write(msg.encode())
+      self.__ser.write(struct.pack('!B',0x42))
+      self.__ser.write(struct.pack('!B',lineNumber))
       self.__ser.write(lineData)
-      msg = chr(flags)                   # flags
-      msg += chr(crc8)                    # crc8
-      msg += '\n\r'
-      self.__ser.write(msg.encode())
+      self.__ser.write(struct.pack('!B',flags))
+      self.__ser.write(struct.pack('!B',crc8))
+      self.__ser.write("\n\r".encode())
       # print "< cnfLine"
       # print lineData
 
