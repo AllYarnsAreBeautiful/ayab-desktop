@@ -72,6 +72,7 @@ class GuiMain(QMainWindow):
 
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+        self.showMaximized()
         self.plugins_init()
         self.setupBehaviour()
 
@@ -405,11 +406,17 @@ class GuiMain(QMainWindow):
         except:
             logging.error("Error on executing transform")
 
+        # Update the view
+        self.pil_image = image
+
         # Disable Knit Controls
         self.ui.widget_knitcontrol.setEnabled(False)
 
-        # Update the view
-        self.pil_image = image
+        # Update maximum values
+        width, height = self.pil_image.size
+        self.enabled_plugin.plugin_object.slotSetImageDimensions(width,
+                                                                 height)
+        # Draw canvas
         self.refresh_scene()
 
     def __smart_resize_image(self, image, args):

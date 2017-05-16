@@ -14,8 +14,9 @@ cd ..
 
 echo "# build the distribution"
 python setup.py sdist
-
-ls dist
+mkdir -p dist/release
+mv dist/ayab*.tar.gz dist/release/
+ls dist/release/
 
 echo "# show the versions"
 echo -n "setup.py --version: "

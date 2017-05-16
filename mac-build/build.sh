@@ -13,6 +13,7 @@ cd "$HERE"
 
   echo "# build the distribution"
   ~/.pyenv/shims/python3 setup.py sdist
+  mkdir -p dist/release
 )
 
 pwd
@@ -26,7 +27,7 @@ cd ..
 
 echo "# create the .dmg file"
 # see http://stackoverflow.com/a/367826/1320237
-AYAB_DMG="`pwd`/dist/AYAB.dmg"
+AYAB_DMG="`pwd`/dist/release/AYAB.dmg"
 rm -f "$AYAB_DMG"
 hdiutil create -srcfolder dist/ayab.app "$AYAB_DMG"
 

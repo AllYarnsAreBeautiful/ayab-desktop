@@ -28,6 +28,7 @@ from PyQt5 import QtGui, QtWidgets, QtCore
 from .ayab_options import Ui_DockWidget
 import serial.tools.list_ports
 
+import pprint
 
 class AyabPluginControl(KnittingPlugin):
 
@@ -147,7 +148,7 @@ class AyabPluginControl(KnittingPlugin):
   def slotSetImageDimensions(self, width, height):
     """Called by Main UI on loading of an image to set Start/Stop needle
     to image width. Updates the maximum value of the Start Line UI element"""
-    right_side = width/2
+    right_side = int(width/2)
     self.options_ui.start_needle_edit.setValue(width - right_side)
     self.options_ui.stop_needle_edit.setValue(right_side)
     self.options_ui.start_line_edit.setMaximum(height)
@@ -372,7 +373,9 @@ class AyabPluginControl(KnittingPlugin):
                 return ("indState", line[1])
 
             else:
-                logging.warning("unknown message: " + line[:])  # drop crlf
+                logging.debug("unknown message: ") # drop crlf
+                pp = pprint.PrettyPrinter(indent=4)
+                pp.pprint(line)
                 return ("unknown", 0)
         return("none", 0)
 
@@ -404,15 +407,16 @@ class AyabPluginControl(KnittingPlugin):
             lineNumber = lineNumber \
                 + (self.__lineBlock * 256)
 
-            # when knitting infinitely, keep the requested
-            # lineNumber in its limits
-            if self.__infRepeat:
-                lineNumber = lineNumber % imgHeight
             #########################
             # decide which line to send according to machine type and amount of colors
             # singlebed, 2 color
             if self.__machineType == 'single' \
                     and self.__numColors == 2:
+
+                # when knitting infinitely, keep the requested
+                # lineNumber in its limits
+                if self.__infRepeat:
+                    lineNumber = lineNumber % imgHeight
 
                 # color is always 0 in singlebed,
                 # because both colors are knitted at once
@@ -432,6 +436,11 @@ class AyabPluginControl(KnittingPlugin):
             # doublebed, 2 color
             elif self.__machineType == 'ribber' \
                     and self.__numColors == 2:
+
+                # when knitting infinitely, keep the requested
+                # lineNumber in its limits
+                if self.__infRepeat:
+                    lineNumber = lineNumber % (lenImgExpanded-1)
 
                 # calculate imgRow
                 imgRow = int(lineNumber / 2) + self.__startLine
@@ -464,6 +473,11 @@ class AyabPluginControl(KnittingPlugin):
             elif self.__machineType == 'ribber' \
                     and self.__numColors > 2:
 
+                # when knitting infinitely, keep the requested
+                # lineNumber in its limits
+                if self.__infRepeat:
+                    lineNumber = lineNumber % (lenImgExpanded-1)
+
                 # calculate imgRow
                 imgRow = int(
                     lineNumber / (self.__numColors * 2)) + self.__startLine
@@ -482,6 +496,11 @@ class AyabPluginControl(KnittingPlugin):
 
             elif self.__machineType == 'circular' \
                     and self.__numColors == 2:
+
+                # when knitting infinitely, keep the requested
+                # lineNumber in its limits
+                if self.__infRepeat:
+                    lineNumber = lineNumber % (lenImgExpanded-1)
 
                 imgRow = int(lineNumber / 4) + self.__startLine
 
