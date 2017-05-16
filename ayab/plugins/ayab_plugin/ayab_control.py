@@ -443,7 +443,7 @@ class AyabPluginControl(KnittingPlugin):
                     lineNumber = lineNumber % lenImgExpanded
 
                 # calculate imgRow
-                imgRow = int(lineNumber / 2) + self.__startLine
+                imgRow = (int(lineNumber / 2) + self.__startLine) % imgHeight
 
                 # 0 0 1 1 2 2 3 3 4 4 .. (imgRow)
                 # 0 1 2 3 4 5 6 7 8 9 .. (lineNumber)
@@ -463,6 +463,8 @@ class AyabPluginControl(KnittingPlugin):
                     indexToSend += lineNumber - 1
                 else:
                     indexToSend += lineNumber
+
+                indexToSend = indexToSend % lenImgExpanded
 
                 # Decide whether to send lastLine Flag
                 if (imgRow == imgHeight - 1) \
