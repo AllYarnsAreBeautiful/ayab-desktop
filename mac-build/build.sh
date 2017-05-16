@@ -20,7 +20,7 @@ echo "# create the .dmg file"
 # see http://stackoverflow.com/a/367826/1320237
 AYAB_DMG="`pwd`/dist/release/AYAB.dmg"
 rm -f "$AYAB_DMG"
-hdiutil create -srcfolder dist/AYAB.app "$AYAB_DMG"
+hdiutil create -srcfolder ../dist/AYAB.app "$AYAB_DMG"
 
 echo "The installer can be found in \"$AYAB_DMG\"."
 
