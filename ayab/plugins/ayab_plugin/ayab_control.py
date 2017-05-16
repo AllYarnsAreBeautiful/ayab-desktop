@@ -574,7 +574,6 @@ class AyabPluginControl(KnittingPlugin):
 
         if lastLine:
           if self.__infRepeat:
-              self.__lineBlock = 0
               return 0  # keep knitting
           else:
               return 1  # image finished
