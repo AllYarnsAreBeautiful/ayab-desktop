@@ -440,7 +440,7 @@ class AyabPluginControl(KnittingPlugin):
                 # when knitting infinitely, keep the requested
                 # lineNumber in its limits
                 if self.__infRepeat:
-                    lineNumber = lineNumber % (lenImgExpanded-1)
+                    lineNumber = lineNumber % lenImgExpanded
 
                 # calculate imgRow
                 imgRow = int(lineNumber / 2) + self.__startLine
@@ -476,7 +476,7 @@ class AyabPluginControl(KnittingPlugin):
                 # when knitting infinitely, keep the requested
                 # lineNumber in its limits
                 if self.__infRepeat:
-                    lineNumber = lineNumber % (lenImgExpanded-1)
+                    lineNumber = lineNumber % lenImgExpanded
 
                 # calculate imgRow
                 imgRow = int(
@@ -500,7 +500,7 @@ class AyabPluginControl(KnittingPlugin):
                 # when knitting infinitely, keep the requested
                 # lineNumber in its limits
                 if self.__infRepeat:
-                    lineNumber = lineNumber % (lenImgExpanded-1)
+                    lineNumber = lineNumber % lenImgExpanded
 
                 imgRow = int(lineNumber / 4) + self.__startLine
 
