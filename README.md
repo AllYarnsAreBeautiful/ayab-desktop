@@ -103,7 +103,39 @@ Now start ayab with
 
 ### macOS
 
-**TODO**
+#### Release Version
+
+The macOS version is using a wrapper script to ensure all dependencies are installed.
+As a result, the first start might take a while depending on your CPU and internet download speed.
+Open the DMG image and copy the app to your Application folder.
+Then just run it and wait for the dependencies to be downloaded and installed.
+
+#### Running from source & Development
+
+To install the development version you can checkout the git repository
+
+    git clone https://github.com/AllYarnsAreBeautiful/ayab-desktop
+
+pyQt5 is also required.
+Best is to use `brew` to install it
+
+    brew install pyqt5
+
+Create a virtual enviroment in the cloned repository
+
+    cd ayab-desktop
+    pip install virtualenv
+    virtualenv -p python3 --system-site-packages venv/
+    source venv/bin/activate
+    pip3 install -r requirements.txt
+
+Now start ayab with
+
+    python3 ayab_devel_launch.py
+
+To be able to work on GUI elements and translation files, the Qt Dev tools are needed also:
+
+    http://download.qt.io/official_releases/online_installers/qt-unified-mac-x64-online.dmg
 
 ## Release Notes
 
