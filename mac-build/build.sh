@@ -6,7 +6,7 @@ set -e
 
 HERE="`dirname \"$0\"`"
 USER="$1"
-PACKAGE_VERSION="`./package_version`"
+PACKAGE_VERSION="`cat ./package_version`"
 cd "$HERE"
 
 mkdir -p ../dist/release
