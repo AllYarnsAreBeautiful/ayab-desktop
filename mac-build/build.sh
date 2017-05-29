@@ -6,12 +6,13 @@ set -e
 
 HERE="`dirname \"$0\"`"
 USER="$1"
+PACKAGE_VERSION="`./package_version`"
 cd "$HERE"
 
 mkdir -p ../dist/release
 
 echo "# build the app"
-/usr/local/bin/platypus -P AYAB_bash.platypus -y ../dist/AYAB
+/usr/local/bin/platypus -P AYAB.platypus -V $PACKAGE_VERSION -Y AYAB -R -y ../dist/AYAB
 
 echo "# create the .dmg file"
 # see http://stackoverflow.com/a/367826/1320237
