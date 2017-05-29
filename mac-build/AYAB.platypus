@@ -13,7 +13,7 @@
 	<key>BundledFiles</key>
 	<array>
 		<string>../ayab</string>
-		<string>../ayab_devel_launch.py</string>
+		<string>ayab_devel_launch.py</string>
 		<string>../requirements.txt</string>
 	</array>
 	<key>Creator</key>

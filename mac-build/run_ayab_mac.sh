@@ -36,6 +36,7 @@ fi
 eval "$(/Users/$USER/.pyenv/bin/pyenv init -)"
 /Users/$USER/.pyenv/shims/pip3 install --upgrade pip
 /Users/$USER/.pyenv/shims/pip3 install PyQt5
+/Users/$USER/.pyenv/shims/pip3 install pyobjc
 /Users/$USER/.pyenv/shims/pip3 install -r requirements.txt
 
 /Users/$USER/.pyenv/shims/python3 ayab_devel_launch.py
