@@ -486,7 +486,7 @@ class AyabPluginControl(KnittingPlugin):
 
                 if (lineNumber % 2) == 0:
                     color = (lineNumber / 2) % self.__numColors
-                    indexToSend = (imgRow * self.__numColors) + color
+                    indexToSend = int((imgRow * self.__numColors) + color)
                     logging.debug("COLOR" + str(color))
                 else:
                     sendBlankLine = True
@@ -517,6 +517,7 @@ class AyabPluginControl(KnittingPlugin):
                 else:
                     indexToSend = self.__startLine * 4
                     indexToSend += lineNumber / 2
+                    indexToSend = int(indexToSend)
 
                 if lineNumber == (lenImgExpanded*2) - 1:
                     lastLine = 0x01
