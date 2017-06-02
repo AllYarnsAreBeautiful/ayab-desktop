@@ -421,7 +421,7 @@ class GuiMain(QMainWindow):
 
     def __smart_resize_image(self, image, args):
         '''Implement the smart resize processing. Ratio sent as a tuple of horizontal and vertical values.'''
-        from . import knit_aware_resize
+        from ayab import knit_aware_resize
         wratio, hratio = args[0]  # Unpacks the first argument.
         logging.debug("resizing image with args: {0}".format(args))
         resized_image = knit_aware_resize.resize_image(image, wratio, hratio)
@@ -459,8 +459,8 @@ class GuiMain(QMainWindow):
 
     def __launch_get_start_smart_resize_dialog_result(self, parent):
         '''Processes dialog and returns a ratio tuple or False.'''
-        from . import smart_resize
-        from . import knit_aware_resize
+        from ayab import smart_resize
+        from ayab import knit_aware_resize
         ##TODO: create smart_resize dialog
         ## Show dialog
         self.physical_width, self.physical_height = 0.0, 0.0
