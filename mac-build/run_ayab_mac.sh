@@ -3,6 +3,7 @@ export LC_CTYPE=en_US.UTF-8
 export PYTHONIOENCODING=utf-8
 
 USER=`whoami`
+PACKAGE_VERSION="`cat ./package_version`"
 
 if type xcode-select >&- && xpath=$( xcode-select --print-path ) &&
    test -d "${xpath}" && test -x "${xpath}" ; then
