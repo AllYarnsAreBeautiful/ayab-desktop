@@ -23,7 +23,7 @@
 	<key>DeclareService</key>
 	<false/>
 	<key>Destination</key>
-	<string>../dist/AYAB.app</string>
+	<string>../dist/AYAB-Launcher.app</string>
 	<key>DevelopmentVersion</key>
 	<false/>
 	<key>DocIconPath</key>
@@ -45,7 +45,7 @@
 	<key>InterpreterPath</key>
 	<string>/bin/bash</string>
 	<key>Name</key>
-	<string>AYAB</string>
+	<string>AYAB Launcher</string>
 	<key>NibPath</key>
 	<string>/usr/local/share/platypus/MainMenu.nib</string>
 	<key>OptimizeApplication</key>
@@ -238,7 +238,7 @@
 	<key>StatusItemIconIsTemplate</key>
 	<false/>
 	<key>StatusItemTitle</key>
-	<string>AYAB</string>
+	<string>AYAB Launcher</string>
 	<key>StatusItemUseSystemFont</key>
 	<true/>
 	<key>Suffixes</key>

@@ -39,7 +39,7 @@ eval "$(/Users/$USER/.pyenv/bin/pyenv init -)"
 /Users/$USER/.pyenv/shims/pip3 install pyobjc
 /Users/$USER/.pyenv/shims/pip3 install -r requirements.txt
 
-if [ ! -f "/Applications/AYAB.app/Contents/Resources/AYAB.app/Contents/MacOS/main.sh" ]
+if [ ! -f "/Applications/AYAB-Launcher.app/Contents/Resources/AYAB.app/Contents/MacOS/main.sh" ]
 then
   echo "creating wrapper"
   /Users/derchris/.pyenv/shims/python3 pyapp.py ayab_devel_launch.py AYAB $PACKAGE_VERSION
