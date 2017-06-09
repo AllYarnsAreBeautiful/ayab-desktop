@@ -15,6 +15,8 @@
 		<string>../ayab</string>
 		<string>ayab_devel_launch.py</string>
 		<string>../requirements.txt</string>
+                <string>package_version</string>
+                <string>pyapp.py</string>
 	</array>
 	<key>Creator</key>
 	<string>Platypus-5.2</string>
