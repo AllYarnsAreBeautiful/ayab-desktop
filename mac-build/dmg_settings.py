@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 import biplist
 import os.path
 
-application = defines.get('app', '/Applications/AYAB-Launcher.app')
+application = defines.get('app', '../dist/AYAB-Launcher.app')
 appname = os.path.basename(application)
 format = defines.get('format', 'UDBZ')
 size = defines.get('size', None)
