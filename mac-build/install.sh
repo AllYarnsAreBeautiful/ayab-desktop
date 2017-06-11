@@ -8,6 +8,7 @@ cd "$HERE"
 mkdir -p /usr/local/share/platypus/
 cp -R platypus/share/* /usr/local/share/platypus/
 cp platypus/platypus /usr/local/bin/
+pip install dmgbuild
 
 ./build.sh $USER
 

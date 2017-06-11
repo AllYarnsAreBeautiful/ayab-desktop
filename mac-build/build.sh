@@ -19,7 +19,8 @@ echo "# create the .dmg file"
 AYAB_DMG="`pwd`/../dist/release/AYAB.dmg"
 rm -f "$AYAB_DMG"
 ls -l ../dist/
-hdiutil create -srcfolder ../dist/AYAB-Launcher.app "$AYAB_DMG"
+#hdiutil create -srcfolder ../dist/AYAB-Launcher.app "$AYAB_DMG"
+dmgbuild -s dmg_settings.py AYAB "$AYAB_DMG"
 
 echo "The installer can be found in \"$AYAB_DMG\"."
 
