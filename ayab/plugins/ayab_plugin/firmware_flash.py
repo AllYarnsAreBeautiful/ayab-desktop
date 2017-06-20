@@ -190,7 +190,7 @@ class FirmwareFlash(QFrame):
                         "\\plugins\\ayab_plugin\\firmware\\avrdude.exe")
             else:
                 exe_route = os.path.join(base_dir, "firmware", "avrdude.exe")
-                exe_route = "\"" + exe_route + "\""
+            exe_route = "\"" + exe_route + "\""
         elif os_name == "Linux":
             # We assume avrdude is available in path
             try:
@@ -208,6 +208,7 @@ class FirmwareFlash(QFrame):
         else:
             binary_file = os.path.join(base_dir, "firmware",
                                        controller_name, firmware_name)
+        binary_file = "\"" + binary_file + "\""
 
         serial_port = port
         # List of Arduino controllers and their avrdude names.
@@ -228,14 +229,15 @@ class FirmwareFlash(QFrame):
         # http://sharats.me/the-ever-useful-and-neat-subprocess-module.html
         exec_command = """{0} -p {1} -c {2} -P {3} -b115200 -D -Uflash:w:"{4}":i """.format(
                        exe_route, device, programmer, serial_port, binary_file)
+
         if os_name == "Windows":
             # determine if application is a script file or frozen exe
             if getattr(sys, 'frozen', False):
-                exec_command += " -C " + (os.path.dirname(sys.executable) +
-                                          "\\plugins\\ayab_plugin\\firmware\\avrdude.conf")
+                exec_command += " -C \"" + (os.path.dirname(sys.executable) +
+                                          "\\plugins\\ayab_plugin\\firmware\\avrdude.conf") + "\""
             else:
-                exec_command += " -C " + os.path.join(base_dir,
-                                                      "firmware", "avrdude.conf")
+                exec_command += " -C \"" + os.path.join(base_dir,
+                                                      "firmware", "avrdude.conf") + "\""
 
         logging.debug(exec_command)
         return exec_command
