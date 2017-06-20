@@ -17,6 +17,7 @@
 		<string>../requirements.txt</string>
                 <string>package_version</string>
                 <string>pyapp.py</string>
+		<string>../patterns</string>
 	</array>
 	<key>Creator</key>
 	<string>Platypus-5.2</string>
