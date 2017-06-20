@@ -216,7 +216,6 @@ class GuiMain(QMainWindow):
         self.ui.actionRotate_Left.triggered.connect(self.rotate_left)
         self.ui.actionRotate_Right.triggered.connect(self.rotate_right)
         self.ui.actionVertical_Flip.triggered.connect(self.flip_image)
-        self.ui.actionSmart_Resize.triggered.connect(self.smart_resize)
 
     def load_image_from_string(self, image_str):
         '''Loads an image into self.ui.image_pattern_view using a temporary QGraphicsScene'''
@@ -377,12 +376,6 @@ class GuiMain(QMainWindow):
         '''Public rotate right current Image function.'''
         self.apply_image_transform("rotate", -90.0)
 
-    def smart_resize(self):
-        '''Executes the smart resize process including dialog .'''
-        dialog_result = self.__launch_get_start_smart_resize_dialog_result(self)
-        if dialog_result:
-            self.apply_image_transform("smart_resize", dialog_result)
-
     def apply_image_transform(self, transform_type, *args):
         '''Executes an image transform specified by key and args.
 
@@ -394,7 +387,6 @@ class GuiMain(QMainWindow):
             'mirror': self.__mirror_image,
             'flip': self.__flip_image,
             'rotate': self.__rotate_image,
-            'smart_resize': self.__smart_resize_image,
         }
         transform = transform_dict.get(transform_type)
         image = self.pil_image
@@ -418,14 +410,6 @@ class GuiMain(QMainWindow):
                                                                  height)
         # Draw canvas
         self.refresh_scene()
-
-    def __smart_resize_image(self, image, args):
-        '''Implement the smart resize processing. Ratio sent as a tuple of horizontal and vertical values.'''
-        from ayab import knit_aware_resize
-        wratio, hratio = args[0]  # Unpacks the first argument.
-        logging.debug("resizing image with args: {0}".format(args))
-        resized_image = knit_aware_resize.resize_image(image, wratio, hratio)
-        return resized_image
 
     def __rotate_image(self, image, args):
         if not args:
@@ -456,89 +440,6 @@ class GuiMain(QMainWindow):
         import PIL.ImageOps
         flipped_image = PIL.ImageOps.flip(image)
         return flipped_image
-
-    def __launch_get_start_smart_resize_dialog_result(self, parent):
-        '''Processes dialog and returns a ratio tuple or False.'''
-        from ayab import smart_resize
-        from ayab import knit_aware_resize
-        ##TODO: create smart_resize dialog
-        ## Show dialog
-        self.physical_width, self.physical_height = 0.0, 0.0
-        self.ratio_tuple = 1.0, 1.0
-        ratio = 0.0
-        dialog = QtWidgets.QDialog()
-        dialog.ui = smart_resize.Ui_Dialog()
-        dialog.ui.setupUi(dialog)
-
-        def calculate_ratio_value(height, width):
-            '''Calculates the ratio value with given height and width.'''
-            try:
-                return height / width
-            except:
-                return 0.0
-
-        def set_ratio_list(ratio):
-            '''Sets the dialog ratio list to a list of aproximations of rational ratios that match it.'''
-            dialog.ui.ratios_list.clear()
-            self.ratio_list = knit_aware_resize.get_rational_ratios(ratio)
-            for ratio in self.ratio_list:
-                ratio_string = "{0:.0f} - {1:.0f}".format(ratio[0], ratio[1])
-                dialog.ui.ratios_list.addItem(ratio_string)
-
-        def set_ratio_value(ratio):
-            dialog.ui.ratio_label.setText("{0:.2f}".format(ratio))
-            set_ratio_list(ratio)
-
-        def recalculate_ratio():
-            ratio = calculate_ratio_value(self.physical_height, self.physical_width)
-            set_ratio_value(ratio)
-            logging.debug("Set Ratio to {}".format(ratio))
-
-        def set_height_ratio(height_string):
-            self.physical_height = float(height_string)
-            recalculate_ratio()
-
-        def set_width_ratio(width_string):
-            self.physical_width = float(width_string)
-            recalculate_ratio()
-
-        def get_ratios_list_item_value(selected_value):
-            '''Gets the value of the tuple corresponding to the selected ratio list.'''
-            try:
-                self.ratio_tuple = self.ratio_list[selected_value]
-                recalculate_real_size(self.ratio_tuple)
-                logging.debug(self.ratio_tuple)
-            except IndexError:
-                pass
-
-        def recalculate_real_size(ratio_tuple):
-            '''Updates the calculations on the Resize dialog.'''
-            try:
-                h, w = self.pil_image.size
-                h_ratio, w_ratio = ratio_tuple
-                horizontal_size_text, vertical_size_text = "{0:.2f}".format(h * h_ratio), "{0:.2f}".format(w * w_ratio)
-                dialog.ui.horizontal_stitches_label.setText(horizontal_size_text)
-                dialog.ui.vertical_stitches_label.setText(vertical_size_text)
-                real_width_text, real_height_text = str(self.physical_height * h_ratio), str(self.physical_width * w_ratio)
-                dialog.ui.calculated_width_label.setText(real_width_text)
-                dialog.ui.calculated_height_label.setText(real_height_text)
-            except:
-                pass
-
-        dialog.ui.height_spinbox.valueChanged[str].connect(set_height_ratio)
-        dialog.ui.width_spinbox.valueChanged[str].connect(set_width_ratio)
-        dialog.ui.ratios_list.currentRowChanged[int].connect(get_ratios_list_item_value)
-
-        dialog_ok = dialog.exec_()
-        #dialog.show()
-
-        logging.debug(dialog_ok)
-        if dialog_ok:
-            print(ratio)
-            return self.ratio_tuple
-            #set variables to parent
-        else:
-            return False
 
     def getSerialPorts(self):
         """

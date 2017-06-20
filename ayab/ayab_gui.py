@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ayab/ayab_gui.ui'
 #
-# Created: Thu Jan 26 21:51:43 2017
+# Created: Tue Jun 20 09:27:36 2017
 #      by: PyQt5 UI code generator 5.3.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -142,7 +142,7 @@ class Ui_MainWindow(object):
         self.gridLayout.addLayout(self.image_side_panel, 0, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1008, 19))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1008, 25))
         self.menubar.setObjectName("menubar")
         self.menuFile = QtWidgets.QMenu(self.menubar)
         self.menuFile.setObjectName("menuFile")
@@ -190,7 +190,6 @@ class Ui_MainWindow(object):
         self.menuImage_Actions.addAction(self.actionRotate_Left)
         self.menuImage_Actions.addAction(self.actionRotate_Right)
         self.menuImage_Actions.addSeparator()
-        self.menuImage_Actions.addAction(self.actionSmart_Resize)
         self.menubar.addAction(self.menuFile.menuAction())
         self.menubar.addAction(self.menuImage_Actions.menuAction())
         self.menubar.addAction(self.menuTools.menuAction())
