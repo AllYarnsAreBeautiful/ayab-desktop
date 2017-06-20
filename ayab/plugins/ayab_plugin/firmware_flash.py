@@ -186,8 +186,8 @@ class FirmwareFlash(QFrame):
         if os_name == "Windows":
             # determine if application is a script file or frozen exe
             if getattr(sys, 'frozen', False):
-                exe_route = (os.path.dirname(sys.executable) +
-                        "\\plugins\\ayab_plugin\\firmware\\avrdude.exe")
+                exe_route = os.path.join(os.path.dirname(sys.executable),
+                        "plugins","ayab_plugin","firmware","avrdude.exe")
             else:
                 exe_route = os.path.join(base_dir, "firmware", "avrdude.exe")
             exe_route = "\"" + exe_route + "\""
@@ -202,13 +202,15 @@ class FirmwareFlash(QFrame):
             exe_route = os.path.join(base_dir, "firmware", "avrdude_mac")
 
         if os_name == "Windows":
-            binary_file = os.path.join(os.path.dirname(sys.executable),
-                                       "plugins", "ayab_plugin", "firmware",
+            if getattr(sys, 'frozen', False):
+                binary_file = os.path.join(os.path.dirname(sys.executable),
+                        "plugins","ayab_plugin","firmware",controller_name,firmware_name)
+            else:
+                binary_file = os.path.join(base_dir, "firmware",
                                        controller_name, firmware_name)
         else:
             binary_file = os.path.join(base_dir, "firmware",
                                        controller_name, firmware_name)
-        binary_file = "\"" + binary_file + "\""
 
         serial_port = port
         # List of Arduino controllers and their avrdude names.
@@ -233,8 +235,8 @@ class FirmwareFlash(QFrame):
         if os_name == "Windows":
             # determine if application is a script file or frozen exe
             if getattr(sys, 'frozen', False):
-                exec_command += " -C \"" + (os.path.dirname(sys.executable) +
-                                          "\\plugins\\ayab_plugin\\firmware\\avrdude.conf") + "\""
+                exec_command += " -C \"" + os.path.join(os.path.dirname(sys.executable),
+                                          "plugins","ayab_plugin","firmware","avrdude.conf") + "\""
             else:
                 exec_command += " -C \"" + os.path.join(base_dir,
                                                       "firmware", "avrdude.conf") + "\""
