@@ -45,5 +45,13 @@ then
   echo "creating wrapper"
   /Users/$USER/.pyenv/shims/python3 pyapp.py ayab_devel_launch.py AYAB $PACKAGE_VERSION
 fi
+
+if [ ! -f "/Users/$USER/Documents/AYAB/patterns" ]
+then
+  echo "installing patterns"
+  mkdir -p /Users/$USER/Documents/AYAB/
+  cp -R patterns /Users/$USER/Documents/AYAB/
+fi
+
 echo "running app"
 AYAB.app/Contents/MacOS/main.sh
