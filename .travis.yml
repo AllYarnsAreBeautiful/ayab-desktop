@@ -38,6 +38,8 @@ script:
       mv ayab*.tar.gz AYAB-Linux-${TRAVIS_COMMIT}.tar.gz;
     fi
   fi
+- ls
+- cd ../..
 before_cache:
 - rm -f $HOME/.cache/pip/log/debug.log
 deploy:
