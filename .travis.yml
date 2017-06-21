@@ -3,6 +3,9 @@ cache:
   directories:
   - "/Library/Caches/Homebrew"
   - "$HOME/.cache/pip"
+env:
+  global:
+  - COMMIT=${TRAVIS_COMMIT::8}
 matrix:
   include:
   - os: linux
@@ -28,14 +31,14 @@ script:
     if [ "$TRAVIS_TAG" ]; then
       mv AYAB.dmg AYAB-${TRAVIS_TAG}.dmg;
     else
-      mv AYAB.dmg AYAB-OSX-${TRAVIS_COMMIT}.dmg;
+      mv AYAB.dmg AYAB-OSX-${COMMIT}.dmg;
     fi
   fi
 - if [ "$TRAVIS_OS_NAME" == "linux" ]; then
     if [ "$TRAVIS_TAG" ]; then
       mv ayab*.tar.gz AYAB-${TRAVIS_TAG}.tar.gz;
     else
-      mv ayab*.tar.gz AYAB-Linux-${TRAVIS_COMMIT}.tar.gz;
+      mv ayab*.tar.gz AYAB-Linux-${COMMIT}.tar.gz;
     fi
   fi
 - ls
