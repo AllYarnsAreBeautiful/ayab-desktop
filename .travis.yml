@@ -7,10 +7,10 @@ matrix:
   include:
   - os: linux
     python: 3.4
-    env: DEPLOY_FILE=dist/release/ayab*.tar.gz
+    env: DEPLOY_FILE=dist/release/AYAB*.tar.gz
   - os: osx
     language: generic
-    env: DEPLOY_FILE=dist/release/AYAB.dmg
+    env: DEPLOY_FILE=dist/release/AYAB*.dmg
   allow_failures:
   - os: osx
 before_install:
@@ -18,7 +18,10 @@ before_install:
 - if [ "$TRAVIS_OS_NAME" == "linux" ] ; then linux-build/install.sh ; fi
 install: true
 script:
-- ls dist
+- cd dist/release
+- ls
+- if [ "$TRAVIS_TAG" ] ; then mv ayab*.tar.gz AYAB-${TRAVIS_TAG}.tar.gz; else mv ayab*.tar.gz AYAB-Linux-${TRAVIS_COMMIT}.tar.gz; fi
+- if [ "$TRAVIS_TAG" ] ; then mv AYAB.dmg AYAB-${TRAVIS_TAG}.dmg; else mv AYAB.dmg AYAB-OSX-${TRAVIS_COMMIT}.dmg; fi
 before_cache:
 - rm -f $HOME/.cache/pip/log/debug.log
 deploy:
