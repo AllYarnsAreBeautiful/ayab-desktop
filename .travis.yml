@@ -19,6 +19,7 @@ matrix:
 before_install:
 - TAG=$(git describe --tags)
 - sed -i 's/PACKAGE_VERSION/'"$TAG"'/g' package_version
+- cat package_version
 - if [ "$TRAVIS_OS_NAME" == "osx"   ]; then
     mac-build/install.sh;
   fi
@@ -30,18 +31,10 @@ script:
 - cd dist/release
 - ls
 - if [ "$TRAVIS_OS_NAME" == "osx"   ]; then
-    if [ "$TRAVIS_TAG" ]; then
-      mv AYAB.dmg AYAB-${TRAVIS_TAG}.dmg;
-    else
-      mv AYAB.dmg AYAB-OSX-${COMMIT}.dmg;
-    fi
+    mv AYAB.dmg AYAB-OSX-${TAG}.dmg;
   fi
 - if [ "$TRAVIS_OS_NAME" == "linux" ]; then
-    if [ "$TRAVIS_TAG" ]; then
-      mv ayab*.tar.gz AYAB-${TRAVIS_TAG}.tar.gz;
-    else
-      mv ayab*.tar.gz AYAB-Linux-${COMMIT}.tar.gz;
-    fi
+    mv ayab*.tar.gz AYAB-Linux-${TAG}.tar.gz;
   fi
 - ls
 - cd ../..
