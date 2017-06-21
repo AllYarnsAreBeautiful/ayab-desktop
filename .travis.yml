@@ -17,6 +17,8 @@ matrix:
   allow_failures:
   - os: osx
 before_install:
+- TAG=$(git describe --tags)
+- sed -i 's/PACKAGE_VERSION/'"$TAG"'/g' package_version
 - if [ "$TRAVIS_OS_NAME" == "osx"   ]; then
     mac-build/install.sh;
   fi
