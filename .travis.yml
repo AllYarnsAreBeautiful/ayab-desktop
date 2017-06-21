@@ -18,12 +18,7 @@ matrix:
   - os: osx
 before_install:
 - TAG=$(git describe --tags)
-- if [ "$TRAVIS_OS_NAME" == "osx"   ]; then 
-    sed -i '' 's/PACKAGE_VERSION/'"$TAG"'/g' package_version
-  fi
-- if [ "$TRAVIS_OS_NAME" == "linux"   ]; then
-    sed -i 's/PACKAGE_VERSION/'"$TAG"'/g' package_version
-  fi
+- echo $TAG > package_version
 - cat package_version
 - if [ "$TRAVIS_OS_NAME" == "osx"   ]; then
     mac-build/install.sh;
