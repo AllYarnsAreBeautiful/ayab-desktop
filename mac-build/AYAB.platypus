@@ -15,7 +15,7 @@
 		<string>../ayab</string>
 		<string>ayab_devel_launch.py</string>
 		<string>../requirements.txt</string>
-                <string>package_version</string>
+                <string>../package_version</string>
                 <string>pyapp.py</string>
 		<string>../patterns</string>
 	</array>
