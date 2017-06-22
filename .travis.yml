@@ -24,8 +24,7 @@ before_install:
 - cat package_version
 - if [ "$TRAVIS_OS_NAME" == "osx"   ]; then mac-build/install.sh; fi
 - if [ "$TRAVIS_OS_NAME" == "linux" ]; then linux-build/install.sh; fi
-- pip install awscli
-- if [ "$TRAVIS_OS_NAME" == "linux" ]; then aws s3 rm s3://ayab-debug --recursive --region eu-central-1; fi
+- if [ "$TRAVIS_OS_NAME" == "linux" ]; then pip install awscli && aws s3 rm s3://ayab-debug --recursive --region eu-central-1; fi
 install: true
 script:
 - cd dist/release
