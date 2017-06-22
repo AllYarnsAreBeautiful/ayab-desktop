@@ -1,4 +1,4 @@
-__version__ = 0.90
+__version__ = "PACKAGE_VERSION"
 
 def run():
   from .ayab import run
