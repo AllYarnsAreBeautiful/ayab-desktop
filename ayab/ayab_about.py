@@ -46,6 +46,6 @@ class Ui_AboutForm(object):
         AboutForm.setWindowTitle(_translate("AboutForm", "About AYAB"))
         self.label_2.setText(_translate("AboutForm", "All Yarns Are Beautiful"))
         self.label_4.setText(_translate("AboutForm", "<html><head/><body><p><a href=\"http://ayab-knitting.com\"><span style=\" text-decoration: underline; color:#0000ff;\">http://ayab-knitting.com</span></a></p></body></html>"))
-        self.label_3.setText(_translate("AboutForm", "Version 0.90"))
+        self.label_3.setText(_translate("AboutForm", "Version PACKAGE_VERSION"))
 
 from . import resources_rc
