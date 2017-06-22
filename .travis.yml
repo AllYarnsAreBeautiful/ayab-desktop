@@ -22,7 +22,7 @@ before_install:
 - TAG=$(git describe --tags)
 - echo $TAG > package_version
 - cat package_version
-- perl -i -pe 's/PACKAGE_VERSION/"${TAG}"/g' ayab/__init__.py
+- perl -i -pe 's/PACKAGE_VERSION/$TAG/g' ayab/__init__.py
 - cat ayab/__init__.py
 - if [ "$TRAVIS_OS_NAME" == "osx"   ]; then mac-build/install.sh; fi
 - if [ "$TRAVIS_OS_NAME" == "linux" ]; then linux-build/install.sh; fi
