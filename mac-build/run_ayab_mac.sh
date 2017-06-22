@@ -46,7 +46,7 @@ then
   /Users/$USER/.pyenv/shims/python3 pyapp.py ayab_devel_launch.py AYAB $PACKAGE_VERSION
 fi
 
-if [ ! -f "/Users/$USER/Documents/AYAB/patterns" ]
+if [ ! -d "/Users/$USER/Documents/AYAB/patterns" ]
 then
   echo "installing patterns"
   mkdir -p /Users/$USER/Documents/AYAB/
