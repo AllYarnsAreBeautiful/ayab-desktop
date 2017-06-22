@@ -24,7 +24,7 @@ before_install:
 - cat package_version
 - perl -i -pe "s/PACKAGE_VERSION/${TAG}/g" ayab/__init__.py
 - perl -i -pe "s/PACKAGE_VERSION/${TAG}/g" ayab/ayab_about.ui
-- if [ "$TRAVIS_OS_NAME" == "linux" ]; then apt-get install python3-pyqt5; fi 
+- if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get install python3-pyqt5; fi 
 - if [ "$TRAVIS_OS_NAME" == "osx"   ]; then pip install pyqt5; fi
 - pyuic5 ayab/ayab_about.ui -o ayab/ayab_about.py
 - if [ "$TRAVIS_OS_NAME" == "osx"   ]; then mac-build/install.sh; fi
