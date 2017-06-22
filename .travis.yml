@@ -22,6 +22,8 @@ before_install:
 - TAG=$(git describe --tags)
 - echo $TAG > package_version
 - cat package_version
+- tail -n +2 ayab/__init__.py > ayab/__init__.py.tmp && mv ayab/__init__.py.tmp ayab/__init__.py
+- echo "$(cat package_version | cat - ayab/__init__.py)" > ayab/__init__.py 
 - if [ "$TRAVIS_OS_NAME" == "osx"   ]; then mac-build/install.sh; fi
 - if [ "$TRAVIS_OS_NAME" == "linux" ]; then linux-build/install.sh; fi
 - if [ "$TRAVIS_OS_NAME" == "linux" ]; then pip install awscli && aws s3 rm s3://ayab-debug --recursive --region eu-central-1; fi
