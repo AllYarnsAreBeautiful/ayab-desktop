@@ -6,6 +6,11 @@ environment:
   # isn't covered by this document) at the time of writing.
   PYTHON: "C:\\Python35"
   PATH: "%PATH%;%PYTHON%\\Lib\\site-packages\\PyQt5\\Qt\\bin"
+  APPVEYOR_RDP_PASSWORD:
+    secure: secure: gd/dxxrKL4GIBpIFqarUVhBeRISaOwo0QyQj320CFTY=
+
+init:
+  - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 
 install:
   - "echo %PATH%"
