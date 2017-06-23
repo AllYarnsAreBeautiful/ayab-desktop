@@ -60,4 +60,4 @@ deploy:
   bucket: ayab-debug
   region: eu-central-1
   unzip: false
-  artifact: installer
+  artifact: standalone
