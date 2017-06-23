@@ -478,22 +478,27 @@ class AyabPluginControl(KnittingPlugin):
                 # when knitting infinitely, keep the requested
                 # lineNumber in its limits
                 if self.__infRepeat:
-                    lineNumber = lineNumber % lenImgExpanded
+                    # *2 because of BLANK lines in between
+                    lineNumber = lineNumber % (2*lenImgExpanded)
 
                 # calculate imgRow
-                imgRow = int(
-                    lineNumber / (self.__numColors * 2)) + self.__startLine
+                imgRow = (int(
+                    lineNumber / (self.__numColors * 2)) + self.__startLine) % imgHeight
 
-                if (lineNumber % 2) == 0:
-                    color = (lineNumber / 2) % self.__numColors
-                    indexToSend = int((imgRow * self.__numColors) + color)
-                    logging.debug("COLOR" + str(color))
-                else:
+                if (lineNumber % 2) == 1:
                     sendBlankLine = True
+                else:
+                    logging.debug("COLOR" + str(color))
 
-                # TODO Check assignment
-                if imgRow == imgHeight - 1 \
-                        and (indexToSend == lenImgExpanded - 1):
+                color = (lineNumber / 2) % self.__numColors
+
+                #indexToSend = self.__startLine * self.__numColors
+                indexToSend = int((imgRow * self.__numColors) + color)
+
+                indexToSend = indexToSend % lenImgExpanded
+
+                if (indexToSend == (lenImgExpanded-1)) \
+                        and (sendBlankLine == True):
                     lastLine = 0x01
 
             elif self.__machineType == 'circular' \
@@ -502,6 +507,7 @@ class AyabPluginControl(KnittingPlugin):
                 # when knitting infinitely, keep the requested
                 # lineNumber in its limits
                 if self.__infRepeat:
+                    # *2 because of BLANK lines in between
                     lineNumber = lineNumber % (2*lenImgExpanded)
 
                 imgRow = (int(lineNumber / 4) + self.__startLine) % imgHeight
@@ -515,7 +521,7 @@ class AyabPluginControl(KnittingPlugin):
                 if (lineNumber % 2) == 1:
                     sendBlankLine = True
 
-                indexToSend = self.__startLine * 2
+                indexToSend = self.__startLine * self.__numColors
                 indexToSend += lineNumber / 2
                 indexToSend = int(indexToSend)
 
