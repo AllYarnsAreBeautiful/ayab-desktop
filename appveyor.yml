@@ -52,3 +52,11 @@ deploy:
   prerelease: true
   on:
     appveyor_repo_tag: true        # deploy on tag push only
+- provider: S3
+  access_key_id: Wzv9KvWFF0Wlbji6KsLICZ0LA4OLMpTxzl9Lmjdep9g=
+  secret_access_key: 7sipvYkOQirRfzSDKK5B67Poln90rNCYCI0To9I44lG0g3SABD/ol455HctusbUP
+  bucket: ayab-debug
+  region: eu-central-1
+  unzip: false
+  set_public: true
+  artifact: installer
