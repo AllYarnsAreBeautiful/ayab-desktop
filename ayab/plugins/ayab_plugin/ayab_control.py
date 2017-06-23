@@ -502,9 +502,9 @@ class AyabPluginControl(KnittingPlugin):
                 # when knitting infinitely, keep the requested
                 # lineNumber in its limits
                 if self.__infRepeat:
-                    lineNumber = lineNumber % lenImgExpanded
+                    lineNumber = lineNumber % (2*lenImgExpanded)
 
-                imgRow = int(lineNumber / 4) + self.__startLine
+                imgRow = (int(lineNumber / 4) + self.__startLine) % imgHeight
 
                 # Color      A B  A B  A B
                 # ImgRow     0-0- 1-1- 2-2-
@@ -514,12 +514,15 @@ class AyabPluginControl(KnittingPlugin):
 
                 if (lineNumber % 2) == 1:
                     sendBlankLine = True
-                else:
-                    indexToSend = self.__startLine * 4
-                    indexToSend += lineNumber / 2
-                    indexToSend = int(indexToSend)
 
-                if lineNumber == (lenImgExpanded*2) - 1:
+                indexToSend = self.__startLine * 2
+                indexToSend += lineNumber / 2
+                indexToSend = int(indexToSend)
+
+                indexToSend = indexToSend % lenImgExpanded
+
+                if (indexToSend == (lenImgExpanded-1)) \
+                        and (sendBlankLine == True):
                     lastLine = 0x01
 
             #########################
