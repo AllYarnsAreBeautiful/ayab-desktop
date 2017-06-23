@@ -60,5 +60,4 @@ deploy:
   bucket: ayab-debug
   region: eu-central-1
   unzip: false
-  set_public: true
   artifact: installer
