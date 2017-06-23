@@ -13,7 +13,7 @@ install:
   - "%PYTHON%\\python.exe -m pip install -r requirements.txt"
 
 build_script:
-  - cmd: git describe -- tags > package_version
+  - cmd: git describe --tags > package_version
   - cmd: set /p PACKAGE_VERSION=package_version
   - "%PYTHON%\\python.exe -m PyInstaller -y ayab.spec"
   - git clone https://github.com/AllYarnsAreBeautiful/ayab-patterns dist\\ayab\\patterns
