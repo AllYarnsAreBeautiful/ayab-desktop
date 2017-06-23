@@ -5,6 +5,8 @@ docs/_build/
 venv/
 ayab.egg-info
 dist
+# File is changed by CI
+package_version
 # Makefile directories
 .lib/
 .dep/

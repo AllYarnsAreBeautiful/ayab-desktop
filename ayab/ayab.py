@@ -43,6 +43,9 @@ import serial.tools.list_ports
 logging.basicConfig(filename='ayab_log.txt', level=logging.DEBUG)
 logging.getLogger().addHandler(logging.StreamHandler())
 
+__version__ = "package_version"
+with open('package_version') as version_file:
+    __version__ = version_file.read().strip()
 
 class GuiMain(QMainWindow):
     """GuiMain is the main object that handles the instance of AYAB's GUI from ayab_gui.UiForm .
@@ -354,6 +357,7 @@ class GuiMain(QMainWindow):
         self.__AboutForm = QtWidgets.QFrame()
         self.__about_ui = Ui_AboutForm()
         self.__about_ui.setupUi(self.__AboutForm)
+        self.__about_ui.label_3.setText("Version " + __version__)
         self.__AboutForm.show()
 
     def invert_image(self):
