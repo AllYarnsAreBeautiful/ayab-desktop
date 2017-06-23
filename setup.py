@@ -31,6 +31,10 @@ import ayab
 
 here = os.path.abspath(os.path.dirname(__file__))
 
+version = "package_version"
+with open('package_version') as version_file:
+    __version__ = version_file.read().strip()
+
 ## Useful Docs
 ## https://packaging.python.org/distributing/#requirements-for-packaging-and-distributing
 
@@ -84,7 +88,7 @@ def find_data_files(source, target, patterns):
 
 setup(
     name='ayab',
-    version=ayab.__version__,
+    version=ayab.version,
     url='http://ayab-knitting.com/',
     license='GNU GPLv3+',
     author='Christian Obersteiner, Andreas Müller, Sebastian Oliva',
@@ -93,6 +97,7 @@ setup(
     skip_archive=True,
     data_files=find_data_files('ayab', 'ayab', [
         'README.md',
+        'package_version',
         'patterns/*',
         '*.ts',
         '*.yapsy-plugin',
