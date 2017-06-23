@@ -232,7 +232,7 @@ class FirmwareFlash(QFrame):
         exec_command = """{0} -p {1} -c {2} -P {3} -b115200 -D -Uflash:w:"{4}":i """.format(
                        exe_route, device, programmer, serial_port, binary_file)
 
-        if os_name == "Windows":
+        if os_name == "Windows" or os_name == "Darwin":
             # determine if application is a script file or frozen exe
             if getattr(sys, 'frozen', False):
                 exec_command += " -C \"" + os.path.join(os.path.dirname(sys.executable),
