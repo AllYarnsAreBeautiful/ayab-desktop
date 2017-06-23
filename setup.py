@@ -31,7 +31,7 @@ import ayab
 
 here = os.path.abspath(os.path.dirname(__file__))
 
-version = "package_version"
+__version__ = "moep"
 with open('package_version') as version_file:
     __version__ = version_file.read().strip()
 
@@ -88,7 +88,7 @@ def find_data_files(source, target, patterns):
 
 setup(
     name='ayab',
-    version=version,
+    version=__version__,
     url='http://ayab-knitting.com/',
     license='GNU GPLv3+',
     author='Christian Obersteiner, Andreas Müller, Sebastian Oliva',
