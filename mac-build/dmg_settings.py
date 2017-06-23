@@ -14,8 +14,8 @@ icon_locations = {
     appname:        (140, 90),
     'Applications': (500, 90)
     }
-#background = 'builtin-arrow'
-background = None
+background = 'builtin-arrow'
+#background = None
 show_status_bar = False
 show_tab_view = False
 show_toolbar = False
