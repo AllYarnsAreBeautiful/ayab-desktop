@@ -29,6 +29,7 @@ exe = EXE(pyz,
 plugin_tree = Tree('ayab/plugins', prefix = 'plugins')
 # add README to that TOC for convenience
 plugin_tree += [('README.md', './README.md', 'DATA')]
+plugin_tree += [('package_version', './package_version', 'DATA')]
 
 coll = COLLECT(exe,
                a.binaries,
