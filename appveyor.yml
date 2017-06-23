@@ -14,7 +14,7 @@ install:
 
 build_script:
   - cmd: git describe --tags > package_version
-  - cmd: set /p PACKAGE_VERSION=package_version
+  - cmd: set /p "PACKAGE_VERSION=" <package_version
   - "%PYTHON%\\python.exe -m PyInstaller -y ayab.spec"
   - git clone https://github.com/AllYarnsAreBeautiful/ayab-patterns dist\\ayab\\patterns
   - cmd: cmd /c "windows-build\\Inno Setup 5\\ISCC.exe" windows-build\\ayab.iss
