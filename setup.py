@@ -88,7 +88,7 @@ def find_data_files(source, target, patterns):
 
 setup(
     name='ayab',
-    version=ayab.version,
+    version=version,
     url='http://ayab-knitting.com/',
     license='GNU GPLv3+',
     author='Christian Obersteiner, Andreas Müller, Sebastian Oliva',
