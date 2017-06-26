@@ -7,7 +7,7 @@
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
 AppId={{210863D0-9D1F-4B83-B966-ECB59C79AC5B}
 AppName=AYAB
-AppVersion=0.9
+AppVersion=PACKAGE_VERSION
 ;AppVerName=AYAB 0.0.5
 AppPublisher=All Yarns Are Beautiful
 AppPublisherURL=http://ayab-knitting.com/

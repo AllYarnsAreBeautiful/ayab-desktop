@@ -1,0 +1,89 @@
+variables:
+  GIT_STRATEGY: clone
+  GIT_SUBMODULE_STRATEGY: recursive
+  GIT_DEPTH: "50"
+  GIT_SSL_NO_VERIFY: "true"
+
+stages:
+  - build
+  - deploy
+
+cache:
+  paths:
+  - /Library/Caches/Homebrew
+  - ~/.cache/pip
+
+before_script:
+  - TAG=$(git describe --tags)
+  - echo $TAG > package_version
+  - cat package_version
+
+build:osx:
+  tags:
+    - osx
+    - virtualbox
+  stage: build
+  artifacts:
+    when: always
+    paths:
+    - dist/release/
+  script: 
+  - mac-build/install.sh
+  after_script:
+  - TAG=$(cat package_version)
+  - cd dist/release
+  - ls
+  - mv AYAB.dmg AYAB-OSX-${TAG}.dmg
+  - cd ../.
+
+build:linux:
+  image: python:3.5
+  tags:
+    - linux
+    - docker
+  stage: build
+  artifacts:
+    when: always
+    paths:
+    - dist/release/
+  script:
+  - linux-build/install.sh
+  after_script:
+  - TAG=$(cat package_version)
+  - cd dist/release
+  - ls
+  - mv ayab*.tar.gz AYAB-Linux-${TAG}.tar.gz
+  - ls
+  - cd ../..
+
+build:win7:
+  tags:
+    - win7
+    - virtualbox
+  stage: build
+  artifacts:
+    when: always
+    paths:
+    - dist/release/
+  script:
+  - windows-build/install.sh 7
+  after_script:
+  - cd dist/release
+  - ls
+  - cd ../..
+
+build:win10:
+  tags:
+    - win10
+    - virtualbox
+  stage: build
+  artifacts:
+    when: always
+    paths:
+    - dist/release/
+  script:
+  - windows-build/install.sh 10
+  after_script:
+  - cd dist/release
+  - ls
+  - cd ../..
