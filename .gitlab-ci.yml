@@ -3,6 +3,7 @@ variables:
   GIT_SUBMODULE_STRATEGY: recursive
   GIT_DEPTH: "50"
   GIT_SSL_NO_VERIFY: "true"
+  S3_BUCKET_NAME: "ayab-debug"
 
 stages:
   - build
@@ -87,3 +88,10 @@ build:win10:
   - cd dist/release
   - ls
   - cd ../..
+
+deploy:s3:
+  stage: deploy
+  image: python:latest
+  script:
+  - pip install awscli
+  - aws s3 cp ./dist/release/ s3://$S3_BUCKET_NAME/ --recursive
