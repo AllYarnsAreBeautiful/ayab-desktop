@@ -90,6 +90,9 @@ build:win10:
   - cd ../..
 
 deploy:s3:
+  tags:
+    - linux
+    - docker
   stage: deploy
   image: python:latest
   script:
