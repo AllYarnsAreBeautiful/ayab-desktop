@@ -101,6 +101,7 @@ deploy:s3:
   before_script:
   - cd dist/release
   - for i in `ls`; do echo "<a href=\"$i\">$i<a/>" >> index.html; done
+  - cd ../../
   script:
   - pip install awscli
   - aws s3 rm s3://$S3_BUCKET_NAME/ --recursive
