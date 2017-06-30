@@ -105,4 +105,4 @@ deploy:s3:
   script:
   - pip install awscli
   - aws s3 rm s3://$S3_BUCKET_NAME/ --recursive
-  - aws s3 cp ./dist/release/ s3://$S3_BUCKET_NAME/ --recursive
+  - aws s3 cp --acl public-read ./dist/release/ s3://$S3_BUCKET_NAME/ --recursive
