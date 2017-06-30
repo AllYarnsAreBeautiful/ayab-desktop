@@ -453,13 +453,13 @@ class AyabPluginControl(KnittingPlugin):
                 indexToSend = self.__startLine * 2
 
                 color = 0  # A
-                if lineNumber % 4 == 1 or lineNumber % 4 == 2:
+                if reqestedLine % 4 == 1 or reqestedLine % 4 == 2:
                     color = 1  # B
 
                 # Decide if lineNumber has to be switched or not
-                if lineNumber % 4 == 2:
+                if reqestedLine % 4 == 2:
                     indexToSend += lineNumber + 1
-                elif lineNumber % 4 == 3:
+                elif reqestedLine % 4 == 3:
                     indexToSend += lineNumber - 1
                 else:
                     indexToSend += lineNumber
