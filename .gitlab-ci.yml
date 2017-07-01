@@ -96,7 +96,7 @@ deploy:s3:
   stage: deploy
   environment:
     name: s3
-    url: https://ayab-debug.s3.amazonaws.com/
+    url: http://ayab-debug.s3-website.eu-central-1.amazonaws.com
   image: python:latest
   before_script:
   - cd dist/release
@@ -106,3 +106,18 @@ deploy:s3:
   - pip install awscli
   - aws s3 rm s3://$S3_BUCKET_NAME/ --recursive
   - aws s3 cp --acl public-read ./dist/release/ s3://$S3_BUCKET_NAME/ --recursive
+
+deploy:github:
+  tags:
+    - linux
+    - docker
+  stage: deploy
+  environment:
+    name: github
+    url: https://github.com/AllYarnsAreBeautiful/ayab-desktop/releases
+  image: python:latest
+  script:
+  - ls -l dist/release
+  - upload.sh $CI_COMMIT_TAG
+  only:
+  - tags
