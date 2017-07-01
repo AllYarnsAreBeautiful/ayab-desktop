@@ -100,7 +100,7 @@ deploy:s3:
   image: python:latest
   before_script:
   - cd dist/release
-  - for i in `ls`; do echo "<a href=\"$i\">$i<a/>" >> index.html; done
+  - for i in `ls`; do echo "<a href=\"$i\">$i<a/><br /><br />" >> index.html; done
   - cd ../../
   script:
   - pip install awscli
