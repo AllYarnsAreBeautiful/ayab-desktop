@@ -120,12 +120,11 @@ deploy:github:
     name: github
     url: https://github.com/AllYarnsAreBeautiful/ayab-desktop/releases
   image: python:latest
-  before_script:
-  - echo $CI_COMMIT_TAG
-  - echo $CI_COMMIT_REF_NAME
   script:
+  - BRANCH_CI=$(git rev-parse --abbrev-ref HEAD)
+  - echo $BRANCH_CI
   - ls -l dist/release
   - cd dist/release
-  - /tools/upload.sh $CI_COMMIT_TAG $CI_COMMIT_REF_NAME
+  - /tools/upload.sh $CI_COMMIT_TAG $BRANCH_CI
   only:
   - tags
