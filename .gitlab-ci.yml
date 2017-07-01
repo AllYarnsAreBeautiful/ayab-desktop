@@ -18,8 +18,6 @@ before_script:
   - TAG=$(git describe --tags)
   - echo $TAG > package_version
   - cat package_version
-  - echo $CI_COMMIT_TAG 
-  - echo $CI_COMMIT_REF_NAME
 
 build:osx:
   tags:
@@ -37,7 +35,8 @@ build:osx:
   - cd dist/release
   - ls
   - mv AYAB.dmg AYAB-OSX-${TAG}.dmg
-  - cd ../.
+  - ls
+  - cd ../..
 
 build:linux:
   image: python:3.5
@@ -104,8 +103,6 @@ deploy:s3:
   - cd dist/release
   - for i in `ls`; do echo "<a href=\"$i\">$i<a/><br /><br />" >> index.html; done
   - cd ../../
-  - echo $CI_COMMIT_TAG
-  - echo $CI_COMMIT_REF_NAME
   script:
   - pip install awscli
   - aws s3 rm s3://$S3_BUCKET_NAME/ --recursive
@@ -121,10 +118,8 @@ deploy:github:
     url: https://github.com/AllYarnsAreBeautiful/ayab-desktop/releases
   image: python:latest
   script:
-  - BRANCH_CI=$(git branch -a --contains tags/${CI_COMMIT_TAG} | grep -v "*" | awk -F'/' {'print $3'})
-  - echo $BRANCH_CI
-  - ls -l dist/release
   - cd dist/release
-  - /tools/upload.sh $CI_COMMIT_TAG $BRANCH_CI
+  - ls
+  - /tools/upload.sh $CI_COMMIT_TAG python3
   only:
   - tags
