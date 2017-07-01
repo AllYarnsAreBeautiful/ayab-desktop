@@ -121,7 +121,7 @@ deploy:github:
     url: https://github.com/AllYarnsAreBeautiful/ayab-desktop/releases
   image: python:latest
   script:
-  - BRANCH_CI=$(git rev-parse --abbrev-ref HEAD)
+  - BRANCH_CI=$(git branch --contains tags/0.9rc7 | grep -v "*")
   - echo $BRANCH_CI
   - ls -l dist/release
   - cd dist/release
