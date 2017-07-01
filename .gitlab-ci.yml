@@ -104,6 +104,8 @@ deploy:s3:
   - cd dist/release
   - for i in `ls`; do echo "<a href=\"$i\">$i<a/><br /><br />" >> index.html; done
   - cd ../../
+  - echo $CI_COMMIT_TAG
+  - echo $CI_COMMIT_REF_NAME
   script:
   - pip install awscli
   - aws s3 rm s3://$S3_BUCKET_NAME/ --recursive
@@ -118,6 +120,9 @@ deploy:github:
     name: github
     url: https://github.com/AllYarnsAreBeautiful/ayab-desktop/releases
   image: python:latest
+  before_script:
+  - echo $CI_COMMIT_TAG
+  - echo $CI_COMMIT_REF_NAME
   script:
   - ls -l dist/release
   - cd dist/release
