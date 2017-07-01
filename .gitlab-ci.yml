@@ -119,6 +119,6 @@ deploy:github:
   script:
   - ls -l dist/release
   - cd dist/release
-  - /tools/upload.sh $CI_COMMIT_TAG
+  - /tools/upload.sh $CI_COMMIT_TAG $CI_COMMIT_REF_NAME
   only:
   - tags
