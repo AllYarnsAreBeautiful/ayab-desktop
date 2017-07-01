@@ -18,6 +18,8 @@ before_script:
   - TAG=$(git describe --tags)
   - echo $TAG > package_version
   - cat package_version
+  - echo $CI_COMMIT_TAG 
+  - echo $CI_COMMIT_REF_NAME
 
 build:osx:
   tags:
