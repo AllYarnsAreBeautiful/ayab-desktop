@@ -344,7 +344,12 @@ class GuiMain(QMainWindow):
         self.enabled_plugin.plugin_object.configure(self)
 
     def file_select_dialog(self):
-        file_selected_route, _ = QtWidgets.QFileDialog.getOpenFileName(self)
+        filenameValue = self.ui.filename_lineedit.text()
+        if filenameValue == '':
+            filePath = os.path.expanduser("~")
+        else:
+            filePath = ''
+        file_selected_route, _ = QtWidgets.QFileDialog.getOpenFileName(self, "Open file", filePath, 'Images (*.png *.PNG *.jpg *.JPG *.jpeg *.JPEG)')
         if file_selected_route:
             self.update_file_selected_text_field(file_selected_route)
             self.load_image_from_string(str(file_selected_route))
