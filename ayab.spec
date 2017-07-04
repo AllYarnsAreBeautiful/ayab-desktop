@@ -23,7 +23,8 @@ exe = EXE(pyz,
           debug=True,
           strip=False,
           upx=False,
-          console=True )
+          console=True,
+          icon='windows-build/AYAB.ico')
 
 # Include all files in plugins folder
 plugin_tree = Tree('ayab/plugins', prefix = 'plugins')
