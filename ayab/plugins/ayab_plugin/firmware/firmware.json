@@ -5,35 +5,25 @@
         "uno":[
             {
                 "url":"/",
-                "version":"0.80 (latest)",
+                "version":"0.90rc1 (latest)",
+                "file":"kh910_uno_0-90rc1.hex"
+            },
+            {
+                "url":"/",
+                "version":"0.80",
                 "file":"kh910_uno_0-80.hex"
-            },
-            {
-                "url":"/",
-                "version":"0.75",
-                "file":"kh910_uno_0-75.hex"
-            },
-            {
-                "url":"/",
-                "version":"0.6",
-                "file":"kh910_uno_0-6.hex"
             }
         ],
         "mega2560":[
             {
                 "url":"/",
-                "version":"0.80 (latest)",
+                "version":"0.90rc1 (latest)",
+                "file":"kh910_mega_0-90rc1.hex"
+            },
+            {
+                "url":"/",
+                "version":"0.80",
                 "file":"kh910_mega_0-80.hex"
-            },
-            {
-                "url":"/",
-                "version":"0.75",
-                "file":"kh910_mega_0-75.hex"
-            },
-            {
-                "url":"/",
-                "version":"0.6",
-                "file":"kh910_mega_0-6.hex"
             }
         ]
       }
@@ -44,35 +34,25 @@
             "uno":[
                 {
                     "url":"/",
-                    "version":"0.80 (latest)",
+                    "version":"0.90rc1 (latest)",
+                    "file":"kh930_uno_0-90rc1.hex"
+                },
+                {
+                    "url":"/",
+                    "version":"0.80",
                     "file":"kh930_uno_0-80.hex"
-                },
-                {
-                    "url":"/",
-                    "version":"0.75",
-                    "file":"kh930_uno_0-75.hex"
-                },
-                {
-                    "url":"/",
-                    "version":"0.6",
-                    "file":"kh930_uno_0-6.hex"
                 }
             ],
             "mega2560":[
                 {
                     "url":"/",
-                    "version":"0.80 (latest)",
+                    "version":"0.90rc1 (latest)",
+                    "file":"kh930_mega_0-90rc1.hex"
+                },
+                {
+                    "url":"/",
+                    "version":"0.80",
                     "file":"kh930_mega_0-80.hex"
-                },
-                {
-                    "url":"/",
-                    "version":"0.75",
-                    "file":"kh930_mega_0-75.hex"
-                },
-                {
-                    "url":"/",
-                    "version":"0.6",
-                    "file":"kh930_mega_0-6.hex"
                 }
             ]
         }
@@ -85,16 +65,6 @@
                     "url":"/",
                     "version":"0.80 (latest)",
                     "file":"hwtest_uno_0-80.hex"
-                },
-                {
-                    "url":"/",
-                    "version":"0.7",
-                    "file":"hwtest_uno_0-7.hex"
-                },
-                {
-                    "url":"/",
-                    "version":"0.6",
-                    "file":"hwtest_uno_0-6.hex"
                 }
             ],
             "mega2560":[
@@ -102,16 +72,6 @@
                     "url":"/",
                     "version":"0.80 (latest)",
                     "file":"hwtest_mega_0-80.hex"
-                },
-                {
-                    "url":"/",
-                    "version":"0.7",
-                    "file":"hwtest_mega_0-7.hex"
-                },
-                {
-                    "url":"/",
-                    "version":"0.6",
-                    "file":"hwtest_mega_0-6.hex"
                 }
             ]
         }

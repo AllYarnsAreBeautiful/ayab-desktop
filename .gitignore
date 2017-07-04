@@ -12,7 +12,6 @@ package_version
 .dep/
 # Binaries
 *.o
-*.hex
 # Obsolete Directories
 documents/
 patterns/
