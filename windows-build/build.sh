@@ -16,7 +16,7 @@ cd windows-build
 echo "# create the installer"
 AYAB_EXE="`pwd`/../dist/release//AYAB-Windows$VERSION-$PACKAGE_VERSION-Setup.exe"
 chmod -R 770 Inno\ Setup\ 5/
-sed "s/PACKAGE_VERSION/$PACKAGE_VERSION/g" ayab.iss
+sed -i "s/PACKAGE_VERSION/$PACKAGE_VERSION/g" ayab.iss
 Inno\ Setup\ 5/ISCC.exe -FAYAB-Windows$VERSION-$PACKAGE_VERSION-Setup /O../dist/release/ ayab.iss
 7z a -tzip ../dist/release/AYAB-Windows$VERSION-$PACKAGE_VERSION.zip "../dist/ayab/*"
 ls -l ../dist/
