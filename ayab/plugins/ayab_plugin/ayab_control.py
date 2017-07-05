@@ -61,13 +61,18 @@ class AyabPluginControl(KnittingPlugin):
         parent_ui.ui.knit_button.setEnabled(True)
 
         if conf.get("start_needle") and conf.get("stop_needle"):
-            self.__image.setKnitNeedles(conf.get("start_needle"), conf.get("stop_needle"))
+            self.__image.setKnitNeedles(conf.get("start_needle"),
+                                        conf.get("stop_needle"))
         if conf.get("alignment"):
             self.__image.setImagePosition(conf.get("alignment"))
         if conf.get("start_line"):
             self.__image.setStartLine(conf.get("start_line"))
             self.__emit_progress(conf.get("start_line")+1,
                                  self.__image.imgHeight())
+    else:
+        parent_ui.ui.widget_knitcontrol.setEnabled(False)
+        parent_ui.ui.knit_button.setEnabled(False)
+
     return
 
   def validate_configuration(self, conf):
@@ -82,6 +87,16 @@ class AyabPluginControl(KnittingPlugin):
     if conf.get("portname") == '':
       self.__notify_user("Please choose a valid port.")
       return False
+
+    if conf.get("machine_type") == 'single' \
+            and conf.get("num_colors") >= 3:
+        self.__notify_user("Single bed knitting currently supports only 2 colors", "warning")
+        return False
+
+    if conf.get("machine_type") == 'circular' \
+            and conf.get("num_colors") >= 3:
+        self.__notify_user("Circular knitting supports only 2 colors", "warning")
+        return False
 
     return True
 
