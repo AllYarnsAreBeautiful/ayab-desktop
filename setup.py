@@ -93,8 +93,6 @@ setup(
     license='GNU GPLv3+',
     author='Christian Obersteiner, Andreas Müller, Sebastian Oliva',
     scripts=['bin/ayab'],
-    windows=['bin/ayab'],
-    skip_archive=True,
     data_files=find_data_files('ayab', 'ayab', [
         'README.md',
         'LICENSE',
