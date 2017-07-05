@@ -12,8 +12,11 @@ TAG_NAME="`./tag_name`"
 
 cd ..
 
+echo "# install pandoc"
+apt-get update
+apt-get -y install pandoc
+
 echo "# build the distribution"
-pip install pandoc
 pandoc --from=markdown --to=rst --output=README.rst README.md
 python setup.py sdist bdist_wheel
 mkdir -p dist/release
