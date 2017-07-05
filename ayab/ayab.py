@@ -44,7 +44,9 @@ logging.basicConfig(filename='ayab_log.txt', level=logging.DEBUG)
 logging.getLogger().addHandler(logging.StreamHandler())
 
 __version__ = "package_version"
-with open('package_version') as version_file:
+filename_version = os.path.dirname(__file__)
+package_version = os.path.join(filename_version, "package_version")
+with open(package_vversion) as version_file:
     __version__ = version_file.read().strip()
 
 class GuiMain(QMainWindow):
