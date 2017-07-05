@@ -41,3 +41,24 @@ Name: "{commondesktop}\AYAB"; Filename: "{app}\ayab.exe"; Tasks: desktopicon
 
 [Run]
 Filename: "{app}\ayab.exe"; Description: "{cm:LaunchProgram,AYAB}"; Flags: nowait postinstall skipifsilent
+
+[Code]
+
+function InitializeSetup(): Boolean;
+var
+  Version: TWindowsVersion;
+begin
+  Result := True;
+
+  GetWindowsVersionEx(Version);
+  Log(Format('Product Type is %d', [Version.ProductType]));
+  Log(Format('Major is %d', [Version.Major]));
+  Log(Format('Minor is %d', [Version.Minor]));
+
+  if (Version.Major = 5) and (Version.Minor = 1) then
+  begin
+    MsgBox('This product cannot be installed on Windows XP.', mbError, MB_OK);
+    { Abort installer }
+    Result := False;
+  end;
+end;
