@@ -31,8 +31,10 @@ import ayab
 
 here = os.path.abspath(os.path.dirname(__file__))
 
-__version__ = "moep"
-with open('package_version') as version_file:
+__version__ = "package_version"
+filename_version = os.path.dirname(__file__)
+package_version = os.path.join(filename_version, "package_version")
+with open(package_version) as version_file:
     __version__ = version_file.read().strip()
 
 ## Useful Docs
