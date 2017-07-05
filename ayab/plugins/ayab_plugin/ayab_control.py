@@ -111,11 +111,7 @@ class AyabPluginControl(KnittingPlugin):
     self._knitImage = False
 
   def __close_serial(self):
-    try:
-        self.__ayabCom.close_serial()
-        logging.debug("Closing Serial port successful.")
-    except:
-        logging.debug("Closing Serial port failed. Was it ever open?")
+    self.__ayabCom.close_serial()
 
   def onerror(self, e):
     #TODO add message info from event
