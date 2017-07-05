@@ -13,6 +13,8 @@ TAG_NAME="`./tag_name`"
 cd ..
 
 echo "# build the distribution"
+pip install pandoc
+pandoc --from=markdown --to=rst --output=README.rst README.md
 python setup.py sdist bdist_wheel
 mkdir -p dist/release
 mv dist/ayab*.tar.gz dist/release/
