@@ -123,3 +123,18 @@ deploy:github:
   - /tools/upload.sh $CI_COMMIT_TAG python3
   only:
   - tags
+
+deploy:pypi_test:
+    tags:
+    - linux
+    - docker
+    stage: deploy
+    environment:
+      name: pypi_test
+      url: https://testpypi.python.org/pypi/ayab
+    image: python:latest
+    script:
+    - pip install twine
+    - cd dist/release
+    - ls
+    - /tools/pypi.sh test
