@@ -15,11 +15,11 @@ The other main dependencies can be found in requirements.txt
 
 *For Debian/Ubuntu*
 
-    sudo apt-get install python-pip python-qt5 python-dev python-virtualenv
+    sudo apt-get install python3-pip python3-qt5 python3-dev python3-virtualenv
 
 *For openSUSE*
 
-    sudo zypper install python-pip python-qt5 python-virtualenv
+    sudo zypper install python3-pip python3-qt5 python3-virtualenv
 
 *All Distributions*
 To be able to communicate with your Arduino, it might be necessary to add the rights for USB communication by adding your user to some groups.
@@ -33,7 +33,7 @@ This will install the latest release version from PyPi
 
     virtualenv -p python3 --system-site-packages venv/
     source venv/bin/activate
-    pip install ayab
+    pip3 install ayab
 
 Now, you can start the software with
 
@@ -81,7 +81,7 @@ You may also need PyWin32 (https://sourceforge.net/projects/pywin32/files/pywin3
 
 Now, use pip to install further dependencies
 
-    pip install virtualenv pyqt5
+    pip3 install virtualenv pyqt5
 
 You can checkout the git repository with
 
@@ -95,7 +95,7 @@ Create a virtual enviroment in the cloned repository
 
 Then install the remaining prerequisites with
 
-    pip install -r requirements.txt
+    pip3 install -r requirements.txt
 
 Now start ayab with
 
@@ -108,25 +108,39 @@ Now start ayab with
 The macOS version is using a wrapper script to ensure all dependencies are installed.
 As a result, the first start might take a while depending on your CPU and internet download speed.
 Open the DMG image and copy the app to your Application folder.
-Then just run it and wait for the dependencies to be downloaded and installed.
+Then just run
+
+    AYAB-Launcher.app
+
+and wait for the dependencies to be downloaded and installed.
 
 #### Running from source & Development
+
+You need Python 3.5 and PyQt5.
+For Python I would recommend `pyenv`
+You can install it using Homebrew
+
+    brew install pyenv
+
+You also need the Xcode command line tools installed.
+Once these have been installed, you need to get the Python version installed
+
+    env PYTHON_CONFIGURE_OPTS="--enable-framework" pyenv install 3.5.0
 
 To install the development version you can checkout the git repository
 
     git clone https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
-pyQt5 is also required.
-Best is to use `brew` to install it
-
-    brew install pyqt5
-
 Create a virtual enviroment in the cloned repository
 
     cd ayab-desktop
-    pip install virtualenv
+    pip3 install virtualenv
     virtualenv -p python3 --system-site-packages venv/
     source venv/bin/activate
+
+Then install the remaining prerequisites with
+
+    pip3 install pyqt5
     pip3 install -r requirements.txt
 
 Now start ayab with
@@ -138,6 +152,18 @@ To be able to work on GUI elements and translation files, the Qt Dev tools are n
     http://download.qt.io/official_releases/online_installers/qt-unified-mac-x64-online.dmg
 
 ## Release Notes
+
+### 0.90 (July 2017)
+
+#### Firmware
+
+* New end beep
+
+#### GUI
+
+* Migration from Python2 to python3
+* OSX App Bundle
+* Windows7 and Windows10 builds
 
 ### 0.80 (November 2015)
 
