@@ -140,15 +140,16 @@ Create a virtual enviroment in the cloned repository
 
     cd ayab-desktop
     pyvenv venv
+    cd venv
 
 Then install the remaining prerequisites with
 
-    venv/bin/pip3 install pyqt5
-    venv/bin/pip3 install -r requirements.txt
+    bin/pip3 install pyqt5
+    bin/pip3 install -r requirements.txt
 
 Now start ayab with
 
-    venv/bin/python3 ayab_devel_launch.py
+    bin/python3 ayab_devel_launch.py
 
 To be able to work on GUI elements and translation files, the Qt Dev tools are needed also:
 
