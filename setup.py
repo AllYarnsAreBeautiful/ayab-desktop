@@ -97,6 +97,7 @@ setup(
     skip_archive=True,
     data_files=find_data_files('ayab', 'ayab', [
         'README.md',
+        'LICENSE',
         'package_version',
         'patterns/*',
         '*.ts',

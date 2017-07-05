@@ -13,9 +13,10 @@ TAG_NAME="`./tag_name`"
 cd ..
 
 echo "# build the distribution"
-python setup.py sdist
+python setup.py sdist bdist_wheel
 mkdir -p dist/release
 mv dist/ayab*.tar.gz dist/release/
+mv dist/ayab*.whl dist/release/
 ls dist/release/
 
 echo "# show the versions"
