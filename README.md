@@ -22,6 +22,7 @@ The other main dependencies can be found in requirements.txt
     sudo zypper install python3-pip python3-qt5 python3-virtualenv
 
 *All Distributions*
+
 To be able to communicate with your Arduino, it might be necessary to add the rights for USB communication by adding your user to some groups.
 
     sudo usermod -a -G tty [userName]
@@ -38,6 +39,10 @@ This will install the latest release version from PyPi
 Now, you can start the software with
 
     ayab
+
+Instead of installing from the PyPi repository, you can also download the .whl file from the release section and install it like this
+
+    pip3 install <file>.whl
 
 #### Running from Source & Development
 
@@ -134,18 +139,16 @@ To install the development version you can checkout the git repository
 Create a virtual enviroment in the cloned repository
 
     cd ayab-desktop
-    pip3 install virtualenv
-    virtualenv -p python3 --system-site-packages venv/
-    source venv/bin/activate
+    pyvenv venv
 
 Then install the remaining prerequisites with
 
-    pip3 install pyqt5
-    pip3 install -r requirements.txt
+    venv/bin/pip3 install pyqt5
+    venv/bin/pip3 install -r requirements.txt
 
 Now start ayab with
 
-    python3 ayab_devel_launch.py
+    venv/bin/python3 ayab_devel_launch.py
 
 To be able to work on GUI elements and translation files, the Qt Dev tools are needed also:
 
