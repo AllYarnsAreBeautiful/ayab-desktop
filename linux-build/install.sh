@@ -9,12 +9,10 @@ USER="$1"
 
 PACKAGE_VERSION="`./package_version`"
 TAG_NAME="`./tag_name`"
-ls -l
 cd ..
 
 echo "# build the distribution"
 cp package_version LICENSE.txt ayab/
-ls -l
 python setup.py sdist bdist_wheel
 mkdir -p dist/release
 mv dist/ayab*.tar.gz dist/release/

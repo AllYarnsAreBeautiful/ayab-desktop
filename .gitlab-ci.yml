@@ -49,7 +49,7 @@ build:linux:
     paths:
     - dist/release/
   script:
-  - cp linux-build/README.rst ../
+  - cp linux-build/README.rst .
   - linux-build/install.sh
   after_script:
   - TAG=$(cat package_version)
