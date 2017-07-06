@@ -14,7 +14,7 @@ cd ..
 
 echo "# build the distribution"
 cp package_version LICENSE.txt ayab/
-python setup.py sdist bdist bdist_wheel
+python setup.py sdist bdist_wheel
 mkdir -p dist/release
 mv dist/ayab*.tar.gz dist/release/
 mv dist/ayab*.whl dist/release/

@@ -54,7 +54,6 @@ build:linux:
   - TAG=$(cat package_version)
   - cd dist/release
   - ls
-  - mv ayab*linux-x86_64.tar.gz AYAB-${TAG}-linux-x86_64.tar.gz
   - mv ayab*.tar.gz AYAB-Linux-${TAG}.tar.gz
   - mv ayab*.whl AYAB-${TAG}-py3-none-any.whl
   - ls
