@@ -62,7 +62,7 @@ def read_requirements(file_name):
     return requirements_list
 
 ## This builds the long description from Readme file, should be rst.
-long_description = read('README.md')  # TODO: Add 'CHANGES.txt'
+long_description = read('README.rst')  # TODO: Add 'CHANGES.txt'
 
 def find_data_files(source, target, patterns):
     """Locates the specified data-files and returns the matches
@@ -96,8 +96,6 @@ setup(
     author='Christian Obersteiner, Andreas Müller, Sebastian Oliva',
     scripts=['bin/ayab'],
     data_files=find_data_files('ayab', 'ayab', [
-        'README.md',
-        'LICENSE',
         'package_version',
         'patterns/*',
         '*.ts',
