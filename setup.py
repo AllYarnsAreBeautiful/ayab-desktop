@@ -92,7 +92,7 @@ setup(
     name='ayab',
     version=__version__,
     url='http://ayab-knitting.com/',
-    license='GNU GPLv3+',
+    license='GPLv3+',
     author='Christian Obersteiner, Andreas Müller, Sebastian Oliva',
     scripts=['bin/ayab'],
     data_files=find_data_files('ayab', 'ayab', [
@@ -124,5 +124,8 @@ setup(
         'Programming Language :: Python',
         'Development Status :: 4 - Beta',
         'Natural Language :: English',
+        'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
+        'Intended Audience :: End Users/Desktop',
+        'Operating System :: OS Independent',
         ]
 )
