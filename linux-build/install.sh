@@ -18,7 +18,6 @@ python setup.py sdist bdist bdist_wheel
 mkdir -p dist/release
 mv dist/ayab*.tar.gz dist/release/
 mv dist/ayab*.whl dist/release/
-mv dist/ayab*.egg dist/release/
 ls dist/release/
 
 echo "# show the versions"
