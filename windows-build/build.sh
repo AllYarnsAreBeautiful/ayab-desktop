@@ -20,7 +20,7 @@ AYAB_EXE="`pwd`/../dist/release//AYAB-Windows$VERSION-$PACKAGE_VERSION-Setup.exe
 chmod -R 770 Inno\ Setup\ 5/
 sed -i "s/PACKAGE_VERSION/$PACKAGE_VERSION/g" ayab.iss
 Inno\ Setup\ 5/ISCC.exe -FAYAB-$PACKAGE_VERSION-windows$VERSION-setup /O../dist/release/ ayab.iss
-7z a -tzip ../dist/release/AYAB-$PACKAGE_VERSION-windows$Version.zip "../dist/ayab/*"
+7z a -tzip ../dist/release/AYAB-$PACKAGE_VERSION-windows$VERSION.zip "../dist/ayab/*"
 ls -l ../dist/
 
 echo "The installer can be found in \"$AYAB_EXE\"."
