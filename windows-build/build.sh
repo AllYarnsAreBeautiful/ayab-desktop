@@ -10,7 +10,8 @@ mkdir -p ../dist/release
 
 echo "# build the app"
 cd ..
-cp package_version LICENSE ayab/
+cp package_version LICENSE.txt ayab/
+cp LICENSE.txt windows-build/
 /cygdrive/c/python35/python.exe -m PyInstaller -y ayab.spec
 cd windows-build
 

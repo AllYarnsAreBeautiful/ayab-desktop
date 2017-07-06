@@ -9,7 +9,7 @@ mkdir -p /usr/local/share/platypus/
 cp -R platypus/share/* /usr/local/share/platypus/
 cp platypus/platypus /usr/local/bin/
 pip install dmgbuild
-cp ../package_version ../LICENSE ../ayab/
+cp ../package_version ../LICENSE.txt ../ayab/
 
 ./build.sh $USER
 

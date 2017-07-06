@@ -18,7 +18,7 @@ apt-get -y install pandoc
 
 echo "# build the distribution"
 pandoc --from=markdown --to=rst --output=README.rst README.md
-cp package_version LICENSE ayab/
+cp package_version LICENSE.txt ayab/
 python setup.py sdist bdist_wheel
 mkdir -p dist/release
 mv dist/ayab*.tar.gz dist/release/
