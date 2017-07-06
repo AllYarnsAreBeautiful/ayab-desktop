@@ -55,7 +55,7 @@ build:linux:
   - cd dist/release
   - ls
   - mv ayab*.tar.gz AYAB-Linux-${TAG}.tar.gz
-  - mv ayab*.whl AYAB-PyPi-${TAG}-py35-none-any.whl
+  - mv ayab*.whl AYAB-${TAG}-py3-none-any.whl
   - ls
   - cd ../..
 
