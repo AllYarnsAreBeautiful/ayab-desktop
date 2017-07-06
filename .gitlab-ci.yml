@@ -15,7 +15,7 @@ cache:
   - ~/.cache/pip
 
 before_script:
-  - TAG=$(git describe --tags | sed 's/-/+/')
+  - TAG=$(git describe --tags | sed 's/-/.post/' | cut -f1 -d'-')
   - echo $TAG > package_version
   - cat package_version
 
