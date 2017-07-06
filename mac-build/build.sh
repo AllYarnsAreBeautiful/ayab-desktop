@@ -6,29 +6,19 @@ set -e
 
 HERE="`dirname \"$0\"`"
 USER="$1"
+PACKAGE_VERSION="`cat ./package_version`"
 cd "$HERE"
 
-(
-  cd ..
-
-  echo "# build the distribution"
-  python setup.py sdist
-)
-
-pwd
-ls
+mkdir -p ../dist/release
 
 echo "# build the app"
-cp ayab.spec ../
-cd ..
-# see https://pythonhosted.org/PyInstaller/usage.html
-python -m PyInstaller -d -y ayab.spec
+/usr/local/bin/platypus -x -P AYAB.platypus -V $PACKAGE_VERSION -Y AYAB-Launcher -y ../dist/AYAB-Launcher
 
 echo "# create the .dmg file"
-# see http://stackoverflow.com/a/367826/1320237
-AYAB_DMG="`pwd`/dist/AYAB.dmg"
+AYAB_DMG="`pwd`/../dist/release/AYAB.dmg"
 rm -f "$AYAB_DMG"
-hdiutil create -srcfolder dist/ayab.app "$AYAB_DMG"
+ls -l ../dist/
+dmgbuild -s dmg_settings.py AYAB "$AYAB_DMG"
 
 echo "The installer can be found in \"$AYAB_DMG\"."
 

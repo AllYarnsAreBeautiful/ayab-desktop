@@ -55,7 +55,7 @@
    <item>
     <widget class="QLabel" name="label_3">
      <property name="text">
-      <string>Version 0.80</string>
+      <string>Version PACKAGE_VERSION</string>
      </property>
     </widget>
    </item>

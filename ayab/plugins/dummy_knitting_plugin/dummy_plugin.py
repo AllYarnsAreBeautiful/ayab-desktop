@@ -15,7 +15,7 @@
 #    along with AYAB.  If not, see <http://www.gnu.org/licenses/>.
 #
 #    Copyright 2013, 2014 Sebastian Oliva, Christian Obersteiner, Andreas Müller
-#    https://bitbucket.org/chris007de/ayab-apparat/
+#    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
 import time
 from PyQt5 import QtGui, QtCore
@@ -46,7 +46,7 @@ class DummyKnittingPlugin(KnittingPlugin):
     # Simulating a blocking task.
     for i in range(self._cycle_ammount):
       percent = (i / float(self._cycle_ammount))*100
-      print percent
+      print(percent)
       self.parent_ui.emit(QtCore.SIGNAL('updateProgress(int)'), int(percent))
       time.sleep(0.1)
     self.finish()

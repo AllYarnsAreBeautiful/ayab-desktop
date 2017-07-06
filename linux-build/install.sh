@@ -13,14 +13,15 @@ TAG_NAME="`./tag_name`"
 cd ..
 
 echo "# build the distribution"
-python setup.py sdist
-
-ls dist
+cp package_version LICENSE.txt ayab/
+python setup.py sdist bdist_wheel
+mkdir -p dist/release
+mv dist/ayab*.tar.gz dist/release/
+mv dist/ayab*.whl dist/release/
+ls dist/release/
 
 echo "# show the versions"
 echo -n "setup.py --version: "
 python setup.py --version
-echo -n "requirements: "
-python setup.py --requires
 echo "Package version $PACKAGE_VERSION with possible tag name $TAG_NAME"
 

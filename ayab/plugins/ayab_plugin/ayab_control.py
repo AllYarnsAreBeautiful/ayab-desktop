@@ -15,19 +15,20 @@
 #    along with AYAB.  If not, see <http://www.gnu.org/licenses/>.
 #
 #    Copyright 2013, 2014 Sebastian Oliva, Christian Obersteiner, Andreas MÃ¼ller
-#    https://bitbucket.org/chris007de/ayab-apparat/
+#    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
-from ayab_communication import AyabCommunication
-import ayab_image
+from .ayab_communication import AyabCommunication
+from . import ayab_image
 import time
 import logging
 import os
 from ayab.plugins.knitting_plugin import KnittingPlugin
 from PyQt5 import QtGui, QtWidgets, QtCore
 
-from ayab_options import Ui_DockWidget
+from .ayab_options import Ui_DockWidget
 import serial.tools.list_ports
 
+import pprint
 
 class AyabPluginControl(KnittingPlugin):
 
@@ -60,13 +61,18 @@ class AyabPluginControl(KnittingPlugin):
         parent_ui.ui.knit_button.setEnabled(True)
 
         if conf.get("start_needle") and conf.get("stop_needle"):
-            self.__image.setKnitNeedles(conf.get("start_needle"), conf.get("stop_needle"))
+            self.__image.setKnitNeedles(conf.get("start_needle"),
+                                        conf.get("stop_needle"))
         if conf.get("alignment"):
             self.__image.setImagePosition(conf.get("alignment"))
         if conf.get("start_line"):
             self.__image.setStartLine(conf.get("start_line"))
             self.__emit_progress(conf.get("start_line")+1,
                                  self.__image.imgHeight())
+    else:
+        parent_ui.ui.widget_knitcontrol.setEnabled(False)
+        parent_ui.ui.knit_button.setEnabled(False)
+
     return
 
   def validate_configuration(self, conf):
@@ -82,6 +88,16 @@ class AyabPluginControl(KnittingPlugin):
       self.__notify_user("Please choose a valid port.")
       return False
 
+    if conf.get("machine_type") == 'single' \
+            and conf.get("num_colors") >= 3:
+        self.__notify_user("Single bed knitting currently supports only 2 colors", "warning")
+        return False
+
+    if conf.get("machine_type") == 'circular' \
+            and conf.get("num_colors") >= 3:
+        self.__notify_user("Circular knitting supports only 2 colors", "warning")
+        return False
+
     return True
 
   def onfinish(self, e):
@@ -95,11 +111,7 @@ class AyabPluginControl(KnittingPlugin):
     self._knitImage = False
 
   def __close_serial(self):
-    try:
-        self.__ayabCom.close_serial()
-        logging.debug("Closing Serial port successful.")
-    except:
-        logging.debug("Closing Serial port failed. Was it ever open?")
+    self.__ayabCom.close_serial()
 
   def onerror(self, e):
     #TODO add message info from event
@@ -147,7 +159,7 @@ class AyabPluginControl(KnittingPlugin):
   def slotSetImageDimensions(self, width, height):
     """Called by Main UI on loading of an image to set Start/Stop needle
     to image width. Updates the maximum value of the Start Line UI element"""
-    right_side = width/2
+    right_side = int(width/2)
     self.options_ui.start_needle_edit.setValue(width - right_side)
     self.options_ui.stop_needle_edit.setValue(right_side)
     self.options_ui.start_line_edit.setMaximum(height)
@@ -285,7 +297,7 @@ class AyabPluginControl(KnittingPlugin):
 
     serial_port_text = ui.findChild(QtWidgets.QComboBox, "serial_port_dropdown").currentText()
     self.conf["portname"] = str(serial_port_text)
-    
+
     # getting file location from textbox
     filename_text = ui.findChild(QtWidgets.QLineEdit, "filename_lineedit").text()
     self.conf["filename"] = str(filename_text)
@@ -318,7 +330,7 @@ class AyabPluginControl(KnittingPlugin):
 #####################################
 
   def __setBit(self, int_type, offset):
-      mask = 1 << offset
+      mask = 1 << int(offset)
       return(int_type | mask)
 
   def __setPixel(self, bytearray, pixel):
@@ -332,47 +344,49 @@ class AyabPluginControl(KnittingPlugin):
 
         line = self.__ayabCom.read_line()
 
-        if line != '':
-            msgId = ord(line[0])
+        if len(line) > 0:
+            msgId = line[0]
             if msgId == 0xC1:    # cnfStart
                 # print "> cnfStart: " + str(ord(line[1]))
-                return ("cnfStart", ord(line[1]))
+                return ("cnfStart", line[1])
 
             elif msgId == 0xC3:  # cnfInfo
                 # print "> cnfInfo: Version=" + str(ord(line[1]))
-                api = ord(line[1])
+                api = line[1]
                 msg = "API v" + str(api)
 
                 if api >= 4:
-                    msg += ", FW v" + str(ord(line[2])) + "." + str(ord(line[3]))
+                    msg += ", FW v" + str(line[2]) + "." + str(line[3])
 
                 logging.info(msg)
-                return ("cnfInfo", ord(line[1]))
+                return ("cnfInfo", line[1])
 
             elif msgId == 0x82:  # reqLine
                 # print "> reqLine: " + str(ord(line[1]))
-                return ("reqLine", ord(line[1]))
+                return ("reqLine", line[1])
 
             elif msgId == 0xC4:  # cnfTest
-                return ("cnfTest", ord(line[1]))
+                return ("cnfTest", line[1])
 
             elif msgId == 0x84:
-                hall_l = (ord(line[2]) << 8) + ord(line[3])
-                hall_r = (ord(line[4]) << 8) + ord(line[5])
+                hall_l = (line[2] << 8) + line[3]
+                hall_r = (line[4] << 8) + line[5]
 
                 self.options_ui.progress_hall_l.setValue(hall_l)
                 self.options_ui.progress_hall_r.setValue(hall_r)
-                self.options_ui.slider_position.setValue(ord(line[7]))
-                carriage = ord(line[6])
+                self.options_ui.slider_position.setValue(line[7])
+                carriage = line[6]
                 if carriage == 1:
                     self.options_ui.label_carriage.setText("K Carriage")
                 elif carriage == 2:
                     self.options_ui.label_carriage.setText("L Carriage")
 
-                return ("indState", ord(line[1]))
+                return ("indState", line[1])
 
             else:
-                logging.warning("unknown message: " + line[:])  # drop crlf
+                logging.debug("unknown message: ") # drop crlf
+                pp = pprint.PrettyPrinter(indent=4)
+                pp.pprint(line)
                 return ("unknown", 0)
         return("none", 0)
 
@@ -404,15 +418,16 @@ class AyabPluginControl(KnittingPlugin):
             lineNumber = lineNumber \
                 + (self.__lineBlock * 256)
 
-            # when knitting infinitely, keep the requested
-            # lineNumber in its limits
-            if self.__infRepeat:
-                lineNumber = lineNumber % imgHeight
             #########################
             # decide which line to send according to machine type and amount of colors
             # singlebed, 2 color
             if self.__machineType == 'single' \
                     and self.__numColors == 2:
+
+                # when knitting infinitely, keep the requested
+                # lineNumber in its limits
+                if self.__infRepeat:
+                    lineNumber = lineNumber % imgHeight
 
                 # color is always 0 in singlebed,
                 # because both colors are knitted at once
@@ -433,8 +448,13 @@ class AyabPluginControl(KnittingPlugin):
             elif self.__machineType == 'ribber' \
                     and self.__numColors == 2:
 
+                # when knitting infinitely, keep the requested
+                # lineNumber in its limits
+                if self.__infRepeat:
+                    lineNumber = lineNumber % lenImgExpanded
+
                 # calculate imgRow
-                imgRow = int(lineNumber / 2) + self.__startLine
+                imgRow = (int(lineNumber / 2) + self.__startLine) % imgHeight
 
                 # 0 0 1 1 2 2 3 3 4 4 .. (imgRow)
                 # 0 1 2 3 4 5 6 7 8 9 .. (lineNumber)
@@ -444,16 +464,18 @@ class AyabPluginControl(KnittingPlugin):
                 indexToSend = self.__startLine * 2
 
                 color = 0  # A
-                if lineNumber % 4 == 1 or lineNumber % 4 == 2:
+                if reqestedLine % 4 == 1 or reqestedLine % 4 == 2:
                     color = 1  # B
 
                 # Decide if lineNumber has to be switched or not
-                if lineNumber % 4 == 2:
+                if reqestedLine % 4 == 2:
                     indexToSend += lineNumber + 1
-                elif lineNumber % 4 == 3:
+                elif reqestedLine % 4 == 3:
                     indexToSend += lineNumber - 1
                 else:
                     indexToSend += lineNumber
+
+                indexToSend = indexToSend % lenImgExpanded
 
                 # Decide whether to send lastLine Flag
                 if (imgRow == imgHeight - 1) \
@@ -464,26 +486,42 @@ class AyabPluginControl(KnittingPlugin):
             elif self.__machineType == 'ribber' \
                     and self.__numColors > 2:
 
+                # when knitting infinitely, keep the requested
+                # lineNumber in its limits
+                if self.__infRepeat:
+                    # *2 because of BLANK lines in between
+                    lineNumber = lineNumber % (2*lenImgExpanded)
+
                 # calculate imgRow
-                imgRow = int(
-                    lineNumber / (self.__numColors * 2)) + self.__startLine
+                imgRow = (int(
+                    lineNumber / (self.__numColors * 2)) + self.__startLine) % imgHeight
 
-                if (lineNumber % 2) == 0:
-                    color = (lineNumber / 2) % self.__numColors
-                    indexToSend = (imgRow * self.__numColors) + color
-                    logging.debug("COLOR" + str(color))
-                else:
+                if (lineNumber % 2) == 1:
                     sendBlankLine = True
+                else:
+                    logging.debug("COLOR" + str(color))
 
-                # TODO Check assignment
-                if imgRow == imgHeight - 1 \
-                        and (indexToSend == lenImgExpanded - 1):
+                color = (lineNumber / 2) % self.__numColors
+
+                #indexToSend = self.__startLine * self.__numColors
+                indexToSend = int((imgRow * self.__numColors) + color)
+
+                indexToSend = indexToSend % lenImgExpanded
+
+                if (indexToSend == (lenImgExpanded-1)) \
+                        and (sendBlankLine == True):
                     lastLine = 0x01
 
             elif self.__machineType == 'circular' \
                     and self.__numColors == 2:
 
-                imgRow = int(lineNumber / 4) + self.__startLine
+                # when knitting infinitely, keep the requested
+                # lineNumber in its limits
+                if self.__infRepeat:
+                    # *2 because of BLANK lines in between
+                    lineNumber = lineNumber % (2*lenImgExpanded)
+
+                imgRow = (int(lineNumber / 4) + self.__startLine) % imgHeight
 
                 # Color      A B  A B  A B
                 # ImgRow     0-0- 1-1- 2-2-
@@ -493,11 +531,15 @@ class AyabPluginControl(KnittingPlugin):
 
                 if (lineNumber % 2) == 1:
                     sendBlankLine = True
-                else:
-                    indexToSend = self.__startLine * 4
-                    indexToSend += lineNumber / 2
 
-                if lineNumber == (lenImgExpanded*2) - 1:
+                indexToSend = self.__startLine * self.__numColors
+                indexToSend += lineNumber / 2
+                indexToSend = int(indexToSend)
+
+                indexToSend = indexToSend % lenImgExpanded
+
+                if (indexToSend == (lenImgExpanded-1)) \
+                        and (sendBlankLine == True):
                     lastLine = 0x01
 
             #########################
@@ -555,7 +597,6 @@ class AyabPluginControl(KnittingPlugin):
 
         if lastLine:
           if self.__infRepeat:
-              self.__lineBlock = 0
               return 0  # keep knitting
           else:
               return 1  # image finished

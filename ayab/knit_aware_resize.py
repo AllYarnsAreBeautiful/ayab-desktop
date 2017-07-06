@@ -15,7 +15,7 @@
 #    along with AYAB.  If not, see <http://www.gnu.org/licenses/>.
 #
 #    Copyright 2014 Sebastian Oliva, Christian Obersteiner, Andreas Müller
-#    https://bitbucket.org/chris007de/ayab-apparat/
+#    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
 '''Provides conveniency functions to aproximately resize an image using a rational continued fraction aproximation.'''
 

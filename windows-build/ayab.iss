@@ -7,17 +7,17 @@
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
 AppId={{210863D0-9D1F-4B83-B966-ECB59C79AC5B}
 AppName=AYAB
-AppVersion=0.9
+AppVersion=PACKAGE_VERSION
 ;AppVerName=AYAB 0.0.5
 AppPublisher=All Yarns Are Beautiful
 AppPublisherURL=http://ayab-knitting.com/
 AppSupportURL=http://ayab-knitting.com/
 AppUpdatesURL=http://ayab-knitting.com/
-DefaultDirName={pf}\AYAB
+DefaultDirName={sd}\AYAB
 DisableProgramGroupPage=yes
-LicenseFile=LICENSE
+LicenseFile=LICENSE.txt
 OutputDir=.
-OutputBaseFilename=AYABInstaller
+OutputBaseFilename=AYAB-Windows10-Setup
 Compression=lzma
 SolidCompression=yes
 
@@ -40,5 +40,25 @@ Name: "{commonprograms}\AYAB"; Filename: "{app}\ayab.exe"
 Name: "{commondesktop}\AYAB"; Filename: "{app}\ayab.exe"; Tasks: desktopicon
 
 [Run]
-Filename: "{app}\ayab.exe"; Description: "{cm:LaunchProgram,KnitEditor}"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\ayab.exe"; Description: "{cm:LaunchProgram,AYAB}"; Flags: nowait postinstall skipifsilent
 
+[Code]
+
+function InitializeSetup(): Boolean;
+var
+  Version: TWindowsVersion;
+begin
+  Result := True;
+
+  GetWindowsVersionEx(Version);
+  Log(Format('Product Type is %d', [Version.ProductType]));
+  Log(Format('Major is %d', [Version.Major]));
+  Log(Format('Minor is %d', [Version.Minor]));
+
+  if (Version.Major = 5) and (Version.Minor = 1) then
+  begin
+    MsgBox('This product cannot be installed on Windows XP.', mbError, MB_OK);
+    { Abort installer }
+    Result := False;
+  end;
+end;

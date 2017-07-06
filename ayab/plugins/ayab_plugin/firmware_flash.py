@@ -10,17 +10,18 @@ import serial.tools.list_ports
 import json
 import logging
 import os
+import sys
 import platform
 import subprocess
 from subprocess import Popen, PIPE, STDOUT
 
-from firmware_flash_ui import Ui_FirmwareFlashFrame
+from .firmware_flash_ui import Ui_FirmwareFlashFrame
 
 
 class FirmwareFlash(QFrame):
 
     def __init__(self, parent_ui):
-        #TODO: add creator that does not depend from super to ease testing.
+        # TODO: add creator that does not depend from super to ease testing.
         super(FirmwareFlash, self).__init__(None)
 
         self.__parent_ui = parent_ui
@@ -43,7 +44,8 @@ class FirmwareFlash(QFrame):
             "warning": QtWidgets.QMessageBox.warning,
             "error": QtWidgets.QMessageBox.critical,
         }
-        message_box_function = box_function.get(message_type, QtWidgets.QMessageBox.warning)
+        message_box_function = box_function.get(message_type,
+                                                QtWidgets.QMessageBox.warning)
         ret = message_box_function(
             self,
             "AYAB",
@@ -58,8 +60,19 @@ class FirmwareFlash(QFrame):
         self.add_items_from_json_object(self.json_object)
 
     def parse_json(self, json_string):
-        path = (os.path.dirname(os.path.realpath(__file__))
-                + "/firmware/firmware.json")
+        os_name = platform.system()
+        if os_name == "Windows":
+            # determine if application is a script file or frozen exe
+            if getattr(sys, 'frozen', False):
+                path = (os.path.dirname(sys.executable) +
+                        "\\plugins\\ayab_plugin\\firmware\\firmware.json")
+            else:
+                path = (os.path.dirname(os.path.realpath(__file__)) +
+                    "/firmware/firmware.json")
+        else:
+            path = (os.path.dirname(os.path.realpath(__file__)) +
+                    "/firmware/firmware.json")
+
         with open(path) as data_file:
             data = json.load(data_file)
         return data
@@ -96,7 +109,7 @@ class FirmwareFlash(QFrame):
 
     def load_firmware(self, controller_qstring):
         self.clean_firmware_list()
-        controller_key = unicode(controller_qstring)
+        controller_key = str(controller_qstring)
         repo = self.json_object
         for firmware in repo[self.chosen_hardware_device]['controller'][controller_key]:
             self.add_firmware_dict_to_list(firmware)
@@ -128,8 +141,8 @@ class FirmwareFlash(QFrame):
         os_name = platform.system()
         base_dir = os.path.dirname(__file__)
         port = self.ui.port_combo_box.currentText()
-        controller_name = unicode(self.ui.controller_list.currentItem().text())
-        firmware_key = unicode(self.ui.firmware_list.currentItem().text())
+        controller_name = str(self.ui.controller_list.currentItem().text())
+        firmware_key = str(self.ui.firmware_list.currentItem().text())
         firmware_name = "firmware.hex"
         for firmware in self.json_object[self.chosen_hardware_device]['controller'][controller_name]:
             if firmware.get("version") == firmware_key:
@@ -171,7 +184,12 @@ class FirmwareFlash(QFrame):
                                       controller_name, firmware_name):
 
         if os_name == "Windows":
-            exe_route = os.path.join(base_dir, "firmware", ".\\avrdude.exe")
+            # determine if application is a script file or frozen exe
+            if getattr(sys, 'frozen', False):
+                exe_route = os.path.join(os.path.dirname(sys.executable),
+                        "plugins","ayab_plugin","firmware","avrdude.exe")
+            else:
+                exe_route = os.path.join(base_dir, "firmware", "avrdude.exe")
             exe_route = "\"" + exe_route + "\""
         elif os_name == "Linux":
             # We assume avrdude is available in path
@@ -183,8 +201,16 @@ class FirmwareFlash(QFrame):
         elif os_name == "Darwin":  # macOS
             exe_route = os.path.join(base_dir, "firmware", "avrdude_mac")
 
-        binary_file = os.path.join(base_dir, "firmware",
-                                   controller_name, firmware_name)
+        if os_name == "Windows":
+            if getattr(sys, 'frozen', False):
+                binary_file = os.path.join(os.path.dirname(sys.executable),
+                        "plugins","ayab_plugin","firmware",controller_name,firmware_name)
+            else:
+                binary_file = os.path.join(base_dir, "firmware",
+                                       controller_name, firmware_name)
+        else:
+            binary_file = os.path.join(base_dir, "firmware",
+                                       controller_name, firmware_name)
 
         serial_port = port
         # List of Arduino controllers and their avrdude names.
@@ -200,14 +226,20 @@ class FirmwareFlash(QFrame):
         }
         programmer = programmer_dict.get(controller_name, "wiring")
 
-        ## avrdude command.
-        ## http://www.ladyada.net/learn/avr/avrdude.html
-        ## http://sharats.me/the-ever-useful-and-neat-subprocess-module.html
+        # avrdude command.
+        # http://www.ladyada.net/learn/avr/avrdude.html
+        # http://sharats.me/the-ever-useful-and-neat-subprocess-module.html
         exec_command = """{0} -p {1} -c {2} -P {3} -b115200 -D -Uflash:w:"{4}":i """.format(
                        exe_route, device, programmer, serial_port, binary_file)
-        if os_name == "Windows":
-            exec_command += " -C " + os.path.join(base_dir,
-                                                  "firmware", "avrdude.conf")
+
+        if os_name == "Windows" or os_name == "Darwin":
+            # determine if application is a script file or frozen exe
+            if getattr(sys, 'frozen', False):
+                exec_command += " -C \"" + os.path.join(os.path.dirname(sys.executable),
+                                          "plugins","ayab_plugin","firmware","avrdude.conf") + "\""
+            else:
+                exec_command += " -C \"" + os.path.join(base_dir,
+                                                      "firmware", "avrdude.conf") + "\""
 
         logging.debug(exec_command)
         return exec_command

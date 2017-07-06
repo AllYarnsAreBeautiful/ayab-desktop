@@ -15,7 +15,7 @@
 #    along with AYAB.  If not, see <http://www.gnu.org/licenses/>.
 #
 #    Copyright 2013 Christian Obersteiner, Andreas Müller
-#    https://bitbucket.org/chris007de/ayab-apparat/
+#    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
 """Handles the serial communication protocol.
 
@@ -28,6 +28,7 @@ import time
 import serial
 
 import logging
+import struct
 
 
 class AyabCommunication(object):
@@ -57,13 +58,14 @@ class AyabCommunication(object):
 
   def close_serial(self):
     """Closes serial port."""
-    try:
-      self.__ser.close()
-      del(self.__ser)
-      self.__ser = None
-    except:
-      #TODO: add message for closing serial failure.
-      raise CommunicationException()
+    if self.__ser is not None and self.__ser.is_open():
+        try:
+            self.__ser.close()
+            del(self.__ser)
+            self.__ser = None
+            logging.debug("Closing Serial port successful.")
+        except:
+            logging.debug("Closing Serial port failed. Was it ever open?")
 
   def read_line(self):
     """Reads a line from serial communication."""
@@ -75,21 +77,21 @@ class AyabCommunication(object):
 
   def req_start(self, startNeedle, stopNeedle):
       """Sends a start message to the controller."""
-
-      msg = chr(0x01)  # msg id
-      msg += chr(int(startNeedle))
-      msg += chr(int(stopNeedle))
-      # print "< reqStart"
-      self.__ser.write(msg + '\n\r')
+      self.__ser.write(struct.pack('!B',0x01))
+      self.__ser.write(struct.pack('!B',startNeedle))
+      self.__ser.write(struct.pack('!B',stopNeedle))
+      self.__ser.write("\n\r".encode())
 
   def req_info(self):
       """Sends a request for information to controller."""
       # print "< reqInfo"
-      self.__ser.write(chr(0x03) + '\n\r')
+      self.__ser.write(struct.pack('!B',0x03))
+      self.__ser.write("\n\r".encode())
 
   def req_test(self):
       """"""
-      self.__ser.write(chr(0x04) + '\n\r')
+      self.__ser.write(struct.pack('!B',0x04))
+      self.__ser.write("\n\r".encode())
 
   def cnf_line(self, lineNumber, lineData, flags, crc8):
       """Sends a line of data via the serial port.
@@ -105,15 +107,14 @@ class AyabCommunication(object):
         crc8 (bytes, optional): The CRC-8 checksum for transmission.
 
       """
-
-      msg = chr(0x42)                    # msg id
-      msg += chr(lineNumber)              # line number
-      msg += lineData                     # line data
-      msg += chr(flags)                   # flags
-      msg += chr(crc8)                    # crc8
+      self.__ser.write(struct.pack('!B',0x42))
+      self.__ser.write(struct.pack('!B',lineNumber))
+      self.__ser.write(lineData)
+      self.__ser.write(struct.pack('!B',flags))
+      self.__ser.write(struct.pack('!B',crc8))
+      self.__ser.write("\n\r".encode())
       # print "< cnfLine"
       # print lineData
-      self.__ser.write(msg + '\n\r')
 
 
 class CommunicationException(Exception):

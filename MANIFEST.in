@@ -1,3 +1,5 @@
+include CHANGELOG.rst
+include LICENSE.txt
 include *.md
 include *.txt
 recursive-include patterns *.png

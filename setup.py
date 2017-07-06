@@ -16,9 +16,9 @@
 #    along with AYAB.  If not, see <http://www.gnu.org/licenses/>.
 #
 #    Copyright 2014 Sebastian Oliva, Christian Obersteiner, Andreas Müller,
-#    https://bitbucket.org/chris007de/ayab-apparat/
+#    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
-from __future__ import print_function
+
 from setuptools import setup, find_packages
 from setuptools.command.test import test as TestCommand
 import io
@@ -30,6 +30,12 @@ import sys
 import ayab
 
 here = os.path.abspath(os.path.dirname(__file__))
+
+__version__ = "package_version"
+filename_version = os.path.dirname(__file__)
+package_version = os.path.join(filename_version, "package_version")
+with open(package_version) as version_file:
+    __version__ = version_file.read().strip()
 
 ## Useful Docs
 ## https://packaging.python.org/distributing/#requirements-for-packaging-and-distributing
@@ -56,7 +62,7 @@ def read_requirements(file_name):
     return requirements_list
 
 ## This builds the long description from Readme file, should be rst.
-long_description = read('README.md')  # TODO: Add 'CHANGES.txt'
+long_description = read('README.rst')  # TODO: Add 'CHANGES.txt'
 
 def find_data_files(source, target, patterns):
     """Locates the specified data-files and returns the matches
@@ -84,15 +90,13 @@ def find_data_files(source, target, patterns):
 
 setup(
     name='ayab',
-    version=ayab.__version__,
+    version=__version__,
     url='http://ayab-knitting.com/',
-    license='GNU GPLv3+',
-    author=u'Christian Obersteiner, Andreas Müller, Sebastian Oliva',
+    license='GPLv3+',
+    author='Christian Obersteiner, Andreas Müller, Sebastian Oliva',
     scripts=['bin/ayab'],
-    windows=['bin/ayab'],
-    skip_archive=True,
     data_files=find_data_files('ayab', 'ayab', [
-        'README.md',
+        'package_version',
         'patterns/*',
         '*.ts',
         '*.yapsy-plugin',
@@ -120,5 +124,8 @@ setup(
         'Programming Language :: Python',
         'Development Status :: 4 - Beta',
         'Natural Language :: English',
+        'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
+        'Intended Audience :: End Users/Desktop',
+        'Operating System :: OS Independent',
         ]
 )

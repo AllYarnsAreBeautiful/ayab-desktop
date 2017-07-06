@@ -7,7 +7,7 @@ a = Analysis(['ayab/ayab.py'],
              pathex=['./ayab'],
              hiddenimports=[],
              binaries=[],
-             datas=[],
+             datas=[('patterns','patterns')],
              hookspath=[],
              runtime_hooks=[],
              excludes=[],
@@ -23,12 +23,14 @@ exe = EXE(pyz,
           debug=True,
           strip=False,
           upx=False,
-          console=True )
+          console=True,
+          icon='windows-build/AYAB.ico')
 
 # Include all files in plugins folder
 plugin_tree = Tree('ayab/plugins', prefix = 'plugins')
 # add README to that TOC for convenience
 plugin_tree += [('README.md', './README.md', 'DATA')]
+plugin_tree += [('package_version', './package_version', 'DATA')]
 
 coll = COLLECT(exe,
                a.binaries,
