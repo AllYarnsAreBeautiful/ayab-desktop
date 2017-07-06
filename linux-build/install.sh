@@ -13,6 +13,7 @@ TAG_NAME="`./tag_name`"
 cd ..
 
 echo "# build the distribution"
+cp linux-build/README.rst .
 cp package_version LICENSE.txt ayab/
 python setup.py sdist bdist_wheel
 mkdir -p dist/release
