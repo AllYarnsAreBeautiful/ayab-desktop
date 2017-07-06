@@ -17,7 +17,7 @@ DefaultDirName={sd}\AYAB
 DisableProgramGroupPage=yes
 LicenseFile=LICENSE.txt
 OutputDir=.
-OutputBaseFilename=AYAB-Windows10-Setup
+OutputBaseFilename=AYAB-Setup
 Compression=lzma
 SolidCompression=yes
 

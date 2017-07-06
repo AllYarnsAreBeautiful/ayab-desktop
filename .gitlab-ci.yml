@@ -34,7 +34,7 @@ build:osx:
   - TAG=$(cat package_version)
   - cd dist/release
   - ls
-  - mv AYAB.dmg AYAB-OSX-${TAG}.dmg
+  - mv AYAB.dmg AYAB-${TAG}-osx.dmg
   - ls
   - cd ../..
 
@@ -55,7 +55,7 @@ build:linux:
   - TAG=$(cat package_version)
   - cd dist/release
   - ls
-  - mv ayab*.tar.gz AYAB-Linux-${TAG}.tar.gz
+  - mv ayab*.tar.gz AYAB-${TAG}-linux.tar.gz
   - mv ayab*.whl AYAB-${TAG}-py3-none-any.whl
   - ls
   - cd ../..
