@@ -122,8 +122,9 @@ deploy:github:
   script:
   - cd dist/release
   - ls
-  - /tools/upload.sh $CI_COMMIT_TAG python3
+  - /tools/upload.sh $CI_COMMIT_TAG master
   only:
+  - master 
   - tags
 
 deploy:pypi_test:
