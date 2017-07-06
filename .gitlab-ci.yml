@@ -55,6 +55,7 @@ build:linux:
   - cd dist/release
   - ls
   - mv ayab*.tar.gz AYAB-Linux-${TAG}.tar.gz
+  - mv ayab*.whl AYAB-PyPi-${TAG}-py35-none-any.whl
   - ls
   - cd ../..
 
@@ -138,3 +139,21 @@ deploy:pypi_test:
     - cd dist/release
     - ls
     - /tools/pypi.sh test
+
+deploy:pypi:
+    tags:
+    - linux
+    - docker
+    stage: deploy
+    environment:
+      name: pypi
+      url: https://pypi.python.org/pypi/ayab
+    image: python:latest
+    script:
+    - pip install twine
+    - cd dist/release
+    - ls
+    - /tools/pypi.sh prod
+    only:
+    - tags
+    - master     
