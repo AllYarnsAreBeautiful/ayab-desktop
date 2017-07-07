@@ -140,9 +140,9 @@ deploy:s3:
   - cp deploy/*.tpl dist/
   - cd dist/release
   - for i in `ls`; do echo "<li class=\"file\"><a href=\"$i\">$i</a></li>"; done > ../main.tpl
-  - cd ..
+  - cd ../
   - cat header.tpl main.tpl footer.tpl > release/index.html
-  - cd ../../
+  - cd ../
   script:
   - pip install awscli
   - aws s3 rm s3://$S3_BUCKET_NAME/ --recursive
