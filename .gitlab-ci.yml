@@ -137,11 +137,11 @@ deploy:s3:
     url: http://ayab-debug.s3-website.eu-central-1.amazonaws.com
   image: python:latest
   before_script:
-  - cp deploy/*.tpl dist/release/
+  - cp deploy/*.tpl dist/
   - cd dist/release
-  - for i in `ls`; do echo "<li class=\"file\"><a href=\"$i\">$i</a></li>"; done > main.tpl
-  - cat header.tpl main.tpl footer.tpl > index.html
-  - rm -f *.tpl
+  - for i in `ls`; do echo "<li class=\"file\"><a href=\"$i\">$i</a></li>"; done > ../main.tpl
+  - cd ..
+  - cat header.tpl main.tpl footer.tpl > release/index.html
   - cd ../../
   script:
   - pip install awscli
