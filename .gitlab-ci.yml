@@ -7,6 +7,7 @@ variables:
 
 stages:
   - build
+  - test
   - deploy
 
 cache:
@@ -91,6 +92,40 @@ build:win10:
   - cd dist/release
   - ls
   - cd ../..
+
+test:pypi_source:
+  tags:
+    - linux
+    - docker
+  stage: test
+  image: python:3.5
+  before_script:
+  - cd dist/release
+  - ls
+  script:
+  - pip3 install AYAB*.tar.gz
+  
+
+test:pypi_wheel:
+  tags:
+    - linux
+    - docker
+  stage: test
+  image: python:3.5
+  before_script:
+  - cd dist/release
+  - ls
+  script:
+  - pip3 install AYAB*.whl
+
+test:pypi_git:
+  tags:
+    - linux
+    - docker
+  stage: test
+  image: python:3.5
+  script:
+  - pip3 install -e git+https://gitlab.derchris.eu:10443/AllYarnsAreBeautiful/ayab-desktop.git@$CI_COMMIT_REF_NAME#egg=ayab
 
 deploy:s3:
   tags:
