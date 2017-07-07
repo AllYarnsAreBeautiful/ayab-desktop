@@ -65,6 +65,10 @@ To be able to work on GUI elements and translation files, the Qt Dev tools are n
 
     qttools5-dev-tools
 
+You can also install directly the git development version using git
+
+    pip3 install -e git+https://github.com/AllYarnsAreBeautiful/ayab-desktop.git#egg=ayab
+
 ### Windows
 
 #### Release Version
