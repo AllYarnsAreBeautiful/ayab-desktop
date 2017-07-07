@@ -21,6 +21,7 @@
 
 from setuptools import setup, find_packages
 from setuptools.command.test import test as TestCommand
+from pathlib import Path
 import io
 import codecs
 import os
@@ -61,8 +62,15 @@ def read_requirements(file_name):
         requirements_list.append(l)
     return requirements_list
 
+## check for README.rst location
+readme_file_check = Path("README.rst")
+if readme_file_check.is_file():
+    readme_file = "README.rst"
+else:
+    readme_file = "linux-build/README.rst"
+
 ## This builds the long description from Readme file, should be rst.
-long_description = read('README.rst')  # TODO: Add 'CHANGES.txt'
+long_description = read(readme_file)  # TODO: Add 'CHANGES.txt'
 
 def find_data_files(source, target, patterns):
     """Locates the specified data-files and returns the matches
