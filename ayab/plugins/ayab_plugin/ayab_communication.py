@@ -58,7 +58,7 @@ class AyabCommunication(object):
 
   def close_serial(self):
     """Closes serial port."""
-    if self.__ser is not None and self.__ser.is_open():
+    if self.__ser is not None and self.__ser.isOpen() is True:
         try:
             self.__ser.close()
             del(self.__ser)
