@@ -22,6 +22,7 @@ from . import ayab_image
 import time
 import logging
 import os
+import sys
 from ayab.plugins.knitting_plugin import KnittingPlugin
 from PyQt5 import QtGui, QtWidgets, QtCore
 
@@ -333,11 +334,11 @@ class AyabPluginControl(KnittingPlugin):
       mask = 1 << int(offset)
       return(int_type | mask)
 
-  def __setPixel(self, bytearray, pixel):
+  def __setPixel(self, bytearray_, pixel):
       numByte = int(pixel / 8)
-      bytearray[numByte] = self.__setBit(
-          int(bytearray[numByte]), pixel - (8 * numByte))
-      return bytearray
+      bytearray_[numByte] = self.__setBit(
+          int(bytearray_[numByte]), pixel - (8 * numByte))
+      return bytearray_
 
   def __checkSerial(self):
         time.sleep(1)  # TODO if problems in communication, tweak here
@@ -565,8 +566,10 @@ class AyabPluginControl(KnittingPlugin):
                 pxl = (self.__image.imageExpanded())[indexToSend][col]
                 # take the image offset into account
                 if pxl == True and sendBlankLine == False:
-                    bytes = self.__setPixel(
-                        bytes, col + self.__image.imgStartNeedle())
+                    pxlNumber = col + self.__image.imgStartNeedle()
+                    if pxlNumber < 200: # TODO implement for generic machine width
+                        bytes = self.__setPixel(
+                            bytes, pxlNumber)
 
             # TODO implement CRC8
             crc8 = 0x00
