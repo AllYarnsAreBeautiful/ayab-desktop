@@ -2,6 +2,13 @@
 export LC_CTYPE=en_US.UTF-8
 export PYTHONIOENCODING=utf-8
 
+RUN_PATH=`pwd`
+if [[ $RUN_PATH != *"Applications"* ]]
+then
+  echo "AYAB-Launcher.app needs to be copied to the /Applications folder"
+  exit 1
+fi
+
 USER=`whoami`
 PACKAGE_VERSION="`cat ./package_version`"
 
