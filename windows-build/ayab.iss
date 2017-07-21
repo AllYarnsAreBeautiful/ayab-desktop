@@ -61,4 +61,11 @@ begin
     { Abort installer }
     Result := False;
   end;
+
+  if (Version.Major = 6) and (Version.Minor = 0) then
+  begin
+    MsgBox('This product cannot be installed on Windows Vista.', mbError, MB_OK);
+    { Abort installer }
+    Result := False;
+  end;
 end;
