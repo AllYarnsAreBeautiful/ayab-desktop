@@ -5,8 +5,8 @@
         "uno":[
             {
                 "url":"/",
-                "version":"0.90rc1 (latest)",
-                "file":"kh910_uno_0-90rc1.hex"
+                "version":"0.90 (latest)",
+                "file":"kh910_uno_0-90.hex"
             },
             {
                 "url":"/",
@@ -17,8 +17,8 @@
         "mega2560":[
             {
                 "url":"/",
-                "version":"0.90rc1 (latest)",
-                "file":"kh910_mega_0-90rc1.hex"
+                "version":"0.90 (latest)",
+                "file":"kh910_mega_0-90.hex"
             },
             {
                 "url":"/",
@@ -34,8 +34,8 @@
             "uno":[
                 {
                     "url":"/",
-                    "version":"0.90rc1 (latest)",
-                    "file":"kh930_uno_0-90rc1.hex"
+                    "version":"0.90 (latest)",
+                    "file":"kh930_uno_0-90.hex"
                 },
                 {
                     "url":"/",
@@ -46,8 +46,8 @@
             "mega2560":[
                 {
                     "url":"/",
-                    "version":"0.90rc1 (latest)",
-                    "file":"kh930_mega_0-90rc1.hex"
+                    "version":"0.90 (latest)",
+                    "file":"kh930_mega_0-90.hex"
                 },
                 {
                     "url":"/",
