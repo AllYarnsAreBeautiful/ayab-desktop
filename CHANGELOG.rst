@@ -24,9 +24,10 @@ GUI
 -  Showing filename in statusbar (#156)
 -  Removed progress bar (#141)
 -  Making user notification when using incompatible firmware more verbose (#127)
+-  checking image width before setting pixels (#220)
 
 Fixes
-^^^
+^^^^^
 
 -  removing unnecessary exception during serial port closing (#143)
 -  check for valid number of colors in single and circular mode (#205,#207)
