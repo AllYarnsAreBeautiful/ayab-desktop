@@ -162,8 +162,9 @@ deploy:github:
   - ls
   - /tools/upload.sh $CI_COMMIT_TAG v0.9
   only:
-  - master 
   - tags
+  only:
+  - master
 
 deploy:pypi_test:
     tags:
@@ -196,4 +197,5 @@ deploy:pypi:
     - /tools/pypi.sh prod
     only:
     - tags
+    only:
     - master     
