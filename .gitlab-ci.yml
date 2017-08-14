@@ -163,7 +163,6 @@ deploy:github:
   - /tools/upload.sh $CI_COMMIT_TAG v0.9
   only:
   - tags
-  only:
   - master
 
 deploy:pypi_test:
