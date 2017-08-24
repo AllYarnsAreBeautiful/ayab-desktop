@@ -205,8 +205,6 @@ test2:pypi_test:
     - docker
   stage: test2
   image: python:3.5
-  before_script:
-  - cd dist/release
-  - ls
   script:
-  - pip3 install --extra-index-url https://test.pypi.org/pypi ayab==0.9rc12      
+  - TAG=$(cat package_version)
+  - pip3 install --extra-index-url https://test.pypi.org/pypi ayab==${TAG}     
