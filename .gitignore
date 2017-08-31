@@ -1,4 +1,4 @@
-
+ayab_log.txt
 # Python
 *.pyc
 docs/_build/
@@ -12,7 +12,7 @@ package_version
 .dep/
 # Binaries
 *.o
+*.hex
 # Obsolete Directories
 documents/
 patterns/
-ayab_log.txt
