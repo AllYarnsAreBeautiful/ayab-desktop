@@ -1,0 +1,207 @@
+variables:
+  GIT_STRATEGY: clone
+  GIT_SUBMODULE_STRATEGY: recursive
+  GIT_DEPTH: "300"
+  GIT_SSL_NO_VERIFY: "true"
+  S3_BUCKET_NAME: "ayab-debug"
+
+stages:
+  - build
+  - test
+  - deploy
+  - test2
+
+cache:
+  paths:
+  - /Library/Caches/Homebrew
+  - ~/.cache/pip
+
+before_script:
+  - TAG=$(git describe --tags | sed 's/-/.post/' | cut -f1 -d'-')
+  - echo $TAG > package_version
+  - cat package_version
+
+build:osx:
+  tags:
+    - osx
+    - virtualbox
+  stage: build
+  artifacts:
+    when: always
+    paths:
+    - dist/release/
+  script: 
+  - mac-build/install.sh
+  after_script:
+  - TAG=$(cat package_version)
+  - cd dist/release
+  - ls
+  - mv AYAB.dmg AYAB-${TAG}-osx.dmg
+  - ls
+  - cd ../..
+
+build:linux:
+  image: python:3.5
+  tags:
+    - linux
+    - docker
+  stage: build
+  artifacts:
+    when: always
+    paths:
+    - dist/release/
+  script:
+  - cp linux-build/README.rst .
+  - linux-build/install.sh
+  after_script:
+  - TAG=$(cat package_version)
+  - cd dist/release
+  - ls
+  - mv ayab*.tar.gz AYAB-${TAG}-linux.tar.gz
+  - mv ayab*.whl AYAB-${TAG}-py3-none-any.whl
+  - ls
+  - cd ../..
+
+build:win7:
+  tags:
+    - win7
+    - virtualbox
+  stage: build
+  artifacts:
+    when: always
+    paths:
+    - dist/release/
+  script:
+  - windows-build/install.sh 7
+  after_script:
+  - cd dist/release
+  - ls
+  - cd ../..
+
+build:win10:
+  tags:
+    - win10
+    - virtualbox
+  stage: build
+  artifacts:
+    when: always
+    paths:
+    - dist/release/
+  script:
+  - windows-build/install.sh 10
+  after_script:
+  - cd dist/release
+  - ls
+  - cd ../..
+
+test:pypi_source:
+  tags:
+    - linux
+    - docker
+  stage: test
+  image: python:3.5
+  before_script:
+  - cd dist/release
+  - ls
+  script:
+  - pip3 install AYAB*.tar.gz
+
+test:pypi_wheel:
+  tags:
+    - linux
+    - docker
+  stage: test
+  image: python:3.5
+  before_script:
+  - cd dist/release
+  - ls
+  script:
+  - pip3 install AYAB*.whl
+
+test:pypi_git:
+  tags:
+    - linux
+    - docker
+  stage: test
+  image: python:3.5
+  script:
+  - pip3 install -e git+https://gitlab.derchris.eu:10443/AllYarnsAreBeautiful/ayab-desktop.git@$CI_COMMIT_REF_NAME#egg=ayab
+
+deploy:s3:
+  tags:
+    - linux
+    - docker
+  stage: deploy
+  environment:
+    name: s3
+    url: http://ayab-debug.s3-website.eu-central-1.amazonaws.com
+  image: python:latest
+  before_script:
+  - cp deploy/*.tpl dist/
+  - cd dist/release
+  - for i in `ls`; do echo "<li class=\"file\"><a href=\"$i\">$i</a></li>"; done > ../main.tpl
+  - cd ../
+  - cat header.tpl main.tpl footer.tpl > release/index.html
+  - cd ../
+  script:
+  - pip install awscli
+  - aws s3 rm s3://$S3_BUCKET_NAME/ --recursive
+  - aws s3 cp --acl public-read ./dist/release/ s3://$S3_BUCKET_NAME/ --recursive
+
+deploy:github:
+  tags:
+    - linux
+    - docker
+  stage: deploy
+  environment:
+    name: github
+    url: https://github.com/AllYarnsAreBeautiful/ayab-desktop/releases
+  image: python:latest
+  script:
+  - cd dist/release
+  - ls
+  - /tools/upload.sh $CI_COMMIT_TAG v0.9
+  only:
+  - tags
+
+deploy:pypi_test:
+    tags:
+    - linux
+    - docker
+    stage: deploy
+    environment:
+      name: pypi_test
+      url: https://testpypi.python.org/pypi/ayab
+    image: python:latest
+    script:
+    - pip install twine
+    - cd dist/release
+    - ls
+    - /tools/pypi.sh test
+
+deploy:pypi:
+    tags:
+    - linux
+    - docker
+    stage: deploy
+    environment:
+      name: pypi
+      url: https://pypi.python.org/pypi/ayab
+    image: python:latest
+    script:
+    - pip install twine
+    - cd dist/release
+    - ls
+    - /tools/pypi.sh prod
+    only:
+    - tags
+
+test2:pypi_test:
+  tags:
+    - linux
+    - docker
+  stage: test2
+  image: python:3.5
+  script:
+  - TAG=$(cat package_version)
+  - pip3 install --extra-index-url https://test.pypi.org/pypi ayab==${TAG}     

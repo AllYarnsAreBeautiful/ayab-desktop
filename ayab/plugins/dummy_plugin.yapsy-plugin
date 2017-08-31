@@ -1,0 +1,10 @@
+[Core]
+Name = dummy_knitting_plugin
+Module = dummy_knitting_plugin
+Disabled = True
+
+[Documentation]
+Author = Sebastian Oliva, Christian Obersteiner, Andreas Müller, Christian Gerbrandt
+Version = 0.1
+Website = http://ayab-knitting.com
+Description = Plugin for AYAB

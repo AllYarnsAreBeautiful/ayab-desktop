@@ -1,0 +1,6 @@
+include CHANGELOG.rst
+include package_version
+include *.md
+include *.txt
+recursive-include patterns *.png
+recursive-include ayab *.md *.txt *.py *.yapsy-plugin *.ts *.qm *.hex *.json

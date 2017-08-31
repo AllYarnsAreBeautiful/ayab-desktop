@@ -1,0 +1,4 @@
+Pillow==4.1.0
+pyserial==3.3
+fysom==2.1.3
+Yapsy==1.11.223

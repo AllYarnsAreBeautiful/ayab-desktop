@@ -1,0 +1,79 @@
+{
+    "0":{
+        "description": "KH-910, KH-950(i)",
+        "controller": {
+        "uno":[
+            {
+                "url":"/",
+                "version":"0.90 (latest)",
+                "file":"kh910_uno_0-90.hex"
+            },
+            {
+                "url":"/",
+                "version":"0.80",
+                "file":"kh910_uno_0-80.hex"
+            }
+        ],
+        "mega2560":[
+            {
+                "url":"/",
+                "version":"0.90 (latest)",
+                "file":"kh910_mega_0-90.hex"
+            },
+            {
+                "url":"/",
+                "version":"0.80",
+                "file":"kh910_mega_0-80.hex"
+            }
+        ]
+      }
+    },
+    "1":{
+        "description": "KH-900, KH-930, KH-965(i), CK-35",
+        "controller": {
+            "uno":[
+                {
+                    "url":"/",
+                    "version":"0.90 (latest)",
+                    "file":"kh930_uno_0-90.hex"
+                },
+                {
+                    "url":"/",
+                    "version":"0.80",
+                    "file":"kh930_uno_0-80.hex"
+                }
+            ],
+            "mega2560":[
+                {
+                    "url":"/",
+                    "version":"0.90 (latest)",
+                    "file":"kh930_mega_0-90.hex"
+                },
+                {
+                    "url":"/",
+                    "version":"0.80",
+                    "file":"kh930_mega_0-80.hex"
+                }
+            ]
+        }
+    },
+    "2":{
+        "description": "Shield Test",
+        "controller": {
+            "uno":[
+                {
+                    "url":"/",
+                    "version":"0.80 (latest)",
+                    "file":"hwtest_uno_0-80.hex"
+                }
+            ],
+            "mega2560":[
+                {
+                    "url":"/",
+                    "version":"0.80 (latest)",
+                    "file":"hwtest_mega_0-80.hex"
+                }
+            ]
+        }
+    }
+}
