@@ -1,7 +1,7 @@
 Release Notes
 -------------
 
-0.90 (July 2017) (not released yet)
+0.90 (August 2017)
 ~~~~~~~~~~~~~~~~
 
 Firmware

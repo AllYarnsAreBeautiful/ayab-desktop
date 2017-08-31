@@ -160,7 +160,7 @@ deploy:github:
   script:
   - cd dist/release
   - ls
-  - /tools/upload.sh $CI_COMMIT_TAG v0.9
+  - /tools/upload.sh $CI_COMMIT_TAG master
   only:
   - tags
 
