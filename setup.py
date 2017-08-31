@@ -15,7 +15,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with AYAB.  If not, see <http://www.gnu.org/licenses/>.
 #
-#    Copyright 2014 Sebastian Oliva, Christian Obersteiner, Andreas Müller,
+#    Copyright 2014 Sebastian Oliva, Christian Obersteiner, Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
 
@@ -101,7 +101,7 @@ setup(
     version=__version__,
     url='http://ayab-knitting.com/',
     license='GPLv3+',
-    author='Christian Obersteiner, Andreas Müller, Sebastian Oliva',
+    author='Christian Obersteiner, Andreas Müller, Sebastian Oliva, Christian Gerbrandt',
     scripts=['bin/ayab'],
     data_files=find_data_files('ayab', 'ayab', [
         'package_version',

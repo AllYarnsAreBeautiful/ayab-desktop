@@ -3,7 +3,7 @@ Name = AYAB
 Module = ayab_plugin
 
 [Documentation]
-Author = Sebastian Oliva, Christian Obersteiner, Andreas Müller
+Author = Sebastian Oliva, Christian Obersteiner, Andreas Müller, Christian Gerbrandt
 Version = 0.1
 Website = http://ayab-knitting.com
 Description = Plugin for AYAB

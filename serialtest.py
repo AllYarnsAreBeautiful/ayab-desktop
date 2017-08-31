@@ -14,7 +14,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with AYAB.  If not, see <http://www.gnu.org/licenses/>.
 #
-#    Copyright 2013 Christian Obersteiner, Andreas Müller
+#    Copyright 2013 Christian Obersteiner, Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
 import time
@@ -94,7 +94,7 @@ def sendLine(lineNumber):
     if lineNumber < imageH:
         msg = ''
         for x in range(0, imageW):
-            pxl = image.getpixel((x, lineNumber))            
+            pxl = image.getpixel((x, lineNumber))
             if pxl == 255:
                 msg += "#"
                 setPixel(bytes,x)
@@ -124,9 +124,9 @@ def checkSerial( printMode ):
     time.sleep(1)
     out = ''
     while ser.inWaiting() > 0:
-        line = ser.readline()        
+        line = ser.readline()
 
-        msgId = ord(line[0])            
+        msgId = ord(line[0])
         if msgId == 0xC1:    # cnfStart
             msg = "> cnfStart: "
             if(ord(line[1])):
@@ -140,8 +140,8 @@ def checkSerial( printMode ):
             msg += str(ord(line[1]))
             print(msg)
 
-        elif msgId == 0x82: #reqLine            
-            
+        elif msgId == 0x82: #reqLine
+
             msg = "> reqLine: "
             msg += str(ord(line[1]))
             print(msg)
@@ -158,11 +158,11 @@ def no_such_action():
 def print_menu():
     print("===================")
     print("=    AYAB TEST    =")
-    print("===================")    
+    print("===================")
     print("= andz & chris007 =")
     print("=       v1        =")
     print("===================")
-    print(("Image: " + filename))  
+    print(("Image: " + filename))
     print((img.format, img.size, img.mode))
     print("")
     print("1 - reqInfo")
@@ -175,12 +175,12 @@ def print_menu():
     print("0 - Exit")
 
 
-def mainFunction():   
+def mainFunction():
 
     actions = {"1": a_reqInfo, "2": a_reqStart, "3": a_cnfLine, "4": a_showImage, "5": a_printImage}
     print_menu()
     while True:
-        print("")    
+        print("")
         selection = eval(input("Your selection: "))
         print("")
         if "0" == selection:
@@ -191,16 +191,16 @@ def mainFunction():
         toDo()
 
         checkSerial( False )
-        
 
-        
+
+
 filename = sys.argv[1]
 if filename != '':
     img = Image.open(filename)
     image = img.convert('1')
     imageW = image.size[0]
     imageH = image.size[1]
-    maxWidth = 200 
+    maxWidth = 200
     if imageW > maxWidth:
         wpercent = (maxWidth/float(imageW))
         hsize = int((float(imageH)*float(wpercent)))

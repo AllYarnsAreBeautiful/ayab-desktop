@@ -14,12 +14,14 @@ fi
 USER=`whoami`
 PACKAGE_VERSION="`cat ./package_version`"
 
-if type xcode-select >&- && xpath=$( xcode-select --print-path ) &&
+if type xcode-select >&- && xpath=$( xcode-select --print-path >> /dev/null 2>&1 ) &&
    test -d "${xpath}" && test -x "${xpath}" ; then
      echo "xcode command line tools already installed"
 else
      echo "install xcode command line tools"
+     echo "******************************************"
      echo "please be patient, this might take a while"
+     echo "******************************************"
      touch /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress;
      PROD=$(softwareupdate -l | grep "\*.*Command Line" | head -n 1 | awk -F"*" '{print $2}' | sed -e 's/^ *//' | tr -d '\n')
      softwareupdate -i "$PROD";

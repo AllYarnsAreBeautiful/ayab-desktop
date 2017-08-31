@@ -60,7 +60,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'All Yarns Are Beautiful'
-copyright = '2014, Christian Obersteiner, Andreas Müller, Sebastian Oliva'
+copyright = '2014, Christian Obersteiner, Andreas Müller, Sebastian Oliva, Christian Gerbrandt'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -213,7 +213,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
   ('index', 'AllYarnsAreBeautiful.tex', 'All Yarns Are Beautiful Documentation',
-   'Christian Obersteiner, Andreas Müller', 'manual'),
+   'Christian Obersteiner, Andreas Müller, Christian Gerbrandt', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -243,7 +243,7 @@ latex_documents = [
 # (source start file, name, description, authors, manual section).
 man_pages = [
     ('index', 'allyarnsarebeautiful', 'All Yarns Are Beautiful Documentation',
-     ['Christian Obersteiner, Andreas Müller'], 1)
+     ['Christian Obersteiner, Andreas Müller, Christian Gerbrandt'], 1)
 ]
 
 # If true, show URL addresses after external links.
@@ -257,7 +257,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
   ('index', 'AllYarnsAreBeautiful', 'All Yarns Are Beautiful Documentation',
-   'Christian Obersteiner, Andreas Müller', 'AllYarnsAreBeautiful', 'One line description of project.',
+   'Christian Obersteiner, Andreas Müller, Christian Gerbrandt', 'AllYarnsAreBeautiful', 'One line description of project.',
    'Miscellaneous'),
 ]
 

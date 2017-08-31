@@ -9,7 +9,7 @@
 	<key>Authentication</key>
 	<false/>
 	<key>Author</key>
-	<string>Christian Obersteiner, Andreas Müller, Sebastian Oliva</string>
+	<string>Christian Obersteiner, Andreas Müller, Sebastian Oliva, Christian Gerbrandt</string>
 	<key>BundledFiles</key>
 	<array>
 		<string>../ayab</string>
@@ -56,7 +56,7 @@
 	<key>PromptForFileOnLaunch</key>
 	<false/>
 	<key>RemainRunning</key>
-	<true/>
+	<false/>
 	<key>RunInBackground</key>
 	<false/>
 	<key>ScriptArgs</key>
