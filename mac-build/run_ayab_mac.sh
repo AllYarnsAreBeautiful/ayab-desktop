@@ -14,7 +14,7 @@ fi
 USER=`whoami`
 PACKAGE_VERSION="`cat ./package_version`"
 
-if type xcode-select >&- && xpath=$( xcode-select --print-path >> /dev/null 2>&1 ) &&
+if type xcode-select >&- && xpath=$( xcode-select --print-path ) &&
    test -d "${xpath}" && test -x "${xpath}" ; then
      echo "xcode command line tools already installed"
 else
