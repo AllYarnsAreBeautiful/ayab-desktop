@@ -88,6 +88,11 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="ayab_gui.py" line="238"/>
+        <source>Repeat</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="ayab_gui.py" line="239"/>
         <source>Mirror</source>
         <translation type="unfinished"></translation>
