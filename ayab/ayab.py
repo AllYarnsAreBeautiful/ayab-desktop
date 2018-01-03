@@ -218,6 +218,7 @@ class GuiMain(QMainWindow):
         self.ui.actionAbout.triggered.connect(self.open_about_ui)
         self.ui.actionMirror.triggered.connect(self.mirror_image)
         self.ui.actionInvert.triggered.connect(self.invert_image)
+        self.ui.actionRepeat.triggered.connect(self.repeat_image)
         self.ui.actionRotate_Left.triggered.connect(self.rotate_left)
         self.ui.actionRotate_Right.triggered.connect(self.rotate_right)
         self.ui.actionVertical_Flip.triggered.connect(self.flip_image)
@@ -371,6 +372,24 @@ class GuiMain(QMainWindow):
         '''Public invert current Image function.'''
         self.apply_image_transform("invert")
 
+    def repeat_image(self):
+        '''Public repeat current Image function.'''
+        v = QtWidgets.QInputDialog.getInt(
+            self,
+            "Repeat",
+            "Vertical",
+            value=1,
+            min=1
+        )
+        h = QtWidgets.QInputDialog.getInt(
+            self,
+            "Repeat",
+            "Horizontal",
+            value=1,
+            min=1
+        )
+        self.apply_image_transform("repeat", v[0], h[0])
+
     def mirror_image(self):
         '''Public mirror current Image function.'''
         self.apply_image_transform("mirror")
@@ -395,6 +414,7 @@ class GuiMain(QMainWindow):
         '''
         transform_dict = {
             'invert': self.__invert_image,
+            'repeat': self.__repeat_image,
             'mirror': self.__mirror_image,
             'flip': self.__flip_image,
             'rotate': self.__rotate_image,
@@ -451,6 +471,22 @@ class GuiMain(QMainWindow):
         import PIL.ImageOps
         flipped_image = PIL.ImageOps.flip(image)
         return flipped_image
+
+    def __repeat_image(self, image, args):
+        """
+        Repeat image.
+        Repeat pHorizontal times horizontally, pVertical times vertically
+        Sturla Lange 2017-12-30
+        """
+        old_h = image.size[1]
+        old_w = image.size[0]
+        new_h = old_h*args[0] # pVertical
+        new_w = old_w*args[1] # pHorizontal
+        new_im = Image.new('RGB', (new_w,new_h))
+        for h in range(0,new_h,old_h):
+          for w in range(0,new_w,old_w):
+            new_im.paste(image, (w,h))
+        return new_im
 
     def getSerialPorts(self):
         """

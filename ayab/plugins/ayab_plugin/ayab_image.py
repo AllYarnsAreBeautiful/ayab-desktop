@@ -181,6 +181,24 @@ class ayabImage(object):
       self.__updateImageData()
       return
 
+  def repeatImage(self, pHorizontal=1, pVertical=1):
+      """
+      Repeat image.
+      Repeat pHorizontal times horizontally, pVertical times vertically
+      Sturla Lange 2017-12-30
+      """
+      old_h = self.__image.size[1]
+      old_w = self.__image.size[0]
+      new_h = old_h*pVertical
+      new_w = old_w*pHorizontal
+      new_im = Image.new('RGB', (new_w,new_h))
+      for h in range(0,new_h,old_h):
+        for w in range(0,new_w,old_w):
+          new_im.paste(self.__image, (w,h))
+      self.__image = new_im
+      self.__updateImageData()
+      return
+
 
   def setKnitNeedles(self, pKnitStart, pKnitStop):
       """

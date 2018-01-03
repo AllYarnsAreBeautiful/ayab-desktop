@@ -88,6 +88,11 @@
         <translation>Invert</translation>
     </message>
     <message>
+        <location filename="ayab_gui.py" line="238"/>
+        <source>Repeat</source>
+        <translation>Repeat</translation>
+    </message>
+    <message>
         <location filename="ayab_gui.py" line="239"/>
         <source>Mirror</source>
         <translation>Mirror</translation>
