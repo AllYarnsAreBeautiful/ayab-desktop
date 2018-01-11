@@ -16,3 +16,4 @@ package_version
 # Obsolete Directories
 documents/
 patterns/
+build/
