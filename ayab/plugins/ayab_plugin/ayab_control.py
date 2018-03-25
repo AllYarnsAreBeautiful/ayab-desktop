@@ -381,6 +381,8 @@ class AyabPluginControl(KnittingPlugin):
                     self.options_ui.label_carriage.setText("K Carriage")
                 elif carriage == 2:
                     self.options_ui.label_carriage.setText("L Carriage")
+                elif carriage == 3:
+                    self.options_ui.label_carriage.setText("G Carriage")
 
                 return ("indState", line[1])
 
