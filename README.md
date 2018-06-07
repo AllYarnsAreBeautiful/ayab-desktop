@@ -81,7 +81,8 @@ Just unzip the archive or use the Installer and run
 
 #### Running from source & Development (Tested on Win10)
 
-You need Python Version 3.5.3 (Important: the 64 bit version!) and PyQt5 (we used 5.3.2).
+You need Python Version 3.5.3 (Important: the 64 bit version!) and PyQt5 (we used 5.3.2, but 5.6
+or later is needed if you're working with High-DPI screens like 4K displays).
 
 Download and install Python 3.5.3 (64 bit) (pip is already contained in this installer) from
     https://www.python.org/downloads/windows/ (https://www.python.org/ftp/python/3.5.3/python-3.5.3-amd64.exe)
