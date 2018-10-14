@@ -86,12 +86,13 @@ class AyabCommunication(object):
 
   def req_start(self, startNeedle, stopNeedle):
       """Sends a start message to the controller."""
-      data = bytes()
-      data += b'\x01'
-      data += struct.pack('!B',startNeedle)
-      data += struct.pack('!B',stopNeedle)
-      data = self.__driver.send(data)
+      data = bytearray()
+      data.append(0x01)
+      data.append(startNeedle)
+      data.append(stopNeedle)
+      data = self.__driver.send(bytes(data))
       self.__ser.write(data)
+      print(data)
 
   def req_info(self):
       """Sends a request for information to controller."""
@@ -117,14 +118,15 @@ class AyabCommunication(object):
         crc8 (bytes, optional): The CRC-8 checksum for transmission.
 
       """
-      data = bytes()
-      data += b'\x42'
-      data += struct.pack('!B',lineNumber)
-      data += lineData
-      data += struct.pack('!B',flags)
-      data += struct.pack('!B',crc8)
-      data = self.__driver.send(data)
+      data = bytearray()
+      data.append(0x42)
+      data.append(lineNumber)
+      data.extend(lineData)
+      data.append(flags)
+      data.append(crc8)
+      data = self.__driver.send(bytes(data))
       self.__ser.write(data)
+      print(data)
 
 
 class CommunicationException(Exception):
