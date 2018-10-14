@@ -41,6 +41,7 @@ class AyabCommunication(object):
     self.__logger = logging.getLogger(__name__)
     self.__ser = serial
     self.__driver = sliplib.Driver()
+    self.__rxMsgList = list()
 
   def __del__(self):
     """Handles on delete behaviour closing serial port object."""
@@ -79,10 +80,13 @@ class AyabCommunication(object):
       bytes_waiting = self.__ser.in_waiting  
       data = self.__ser.read(bytes_waiting)
     
-    msgs = []
     if len(data) > 0:
-      msgs = self.__driver.receive(data)
-    return msgs
+      self.__rxMsgList.extend(self.__driver.receive(data))
+
+    if len(self.__rxMsgList) > 0:
+      return self.__rxMsgList.pop(0)
+    else:
+      return None
 
   def req_start(self, startNeedle, stopNeedle):
       """Sends a start message to the controller."""
