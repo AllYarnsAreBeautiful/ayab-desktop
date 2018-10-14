@@ -341,56 +341,57 @@ class AyabPluginControl(KnittingPlugin):
       return bytearray_
 
   def __checkSerial(self):
-        time.sleep(1)  # TODO if problems in communication, tweak here
+        msg = self.__ayabCom.update()
 
-        line = self.__ayabCom.read_line()
+        if msg == None:            
+            return("none", 0)
 
-        if len(line) > 0:
-            msgId = line[0]
-            if msgId == 0xC1:    # cnfStart
-                # print "> cnfStart: " + str(ord(line[1]))
-                return ("cnfStart", line[1])
+        msgId = msg[0]
+        if msgId == 0xC1:    # cnfStart
+            # print "> cnfStart: " + str(ord(line[1]))
+            return ("cnfStart", msg[1])
 
-            elif msgId == 0xC3:  # cnfInfo
-                # print "> cnfInfo: Version=" + str(ord(line[1]))
-                api = line[1]
-                msg = "API v" + str(api)
+        elif msgId == 0xC3:  # cnfInfo
+            # print "> cnfInfo: Version=" + str(ord(line[1]))
+            api = msg[1]
+            log = "API v" + str(api)
 
-                if api >= 4:
-                    msg += ", FW v" + str(line[2]) + "." + str(line[3])
+            if api >= 4:
+                log += ", FW v" + str(msg[2]) + "." + str(msg[3])
 
-                logging.info(msg)
-                return ("cnfInfo", line[1])
+            logging.info(log)
+            return ("cnfInfo", msg[1])
 
-            elif msgId == 0x82:  # reqLine
-                # print "> reqLine: " + str(ord(line[1]))
-                return ("reqLine", line[1])
+        elif msgId == 0x82:  # reqLine
+            # print "> reqLine: " + str(ord(line[1]))
+            return ("reqLine", msg[1])
 
-            elif msgId == 0xC4:  # cnfTest
-                return ("cnfTest", line[1])
+        elif msgId == 0xC4:  # cnfTest
+            return ("cnfTest", msg[1])
 
-            elif msgId == 0x84:
-                hall_l = (line[2] << 8) + line[3]
-                hall_r = (line[4] << 8) + line[5]
+        elif msgId == 0x84:
+            hall_l = (msg[2] << 8) + msg[3]
+            hall_r = (msg[4] << 8) + msg[5]
 
-                self.options_ui.progress_hall_l.setValue(hall_l)
-                self.options_ui.progress_hall_r.setValue(hall_r)
-                self.options_ui.slider_position.setValue(line[7])
-                carriage = line[6]
-                if carriage == 1:
-                    self.options_ui.label_carriage.setText("K Carriage")
-                elif carriage == 2:
-                    self.options_ui.label_carriage.setText("L Carriage")
+            self.options_ui.progress_hall_l.setValue(hall_l)
+            self.options_ui.progress_hall_r.setValue(hall_r)
+            self.options_ui.slider_position.setValue(msg[7])
+            carriage = msg[6]
+            if carriage == 1:
+                self.options_ui.label_carriage.setText("K Carriage")
+            elif carriage == 2:
+                self.options_ui.label_carriage.setText("L Carriage")
+            elif carriage == 3:
+                self.options_ui.label_carriage.setText("G Carriage")
 
-                return ("indState", line[1])
+            return ("indState", msg[1])
 
-            else:
-                logging.debug("unknown message: ") # drop crlf
-                pp = pprint.PrettyPrinter(indent=4)
-                pp.pprint(line)
-                return ("unknown", 0)
-        return("none", 0)
-
+        else:
+            logging.debug("unknown message: ") # drop crlf
+            pp = pprint.PrettyPrinter(indent=4)
+            pp.pprint(msg)
+            return ("unknown", 0)
+            
   def __cnfLine(self, lineNumber):
         imgHeight = self.__image.imgHeight()
         lenImgExpanded = len(self.__image.imageExpanded())
@@ -646,7 +647,8 @@ class AyabPluginControl(KnittingPlugin):
                                          + str(rcvParam) + "/"
                                          + str(API_VERSION) + ")")
                       logging.error("wrong API version: " + str(rcvParam)
-                                        + (" (expected: )") + str(API_VERSION))
+                                        + (" ,expected: ") + str(API_VERSION))
+                                        
                       return
 
           if curState == 's_waitForInit':

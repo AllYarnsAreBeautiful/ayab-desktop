@@ -26,6 +26,7 @@ The initializer can also be overriden with a dummy serial object.
 
 import time
 import serial
+import sliplib
 
 import logging
 import struct
@@ -39,6 +40,8 @@ class AyabCommunication(object):
     logging.basicConfig(level=logging.DEBUG)
     self.__logger = logging.getLogger(__name__)
     self.__ser = serial
+    self.__driver = sliplib.Driver()
+    self.__rxMsgList = list()
 
   def __del__(self):
     """Handles on delete behaviour closing serial port object."""
@@ -50,7 +53,11 @@ class AyabCommunication(object):
       self.__portname = pPortname
       try:
           self.__ser = serial.Serial(self.__portname, 115200)
-          time.sleep(1)
+          # TODO SLIP Library on Arduino seems to take some time until it is 
+          # ready to answer.
+          # Remove this sleep and check availability by regular sending of 
+          # reqInfo() in the _knitImage State Machine.
+          time.sleep(5)
       except:
         self.__logger.error("could not open serial port " + self.__portname)
         raise CommunicationException()
@@ -67,31 +74,38 @@ class AyabCommunication(object):
         except:
             logging.debug("Closing Serial port failed. Was it ever open?")
 
-  def read_line(self):
-    """Reads a line from serial communication."""
-    line = bytes()
+  def update(self):
+    """Reads data from serial and tries to parse as SLIP packet."""
     if self.__ser:
-      while self.__ser.inWaiting() > 0:
-          line += self.__ser.read(1)
-    return line
+      bytes_waiting = self.__ser.in_waiting  
+      data = self.__ser.read(bytes_waiting)
+    
+    if len(data) > 0:
+      self.__rxMsgList.extend(self.__driver.receive(data))
+
+    if len(self.__rxMsgList) > 0:
+      return self.__rxMsgList.pop(0)
+    else:
+      return None
 
   def req_start(self, startNeedle, stopNeedle):
       """Sends a start message to the controller."""
-      self.__ser.write(struct.pack('!B',0x01))
-      self.__ser.write(struct.pack('!B',startNeedle))
-      self.__ser.write(struct.pack('!B',stopNeedle))
-      self.__ser.write("\n\r".encode())
+      data = bytearray()
+      data.append(0x01)
+      data.append(startNeedle)
+      data.append(stopNeedle)
+      data = self.__driver.send(bytes(data))
+      self.__ser.write(data)
 
   def req_info(self):
       """Sends a request for information to controller."""
-      # print "< reqInfo"
-      self.__ser.write(struct.pack('!B',0x03))
-      self.__ser.write("\n\r".encode())
+      data = self.__driver.send(b'\x03')
+      self.__ser.write(data)
 
   def req_test(self):
       """"""
-      self.__ser.write(struct.pack('!B',0x04))
-      self.__ser.write("\n\r".encode())
+      data = self.__driver.send(b'\x04')
+      self.__ser.write(data)
 
   def cnf_line(self, lineNumber, lineData, flags, crc8):
       """Sends a line of data via the serial port.
@@ -107,15 +121,14 @@ class AyabCommunication(object):
         crc8 (bytes, optional): The CRC-8 checksum for transmission.
 
       """
-      self.__ser.write(struct.pack('!B',0x42))
-      self.__ser.write(struct.pack('!B',lineNumber))
-      self.__ser.write(lineData)
-      self.__ser.write(struct.pack('!B',flags))
-      self.__ser.write(struct.pack('!B',crc8))
-      self.__ser.write("\n\r".encode())
-      # print "< cnfLine"
-      # print lineData
-
+      data = bytearray()
+      data.append(0x42)
+      data.append(lineNumber)
+      data.extend(lineData)
+      data.append(flags)
+      data.append(crc8)
+      data = self.__driver.send(bytes(data))
+      self.__ser.write(data)
 
 class CommunicationException(Exception):
   pass

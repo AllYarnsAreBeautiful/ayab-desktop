@@ -1,6 +1,21 @@
 Release Notes
 -------------
 
+0.91 (April 2018)
+~~~~~~~~~~~~~~~~
+
+Firmware
+^^^^^^^^
+
+-  Added support for Garter Carriage
+-  Improvement of I2C communication (Pull request #11)
+-  Adjusting END_OF_LINE_OFFSET_L to 12 (Issue #9) 
+
+GUI
+^^^
+
+-  Adding Repeat action and shortcuts (Pull request #251)
+
 0.90 (August 2017)
 ~~~~~~~~~~~~~~~~
 
