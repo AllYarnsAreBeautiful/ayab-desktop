@@ -2,7 +2,7 @@ ayab_log.txt
 # Python
 *.pyc
 docs/_build/
-venv/
+venv*/
 ayab.egg-info
 dist
 # File is changed by CI
