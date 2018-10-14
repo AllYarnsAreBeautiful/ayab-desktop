@@ -40,8 +40,16 @@ import serial
 import serial.tools.list_ports
 
 
-logging.basicConfig(filename='ayab_log.txt', level=logging.DEBUG)
-logging.getLogger().addHandler(logging.StreamHandler())
+logging.basicConfig(filename='ayab_log.txt',
+                    level=logging.DEBUG,
+                    format='%(asctime)s %(name)-8s %(levelname)-8s %(message)s',
+                    datefmt='%y-%m-%d %H:%M:%S')
+console = logging.StreamHandler()
+console.setLevel(logging.DEBUG)
+console.setFormatter(
+    logging.Formatter('%(asctime)s %(name)-8s %(levelname)-8s %(message)s'))
+logging.getLogger().addHandler(console)
+
 
 __version__ = "package_version"
 filename_version = os.path.dirname(__file__)
