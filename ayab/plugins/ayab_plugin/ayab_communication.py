@@ -92,7 +92,6 @@ class AyabCommunication(object):
       data.append(stopNeedle)
       data = self.__driver.send(bytes(data))
       self.__ser.write(data)
-      print(data)
 
   def req_info(self):
       """Sends a request for information to controller."""
@@ -126,8 +125,6 @@ class AyabCommunication(object):
       data.append(crc8)
       data = self.__driver.send(bytes(data))
       self.__ser.write(data)
-      print(data)
-
 
 class CommunicationException(Exception):
   pass
