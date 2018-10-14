@@ -10,16 +10,16 @@ This is the GUI interface for AYAB.
 
 #### Prerequisites
 
-You need Python 3.5 and PyQt5 from your package manager's repository.
+You need Python 3.5 and from your package manager's repository.
 The other main dependencies can be found in requirements.txt
 
 *For Debian/Ubuntu*
 
-    sudo apt-get install python3-pip python3-pyqt5 python3-dev python3-virtualenv
+    sudo apt-get install python3-pip python3-dev python3-virtualenv
 
 *For openSUSE*
 
-    sudo zypper install python3-pip python3-pyqt5 python3-virtualenv
+    sudo zypper install python3-pip python3-virtualenv
 
 *All Distributions*
 
@@ -32,7 +32,7 @@ To be able to communicate with your Arduino, it might be necessary to add the ri
 
 This will install the latest release version from PyPi
 
-    virtualenv -p python3 --system-site-packages venv/
+    virtualenv -p python3 venv/
     source venv/bin/activate
     pip3 install ayab
 
@@ -53,7 +53,7 @@ To install the development version you can checkout the git repository
 Create a virtual enviroment in the cloned repository
 
     cd ayab-desktop
-    virtualenv -p python3 --system-site-packages venv/
+    virtualenv -p python3 venv/
     source venv/bin/activate
     pip3 install -r requirements.txt
 
@@ -81,16 +81,12 @@ Just unzip the archive or use the Installer and run
 
 #### Running from source & Development (Tested on Win10)
 
-You need Python Version 3.5.3 (Important: the 64 bit version!) and PyQt5 (we used 5.3.2).
+You need Python Version 3.5.3 (Important: the 64 bit version!) and PyQt5 (we used 5.11.3).
 
 Download and install Python 3.5.3 (64 bit) (pip is already contained in this installer) from
     https://www.python.org/downloads/windows/ (https://www.python.org/ftp/python/3.5.3/python-3.5.3-amd64.exe)
 
 You may also need PyWin32 (https://sourceforge.net/projects/pywin32/files/pywin32/).
-
-Now, use pip to install further dependencies
-
-    pip3 install virtualenv pyqt5
 
 You can checkout the git repository with
 
@@ -99,7 +95,7 @@ You can checkout the git repository with
 Create a virtual enviroment in the cloned repository
 
     cd ayab-desktop
-    virtualenv --system-site-packages venv/
+    virtualenv venv/
     venv\Scripts\activate
 
 Then install the remaining prerequisites with
@@ -148,7 +144,6 @@ Create a virtual enviroment in the cloned repository
 
 Then install the remaining prerequisites with
 
-    bin/pip3 install pyqt5
     bin/pip3 install -r requirements.txt
 
 Now start ayab with
