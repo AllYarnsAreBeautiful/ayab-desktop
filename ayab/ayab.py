@@ -49,6 +49,12 @@ package_version = os.path.join(filename_version, "package_version")
 with open(package_version) as version_file:
     __version__ = version_file.read().strip()
 
+# Fix PyQt5 for HiDPI screens
+if hasattr(QtCore.Qt, 'AA_EnableHighDpiScaling'):
+    QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
+if hasattr(QtCore.Qt, 'AA_UseHighDpiPixmaps'):
+    QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)
+
 class GuiMain(QMainWindow):
     """GuiMain is the main object that handles the instance of AYAB's GUI from ayab_gui.UiForm .
 
