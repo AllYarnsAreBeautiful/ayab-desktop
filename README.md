@@ -15,11 +15,11 @@ The other main dependencies can be found in requirements.txt
 
 *For Debian/Ubuntu*
 
-    sudo apt-get install python3-pip python3-qt5 python3-dev python3-virtualenv
+    sudo apt-get install python3-pip python3-pyqt5 python3-dev python3-virtualenv
 
 *For openSUSE*
 
-    sudo zypper install python3-pip python3-qt5 python3-virtualenv
+    sudo zypper install python3-pip python3-pyqt5 python3-virtualenv
 
 *All Distributions*
 
