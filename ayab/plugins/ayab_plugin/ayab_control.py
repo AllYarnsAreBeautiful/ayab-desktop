@@ -19,6 +19,7 @@
 
 from .ayab_communication import AyabCommunication
 from . import ayab_image
+import math
 import time
 import logging
 import os
@@ -160,9 +161,9 @@ class AyabPluginControl(KnittingPlugin):
   def slotSetImageDimensions(self, width, height):
     """Called by Main UI on loading of an image to set Start/Stop needle
     to image width. Updates the maximum value of the Start Line UI element"""
-    right_side = int(width/2)
-    self.options_ui.start_needle_edit.setValue(width - right_side)
-    self.options_ui.stop_needle_edit.setValue(right_side)
+    left_side = math.trunc(width/2)
+    self.options_ui.start_needle_edit.setValue(left_side)
+    self.options_ui.stop_needle_edit.setValue(width - left_side)
     self.options_ui.start_line_edit.setMaximum(height)
 
   def __onStartLineChanged(self):
