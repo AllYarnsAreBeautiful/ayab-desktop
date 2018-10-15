@@ -36,6 +36,7 @@ class AyabPluginControl(KnittingPlugin):
 
   def onknit(self, e):
     logging.debug("called onknit on AyabPluginControl")
+    self.options_ui.tabWidget.setCurrentIndex(1)
     self.__knitImage(self.__image, self.conf)
     self.finish()
 
@@ -178,6 +179,9 @@ class AyabPluginControl(KnittingPlugin):
     self.options_ui = Ui_DockWidget()
     self.dock = parent_ui.ui.knitting_options_dock  # findChild(QtGui.QDockWidget, "knitting_options_dock")
     self.options_ui.setupUi(self.dock)
+    self.options_ui.tabWidget.setTabEnabled(1, False)
+    self.options_ui.label_progress.setText("")
+    self.options_ui.label_direction.setText("")
     self.setup_behaviour_ui()
 
   def set_translator(self):
@@ -261,11 +265,6 @@ class AyabPluginControl(KnittingPlugin):
     """
 
     self.conf = {}
-    tab_widget = ui.findChild(QtWidgets.QTabWidget, "tabWidget")
-    if tab_widget.currentIndex() == 1:
-        self.conf["testmode"] = True
-    else:
-        self.conf["testmode"] = False
 
     color_line_text = ui.findChild(QtWidgets.QSpinBox, "color_edit").value()
     self.conf["num_colors"] = int(color_line_text)
@@ -384,6 +383,14 @@ class AyabPluginControl(KnittingPlugin):
                 self.options_ui.label_carriage.setText("L Carriage")
             elif carriage == 3:
                 self.options_ui.label_carriage.setText("G Carriage")
+            
+            direction = msg[8]
+            if direction == 1:
+                self.options_ui.label_direction.setText("left")
+            elif direction == 2:
+                self.options_ui.label_direction.setText("right")
+            else:
+                self.options_ui.label_direction.setText("")
 
             return ("indState", msg[1])
 
@@ -596,6 +603,8 @@ class AyabPluginControl(KnittingPlugin):
 
             #sending line progress to gui
             self.__emit_progress(imgRow+1, imgHeight)
+            self.options_ui.label_progress.setText(str(imgRow+1)
+                                                   + "/" + str(imgHeight))
 
         else:
             logging.error("requested lineNumber out of range")
@@ -636,11 +645,8 @@ class AyabPluginControl(KnittingPlugin):
 
               if rcvMsg == 'cnfInfo':
                   if rcvParam == API_VERSION:
-                      if pOptions["testmode"]:
-                        curState = 's_start'
-                      else:
-                        curState = 's_waitForInit'
-                        self.__updateNotification("Please init machine. (Set the carriage to mode KC-I or KC-II and move the carriage over the left turn mark).")
+                      curState = 's_waitForInit'
+                      self.__updateNotification("Please init machine. (Set the carriage to mode KC-I or KC-II and move the carriage over the left turn mark).")
                   else:
                       self.__notify_user("Wrong Arduino Firmware Version. "
                                          + "Please check if you have flashed "
@@ -661,19 +667,8 @@ class AyabPluginControl(KnittingPlugin):
 
           if curState == 's_start':
               if oldState != curState:
-                if pOptions["testmode"]:
-                    self.__ayabCom.req_test()
-                else:
                     self.__ayabCom.req_start(self.__image.knitStartNeedle(),
                                              self.__image.knitStopNeedle())
-
-              if rcvMsg == 'cnfTest':
-                if rcvParam == 1:
-                    self.__updateNotification("Testmode")
-                else:
-                    self.__updateNotification()
-                    logging.error("Starting Testmode failed")
-                    return
 
               if rcvMsg == 'cnfStart':
                   if rcvParam == 1:
@@ -692,10 +687,13 @@ class AyabPluginControl(KnittingPlugin):
                       curState = 's_finished'
 
           if curState == 's_finished':
-              self.__updateNotification("Image transmission finished. Please knit until you hear the double beep sound.")
-              return
+              self.__wait_for_user_action("Image transmission finished. " \
+                                          "Please knit until you hear the " \
+                                          "double beep sound.")
+              break
 
           oldState = curState
 
       self.options_ui.label_carriage.setText("No carriage detected")
+      self.options_ui.tabWidget.setCurrentIndex(0)
       return

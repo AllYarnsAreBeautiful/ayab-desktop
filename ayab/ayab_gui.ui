@@ -72,53 +72,77 @@
         <property name="sizeConstraint">
          <enum>QLayout::SetFixedSize</enum>
         </property>
-        <item alignment="Qt::AlignHCenter">
-         <widget class="QWidget" name="widget_imgload" native="true">
-          <property name="enabled">
-           <bool>true</bool>
-          </property>
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <layout class="QVBoxLayout" name="verticalLayout">
-           <property name="sizeConstraint">
-            <enum>QLayout::SetMaximumSize</enum>
-           </property>
-           <item>
-            <widget class="QLabel" name="label_3">
-             <property name="text">
-              <string>Load Images and Mode</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QComboBox" name="module_dropdown"/>
-           </item>
-           <item>
-            <widget class="QLineEdit" name="filename_lineedit">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
-             <property name="text">
-              <string notr="true"/>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="load_file_button">
-             <property name="text">
-              <string>1. Load Image File</string>
-             </property>
-             <property name="shortcut">
-              <string>Ctrl+O</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
+        <item>
+         <layout class="QVBoxLayout" name="widget_imgload">
+          <item>
+           <layout class="QHBoxLayout" name="horizontal_layout">
+            <item>
+             <spacer name="horizontalSpacer">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeType">
+               <enum>QSizePolicy::Fixed</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="filename_lineedit">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string notr="true"/>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer_2">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeType">
+               <enum>QSizePolicy::Minimum</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
+          <item alignment="Qt::AlignHCenter">
+           <widget class="QPushButton" name="load_file_button">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>1. Load Image File</string>
+            </property>
+            <property name="shortcut">
+             <string>Ctrl+O</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
         <item alignment="Qt::AlignHCenter">
          <widget class="QWidget" name="widget_optionsdock" native="true">
@@ -165,6 +189,12 @@
           <property name="enabled">
            <bool>true</bool>
           </property>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
           <layout class="QVBoxLayout" name="verticalLayout_3">
            <property name="sizeConstraint">
             <enum>QLayout::SetMaximumSize</enum>
@@ -202,28 +232,11 @@
       </widget>
      </widget>
     </item>
-    <item row="0" column="0">
+    <item row="0" column="0" rowspan="3">
      <layout class="QVBoxLayout" name="image_side_panel">
-      <item>
-       <widget class="QWidget" name="widget_6" native="true">
-        <layout class="QHBoxLayout" name="horizontalLayout_2">
-         <item>
-          <widget class="QLabel" name="label_4">
-           <property name="text">
-            <string>Image Dimensions</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="dimensions_label">
-           <property name="text">
-            <string/>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-      </item>
+      <property name="spacing">
+       <number>6</number>
+      </property>
       <item>
        <widget class="QGraphicsView" name="image_pattern_view"/>
       </item>

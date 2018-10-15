@@ -112,14 +112,10 @@ class GuiMain(QMainWindow):
             if (not pluginInfo.details.has_option("Core", "Disabled")):
                 plugin_name = pluginInfo.name
                 self.pm.activatePluginByName(plugin_name)
-                self.add_plugin_name_on_module_dropdown(plugin_name)
                 logging.info("Plugin {0} activated".format(plugin_name))
         ## Setting AYAB as the default value
         ## TODO: better way of setting ayab as default plugin.
         self.set_enabled_plugin("AYAB")
-
-    def add_plugin_name_on_module_dropdown(self, module_name):
-        self.ui.module_dropdown.addItem(module_name)
 
     def set_enabled_plugin(self, plugin_name=None):
         """Enables plugin, sets up gui and returns the plugin_object from the plugin selected on module_dropdown."""
@@ -129,8 +125,8 @@ class GuiMain(QMainWindow):
         except:
             pass
 
-        if not plugin_name:
-            plugin_name = self.ui.module_dropdown.currentText()
+        #if not plugin_name:
+        #    plugin_name = self.ui.module_dropdown.currentText()
         plugin_o = self.pm.getPluginByName(plugin_name)
         self.enabled_plugin = plugin_o
 
@@ -213,7 +209,6 @@ class GuiMain(QMainWindow):
     def setupBehaviour(self):
         # Connecting UI elements.
         self.ui.load_file_button.clicked.connect(self.file_select_dialog)
-        self.ui.module_dropdown.activated[str].connect(self.set_enabled_plugin)
         self.ui.knit_button.clicked.connect(self.start_knitting_process)
         self.ui.cancel_button.clicked.connect(self.cancel_knitting_process)
         self.ui.actionLoad_AYAB_Firmware.triggered.connect(self.generate_firmware_ui)
@@ -336,7 +331,7 @@ class GuiMain(QMainWindow):
 
     def set_dimensions_on_gui(self, width, height):
         text = "{} - {}".format(width, height)
-        self.ui.dimensions_label.setText(text)
+        self.ui.notification_label.setText("Image Dimensions: " + text)
 
     def display_blocking_pop_up(self, message="", message_type="info"):
         logging.debug("MessageBox {}: '{}'".format(message_type, message))
