@@ -70,6 +70,7 @@ class GuiMain(QMainWindow):
     """
 
     signalUpdateProgress = pyqtSignal(int, int)
+    signalUpdateStatus = pyqtSignal(int, int, 'QString', int)
     signalUpdateNotification = pyqtSignal('QString')
     signalDisplayPopUp = pyqtSignal('QString', 'QString')
     signalUpdateNeedles = pyqtSignal(int, int)
@@ -146,7 +147,17 @@ class GuiMain(QMainWindow):
         # Update label and progress bar
         if total != 0:
             self.ui.notification_label.setText("{0}/{1}".format(row, total))
-
+        
+        options_ui = self.enabled_plugin.plugin_object.options_ui
+        options_ui.label_progress.setText("{0}/{1}".format(row, total))
+    
+    def updateStatus(self, hall_l, hall_r, carriage_type, carriage_position):
+        options_ui = self.enabled_plugin.plugin_object.options_ui
+        options_ui.progress_hall_l.setValue(hall_l)
+        options_ui.progress_hall_r.setValue(hall_r)
+        options_ui.slider_position.setValue(carriage_position)
+        options_ui.label_carriage.setText(carriage_type)
+        
     def update_file_selected_text_field(self, route):
         '''Sets self.image_file_route and ui.filename_lineedit to route.'''
         self.ui.filename_lineedit.setText(route)
@@ -215,6 +226,7 @@ class GuiMain(QMainWindow):
         self.ui.image_pattern_view.setDragMode(QtWidgets.QGraphicsView.ScrollHandDrag)
         # Connecting Signals.
         self.signalUpdateProgress.connect(self.updateProgress)
+        self.signalUpdateStatus.connect(self.updateStatus)
         self.signalUpdateNotification.connect(self.slotUpdateNotification)
         self.signalDisplayPopUp.connect(self.display_blocking_pop_up)
         self.signalUpdateNeedles.connect(self.slotUpdateNeedles)

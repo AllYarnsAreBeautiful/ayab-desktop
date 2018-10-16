@@ -107,7 +107,7 @@ class AyabPluginControl(KnittingPlugin):
     logging.info("Finished Knitting.")
     self.__close_serial()
     self.__parent_ui.resetUI()
-    self.__parent_ui.signalUpdateProgress.emit(0, 0)
+    self.__emit_progress(0,0)
 
   def cancel(self):
     self.__updateNotification("Knitting cancelled")
@@ -136,6 +136,11 @@ class AyabPluginControl(KnittingPlugin):
   def __emit_progress(self, row, total = 0):
     """Sends the updateProgress QtSignal."""
     self.__parent_ui.signalUpdateProgress.emit(int(row), int(total))
+
+  def __emit_status(self, hall_l, hall_r, carriage_type, carriage_position):
+    """Sends the updateStatus QtSignal"""
+    self.__parent_ui.signalUpdateStatus.emit(hall_l, hall_r,
+                                             carriage_type, carriage_position)
 
   def __emit_needles(self):
     """Sends the updateNeedles QtSignal."""
@@ -370,27 +375,21 @@ class AyabPluginControl(KnittingPlugin):
             return ("cnfTest", msg[1])
 
         elif msgId == 0x84:
-            hall_l = (msg[2] << 8) + msg[3]
-            hall_r = (msg[4] << 8) + msg[5]
+            hall_l = int((msg[2] << 8) + msg[3])
+            hall_r = int((msg[4] << 8) + msg[5])
 
-            self.options_ui.progress_hall_l.setValue(hall_l)
-            self.options_ui.progress_hall_r.setValue(hall_r)
-            self.options_ui.slider_position.setValue(msg[7])
-            carriage = msg[6]
-            if carriage == 1:
-                self.options_ui.label_carriage.setText("K Carriage")
-            elif carriage == 2:
-                self.options_ui.label_carriage.setText("L Carriage")
-            elif carriage == 3:
-                self.options_ui.label_carriage.setText("G Carriage")
-            
-            direction = msg[8]
-            if direction == 1:
-                self.options_ui.label_direction.setText("left")
-            elif direction == 2:
-                self.options_ui.label_direction.setText("right")
-            else:
-                self.options_ui.label_direction.setText("")
+            carriage_type = ""
+            if msg[6] == 1:
+                carriage_type = "K Carriage"
+            elif msg[6] == 2:
+                carriage_type = "L Carriage"
+            elif msg[6] == 3:
+                carriage_type = "G Carriage"
+
+            carriage_position = int(msg[7])
+
+            self.__emit_status(hall_l, hall_r,
+                               carriage_type, carriage_position)   
 
             return ("indState", msg[1])
 
@@ -603,8 +602,6 @@ class AyabPluginControl(KnittingPlugin):
 
             #sending line progress to gui
             self.__emit_progress(imgRow+1, imgHeight)
-            self.options_ui.label_progress.setText(str(imgRow+1)
-                                                   + "/" + str(imgHeight))
 
         else:
             logging.error("requested lineNumber out of range")
