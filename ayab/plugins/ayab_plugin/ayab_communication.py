@@ -52,7 +52,7 @@ class AyabCommunication(object):
     if not self.__ser:
       self.__portname = pPortname
       try:
-          self.__ser = serial.Serial(self.__portname, 115200)
+          self.__ser = serial.Serial(self.__portname, 115200, timeout=1)
           # TODO SLIP Library on Arduino seems to take some time until it is 
           # ready to answer.
           # Remove this sleep and check availability by regular sending of 
@@ -76,17 +76,15 @@ class AyabCommunication(object):
 
   def update(self):
     """Reads data from serial and tries to parse as SLIP packet."""
-    if self.__ser:
-      bytes_waiting = self.__ser.in_waiting  
-      data = self.__ser.read(bytes_waiting)
-    
-    if len(data) > 0:
-      self.__rxMsgList.extend(self.__driver.receive(data))
+    if self.__ser:      
+      data = self.__ser.read(1)
+      if len(data) > 0:
+        self.__rxMsgList.extend(self.__driver.receive(data))
 
-    if len(self.__rxMsgList) > 0:
-      return self.__rxMsgList.pop(0)
-    else:
-      return None
+      if len(self.__rxMsgList) > 0:
+        return self.__rxMsgList.pop(0)
+    
+    return None
 
   def req_start(self, startNeedle, stopNeedle):
       """Sends a start message to the controller."""
