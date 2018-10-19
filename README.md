@@ -15,11 +15,11 @@ The other main dependencies can be found in requirements.txt
 
 *For Debian/Ubuntu*
 
-    sudo apt-get install python3-pip python3-dev python3-virtualenv
+    sudo apt-get install python3-pip python3-dev python3-virtualenv python3-gi
 
 *For openSUSE*
 
-    sudo zypper install python3-pip python3-virtualenv
+    sudo zypper install python3-pip python3-virtualenv python3-gi
 
 *All Distributions*
 
@@ -32,7 +32,7 @@ To be able to communicate with your Arduino, it might be necessary to add the ri
 
 This will install the latest release version from PyPi
 
-    virtualenv -p python3 venv/
+    virtualenv -p python3 --system-site-packages venv/
     source venv/bin/activate
     pip3 install ayab
 
@@ -53,7 +53,7 @@ To install the development version you can checkout the git repository
 Create a virtual enviroment in the cloned repository
 
     cd ayab-desktop
-    virtualenv -p python3 venv/
+    virtualenv -p python3 --system-site-packages venv/
     source venv/bin/activate
     pip3 install -r requirements.txt
 
@@ -95,7 +95,7 @@ You can checkout the git repository with
 Create a virtual enviroment in the cloned repository
 
     cd ayab-desktop
-    virtualenv venv/
+    virtualenv --system-site-packages venv/
     venv\Scripts\activate
 
 Then install the remaining prerequisites with

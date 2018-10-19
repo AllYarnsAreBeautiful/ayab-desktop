@@ -164,6 +164,9 @@ class AyabPluginControl(KnittingPlugin):
     alignment_text = self.options_ui.alignment_combo_box.currentText()
     self.__parent_ui.signalUpdateAlignment.emit(alignment_text)
 
+  def __emit_playsound(self, event):
+    self.__parent_ui.signalPlaysound.emit(event)
+
   def slotSetImageDimensions(self, width, height):
     """Called by Main UI on loading of an image to set Start/Stop needle
     to image width. Updates the maximum value of the Start Line UI element"""
@@ -602,6 +605,7 @@ class AyabPluginControl(KnittingPlugin):
 
             #sending line progress to gui
             self.__emit_progress(imgRow+1, imgHeight)
+            self.__emit_playsound("nextline")
 
         else:
             logging.error("requested lineNumber out of range")
@@ -671,6 +675,7 @@ class AyabPluginControl(KnittingPlugin):
                   if rcvParam == 1:
                       curState = 's_operate'
                       self.__updateNotification("Please Knit")
+                      self.__emit_playsound("start")
                   else:
                       self.__updateNotification()
                       self.__wait_for_user_action("Device not ready, configure and try again.")
@@ -687,7 +692,9 @@ class AyabPluginControl(KnittingPlugin):
               self.__wait_for_user_action("Image transmission finished. " \
                                           "Please knit until you hear the " \
                                           "double beep sound.")
+              self.__emit_playsound("finished")
               break
+
 
           oldState = curState
 

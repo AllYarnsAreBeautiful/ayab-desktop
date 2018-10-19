@@ -4,3 +4,4 @@ pyserial==3.3
 sliplib==0.3.0
 fysom==2.1.3
 Yapsy==1.11.223
+playsound==1.2.2

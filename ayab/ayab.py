@@ -39,6 +39,8 @@ from ayab.ayab_about import Ui_AboutForm
 import serial
 import serial.tools.list_ports
 
+from playsound import playsound
+
 
 logging.basicConfig(filename='ayab_log.txt',
                     level=logging.DEBUG,
@@ -76,6 +78,7 @@ class GuiMain(QMainWindow):
     signalUpdateNeedles = pyqtSignal(int, int)
     signalUpdateAlignment = pyqtSignal('QString')
     signalDisplayBlockingPopUp = pyqtSignal('QString', 'QString')
+    signalPlaysound = pyqtSignal('QString')
 
     def __init__(self):
         super(GuiMain, self).__init__(None)
@@ -233,6 +236,7 @@ class GuiMain(QMainWindow):
         self.signalDisplayPopUp.connect(self.display_blocking_pop_up)
         self.signalUpdateNeedles.connect(self.slotUpdateNeedles)
         self.signalUpdateAlignment.connect(self.slotUpdateAlignment)
+        self.signalPlaysound.connect(self.slotPlaysound)
 
         # This blocks the other thread until signal is done
         self.signalDisplayBlockingPopUp.connect(self.display_blocking_pop_up)
@@ -516,6 +520,14 @@ class GuiMain(QMainWindow):
         Returns a list of all USB Serial Ports
         """
         return list(serial.tools.list_ports.grep("USB"))
+
+    def slotPlaysound(self, event):
+        if event == "start":
+            playsound("./assets/start.wav")
+        if event == "nextline":
+            playsound("./assets/nextline.wav")
+        if event == "finished":
+            playsound("./assets/finish.wav")
 
 
 class GenericThread(QThread):
