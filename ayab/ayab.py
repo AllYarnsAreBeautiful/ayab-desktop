@@ -154,7 +154,9 @@ class GuiMain(QMainWindow):
     def updateStatus(self, hall_l, hall_r, carriage_type, carriage_position):
         options_ui = self.enabled_plugin.plugin_object.options_ui
         options_ui.progress_hall_l.setValue(hall_l)
+        options_ui.label_hall_l.setText(str(hall_l))
         options_ui.progress_hall_r.setValue(hall_r)
+        options_ui.label_hall_r.setText(str(hall_r))
         options_ui.slider_position.setValue(carriage_position)
         options_ui.label_carriage.setText(carriage_type)
         
