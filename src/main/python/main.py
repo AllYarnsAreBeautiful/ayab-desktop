@@ -1,14 +1,11 @@
 from fbs_runtime.application_context import ApplicationContext
-from PyQt5.QtWidgets import QMainWindow
 
 import sys
+import ayab
 
 class AppContext(ApplicationContext):           # 1. Subclass ApplicationContext
     def run(self):                              # 2. Implement run()
-        window = QMainWindow()
-        window.setWindowTitle("AYAB")
-        window.resize(250, 150)
-        window.show()
+        ayab.run()
         return self.app.exec_()                 # 3. End run() with this line
 
 if __name__ == '__main__':
