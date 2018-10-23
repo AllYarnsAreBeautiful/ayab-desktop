@@ -18,6 +18,7 @@
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
 """Provides an Interface for users to operate AYAB using a GUI."""
+from fbs_runtime.application_context import ApplicationContext
 
 import sys
 import os
@@ -80,8 +81,10 @@ class GuiMain(QMainWindow):
     signalDisplayBlockingPopUp = pyqtSignal('QString', 'QString')
     signalPlaysound = pyqtSignal('QString')
 
-    def __init__(self):
+    def __init__(self, app_context):
         super(GuiMain, self).__init__(None)
+
+        self.app_context = app_context
 
         self.image_file_route = None
         self.enabled_plugin = None
@@ -523,11 +526,11 @@ class GuiMain(QMainWindow):
 
     def slotPlaysound(self, event):
         if event == "start":
-            playsound("./assets/start.wav")
+            playsound(self.app_context.get_resource("assets/start.wav"))
         if event == "nextline":
-            playsound("./assets/nextline.wav")
+            playsound(self.app_context.get_resource("assets/nextline.wav"))
         if event == "finished":
-            playsound("./assets/finish.wav")
+            playsound(self.app_context.get_resource("assets/finish.wav"))
 
 
 class GenericThread(QThread):
@@ -562,15 +565,12 @@ def get_route():
     return filename
 
 
-def run():
+def run(app_context):
     translator = QtCore.QTranslator()
     ## Loading ayab_gui main translator.
     translator.load(QtCore.QLocale.system(), "ayab_gui", ".", os.path.join(get_route(), "translations"), ".qm")
     app = QtWidgets.QApplication(sys.argv)
     app.installTranslator(translator)
-    window = GuiMain()
+    window = GuiMain(app_context)
     window.show()
     sys.exit(app.exec_())
-
-if __name__ == '__main__':
-    run()

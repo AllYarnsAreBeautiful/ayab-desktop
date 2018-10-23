@@ -5,7 +5,7 @@ import ayab
 
 class AppContext(ApplicationContext):           # 1. Subclass ApplicationContext
     def run(self):                              # 2. Implement run()
-        ayab.run()
+        ayab.run(self)
         return self.app.exec_()                 # 3. End run() with this line
 
 if __name__ == '__main__':

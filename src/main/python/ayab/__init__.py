@@ -1,4 +1,4 @@
 
-def run():
+def run(app_context):
     from .ayab import run
-    run()
+    run(app_context)
