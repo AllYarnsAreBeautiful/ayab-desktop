@@ -379,7 +379,7 @@ class GuiMain(QMainWindow):
     def file_select_dialog(self):
         filenameValue = self.ui.filename_lineedit.text()
         if filenameValue == '':
-            filePath = os.path.expanduser("~")
+            filePath = self.app_context.get_resource("patterns")
         else:
             filePath = ''
         file_selected_route, _ = QtWidgets.QFileDialog.getOpenFileName(self, "Open file", filePath, 'Images (*.png *.PNG *.jpg *.JPG *.jpeg *.JPEG *.bmp *.BMP *.gif *.GIF *.tiff *.TIFF *.tif *.TIF)')
