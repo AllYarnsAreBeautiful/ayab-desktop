@@ -17,12 +17,10 @@
 #    Copyright 2014 Sebastian Oliva, Christian Obersteiner, Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
-
-from yapsy.IPlugin import IPlugin
 from fysom import Fysom
 
 
-class KnittingPlugin(IPlugin, Fysom):
+class KnittingPlugin(Fysom):
   '''A generic plugin implementing a state machine for knitting.
 
   Subclasses inherit the basic State Machine defined in __init__.

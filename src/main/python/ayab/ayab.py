@@ -28,11 +28,11 @@ from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtWidgets import QMainWindow
 from PyQt5.QtCore import QThread, pyqtSignal, pyqtSlot
 
-from yapsy import PluginManager
 from PIL import Image
 from fysom import FysomError
 
 from ayab.ayab_gui import Ui_MainWindow
+from ayab.plugins.ayab_plugin import AyabPluginControl
 from ayab.plugins.ayab_plugin.firmware_flash import FirmwareFlash
 from ayab.ayab_about import Ui_AboutForm
 
@@ -86,8 +86,7 @@ class GuiMain(QMainWindow):
 
         self.app_context = app_context
 
-        self.image_file_route = None
-        self.enabled_plugin = None
+        self.image_file_route = None        
 
         self.pil_image = None
         self.start_needle = 80
@@ -98,51 +97,10 @@ class GuiMain(QMainWindow):
 
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+        self.enabled_plugin = AyabPluginControl()
+        self.enabled_plugin.setup_ui(self)
         self.showMaximized()
-        self.plugins_init()
         self.setupBehaviour()
-
-    def plugins_init(self, is_reloading=False):
-        # Disable DEBUG logging of yapsy
-        logging.getLogger('yapsy').setLevel(logging.WARNING)
-
-        if is_reloading:
-            logging.info("Deactivating All Plugins")
-            for pluginInfo in self.pm.getAllPlugins():
-                self.pm.deactivatePluginByName(pluginInfo.name)
-        route = get_route()
-        self.pm = PluginManager.PluginManager(directories_list=[os.path.join(route, "plugins")],)
-
-        self.pm.collectPlugins()
-        for pluginInfo in self.pm.getAllPlugins():
-            ## This stops the plugins marked as Disabled from being activated.
-            if (not pluginInfo.details.has_option("Core", "Disabled")):
-                plugin_name = pluginInfo.name
-                self.pm.activatePluginByName(plugin_name)
-                logging.info("Plugin {0} activated".format(plugin_name))
-        ## Setting AYAB as the default value
-        ## TODO: better way of setting ayab as default plugin.
-        self.set_enabled_plugin("AYAB")
-
-    def set_enabled_plugin(self, plugin_name=None):
-        """Enables plugin, sets up gui and returns the plugin_object from the plugin selected on module_dropdown."""
-        try:
-            if self.enabled_plugin:
-                self.enabled_plugin.plugin_object.cleanup_ui(self)
-        except:
-            pass
-
-        #if not plugin_name:
-        #    plugin_name = self.ui.module_dropdown.currentText()
-        plugin_o = self.pm.getPluginByName(plugin_name)
-        self.enabled_plugin = plugin_o
-
-        try:
-            self.enabled_plugin.plugin_object.setup_ui(self)
-            logging.info("Set enabled_plugin as {0} - {1}".format(plugin_o, plugin_name))
-        except:
-            logging.info("no plugin object loaded")
-        return plugin_o
 
     def updateProgress(self, row, total=0):
         '''Updates the Progress Bar.'''
@@ -154,11 +112,11 @@ class GuiMain(QMainWindow):
         if total != 0:
             self.ui.notification_label.setText("{0}/{1}".format(row, total))
         
-        options_ui = self.enabled_plugin.plugin_object.options_ui
+        options_ui = self.enabled_plugin.options_ui
         options_ui.label_progress.setText("{0}/{1}".format(row, total))
     
     def updateStatus(self, hall_l, hall_r, carriage_type, carriage_position):
-        options_ui = self.enabled_plugin.plugin_object.options_ui
+        options_ui = self.enabled_plugin.options_ui
         options_ui.progress_hall_l.setValue(hall_l)
         options_ui.label_hall_l.setText(str(hall_l))
         options_ui.progress_hall_r.setValue(hall_r)
@@ -210,11 +168,11 @@ class GuiMain(QMainWindow):
         self.ui.knit_button.setEnabled(False)
         self.ui.cancel_button.setEnabled(True)
 
-        self.gt = GenericThread(self.enabled_plugin.plugin_object.knit, parent_window=self)
+        self.gt = GenericThread(self.enabled_plugin.knit, parent_window=self)
         self.gt.start()
 
     def cancel_knitting_process(self):
-        self.enabled_plugin.plugin_object.cancel()
+        self.enabled_plugin.cancel()
 
     def resetUI(self):
         # (Re-)enable UI elements
@@ -268,8 +226,8 @@ class GuiMain(QMainWindow):
         self.ui.menuImage_Actions.setEnabled(True)
         # Tell loaded plugin elements about changed parameters
         width, height = self.pil_image.size
-        self.enabled_plugin.plugin_object.slotSetImageDimensions(width,
-                                                                 height)
+        self.enabled_plugin.slotSetImageDimensions(width,
+                                                   height)
 
     def refresh_scene(self):
         '''Updates the current scene '''
@@ -374,7 +332,7 @@ class GuiMain(QMainWindow):
             return True
 
     def conf_button_function(self):
-        self.enabled_plugin.plugin_object.configure(self)
+        self.enabled_plugin.configure(self)
 
     def file_select_dialog(self):
         filenameValue = self.ui.filename_lineedit.text()
@@ -467,8 +425,8 @@ class GuiMain(QMainWindow):
 
         # Update maximum values
         width, height = self.pil_image.size
-        self.enabled_plugin.plugin_object.slotSetImageDimensions(width,
-                                                                 height)
+        self.enabled_plugin.slotSetImageDimensions(width,
+                                                   height)
         # Draw canvas
         self.refresh_scene()
 
