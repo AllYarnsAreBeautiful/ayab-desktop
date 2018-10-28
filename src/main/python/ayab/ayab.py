@@ -53,13 +53,6 @@ console.setFormatter(
     logging.Formatter('%(asctime)s %(name)-8s %(levelname)-8s %(message)s'))
 logging.getLogger().addHandler(console)
 
-
-__version__ = "package_version"
-filename_version = os.path.dirname(__file__)
-package_version = os.path.join(filename_version, "package_version")
-with open(package_version) as version_file:
-    __version__ = version_file.read().strip()
-
 # Fix PyQt5 for HiDPI screens
 if hasattr(QtCore.Qt, 'AA_EnableHighDpiScaling'):
     QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
@@ -350,6 +343,11 @@ class GuiMain(QMainWindow):
         self.__flash_ui.show()
 
     def open_about_ui(self):
+        __version__ = "package_version"
+        filename_version = self.app_context.get_resource("ayab/package_version")
+        with open(filename_version) as version_file:
+            __version__ = version_file.read().strip()
+        
         self.__AboutForm = QtWidgets.QFrame()
         self.__about_ui = Ui_AboutForm()
         self.__about_ui.setupUi(self.__AboutForm)
