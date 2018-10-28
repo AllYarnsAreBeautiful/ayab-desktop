@@ -510,18 +510,6 @@ class GenericThread(QThread):
             logging.error(fe)
         return
 
-
-def get_route():
-  #if getattr(sys, 'frozen', False):
-  #  route = sys._MEIPASS
-  #  logging.debug("Loading AYAB from pyinstaller.")
-  #  return route
-  #else:
-    filename = os.path.dirname(__file__)
-    logging.debug("Loading AYAB from normal package structure.")
-    return filename
-
-
 def run(app_context):
     translator = QtCore.QTranslator()
     ## Loading ayab_gui main translator.
