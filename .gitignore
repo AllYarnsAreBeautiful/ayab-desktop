@@ -20,4 +20,6 @@ patterns/
 # Buildfolder
 build/
 target/
+# macOS
+.DS_Store
 
