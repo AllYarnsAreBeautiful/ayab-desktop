@@ -60,18 +60,7 @@ class FirmwareFlash(QFrame):
         self.add_items_from_json_object(self.json_object)
 
     def parse_json(self, json_string):
-        os_name = platform.system()
-        if os_name == "Windows":
-            # determine if application is a script file or frozen exe
-            if getattr(sys, 'frozen', False):
-                path = (os.path.dirname(sys.executable) +
-                        "\\plugins\\ayab_plugin\\firmware\\firmware.json")
-            else:
-                path = (os.path.dirname(os.path.realpath(__file__)) +
-                    "/firmware/firmware.json")
-        else:
-            path = (os.path.dirname(os.path.realpath(__file__)) +
-                    "/firmware/firmware.json")
+        path = self.__parent_ui.app_context.get_resource("ayab/firmware/firmware.json")
 
         with open(path) as data_file:
             data = json.load(data_file)
@@ -184,12 +173,7 @@ class FirmwareFlash(QFrame):
                                       controller_name, firmware_name):
 
         if os_name == "Windows":
-            # determine if application is a script file or frozen exe
-            if getattr(sys, 'frozen', False):
-                exe_route = os.path.join(os.path.dirname(sys.executable),
-                        "plugins","ayab_plugin","firmware","avrdude.exe")
-            else:
-                exe_route = os.path.join(base_dir, "firmware", "avrdude.exe")
+            exe_route = self.__parent_ui.app_context.get_resource("ayab/firmware/avrdude.exe")
             exe_route = "\"" + exe_route + "\""
         elif os_name == "Linux":
             # We assume avrdude is available in path
@@ -199,18 +183,10 @@ class FirmwareFlash(QFrame):
                 logging.error("avrdude not found in path")
             exe_route = "avrdude"
         elif os_name == "Darwin":  # macOS
-            exe_route = os.path.join(base_dir, "firmware", "avrdude_mac")
-
-        if os_name == "Windows":
-            if getattr(sys, 'frozen', False):
-                binary_file = os.path.join(os.path.dirname(sys.executable),
-                        "plugins","ayab_plugin","firmware",controller_name,firmware_name)
-            else:
-                binary_file = os.path.join(base_dir, "firmware",
-                                       controller_name, firmware_name)
-        else:
-            binary_file = os.path.join(base_dir, "firmware",
-                                       controller_name, firmware_name)
+            exe_route = self.__parent_ui.app_context.get_resource("ayab/firmware/avrdude_mac")
+        
+        binary_file = os.path.join(self.__parent_ui.app_context.get_resource("ayab/firmware"),
+                                   controller_name,firmware_name)
 
         serial_port = port
         # List of Arduino controllers and their avrdude names.
@@ -233,13 +209,7 @@ class FirmwareFlash(QFrame):
                        exe_route, device, programmer, serial_port, binary_file)
 
         if os_name == "Windows" or os_name == "Darwin":
-            # determine if application is a script file or frozen exe
-            if getattr(sys, 'frozen', False):
-                exec_command += " -C \"" + os.path.join(os.path.dirname(sys.executable),
-                                          "plugins","ayab_plugin","firmware","avrdude.conf") + "\""
-            else:
-                exec_command += " -C \"" + os.path.join(base_dir,
-                                                      "firmware", "avrdude.conf") + "\""
+            exec_command += " -C \"" +  self.__parent_ui.app_context.get_resource("ayab/firmware/avrdude.conf") + "\""
 
         logging.debug(exec_command)
         return exec_command
