@@ -16,7 +16,7 @@ Function .onInit
   ;Do not use InstallDir at all so we can detect empty $InstDir!
   ${If} $InstDir == "" ; /D not used
       ${If} $MultiUser.InstallMode == "AllUsers"
-          StrCpy $InstDir "$PROGRAMFILES\%{app_name}"
+          StrCpy $InstDir "C:\%{app_name}"
       ${Else}
           StrCpy $InstDir "$LOCALAPPDATA\%{app_name}"
       ${EndIf}
