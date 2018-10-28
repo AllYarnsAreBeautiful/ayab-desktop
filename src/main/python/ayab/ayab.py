@@ -525,7 +525,7 @@ def get_route():
 def run(app_context):
     translator = QtCore.QTranslator()
     ## Loading ayab_gui main translator.
-    translator.load(QtCore.QLocale.system(), "ayab_gui", ".", os.path.join(get_route(), "translations"), ".qm")
+    translator.load(QtCore.QLocale.system(), "ayab_gui", ".", app_context.get_resource("ayab/translations"), ".qm")
     app = QtWidgets.QApplication(sys.argv)
     app.installTranslator(translator)
     window = GuiMain(app_context)
