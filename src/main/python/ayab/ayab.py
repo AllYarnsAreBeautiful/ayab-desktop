@@ -40,7 +40,7 @@ from ayab.ayab_about import Ui_AboutForm
 import serial
 import serial.tools.list_ports
 
-from playsound import playsound
+# from playsound import playsound
 
 
 logging.basicConfig(filename='ayab_log.txt',
@@ -483,12 +483,13 @@ class GuiMain(QMainWindow):
         return list(serial.tools.list_ports.grep("USB"))
 
     def slotPlaysound(self, event):
-        if event == "start":
-            playsound(self.app_context.get_resource("assets/start.wav"))
-        if event == "nextline":
-            playsound(self.app_context.get_resource("assets/nextline.wav"))
-        if event == "finished":
-            playsound(self.app_context.get_resource("assets/finish.wav"))
+        return
+        #if event == "start":
+        #    playsound(self.app_context.get_resource("assets/start.wav"))
+        #if event == "nextline":
+        #    playsound(self.app_context.get_resource("assets/nextline.wav"))
+        #if event == "finished":
+        #    playsound(self.app_context.get_resource("assets/finish.wav"))
 
 
 class GenericThread(QThread):
