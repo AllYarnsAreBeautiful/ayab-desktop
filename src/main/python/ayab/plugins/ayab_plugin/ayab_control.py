@@ -326,7 +326,7 @@ class AyabPluginControl(KnittingPlugin):
     # KnittingPlugin.__init__(self)
 
     #Copying from ayab_control
-    self.__API_VERSION = 0x04
+    self.__API_VERSION = 0x05
     self.__ayabCom = AyabCommunication()
 
     self.__formerRequest = 0
@@ -364,7 +364,7 @@ class AyabPluginControl(KnittingPlugin):
             api = msg[1]
             log = "API v" + str(api)
 
-            if api >= 4:
+            if api >= 5:
                 log += ", FW v" + str(msg[2]) + "." + str(msg[3])
 
             logging.info(log)
