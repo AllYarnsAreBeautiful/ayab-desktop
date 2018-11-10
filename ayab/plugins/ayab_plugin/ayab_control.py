@@ -483,6 +483,16 @@ class AyabPluginControl(KnittingPlugin):
                         and (lineNumber % 4 == 1 or lineNumber % 4 == 3):
                     lastLine = 0x01
 
+            # doublebed heart of pluto multicolor
+            # 0-00 1-11 2-22 3-33 4-44 5-55 .. (imgRow)
+            # 0123 4567 8911 1111 1111 2222.. (lineNumber)
+            #             01 2345 6789 0123
+            #
+            # 0-21 4-53 6-87 1-19 1-11 1-11 .. (imageExpanded)
+            #                0 1  2 43 6 75
+            #
+            # A-CB B-CA A-CB B-CA A-CB B-CA .. (color)
+
             # doublebed, multicolor
             elif self.__machineType == 'ribber' \
                     and self.__numColors > 2:
