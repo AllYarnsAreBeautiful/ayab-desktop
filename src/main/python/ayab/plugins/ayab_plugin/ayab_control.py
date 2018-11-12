@@ -20,7 +20,6 @@
 from .ayab_communication import AyabCommunication
 from . import ayab_image
 import math
-import time
 import logging
 import os
 import sys
@@ -641,9 +640,6 @@ class AyabPluginControl(KnittingPlugin):
           # TODO: port to state machine or similar.
           rcvMsg, rcvParam = self.__checkSerial()
           if curState == 's_init':
-              if oldState != curState:
-                  self.__ayabCom.req_info()
-
               if rcvMsg == 'cnfInfo':
                   if rcvParam == API_VERSION:
                       curState = 's_waitForInit'
@@ -655,9 +651,11 @@ class AyabPluginControl(KnittingPlugin):
                                          + str(rcvParam) + "/"
                                          + str(API_VERSION) + ")")
                       logging.error("wrong API version: " + str(rcvParam)
-                                        + (" ,expected: ") + str(API_VERSION))
-                                        
+                                        + (" ,expected: ") + str(API_VERSION))                                        
                       return
+              else:
+                  self.__updateNotification("Connecting to machine...")                  
+                  self.__ayabCom.req_info()
 
           if curState == 's_waitForInit':
               if rcvMsg == "indState":

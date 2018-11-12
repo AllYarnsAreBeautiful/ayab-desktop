@@ -24,7 +24,6 @@ AyabCommunication uses an internal PySerial.Serial object to connect to the devi
 The initializer can also be overriden with a dummy serial object.
 """
 
-import time
 import serial
 import sliplib
 
@@ -52,12 +51,7 @@ class AyabCommunication(object):
     if not self.__ser:
       self.__portname = pPortname
       try:
-          self.__ser = serial.Serial(self.__portname, 115200, timeout=1)
-          # TODO SLIP Library on Arduino seems to take some time until it is 
-          # ready to answer.
-          # Remove this sleep and check availability by regular sending of 
-          # reqInfo() in the _knitImage State Machine.
-          time.sleep(5)
+          self.__ser = serial.Serial(self.__portname, 115200, timeout=0.1)
       except:
         self.__logger.error("could not open serial port " + self.__portname)
         raise CommunicationException()
@@ -76,8 +70,8 @@ class AyabCommunication(object):
 
   def update(self):
     """Reads data from serial and tries to parse as SLIP packet."""
-    if self.__ser:      
-      data = self.__ser.read(1)
+    if self.__ser:    
+      data = self.__ser.read(1000)
       if len(data) > 0:
         self.__rxMsgList.extend(self.__driver.receive(data))
 
