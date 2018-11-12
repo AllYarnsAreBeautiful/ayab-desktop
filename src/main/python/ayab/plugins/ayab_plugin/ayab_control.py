@@ -34,13 +34,13 @@ import pprint
 class AyabPluginControl(KnittingPlugin):
 
   def onknit(self, e):
-    logging.debug("called onknit on AyabPluginControl")
+    self.__logger.debug("called onknit on AyabPluginControl")
     self.options_ui.tabWidget.setCurrentIndex(1)
     self.__knitImage(self.__image, self.conf)
     self.finish()
 
   def onconfigure(self, e):
-    logging.debug("called onconfigure on AYAB Knitting Plugin")
+    self.__logger.debug("called onconfigure on AYAB Knitting Plugin")
     #print ', '.join("%s: %s" % item for item in vars(e).items())
     #FIXME: substitute setting parent_ui from self.__parent_ui
     #self.__parent_ui = e.event.parent_ui
@@ -103,7 +103,7 @@ class AyabPluginControl(KnittingPlugin):
     return True
 
   def onfinish(self, e):
-    logging.info("Finished Knitting.")
+    self.__logger.info("Finished Knitting.")
     self.__close_serial()
     self.__parent_ui.resetUI()
     self.__emit_progress(0,0)
@@ -117,7 +117,7 @@ class AyabPluginControl(KnittingPlugin):
 
   def onerror(self, e):
     #TODO add message info from event
-    logging.error("Error while Knitting.")
+    self.__logger.error("Error while Knitting.")
     self.__close_serial()
 
   def __wait_for_user_action(self, message="", message_type="info"):
@@ -310,7 +310,7 @@ class AyabPluginControl(KnittingPlugin):
     filename_text = ui.findChild(QtWidgets.QLineEdit, "filename_lineedit").text()
     self.conf["filename"] = str(filename_text)
 
-    logging.debug(self.conf)
+    self.__logger.debug(self.conf)
     ## Add more config options.
     return self.conf
 
@@ -322,7 +322,8 @@ class AyabPluginControl(KnittingPlugin):
 
   def __init__(self):
     super(AyabPluginControl, self).__init__({})
-    # KnittingPlugin.__init__(self)
+    
+    self.__logger = logging.getLogger(type(self).__name__)
 
     #Copying from ayab_control
     self.__API_VERSION = 0x05
@@ -366,7 +367,7 @@ class AyabPluginControl(KnittingPlugin):
             if api >= 5:
                 log += ", FW v" + str(msg[2]) + "." + str(msg[3])
 
-            logging.info(log)
+            self.__logger.info(log)
             return ("cnfInfo", msg[1])
 
         elif msgId == 0x82:  # reqLine
@@ -396,7 +397,7 @@ class AyabPluginControl(KnittingPlugin):
             return ("indState", msg[1])
 
         else:
-            logging.debug("unknown message: ") # drop crlf
+            self.__logger.debug("unknown message: ") # drop crlf
             pp = pprint.PrettyPrinter(indent=4)
             pp.pprint(msg)
             return ("unknown", 0)
@@ -510,7 +511,7 @@ class AyabPluginControl(KnittingPlugin):
                 if (lineNumber % 2) == 1:
                     sendBlankLine = True
                 else:
-                    logging.debug("COLOR" + str(color))
+                    self.__logger.debug("COLOR" + str(color))
 
                 color = (lineNumber / 2) % self.__numColors
 
@@ -600,14 +601,14 @@ class AyabPluginControl(KnittingPlugin):
             else:
                 msg += ' indexToSend: ' + str(indexToSend)
                 msg += ' ' + str((self.__image.imageExpanded())[indexToSend])
-            logging.debug(msg)
+            self.__logger.debug(msg)
 
             #sending line progress to gui
             self.__emit_progress(imgRow+1, imgHeight)
             self.__emit_playsound("nextline")
 
         else:
-            logging.error("requested lineNumber out of range")
+            self.__logger.error("requested lineNumber out of range")
 
         if lastLine:
           if self.__infRepeat:
@@ -631,7 +632,7 @@ class AyabPluginControl(KnittingPlugin):
       oldState = 'none'
 
       if not self.__ayabCom.open_serial(pOptions["portname"]):
-          logging.error("Could not open serial port")
+          self.__logger.error("Could not open serial port")
           return
 
       self._knitImage = True
@@ -650,7 +651,7 @@ class AyabPluginControl(KnittingPlugin):
                                          + "the latest version. ("
                                          + str(rcvParam) + "/"
                                          + str(API_VERSION) + ")")
-                      logging.error("wrong API version: " + str(rcvParam)
+                      self.__logger.error("wrong API version: " + str(rcvParam)
                                         + (" ,expected: ") + str(API_VERSION))                                        
                       return
               else:
@@ -662,7 +663,7 @@ class AyabPluginControl(KnittingPlugin):
                 if rcvParam == 1:
                     curState = 's_start'
                 else:
-                    logging.debug("init failed")
+                    self.__logger.debug("init failed")
 
           if curState == 's_start':
               if oldState != curState:
@@ -677,7 +678,7 @@ class AyabPluginControl(KnittingPlugin):
                   else:
                       self.__updateNotification()
                       self.__wait_for_user_action("Device not ready, configure and try again.")
-                      logging.error("device not ready")
+                      self.__logger.error("device not ready")
                       return
 
           if curState == 's_operate':

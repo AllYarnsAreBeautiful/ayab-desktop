@@ -23,7 +23,7 @@ class FirmwareFlash(QFrame):
     def __init__(self, parent_ui):
         # TODO: add creator that does not depend from super to ease testing.
         super(FirmwareFlash, self).__init__(None)
-
+        self.__logger = logging.getLogger(type(self).__name__)
         self.__parent_ui = parent_ui
 
         self.ui = Ui_FirmwareFlashFrame()
@@ -38,7 +38,7 @@ class FirmwareFlash(QFrame):
         self.ui.flash_firmware.clicked.connect(self.execute_flash_command)
 
     def display_blocking_pop_up(self, message="", message_type="info"):
-        logging.debug("message emited: '{}'".format(message))
+        self.__logger.debug("message emited: '{}'".format(message))
         box_function = {
             "info": QtWidgets.QMessageBox.information,
             "warning": QtWidgets.QMessageBox.warning,
@@ -152,20 +152,20 @@ class FirmwareFlash(QFrame):
             while rc != 0:
                 while True:
                     line = p.stdout.readline()
-                    logging.debug(line)
+                    self.__logger.debug(line)
                     if not line:
                         break
                 rc = p.poll()
 
             if rc == 0:
-                logging.info("Flashing Done!")
+                self.__logger.info("Flashing Done!")
                 self.display_blocking_pop_up("Flashing Done!")
             else:
-                logging.info("Error on flashing firmware.")
+                self.__logger.info("Error on flashing firmware.")
                 self.display_blocking_pop_up("Error on flashing firmware.",
                                              message_type="error")
         except Exception as e:
-            logging.info("Error on flashing firmware." + e)
+            self.__logger.info("Error on flashing firmware." + e)
             self.display_blocking_pop_up("Error on flashing firmware.",
                                          message_type="error")
 
@@ -180,7 +180,7 @@ class FirmwareFlash(QFrame):
             try:
                 subprocess.call(["which avrdude"])
             except:
-                logging.error("avrdude not found in path")
+                self.__logger.error("avrdude not found in path")
             exe_route = "avrdude"
         elif os_name == "Darwin":  # macOS
             exe_route = self.__parent_ui.app_context.get_resource("ayab/firmware/avrdude_mac")
@@ -211,7 +211,7 @@ class FirmwareFlash(QFrame):
         if os_name == "Windows" or os_name == "Darwin":
             exec_command += " -C \"" +  self.__parent_ui.app_context.get_resource("ayab/firmware/avrdude.conf") + "\""
 
-        logging.debug(exec_command)
+        self.__logger.debug(exec_command)
         return exec_command
 
     def load_ports(self):

@@ -37,7 +37,7 @@ class AyabCommunication(object):
   def __init__(self, serial=None):
     """Creates an AyabCommunication object, with an optional serial-like object."""
     logging.basicConfig(level=logging.DEBUG)
-    self.__logger = logging.getLogger(__name__)
+    self.__logger = logging.getLogger(type(self).__name__)
     self.__ser = serial
     self.__driver = sliplib.Driver()
     self.__rxMsgList = list()
@@ -64,9 +64,9 @@ class AyabCommunication(object):
             self.__ser.close()
             del(self.__ser)
             self.__ser = None
-            logging.debug("Closing Serial port successful.")
+            self.__logger.info("Closing Serial port successful.")
         except:
-            logging.debug("Closing Serial port failed. Was it ever open?")
+            self.__logger.warning("Closing Serial port failed. Was it ever open?")
 
   def update(self):
     """Reads data from serial and tries to parse as SLIP packet."""
