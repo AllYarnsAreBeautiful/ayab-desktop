@@ -124,7 +124,7 @@ You can install it using Homebrew
     brew install pyenv
     brew install pyenv-virtualenv
 
-You also need the Xcode command line tools installed.
+You also need the Xcode command line tools installed (xcode-select --install).
 Once these have been installed, you need to get the Python version installed
 
     env PYTHON_CONFIGURE_OPTS="--enable-framework" CFLAGS="-I$(xcrun --show-sdk-path)/usr/include" pyenv install 3.5.3
@@ -139,9 +139,20 @@ Create a virtual enviroment in the cloned repository
     pyenv virtualenv 3.5.3 venv
     pyenv activate venv
 
+(If the pyenv commands don't work out, you probably have to add
+
+  eval "$(pyenv init -)"
+  eval "$(pyenv virtualenv-init -)"
+
+to your ~/.bash_profile)
+
 Then install the remaining prerequisites with
 
     pip3 install -r requirements.txt
+
+To solve pip3 SSL:TLSV1_ALERT_PROTOCOL_VERSION problem:
+    
+    curl https://bootstrap.pypa.io/get-pip.py | python3
 
 Now start ayab with
 
