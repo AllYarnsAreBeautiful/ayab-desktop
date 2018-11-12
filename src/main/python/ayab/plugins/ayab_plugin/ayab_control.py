@@ -67,10 +67,9 @@ class AyabPluginControl(KnittingPlugin):
                                         conf.get("stop_needle"))
         if conf.get("alignment"):
             self.__image.setImagePosition(conf.get("alignment"))
-        if conf.get("start_line"):
-            self.__image.setStartLine(conf.get("start_line"))
-            self.__emit_progress(conf.get("start_line")+1,
-                                 self.__image.imgHeight())
+
+        self.__image.setStartLine(conf.get("start_line"))
+        self.__emit_progress(conf.get("start_line")+1, self.__image.imgHeight())
     else:
         parent_ui.ui.widget_knitcontrol.setEnabled(False)
         parent_ui.ui.knit_button.setEnabled(False)
@@ -106,7 +105,6 @@ class AyabPluginControl(KnittingPlugin):
     self.__logger.info("Finished Knitting.")
     self.__close_serial()
     self.__parent_ui.resetUI()
-    self.__emit_progress(0,0)
 
   def cancel(self):
     self.__updateNotification("Knitting cancelled")
@@ -688,9 +686,9 @@ class AyabPluginControl(KnittingPlugin):
                       curState = 's_finished'
 
           if curState == 's_finished':
-              self.__wait_for_user_action("Image transmission finished. " \
-                                          "Please knit until you hear the " \
-                                          "double beep sound.")
+              self.__updateNotification("Image transmission finished. " \
+                                        "Please knit until you hear the " \
+                                        "double beep sound.")
               self.__emit_playsound("finished")
               break
 
