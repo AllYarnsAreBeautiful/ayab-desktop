@@ -31,30 +31,22 @@ build:osx:
   script: 
   - mac-build/build.sh
   after_script:
-  - cd dist/release
-  - ls -lisa
+  - ls -lisa dist/release
 
-#build:linux:
-#  image: python:3.5
-#  tags:
-#    - linux
-#    - docker
-#  stage: build
-#  artifacts:
-#    when: always
-#    paths:
-#    - dist/release/
-#  script:
-#  - cp linux-build/README.rst .
-#  - linux-build/install.sh
-#  after_script:
-#  - TAG=$(cat package_version)
-#  - cd dist/release
-#  - ls
-#  - mv ayab*.tar.gz AYAB-${TAG}-linux.tar.gz
-#  - mv ayab*.whl AYAB-${TAG}-py3-none-any.whl
-#  - ls
-#  - cd ../..
+build:linux:
+  image: python:3.5
+  tags:
+    - linux
+    - docker
+  stage: build
+  artifacts:
+    when: always
+    paths:
+    - dist/release/
+  script:
+  - linux-build/build.sh
+  after_script:
+  - ls -lisa dist/release
 
 #build:win7:
 #  tags:
@@ -84,8 +76,7 @@ build:win10:
   script:
   - windows-build/build.sh 10
   after_script:
-  - cd dist/release
-  - ls -lisa
+  - ls -lisa dist/release
 
 #deploy:s3:
 #  tags:
