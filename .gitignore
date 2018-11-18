@@ -22,4 +22,5 @@ build/
 target/
 # macOS
 .DS_Store
-
+# VSCode
+.vscode
