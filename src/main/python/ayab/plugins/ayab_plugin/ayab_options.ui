@@ -106,7 +106,7 @@
        </size>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <property name="documentMode">
        <bool>false</bool>
@@ -129,8 +129,8 @@
          <rect>
           <x>-1</x>
           <y>-1</y>
-          <width>221</width>
-          <height>402</height>
+          <width>224</width>
+          <height>414</height>
          </rect>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -385,6 +385,13 @@
            </item>
           </widget>
          </item>
+         <item>
+          <widget class="QCheckBox" name="checkBox_ContinuousReporting">
+           <property name="text">
+            <string>Continuous Status Reporting</string>
+           </property>
+          </widget>
+         </item>
         </layout>
        </widget>
       </widget>
@@ -398,7 +405,7 @@
           <x>0</x>
           <y>-1</y>
           <width>211</width>
-          <height>321</height>
+          <height>333</height>
          </rect>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_4">

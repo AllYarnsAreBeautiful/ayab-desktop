@@ -80,12 +80,13 @@ class AyabCommunication(object):
     
     return None
 
-  def req_start(self, startNeedle, stopNeedle):
+  def req_start(self, startNeedle, stopNeedle, continuousReporting):
       """Sends a start message to the controller."""
       data = bytearray()
       data.append(0x01)
       data.append(startNeedle)
       data.append(stopNeedle)
+      data.append(continuousReporting)
       data = self.__driver.send(bytes(data))
       self.__ser.write(data)
 

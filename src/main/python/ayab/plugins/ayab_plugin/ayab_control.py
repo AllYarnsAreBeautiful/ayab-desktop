@@ -35,7 +35,10 @@ class AyabPluginControl(KnittingPlugin):
 
   def onknit(self, e):
     self.__logger.debug("called onknit on AyabPluginControl")
-    self.options_ui.tabWidget.setCurrentIndex(1)
+
+    if self.conf["continuousReporting"] == True:
+        self.options_ui.tabWidget.setCurrentIndex(1)
+
     self.__knitImage(self.__image, self.conf)
     self.finish()
 
@@ -270,6 +273,13 @@ class AyabPluginControl(KnittingPlugin):
     """
 
     self.conf = {}
+    continuousReporting = ui.findChild(QtWidgets.QCheckBox, 
+                            "checkBox_ContinuousReporting").isChecked()
+    if continuousReporting == 1:
+        self.conf["continuousReporting"] = True
+    else:
+        self.conf["continuousReporting"] = False
+
 
     color_line_text = ui.findChild(QtWidgets.QSpinBox, "color_edit").value()
     self.conf["num_colors"] = int(color_line_text)
@@ -666,7 +676,8 @@ class AyabPluginControl(KnittingPlugin):
           if curState == 's_start':
               if oldState != curState:
                     self.__ayabCom.req_start(self.__image.knitStartNeedle(),
-                                             self.__image.knitStopNeedle())
+                                             self.__image.knitStopNeedle(),
+                                             pOptions["continuousReporting"])
 
               if rcvMsg == 'cnfStart':
                   if rcvParam == 1:

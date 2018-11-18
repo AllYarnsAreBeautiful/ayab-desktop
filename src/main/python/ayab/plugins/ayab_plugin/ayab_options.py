@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ayab/plugins/ayab_plugin/ayab_options.ui'
 #
-# Created by: PyQt5 UI code generator 5.7
+# Created by: PyQt5 UI code generator 5.11.3
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -29,7 +29,7 @@ class Ui_DockWidget(object):
         self.ayab_config.setSizePolicy(sizePolicy)
         self.ayab_config.setObjectName("ayab_config")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.ayab_config)
-        self.verticalLayout.setContentsMargins(0, 0, 0, 0)
+        self.verticalLayout.setContentsMargins(-1, 0, -1, -1)
         self.verticalLayout.setSpacing(6)
         self.verticalLayout.setObjectName("verticalLayout")
         self.groupBox = QtWidgets.QGroupBox(self.ayab_config)
@@ -69,7 +69,7 @@ class Ui_DockWidget(object):
         self.tab_knit.setSizePolicy(sizePolicy)
         self.tab_knit.setObjectName("tab_knit")
         self.verticalLayoutWidget = QtWidgets.QWidget(self.tab_knit)
-        self.verticalLayoutWidget.setGeometry(QtCore.QRect(-1, -1, 221, 402))
+        self.verticalLayoutWidget.setGeometry(QtCore.QRect(-1, -1, 224, 414))
         self.verticalLayoutWidget.setObjectName("verticalLayoutWidget")
         self.verticalLayout_3 = QtWidgets.QVBoxLayout(self.verticalLayoutWidget)
         self.verticalLayout_3.setContentsMargins(6, 6, 6, 6)
@@ -180,11 +180,14 @@ class Ui_DockWidget(object):
         self.alignment_combo_box.addItem("")
         self.alignment_combo_box.setItemText(2, "right")
         self.verticalLayout_3.addWidget(self.alignment_combo_box)
+        self.checkBox_ContinuousReporting = QtWidgets.QCheckBox(self.verticalLayoutWidget)
+        self.checkBox_ContinuousReporting.setObjectName("checkBox_ContinuousReporting")
+        self.verticalLayout_3.addWidget(self.checkBox_ContinuousReporting)
         self.tabWidget.addTab(self.tab_knit, "")
         self.tab_status = QtWidgets.QWidget()
         self.tab_status.setObjectName("tab_status")
         self.verticalLayoutWidget_2 = QtWidgets.QWidget(self.tab_status)
-        self.verticalLayoutWidget_2.setGeometry(QtCore.QRect(0, -1, 211, 321))
+        self.verticalLayoutWidget_2.setGeometry(QtCore.QRect(0, -1, 211, 333))
         self.verticalLayoutWidget_2.setObjectName("verticalLayoutWidget_2")
         self.verticalLayout_4 = QtWidgets.QVBoxLayout(self.verticalLayoutWidget_2)
         self.verticalLayout_4.setContentsMargins(6, 6, 6, 6)
@@ -316,7 +319,7 @@ class Ui_DockWidget(object):
         DockWidget.setWidget(self.ayab_config)
 
         self.retranslateUi(DockWidget)
-        self.tabWidget.setCurrentIndex(1)
+        self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(DockWidget)
 
     def retranslateUi(self, DockWidget):
@@ -330,6 +333,7 @@ class Ui_DockWidget(object):
         self.gbox_stopneedle.setTitle(_translate("DockWidget", "Stop Needle"))
         self.label_4.setText(_translate("DockWidget", "Machine Type"))
         self.label_3.setText(_translate("DockWidget", "Alignment"))
+        self.checkBox_ContinuousReporting.setText(_translate("DockWidget", "Continuous Status Reporting"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_knit), _translate("DockWidget", "Settings"))
         self.label_8.setText(_translate("DockWidget", "Hall Sensors"))
         self.progress_hall_l.setFormat(_translate("DockWidget", "%p%"))
