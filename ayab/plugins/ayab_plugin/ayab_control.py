@@ -483,15 +483,43 @@ class AyabPluginControl(KnittingPlugin):
                         and (lineNumber % 4 == 1 or lineNumber % 4 == 3):
                     lastLine = 0x01
 
-            # doublebed heart of pluto multicolor
-            # 0-00 1-11 2-22 3-33 4-44 5-55 .. (imgRow)
-            # 0123 4567 8911 1111 1111 2222.. (lineNumber)
-            #             01 2345 6789 0123
-            #
-            # 0-21 4-53 6-87 1-19 1-11 1-11 .. (imageExpanded)
-            #                0 1  2 43 6 75
-            #
-            # A-CB B-CA A-CB B-CA A-CB B-CA .. (color)
+            elif self.__machineType == 'ribber' \
+                    and self.__numColors > 2:
+
+                # doublebed heart of pluto multicolor
+                # 0-00 1-11 2-22 3-33 4-44 5-55 .. (imgRow)
+                # 0123 4567 8911 1111 1111 2222.. (lineNumber)
+                #             01 2345 6789 0123
+                #
+                # 0-21 4-53 6-87 1-19 1-11 1-11 .. (imageExpanded)
+                #                0 1  2 43 6 75
+                #
+                # A-CB B-CA A-CB B-CA A-CB B-CA .. (color)
+
+                #Double the line minus the 2 you save on the beg and end of each imgRow
+                passesPerRow = self.__numColors * 2 - 2
+
+                imgRow = self.__startLine + int(reqestedLine/passesPerRow)
+
+                if self.__infRepeat:
+                    imgRow = imgRow % imgHeight
+
+                indexToSend = imgRow * self.__numColors
+
+                if imgRow % 2 == 0:
+                    color = int(((reqestedLine % passesPerRow) + 1) / 2)
+                else:
+                    color = int((passesPerRow - (reqestedLine % passesPerRow)) / 2)
+
+                if reqestedLine % passesPerRow == 0 or (reqestedLine + 1) % passesPerRow == 0 or reqestedLine % 2 ==0:
+                    sendBlankLine = False
+                else:
+                    sendBlankLine = True
+                
+                indexToSend += color
+
+                if indexToSend == lenImgExpanded - 1:
+                   lastLine = 0x01 
 
             # doublebed, multicolor
             elif self.__machineType == 'ribber' \
