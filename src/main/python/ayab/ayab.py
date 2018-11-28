@@ -26,7 +26,7 @@ import logging
 
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtWidgets import QMainWindow
-from PyQt5.QtCore import QThread, pyqtSignal, pyqtSlot
+from PyQt5.QtCore import Qt, QThread, pyqtSignal, pyqtSlot
 
 from PIL import Image
 from fysom import FysomError
@@ -54,10 +54,14 @@ console.setFormatter(
 logging.getLogger().addHandler(console)
 
 # Fix PyQt5 for HiDPI screens
-if hasattr(QtCore.Qt, 'AA_EnableHighDpiScaling'):
-    QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
-if hasattr(QtCore.Qt, 'AA_UseHighDpiPixmaps'):
-    QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)
+if hasattr(Qt, 'AA_EnableHighDpiScaling'):
+    QtWidgets.QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
+if hasattr(Qt, 'AA_UseHighDpiPixmaps'):
+    QtWidgets.QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
+# Remove Help Button
+if hasattr(Qt, 'AA_DisableWindowContextHelpButton'):
+    QtWidgets.QApplication.setAttribute(Qt.AA_DisableWindowContextHelpButton,
+                                        True)
 
 class GuiMain(QMainWindow):
     """GuiMain is the main object that handles the instance of AYAB's GUI from ayab_gui.UiForm .
