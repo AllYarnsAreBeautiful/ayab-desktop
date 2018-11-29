@@ -499,7 +499,7 @@ class AyabPluginControl(KnittingPlugin):
                 #Double the line minus the 2 you save on the beg and end of each imgRow
                 passesPerRow = self.__numColors * 2 - 2
 
-                imgRow = self.__startLine + int(reqestedLine/passesPerRow)
+                imgRow = self.__startLine + int(lineNumber/passesPerRow)
 
                 if self.__infRepeat:
                     imgRow = imgRow % imgHeight
@@ -515,7 +515,7 @@ class AyabPluginControl(KnittingPlugin):
                     sendBlankLine = False
                 else:
                     sendBlankLine = True
-                
+
                 indexToSend += color
 
                 if indexToSend == lenImgExpanded - 1:
