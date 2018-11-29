@@ -486,7 +486,7 @@ class AyabPluginControl(KnittingPlugin):
             elif self.__machineType == 'ribber' \
                     and self.__numColors > 2:
 
-                # doublebed heart of pluto multicolor
+                # doublebed middle-colors-twice multicolor
                 # 0-00 1-11 2-22 3-33 4-44 5-55 .. (imgRow)
                 # 0123 4567 8911 1111 1111 2222.. (lineNumber)
                 #             01 2345 6789 0123
