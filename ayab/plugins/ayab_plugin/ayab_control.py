@@ -506,7 +506,7 @@ class AyabPluginControl(KnittingPlugin):
 
                 indexToSend = imgRow * self.__numColors
 
-                if imgRow % 2 == 0:
+                if imgRow % 2 != 0:
                     color = int(((reqestedLine % passesPerRow) + 1) / 2)
                 else:
                     color = int((passesPerRow - (reqestedLine % passesPerRow)) / 2)
