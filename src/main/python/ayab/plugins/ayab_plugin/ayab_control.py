@@ -192,6 +192,10 @@ class AyabPluginControl(KnittingPlugin):
     self.options_ui.label_direction.setText("")
     self.setup_behaviour_ui()
 
+    # Disable "continuous reporting" checkbox
+    parent_ui.findChild(QtWidgets.QCheckBox, 
+                        "checkBox_ContinuousReporting").setVisible(False)
+
   def set_translator(self):
     dirname = os.path.dirname(__file__)
     self.translator = QtCore.QTranslator()
