@@ -507,11 +507,11 @@ class AyabPluginControl(KnittingPlugin):
                 indexToSend = imgRow * self.__numColors
 
                 if imgRow % 2 != 0:
-                    color = int(((reqestedLine % passesPerRow) + 1) / 2)
+                    color = int(((lineNumber % passesPerRow) + 1) / 2)
                 else:
-                    color = int((passesPerRow - (reqestedLine % passesPerRow)) / 2)
+                    color = int((passesPerRow - (lineNumber % passesPerRow)) / 2)
 
-                if reqestedLine % passesPerRow == 0 or (reqestedLine + 1) % passesPerRow == 0 or reqestedLine % 2 ==0:
+                if lineNumber % passesPerRow == 0 or (lineNumber + 1) % passesPerRow == 0 or lineNumber % 2 ==0:
                     sendBlankLine = False
                 else:
                     sendBlankLine = True
