@@ -4,11 +4,40 @@ To build a binary from the Python script files, use PyInstaller (pip install pyi
 
     cd ayab-desktop
     venv\Scripts\activate
-    PyInstaller -y ayab.spec
+    python3 -m fbs freeze
 
-This will generate a standalone build inside ./dist/ayab
+This will generate a standalone build inside target/AYAB
+To build the NSIS installer, run 
+    
+    python3 -m fbs installer
 
-We use `pyinstaller <https://pyinstaller.readthedocs.io/>`__ to create the
-binaries.
-`Inno Setup 5 <http://www.jrsoftware.org/isinfo.php>`__ is used to build the
-installer. Note that Inno Setup 5 has its own license attached.
+(NSIS must be on the Windows PATH)
+
+## Win10 Build dependencies
+
+* vcredist packages
+  * https://www.microsoft.com/en-us/download/confirmation.aspx?id=26999
+  * https://www.microsoft.com/en-us/download/confirmation.aspx?id=30679
+  * https://www.microsoft.com/en-us/download/confirmation.aspx?id=48145
+  * https://developer.microsoft.com/en-us/windows/downloads/windows-10-sdk
+
+* git for windows (https://git-scm.com/download/win)
+* python 3.5.3 (64 bit) (https://www.python.org/downloads/release/python-353/)
+* NSIS http://nsis.sourceforge.net/Download
+* gitlab-runner (https://docs.gitlab.com/runner/install/windows.html)
+
+## Settings
+
+* Add to Path
+  * C:\Programs and Files\Git\bin\
+  * NSIS
+  * %SystemRoot%/SysWOW64
+
+* config.toml
+  * executor = "shell"
+  * shell = "bash"
+  * build_dir = "/c/gitlab-runner/builds/"
+  * builds_cache = "/c/gitlab-runner/cache/"
+
+## Gitlab Runner Call
+C:\Program Files\Git\bin\bash.exe -c "/c/gitlab-runner/gitlab-runner.exe run --working-directory /c/gitlab-runner --config /c/gitlab-runner/config.toml --service gitlab-runner --syslog"

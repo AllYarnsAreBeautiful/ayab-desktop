@@ -1,0 +1,6 @@
+{
+    "app_name": "AYAB",
+    "main_module": "src/main/python/main.py",
+    "author": "Chris",
+    "version": "0.95"
+}

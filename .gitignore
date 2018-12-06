@@ -1,6 +1,7 @@
 ayab_log.txt
 # Python
 *.pyc
+*.pyo
 docs/_build/
 venv*/
 ayab.egg-info
@@ -16,4 +17,10 @@ package_version
 # Obsolete Directories
 documents/
 patterns/
+# Buildfolder
 build/
+target/
+# macOS
+.DS_Store
+# VSCode
+.vscode
