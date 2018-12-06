@@ -1,6 +1,41 @@
 Release Notes
 -------------
 
+0.95 (December 2018)
+~~~~~~~~~~~~~~~~
+
+Firmware
+^^^^^^^^
+
+- Reduced carriage turn around time (#246)
+- Allowing some backwards carriage movement without advancing to the next row (#244)
+
+
+GUI
+^^^
+
+- Fixing macOS installation (at least macOS 10.12 (Sierra) is required to run AYAB) (#253)
+- Patterns with an odd number of stitches get centered on green 1 (#245)
+- Fixed lace patterns: 8-29, 8-30, 8-31, 9-32, 10-33, 10-34, 10-35, 10-36 (#249)
+- Writing date and time to the log (#259)
+- Fixing display on high-DPI screens (#166)
+
+
+0.91 (April 2018) (not released for public)
+~~~~~~~~~~~~~~~~
+
+Firmware
+^^^^^^^^
+
+-  Added experimental support for Garter Carriage
+-  Improvement of I2C communication (Pull request #11)
+-  Adjusting END_OF_LINE_OFFSET_L to 12 (Issue #9) 
+
+GUI
+^^^
+
+-  Adding Repeat action and shortcuts (Pull request #251)
+
 0.90 (August 2017)
 ~~~~~~~~~~~~~~~~
 
