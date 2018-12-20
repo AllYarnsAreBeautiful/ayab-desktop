@@ -41,7 +41,7 @@ FunctionEnd
 ;--------------------------------
 ;Pages
 
-  !define MUI_WELCOMEPAGE_TEXT "This wizard will guide you through the installation of %{app_name}.$\r$\n$\r$\n$\r$\nClick Next to continue."
+  !define MUI_WELCOMEPAGE_TEXT "This wizard will guide you through the installation of %{app_name} v%{version}.$\r$\n$\r$\n$\r$\nClick Next to continue."
   !insertmacro MUI_PAGE_WELCOME
   !insertmacro MUI_PAGE_DIRECTORY
   !insertmacro MUI_PAGE_INSTFILES
@@ -69,6 +69,7 @@ Section
   SetOutPath "$InstDir"
   File /r "..\%{app_name}\*"
   WriteRegStr SHCTX "Software\%{app_name}" "" $InstDir
+  WriteRegStr SHCTX "Software\%{app_name}" "Version" "%{version}"
   WriteUninstaller "$InstDir\uninstall.exe"
   CreateShortCut "$SMPROGRAMS\%{app_name}.lnk" "$InstDir\%{app_name}.exe"
   WriteRegStr SHCTX "${UNINST_KEY}" "DisplayName" "%{app_name}"
@@ -77,6 +78,7 @@ Section
   WriteRegStr SHCTX "${UNINST_KEY}" "QuietUninstallString" \
     "$\"$InstDir\uninstall.exe$\" /$MultiUser.InstallMode /S"
   WriteRegStr SHCTX "${UNINST_KEY}" "Publisher" "%{author}"
+  WriteRegStr SHCTX "${UNINST_KEY}" "Version" "%{version}"
   ${GetSize} "$InstDir" "/S=0K" $0 $1 $2
   IntFmt $0 "0x%08X" $0
   WriteRegDWORD SHCTX "${UNINST_KEY}" "EstimatedSize" "$0"
