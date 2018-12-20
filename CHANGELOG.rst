@@ -18,7 +18,6 @@ GUI
 - Patterns with an odd number of stitches get centered on green 1 (#245)
 - Fixed lace patterns: 8-29, 8-30, 8-31, 9-32, 10-33, 10-34, 10-35, 10-36 (#249)
 - Writing date and time to the log (#259)
-- Fixing display on high-DPI screens (#166)
 
 
 0.91 (April 2018) (not released for public)

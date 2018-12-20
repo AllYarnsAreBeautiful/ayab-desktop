@@ -1,6 +1,6 @@
 {
     "app_name": "AYAB",
     "main_module": "src/main/python/main.py",
-    "author": "Chris",
+    "author": "ayab-knitting.com",
     "version": "0.95"
 }
