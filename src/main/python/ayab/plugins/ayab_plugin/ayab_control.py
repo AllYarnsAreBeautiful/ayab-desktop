@@ -137,6 +137,10 @@ class AyabPluginControl(KnittingPlugin):
     """Sends the updateProgress QtSignal."""
     self.__parent_ui.signalUpdateProgress.emit(int(row), int(total))
 
+  def __emit_color(self, color):
+    """Sends the updateProgress QtSignal."""
+    self.__parent_ui.signalUpdateColor.emit(color)
+
   def __emit_status(self, hall_l, hall_r, carriage_type, carriage_position):
     """Sends the updateStatus QtSignal"""
     self.__parent_ui.signalUpdateStatus.emit(hall_l, hall_r,
@@ -642,16 +646,25 @@ class AyabPluginControl(KnittingPlugin):
               self.__ayabCom.cnf_line(reqestedLine, bytes, lastLine, crc8)
 
             # screen output
+            colorNames = "A", "B", "C", "D"
             msg = str(self.__lineBlock) # Block
             msg += ' ' + str(lineNumber) # Total Line Number
             msg += ' reqLine: ' + str(reqestedLine)
             msg += ' imgRow: ' + str(imgRow)
+            msg += ' color: ' +  colorNames[color]
             if sendBlankLine == True:
                 msg += ' BLANK LINE'
             else:
                 msg += ' indexToSend: ' + str(indexToSend)
                 msg += ' ' + str((self.__image.imageExpanded())[indexToSend])
             self.__logger.debug(msg)
+
+            if self.__machineType == 'single':
+                self.__emit_color("A/B")
+            elif sendBlankLine == True:
+                self.__emit_color("Blank")
+            else:
+                self.__emit_color(colorNames[color])
 
             #sending line progress to gui
             self.__emit_progress(imgRow+1, imgHeight)

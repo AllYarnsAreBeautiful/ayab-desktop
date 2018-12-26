@@ -70,6 +70,7 @@ class GuiMain(QMainWindow):
     """
 
     signalUpdateProgress = pyqtSignal(int, int)
+    signalUpdateColor = pyqtSignal('QString')
     signalUpdateStatus = pyqtSignal(int, int, 'QString', int)
     signalUpdateNotification = pyqtSignal('QString')
     signalDisplayPopUp = pyqtSignal('QString', 'QString')
@@ -99,7 +100,11 @@ class GuiMain(QMainWindow):
         self.showMaximized()
         self.setupBehaviour()
 
-    def updateProgress(self, row, total=0):
+        self.ui.label_notifications.setText("")
+        self.ui.label_current_line.setText("")
+        self.ui.label_current_color.setText("")
+
+    def update_progress(self, row, total=0):
         '''Updates the Progress Bar.'''
         #Store to local variable
         self.var_progress = row
@@ -107,11 +112,15 @@ class GuiMain(QMainWindow):
 
         # Update label and progress bar
         if total != 0:
-            self.ui.notification_label.setText("{0}/{1}".format(row, total))
+            self.ui.label_current_line.setText("{0}/{1}".format(row, total))
         
         options_ui = self.enabled_plugin.options_ui
         options_ui.label_progress.setText("{0}/{1}".format(row, total))
-    
+
+    def update_color(self, color):
+        '''Updates the current color.'''
+        self.ui.label_current_color.setText("Color: " + color)
+            
     def updateStatus(self, hall_l, hall_r, carriage_type, carriage_position):
         options_ui = self.enabled_plugin.options_ui
         options_ui.progress_hall_l.setValue(hall_l)
@@ -129,7 +138,7 @@ class GuiMain(QMainWindow):
     def slotUpdateNotification(self, text):
         '''Updates the Notification field'''
         logging.info("Notification: " + text)
-        self.ui.notification_label.setText(text)
+        self.ui.label_notifications.setText(text)
 
     def slotUpdateNeedles(self, start_needle, stop_needle):
         '''Updates the position of the start/stop needle visualisation'''
@@ -188,7 +197,8 @@ class GuiMain(QMainWindow):
         self.ui.actionLoad_AYAB_Firmware.triggered.connect(self.generate_firmware_ui)
         self.ui.image_pattern_view.setDragMode(QtWidgets.QGraphicsView.ScrollHandDrag)
         # Connecting Signals.
-        self.signalUpdateProgress.connect(self.updateProgress)
+        self.signalUpdateProgress.connect(self.update_progress)
+        self.signalUpdateColor.connect(self.update_color)
         self.signalUpdateStatus.connect(self.updateStatus)
         self.signalUpdateNotification.connect(self.slotUpdateNotification)
         self.signalDisplayPopUp.connect(self.display_blocking_pop_up)
@@ -307,7 +317,7 @@ class GuiMain(QMainWindow):
 
     def set_dimensions_on_gui(self, width, height):
         text = "{} - {}".format(width, height)
-        self.ui.notification_label.setText("Image Dimensions: " + text)
+        self.ui.label_notifications.setText("Image Dimensions: " + text)
 
     def display_blocking_pop_up(self, message="", message_type="info"):
         logging.debug("MessageBox {}: '{}'".format(message_type, message))
