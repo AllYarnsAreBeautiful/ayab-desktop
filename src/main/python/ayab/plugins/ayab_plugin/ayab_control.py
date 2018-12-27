@@ -523,7 +523,49 @@ class AyabPluginControl(KnittingPlugin):
                 if (imgRow == imgHeight - 1) \
                         and (lineNumber % 4 == 1 or lineNumber % 4 == 3):
                     lastLine = 0x01
+<<<<<<< b70a68971c9380af59c41e834936a1f4e921d95d
             
+=======
+
+			# doublebed, multicolor <3 of pluto - advances imgRow as soon as possible
+            elif self.__machineType == 'ribber' \
+                    and self.__numColors > 2:
+
+                #Double the line minus the 2 you save from early advancing to next row
+                passesPerRow = self.__numColors * 2 - 2
+
+                imgRow = self.__startLine + int(lineNumber/passesPerRow)
+
+                #if self.__infRepeat:
+                #    imgRow = imgRow % imgHeight
+
+                indexToSend = imgRow * self.__numColors
+
+                #check if it's time to send a blank line
+                if lineNumber % passesPerRow != 0 and lineNumber % 2 == 0:
+                    sendBlankLine = True
+                #if not set a color
+                else:
+                    color = int(((lineNumber + 1) % (self.__numColors * 2)) / 2)
+                #use color to adjust index
+                indexToSend += color
+
+                #if imgRow % 2 != 0:
+                #    color = int(((lineNumber % passesPerRow) + 1) / 2)
+                #else:
+                #    color = int((passesPerRow - (lineNumber % passesPerRow)) / 2)
+
+                #if lineNumber % passesPerRow == 0 or (lineNumber + 1) % passesPerRow == 0 or lineNumber % 2 ==0:
+                #    sendBlankLine = False
+                #else:
+                #    sendBlankLine = True
+
+                #indexToSend += color
+
+                #if indexToSend == lenImgExpanded - 1:
+                #   lastLine = 0x01
+
+>>>>>>> starting heart of pluto color separation
             # doublebed, multicolor
             elif self.__machineType == Machinetype.CLASSIC_RIBBER_1.value \
                     and self.__numColors > 2:
