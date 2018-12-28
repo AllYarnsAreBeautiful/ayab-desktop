@@ -15,6 +15,66 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0" rowspan="3">
+     <layout class="QVBoxLayout" name="image_side_panel">
+      <property name="spacing">
+       <number>6</number>
+      </property>
+      <item>
+       <widget class="QGraphicsView" name="image_pattern_view"/>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="progressLayout">
+        <property name="spacing">
+         <number>2</number>
+        </property>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <item alignment="Qt::AlignHCenter|Qt::AlignVCenter">
+           <widget class="QLabel" name="label_current_color">
+            <property name="font">
+             <font>
+              <pointsize>14</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+              <kerning>true</kerning>
+             </font>
+            </property>
+            <property name="text">
+             <string>label_current_color</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item alignment="Qt::AlignHCenter|Qt::AlignVCenter">
+         <widget class="QLabel" name="label_current_line">
+          <property name="font">
+           <font>
+            <pointsize>14</pointsize>
+            <weight>75</weight>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string>label_current_line</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_notifications">
+        <property name="text">
+         <string>label_notifications</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
     <item row="0" column="1" rowspan="3">
      <widget class="QScrollArea" name="assistant_dock">
       <property name="enabled">
@@ -232,26 +292,6 @@
       </widget>
      </widget>
     </item>
-    <item row="0" column="0" rowspan="3">
-     <layout class="QVBoxLayout" name="image_side_panel">
-      <property name="spacing">
-       <number>6</number>
-      </property>
-      <item>
-       <widget class="QGraphicsView" name="image_pattern_view"/>
-      </item>
-      <item>
-       <widget class="QLabel" name="notification_label">
-        <property name="text">
-         <string/>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignCenter</set>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -260,7 +300,7 @@
      <x>0</x>
      <y>0</y>
      <width>1008</width>
-     <height>20</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

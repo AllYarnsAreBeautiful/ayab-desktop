@@ -25,11 +25,20 @@ import os
 import sys
 from ayab.plugins.knitting_plugin import KnittingPlugin
 from PyQt5 import QtGui, QtWidgets, QtCore
+from enum import Enum
 
 from .ayab_options import Ui_DockWidget
 import serial.tools.list_ports
 
 import pprint
+
+class Machinetype(Enum):
+    SINGLEBED = 0
+    CLASSIC_RIBBER_1 = 1            # Classic Ribber 1
+    #CLASSIC_RIBBER_2 = 2            # Classic Ribber 2
+    MIDDLECOLORSTWICE_RIBBER = 2    # Middle-Colors-Twice Ribber
+    #HEARTOFPLUTO_RIBBER = 4         # Heart-of-Pluto Ribber
+    CIRCULAR_RIBBER = 3             # Circular Ribber
 
 class AyabPluginControl(KnittingPlugin):
 
@@ -92,12 +101,12 @@ class AyabPluginControl(KnittingPlugin):
       self.__notify_user("Please choose a valid port.")
       return False
 
-    if conf.get("machine_type") == 'single' \
+    if conf.get("machine_type") == Machinetype.SINGLEBED.value \
             and conf.get("num_colors") >= 3:
-        self.__notify_user("Single bed knitting currently supports only 2 colors", "warning")
+        self.__notify_user("Singlebed knitting currently supports only 2 colors", "warning")
         return False
 
-    if conf.get("machine_type") == 'circular' \
+    if conf.get("machine_type") == Machinetype.CIRCULAR_RIBBER.value \
             and conf.get("num_colors") >= 3:
         self.__notify_user("Circular knitting supports only 2 colors", "warning")
         return False
@@ -133,9 +142,15 @@ class AyabPluginControl(KnittingPlugin):
     """Sends the signalUpdateNotification signal"""
     self.__parent_ui.signalUpdateNotification.emit(message)
 
-  def __emit_progress(self, row, total = 0):
+  def __emit_progress(self, row, total = 0, repeats = 0):
     """Sends the updateProgress QtSignal."""
-    self.__parent_ui.signalUpdateProgress.emit(int(row), int(total))
+    self.__parent_ui.signalUpdateProgress.emit(int(row),
+                                               int(total),
+                                               int(repeats))
+
+  def __emit_color(self, color):
+    """Sends the updateProgress QtSignal."""
+    self.__parent_ui.signalUpdateColor.emit(color)
 
   def __emit_status(self, hall_l, hall_r, carriage_type, carriage_position):
     """Sends the updateStatus QtSignal"""
@@ -178,7 +193,7 @@ class AyabPluginControl(KnittingPlugin):
   def __onStartLineChanged(self):
     """ """
     start_line_edit = self.options_ui.start_line_edit.value()
-    self.__emit_progress(start_line_edit, 0)
+    self.__emit_progress(start_line_edit)
 
   def setup_ui(self, parent_ui):
     """Sets up UI elements from ayab_options.Ui_DockWidget in parent_ui."""
@@ -314,6 +329,9 @@ class AyabPluginControl(KnittingPlugin):
 
     machine_type_text = ui.findChild(QtWidgets.QComboBox, "machine_type_box").currentText()
     self.conf["machine_type"] = str(machine_type_text)
+    machine_type_index = ui.findChild(QtWidgets.QComboBox, 
+                                      "machine_type_box").currentIndex()
+    self.conf["machine_type"] = machine_type_index
 
     serial_port_text = ui.findChild(QtWidgets.QComboBox, "serial_port_dropdown").currentText()
     self.conf["portname"] = str(serial_port_text)
@@ -445,7 +463,7 @@ class AyabPluginControl(KnittingPlugin):
             #########################
             # decide which line to send according to machine type and amount of colors
             # singlebed, 2 color
-            if self.__machineType == 'single' \
+            if self.__machineType == Machinetype.SINGLEBED.value \
                     and self.__numColors == 2:
 
                 # when knitting infinitely, keep the requested
@@ -469,7 +487,7 @@ class AyabPluginControl(KnittingPlugin):
                     lastLine = 0x01
 
             # doublebed, 2 color
-            elif self.__machineType == 'ribber' \
+            elif self.__machineType == Machinetype.CLASSIC_RIBBER_1.value \
                     and self.__numColors == 2:
 
                 # when knitting infinitely, keep the requested
@@ -505,9 +523,9 @@ class AyabPluginControl(KnittingPlugin):
                 if (imgRow == imgHeight - 1) \
                         and (lineNumber % 4 == 1 or lineNumber % 4 == 3):
                     lastLine = 0x01
-
+            
             # doublebed, multicolor
-            elif self.__machineType == 'ribber' \
+            elif self.__machineType == Machinetype.CLASSIC_RIBBER_1.value \
                     and self.__numColors > 2:
 
                 # when knitting infinitely, keep the requested
@@ -525,7 +543,7 @@ class AyabPluginControl(KnittingPlugin):
                 else:
                     self.__logger.debug("COLOR" + str(color))
 
-                color = (lineNumber / 2) % self.__numColors
+                color = int((lineNumber / 2) % self.__numColors)
 
                 #indexToSend = self.__startLine * self.__numColors
                 indexToSend = int((imgRow * self.__numColors) + color)
@@ -536,7 +554,46 @@ class AyabPluginControl(KnittingPlugin):
                         and (sendBlankLine == True):
                     lastLine = 0x01
 
-            elif self.__machineType == 'circular' \
+            # Ribber, Middle-Colors-Twice
+            elif self.__machineType == Machinetype.MIDDLECOLORSTWICE_RIBBER.value:
+
+                # doublebed middle-colors-twice multicolor
+                # 0-00 1-11 2-22 3-33 4-44 5-55 .. (imgRow)
+                # 0123 4567 8911 1111 1111 2222.. (lineNumber)
+                #             01 2345 6789 0123
+                #
+                # 0-21 4-53 6-87 1-19 1-11 1-11 .. (imageExpanded)
+                #                0 1  2 43 6 75
+                #
+                # A-CB B-CA A-CB B-CA A-CB B-CA .. (color)
+
+                #Double the line minus the 2 you save on the beg and end of each imgRow
+                passesPerRow = self.__numColors * 2 - 2
+
+                imgRow = self.__startLine + int(lineNumber/passesPerRow)
+
+                if self.__infRepeat:
+                    imgRow = imgRow % imgHeight
+
+                indexToSend = imgRow * self.__numColors
+
+                if imgRow % 2 != 0:
+                    color = int(((lineNumber % passesPerRow) + 1) / 2)
+                else:
+                    color = int((passesPerRow - (lineNumber % passesPerRow)) / 2)
+
+                if lineNumber % passesPerRow == 0 or (lineNumber + 1) % passesPerRow == 0 or lineNumber % 2 ==0:
+                    sendBlankLine = False
+                else:
+                    sendBlankLine = True
+
+                indexToSend += color
+
+                if indexToSend == lenImgExpanded - 1:
+                   lastLine = 0x01 
+
+            # Ribber, Circular
+            elif self.__machineType == Machinetype.CIRCULAR_RIBBER.value \
                     and self.__numColors == 2:
 
                 # when knitting infinitely, keep the requested
@@ -578,8 +635,9 @@ class AyabPluginControl(KnittingPlugin):
                 imgStopNeedle = 199
 
             # set the bitarray
-            if color == 0 \
-                    and self.__machineType == 'ribber':
+            if color == 0 and \
+                    (self.__machineType == Machinetype.CLASSIC_RIBBER_1.value 
+                    or self.__machineType == Machinetype.MIDDLECOLORSTWICE_RIBBER.value):
                 for col in range(0, 200):
                     if col < imgStartNeedle \
                             or col > imgStopNeedle:
@@ -604,10 +662,12 @@ class AyabPluginControl(KnittingPlugin):
               self.__ayabCom.cnf_line(reqestedLine, bytes, lastLine, crc8)
 
             # screen output
+            colorNames = "A", "B", "C", "D"
             msg = str(self.__lineBlock) # Block
             msg += ' ' + str(lineNumber) # Total Line Number
             msg += ' reqLine: ' + str(reqestedLine)
             msg += ' imgRow: ' + str(imgRow)
+            msg += ' color: ' +  colorNames[color]
             if sendBlankLine == True:
                 msg += ' BLANK LINE'
             else:
@@ -615,8 +675,17 @@ class AyabPluginControl(KnittingPlugin):
                 msg += ' ' + str((self.__image.imageExpanded())[indexToSend])
             self.__logger.debug(msg)
 
+            if self.__machineType == Machinetype.SINGLEBED.value:
+                self.__emit_color("A/B")
+            elif sendBlankLine == True:
+                self.__emit_color("Blank")
+            else:
+                self.__emit_color(colorNames[color])
+
             #sending line progress to gui
-            self.__emit_progress(imgRow+1, imgHeight)
+            self.__emit_progress(imgRow+1,
+                                 imgHeight,
+                                 self.__infRepeat_repeats)
             self.__emit_playsound("nextline")
 
         else:
@@ -624,6 +693,7 @@ class AyabPluginControl(KnittingPlugin):
 
         if lastLine:
           if self.__infRepeat:
+              self.__infRepeat_repeats += 1
               return 0  # keep knitting
           else:
               return 1  # image finished
@@ -638,6 +708,7 @@ class AyabPluginControl(KnittingPlugin):
       self.__numColors = pOptions["num_colors"]
       self.__machineType = pOptions["machine_type"]
       self.__infRepeat = pOptions["inf_repeat"]
+      self.__infRepeat_repeats = 0
 
       API_VERSION = self.__API_VERSION
       curState = 's_init'

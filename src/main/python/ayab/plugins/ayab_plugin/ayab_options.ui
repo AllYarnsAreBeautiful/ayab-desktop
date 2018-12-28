@@ -147,6 +147,43 @@
           <number>6</number>
          </property>
          <item>
+          <widget class="QLabel" name="label_4">
+           <property name="text">
+            <string>Knitting Mode</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="machine_type_box">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <item>
+            <property name="text">
+             <string notr="true">Singlebed</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">Ribber: Classic</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Ribber: Middle-Colors-Twice</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">Ribber: Circular</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item>
           <widget class="QLabel" name="label_6">
            <property name="text">
             <string>Colors</string>
@@ -319,38 +356,6 @@
              <number>20</number>
             </property>
            </widget>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="label_4">
-           <property name="text">
-            <string>Machine Type</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QComboBox" name="machine_type_box">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <item>
-            <property name="text">
-             <string notr="true">single</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string notr="true">ribber</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string notr="true">circular</string>
-            </property>
-           </item>
           </widget>
          </item>
          <item>
