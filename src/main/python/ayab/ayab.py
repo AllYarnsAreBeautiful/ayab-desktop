@@ -69,7 +69,7 @@ class GuiMain(QMainWindow):
     GuiMain inherits from QMainWindow and instanciates a window with the form components form ayab_gui.UiForm.
     """
 
-    signalUpdateProgress = pyqtSignal(int, int)
+    signalUpdateProgress = pyqtSignal(int, int, int)
     signalUpdateColor = pyqtSignal('QString')
     signalUpdateStatus = pyqtSignal(int, int, 'QString', int)
     signalUpdateNotification = pyqtSignal('QString')
@@ -104,15 +104,20 @@ class GuiMain(QMainWindow):
         self.ui.label_current_line.setText("")
         self.ui.label_current_color.setText("")
 
-    def update_progress(self, row, total=0):
+    def update_progress(self, row, total=0, repeats=0):
         '''Updates the Progress Bar.'''
         #Store to local variable
         self.var_progress = row
         self.refresh_scene()
 
-        # Update label and progress bar
+        # Update label
         if total != 0:
-            self.ui.label_current_line.setText("{0}/{1}".format(row, total))
+            text = "Line {0}/{1}".format(row, total)
+            if repeats != 0:
+                text += " ({0} repeats completed)".format(repeats)
+        else:
+            text = ""
+        self.ui.label_current_line.setText(text)
         
         options_ui = self.enabled_plugin.options_ui
         options_ui.label_progress.setText("{0}/{1}".format(row, total))

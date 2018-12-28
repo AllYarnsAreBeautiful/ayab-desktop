@@ -142,9 +142,11 @@ class AyabPluginControl(KnittingPlugin):
     """Sends the signalUpdateNotification signal"""
     self.__parent_ui.signalUpdateNotification.emit(message)
 
-  def __emit_progress(self, row, total = 0):
+  def __emit_progress(self, row, total = 0, repeats = 0):
     """Sends the updateProgress QtSignal."""
-    self.__parent_ui.signalUpdateProgress.emit(int(row), int(total))
+    self.__parent_ui.signalUpdateProgress.emit(int(row),
+                                               int(total),
+                                               int(repeats))
 
   def __emit_color(self, color):
     """Sends the updateProgress QtSignal."""
@@ -191,7 +193,7 @@ class AyabPluginControl(KnittingPlugin):
   def __onStartLineChanged(self):
     """ """
     start_line_edit = self.options_ui.start_line_edit.value()
-    self.__emit_progress(start_line_edit, 0)
+    self.__emit_progress(start_line_edit)
 
   def setup_ui(self, parent_ui):
     """Sets up UI elements from ayab_options.Ui_DockWidget in parent_ui."""
@@ -681,7 +683,9 @@ class AyabPluginControl(KnittingPlugin):
                 self.__emit_color(colorNames[color])
 
             #sending line progress to gui
-            self.__emit_progress(imgRow+1, imgHeight)
+            self.__emit_progress(imgRow+1,
+                                 imgHeight,
+                                 self.__infRepeat_repeats)
             self.__emit_playsound("nextline")
 
         else:
@@ -689,6 +693,7 @@ class AyabPluginControl(KnittingPlugin):
 
         if lastLine:
           if self.__infRepeat:
+              self.__infRepeat_repeats += 1
               return 0  # keep knitting
           else:
               return 1  # image finished
@@ -703,6 +708,7 @@ class AyabPluginControl(KnittingPlugin):
       self.__numColors = pOptions["num_colors"]
       self.__machineType = pOptions["machine_type"]
       self.__infRepeat = pOptions["inf_repeat"]
+      self.__infRepeat_repeats = 0
 
       API_VERSION = self.__API_VERSION
       curState = 's_init'
