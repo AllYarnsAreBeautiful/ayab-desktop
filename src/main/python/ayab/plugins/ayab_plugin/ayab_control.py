@@ -25,11 +25,20 @@ import os
 import sys
 from ayab.plugins.knitting_plugin import KnittingPlugin
 from PyQt5 import QtGui, QtWidgets, QtCore
+from enum import Enum
 
 from .ayab_options import Ui_DockWidget
 import serial.tools.list_ports
 
 import pprint
+
+class Machinetype(Enum):
+    SINGLEBED = 0
+    CLASSIC_RIBBER_1 = 1            # Classic Ribber 1
+    #CLASSIC_RIBBER_2 = 2            # Classic Ribber 2
+    MIDDLECOLORSTWICE_RIBBER = 2    # Middle-Colors-Twice Ribber
+    #HEARTOFPLUTO_RIBBER = 4         # Heart-of-Pluto Ribber
+    CIRCULAR_RIBBER = 3             # Circular Ribber
 
 class AyabPluginControl(KnittingPlugin):
 
@@ -92,12 +101,12 @@ class AyabPluginControl(KnittingPlugin):
       self.__notify_user("Please choose a valid port.")
       return False
 
-    if conf.get("machine_type") == 'single' \
+    if conf.get("machine_type") == Machinetype.SINGLEBED.value \
             and conf.get("num_colors") >= 3:
-        self.__notify_user("Single bed knitting currently supports only 2 colors", "warning")
+        self.__notify_user("Singlebed knitting currently supports only 2 colors", "warning")
         return False
 
-    if conf.get("machine_type") == 'circular' \
+    if conf.get("machine_type") == Machinetype.CIRCULAR_RIBBER.value \
             and conf.get("num_colors") >= 3:
         self.__notify_user("Circular knitting supports only 2 colors", "warning")
         return False
@@ -318,6 +327,9 @@ class AyabPluginControl(KnittingPlugin):
 
     machine_type_text = ui.findChild(QtWidgets.QComboBox, "machine_type_box").currentText()
     self.conf["machine_type"] = str(machine_type_text)
+    machine_type_index = ui.findChild(QtWidgets.QComboBox, 
+                                      "machine_type_box").currentIndex()
+    self.conf["machine_type"] = machine_type_index
 
     serial_port_text = ui.findChild(QtWidgets.QComboBox, "serial_port_dropdown").currentText()
     self.conf["portname"] = str(serial_port_text)
@@ -473,7 +485,7 @@ class AyabPluginControl(KnittingPlugin):
                     lastLine = 0x01
 
             # doublebed, 2 color
-            elif self.__machineType == 'ribber' \
+            elif self.__machineType == Machinetype.CLASSIC_RIBBER_1.value \
                     and self.__numColors == 2:
 
                 # when knitting infinitely, keep the requested
@@ -509,9 +521,39 @@ class AyabPluginControl(KnittingPlugin):
                 if (imgRow == imgHeight - 1) \
                         and (lineNumber % 4 == 1 or lineNumber % 4 == 3):
                     lastLine = 0x01
-
-            elif self.__machineType == 'ribber' \
+            
+            # doublebed, multicolor
+            elif self.__machineType == Machinetype.CLASSIC_RIBBER_1.value \
                     and self.__numColors > 2:
+
+                # when knitting infinitely, keep the requested
+                # lineNumber in its limits
+                if self.__infRepeat:
+                    # *2 because of BLANK lines in between
+                    lineNumber = lineNumber % (2*lenImgExpanded)
+
+                # calculate imgRow
+                imgRow = (int(
+                    lineNumber / (self.__numColors * 2)) + self.__startLine) % imgHeight
+
+                if (lineNumber % 2) == 1:
+                    sendBlankLine = True
+                else:
+                    self.__logger.debug("COLOR" + str(color))
+
+                color = (lineNumber / 2) % self.__numColors
+
+                #indexToSend = self.__startLine * self.__numColors
+                indexToSend = int((imgRow * self.__numColors) + color)
+
+                indexToSend = indexToSend % lenImgExpanded
+
+                if (indexToSend == (lenImgExpanded-1)) \
+                        and (sendBlankLine == True):
+                    lastLine = 0x01
+
+            # Ribber, Middle-Colors-Twice
+            elif self.__machineType == Machinetype.MIDDLECOLORSTWICE_RIBBER.value:
 
                 # doublebed middle-colors-twice multicolor
                 # 0-00 1-11 2-22 3-33 4-44 5-55 .. (imgRow)
@@ -548,37 +590,8 @@ class AyabPluginControl(KnittingPlugin):
                 if indexToSend == lenImgExpanded - 1:
                    lastLine = 0x01 
 
-            # doublebed, multicolor
-            elif self.__machineType == 'ribber' \
-                    and self.__numColors > 2:
-
-                # when knitting infinitely, keep the requested
-                # lineNumber in its limits
-                if self.__infRepeat:
-                    # *2 because of BLANK lines in between
-                    lineNumber = lineNumber % (2*lenImgExpanded)
-
-                # calculate imgRow
-                imgRow = (int(
-                    lineNumber / (self.__numColors * 2)) + self.__startLine) % imgHeight
-
-                if (lineNumber % 2) == 1:
-                    sendBlankLine = True
-                else:
-                    self.__logger.debug("COLOR" + str(color))
-
-                color = (lineNumber / 2) % self.__numColors
-
-                #indexToSend = self.__startLine * self.__numColors
-                indexToSend = int((imgRow * self.__numColors) + color)
-
-                indexToSend = indexToSend % lenImgExpanded
-
-                if (indexToSend == (lenImgExpanded-1)) \
-                        and (sendBlankLine == True):
-                    lastLine = 0x01
-
-            elif self.__machineType == 'circular' \
+            # Ribber, Circular
+            elif self.__machineType == Machinetype.CIRCULAR_RIBBER.value \
                     and self.__numColors == 2:
 
                 # when knitting infinitely, keep the requested
@@ -620,8 +633,9 @@ class AyabPluginControl(KnittingPlugin):
                 imgStopNeedle = 199
 
             # set the bitarray
-            if color == 0 \
-                    and self.__machineType == 'ribber':
+            if color == 0 and \
+                    (self.__machineType == Machinetype.CLASSIC_RIBBER_1.value 
+                    or self.__machineType == Machinetype.MIDDLECOLORSTWICE_RIBBER.value):
                 for col in range(0, 200):
                     if col < imgStartNeedle \
                             or col > imgStopNeedle:
