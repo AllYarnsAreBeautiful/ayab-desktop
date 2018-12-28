@@ -463,7 +463,7 @@ class AyabPluginControl(KnittingPlugin):
             #########################
             # decide which line to send according to machine type and amount of colors
             # singlebed, 2 color
-            if self.__machineType == 'single' \
+            if self.__machineType == Machinetype.SINGLEBED.value \
                     and self.__numColors == 2:
 
                 # when knitting infinitely, keep the requested
@@ -543,7 +543,7 @@ class AyabPluginControl(KnittingPlugin):
                 else:
                     self.__logger.debug("COLOR" + str(color))
 
-                color = (lineNumber / 2) % self.__numColors
+                color = int((lineNumber / 2) % self.__numColors)
 
                 #indexToSend = self.__startLine * self.__numColors
                 indexToSend = int((imgRow * self.__numColors) + color)
@@ -675,7 +675,7 @@ class AyabPluginControl(KnittingPlugin):
                 msg += ' ' + str((self.__image.imageExpanded())[indexToSend])
             self.__logger.debug(msg)
 
-            if self.__machineType == 'single':
+            if self.__machineType == Machinetype.SINGLEBED.value:
                 self.__emit_color("A/B")
             elif sendBlankLine == True:
                 self.__emit_color("Blank")
