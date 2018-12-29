@@ -714,7 +714,8 @@ class AyabPluginControl(KnittingPlugin):
                 msg += ' BLANK LINE'
             else:
                 msg += ' indexToSend: ' + str(indexToSend)
-                msg += ' ' + str((self.__image.imageExpanded())[indexToSend])
+                msg += ' color: ' + str(color)
+                #msg += ' ' + str((self.__image.imageExpanded())[indexToSend])
             self.__logger.debug(msg)
 
             if self.__machineType == Machinetype.SINGLEBED.value:
