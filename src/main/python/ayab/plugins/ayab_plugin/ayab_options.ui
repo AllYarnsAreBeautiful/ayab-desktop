@@ -181,6 +181,12 @@
              <string notr="true">Ribber: Circular</string>
             </property>
            </item>
+           <item>
+            <property name="text">
+             <string>Ribber: Heart of Pluto</string>
+            </property>
+           </item>
+           <item>
           </widget>
          </item>
          <item>
