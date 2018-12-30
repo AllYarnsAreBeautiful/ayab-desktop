@@ -524,6 +524,31 @@ class AyabPluginControl(KnittingPlugin):
                         and (lineNumber % 4 == 1 or lineNumber % 4 == 3):
                     lastLine = 0x01
 
+               # doublebed, multicolor <3 of pluto - advances imgRow as soon as possible
+            elif self.__machineType == Machinetype.HEARTOFPLUTO_RIBBER.value \
+                    and self.__numColors >= 2:
+
+                #Double the line minus the 2 you save from early advancing to next row
+                passesPerRow = self.__numColors * 2 - 2
+
+                imgRow = self.__startLine + int(lineNumber/passesPerRow)
+
+                #if self.__infRepeat:
+                #    imgRow = imgRow % imgHeight
+
+                indexToSend = imgRow * self.__numColors
+
+                #check if it's time to send a blank line
+                if lineNumber % passesPerRow != 0 and lineNumber % 2 == 0:
+                    sendBlankLine = True
+                #if not set a color
+                else:
+                    color = int(((lineNumber + 1) % (self.__numColors * 2)) / 2)
+                #use color to adjust index
+                indexToSend += color
+
+                #self.__logger.debug("Co")
+
             # doublebed, multicolor
             elif self.__machineType == Machinetype.CLASSIC_RIBBER_1.value \
                     and self.__numColors > 2:
@@ -591,31 +616,6 @@ class AyabPluginControl(KnittingPlugin):
 
                 if indexToSend == lenImgExpanded - 1:
                    lastLine = 0x01 
-
-            # doublebed, multicolor <3 of pluto - advances imgRow as soon as possible
-            elif self.__machineType == Machinetype.HEARTOFPLUTO_RIBBER.value \
-                    and self.__numColors >= 2:
-
-                #Double the line minus the 2 you save from early advancing to next row
-                passesPerRow = self.__numColors * 2 - 2
-
-                imgRow = self.__startLine + int(lineNumber/passesPerRow)
-
-                if self.__infRepeat:
-                    imgRow = imgRow % imgHeight
-
-                indexToSend = imgRow * self.__numColors
-
-                #check if it's time to send a blank line
-                if lineNumber % passesPerRow != 0 and lineNumber % 2 == 0:
-                    sendBlankLine = True
-                #if not set a color
-                else:
-                    color = self.__numColors - 1 - int(((lineNumber + 1) % (self.__numColors * 2)) / 2)
-                #use color to adjust index
-                indexToSend += color
-
-                #self.__logger.debug("Co")
 
             # Ribber, Circular
             elif self.__machineType == Machinetype.CIRCULAR_RIBBER.value \
