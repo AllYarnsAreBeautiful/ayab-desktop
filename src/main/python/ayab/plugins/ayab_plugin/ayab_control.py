@@ -615,8 +615,6 @@ class AyabPluginControl(KnittingPlugin):
                 #use color to adjust index
                 indexToSend += color
 
-                #self.__logger.debug("Co")
-
             # Ribber, Circular
             elif self.__machineType == Machinetype.CIRCULAR_RIBBER.value \
                     and self.__numColors == 2:
