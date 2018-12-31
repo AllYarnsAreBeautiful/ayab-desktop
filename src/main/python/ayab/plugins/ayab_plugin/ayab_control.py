@@ -589,8 +589,8 @@ class AyabPluginControl(KnittingPlugin):
 
                 indexToSend += color
 
-                if indexToSend == lenImgExpanded - 1:
-                   lastLine = 0x01 
+                if imgRow == imgHeight - 1 and lineNumber % passesPerRow == passesPerRow - 1:
+                    lastLine = 0x01
 
             # doublebed, multicolor <3 of pluto - advances imgRow as soon as possible
             elif self.__machineType == Machinetype.HEARTOFPLUTO_RIBBER.value \
@@ -614,6 +614,9 @@ class AyabPluginControl(KnittingPlugin):
                     color = self.__numColors - 1 - int(((lineNumber + 1) % (self.__numColors * 2)) / 2)
                 #use color to adjust index
                 indexToSend += color
+
+                if imgRow == imgHeight - 1 and lineNumber % passesPerRow == passesPerRow - 1:
+                    lastLine = 0x01
 
             # Ribber, Circular
             elif self.__machineType == Machinetype.CIRCULAR_RIBBER.value \
@@ -658,9 +661,11 @@ class AyabPluginControl(KnittingPlugin):
                 imgStopNeedle = 199
 
             # set the bitarray
-            if color == 0 and \
-                    (self.__machineType == Machinetype.CLASSIC_RIBBER_1.value 
-                    or self.__machineType == Machinetype.MIDDLECOLORSTWICE_RIBBER.value):
+            if (color == 0 and self.__machineType == Machinetype.CLASSIC_RIBBER_1.value)\
+                    or ( color == self.__numColors - 1 \
+                            and (self.__machineType == Machinetype.MIDDLECOLORSTWICE_RIBBER.value \
+                                    or self.__machineType == Machinetype.HEARTOFPLUTO_RIBBER.value )):
+
                 for col in range(0, 200):
                     if col < imgStartNeedle \
                             or col > imgStopNeedle:
