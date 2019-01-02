@@ -37,7 +37,7 @@ class Machinetype(Enum):
     CLASSIC_RIBBER_1 = 1            # Classic Ribber 1
     #CLASSIC_RIBBER_2 = 2            # Classic Ribber 2
     MIDDLECOLORSTWICE_RIBBER = 2    # Middle-Colors-Twice Ribber
-    #HEARTOFPLUTO_RIBBER = 4         # Heart-of-Pluto Ribber
+    HEARTOFPLUTO_RIBBER = 4         # Heart-of-Pluto Ribber
     CIRCULAR_RIBBER = 3             # Circular Ribber
 
 class AyabPluginControl(KnittingPlugin):
@@ -523,7 +523,7 @@ class AyabPluginControl(KnittingPlugin):
                 if (imgRow == imgHeight - 1) \
                         and (lineNumber % 4 == 1 or lineNumber % 4 == 3):
                     lastLine = 0x01
-            
+
             # doublebed, multicolor
             elif self.__machineType == Machinetype.CLASSIC_RIBBER_1.value \
                     and self.__numColors > 2:
@@ -589,8 +589,34 @@ class AyabPluginControl(KnittingPlugin):
 
                 indexToSend += color
 
-                if indexToSend == lenImgExpanded - 1:
-                   lastLine = 0x01 
+                if imgRow == imgHeight - 1 and lineNumber % passesPerRow == passesPerRow - 1:
+                    lastLine = 0x01
+
+            # doublebed, multicolor <3 of pluto - advances imgRow as soon as possible
+            elif self.__machineType == Machinetype.HEARTOFPLUTO_RIBBER.value \
+                    and self.__numColors >= 2:
+
+                #Double the line minus the 2 you save from early advancing to next row
+                passesPerRow = self.__numColors * 2 - 2
+
+                imgRow = self.__startLine + int(lineNumber/passesPerRow)
+
+                if self.__infRepeat:
+                    imgRow = imgRow % imgHeight
+
+                indexToSend = imgRow * self.__numColors
+
+                #check if it's time to send a blank line
+                if lineNumber % passesPerRow != 0 and lineNumber % 2 == 0:
+                    sendBlankLine = True
+                #if not set a color
+                else:
+                    color = self.__numColors - 1 - int(((lineNumber + 1) % (self.__numColors * 2)) / 2)
+                #use color to adjust index
+                indexToSend += color
+
+                if imgRow == imgHeight - 1 and lineNumber % passesPerRow == passesPerRow - 1:
+                    lastLine = 0x01
 
             # Ribber, Circular
             elif self.__machineType == Machinetype.CIRCULAR_RIBBER.value \
@@ -635,9 +661,11 @@ class AyabPluginControl(KnittingPlugin):
                 imgStopNeedle = 199
 
             # set the bitarray
-            if color == 0 and \
-                    (self.__machineType == Machinetype.CLASSIC_RIBBER_1.value 
-                    or self.__machineType == Machinetype.MIDDLECOLORSTWICE_RIBBER.value):
+            if (color == 0 and self.__machineType == Machinetype.CLASSIC_RIBBER_1.value)\
+                    or ( color == self.__numColors - 1 \
+                            and (self.__machineType == Machinetype.MIDDLECOLORSTWICE_RIBBER.value \
+                                    or self.__machineType == Machinetype.HEARTOFPLUTO_RIBBER.value )):
+
                 for col in range(0, 200):
                     if col < imgStartNeedle \
                             or col > imgStopNeedle:
@@ -672,7 +700,8 @@ class AyabPluginControl(KnittingPlugin):
                 msg += ' BLANK LINE'
             else:
                 msg += ' indexToSend: ' + str(indexToSend)
-                msg += ' ' + str((self.__image.imageExpanded())[indexToSend])
+                msg += ' color: ' + str(color)
+                #msg += ' ' + str((self.__image.imageExpanded())[indexToSend])
             self.__logger.debug(msg)
 
             if self.__machineType == Machinetype.SINGLEBED.value:

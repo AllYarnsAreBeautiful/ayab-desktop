@@ -91,6 +91,8 @@ class Ui_DockWidget(object):
         self.machine_type_box.addItem("")
         self.machine_type_box.addItem("")
         self.machine_type_box.setItemText(3, "Ribber: Circular")
+        self.machine_type_box.addItem("")
+        self.machine_type_box.setItemText(4, "Ribber: Heart of Pluto")
         self.verticalLayout_3.addWidget(self.machine_type_box)
         self.label_6 = QtWidgets.QLabel(self.verticalLayoutWidget)
         self.label_6.setObjectName("label_6")

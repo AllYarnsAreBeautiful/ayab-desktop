@@ -5,7 +5,7 @@
 	<key>CFBundleExecutable</key>
 	<string>${app_name}</string>
 	<key>CFBundleDisplayName</key>
-	<string>${app_name}</string>
+	<string>${app_name} v${version}</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleInfoDictionaryVersion</key>
