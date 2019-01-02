@@ -1,7 +1,7 @@
 Release Notes
 -------------
 
-0.95 (December 2018)
+0.95 (January 2019)
 ~~~~~~~~~~~~~~~~
 
 Firmware
@@ -18,6 +18,10 @@ GUI
 - Patterns with an odd number of stitches get centered on green 1 (#245)
 - Fixed lace patterns: 8-29, 8-30, 8-31, 9-32, 10-33, 10-34, 10-35, 10-36 (#249)
 - Writing date and time to the log (#259)
+- Added Middle-Color-Twice Ribber mode (see AYAB manual) (#239)
+- Added Heart of Pluto Ribber mode (see AYAB manual)(#271)
+- Showing number of completed repeats in GUI (#248)
+- Showing current color in GUI (#226)
 
 
 0.91 (April 2018) (not released for public)
