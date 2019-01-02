@@ -154,7 +154,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QComboBox" name="machine_type_box">
+          <widget class="QComboBox" name="knitting_mode_box">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
              <horstretch>0</horstretch>
@@ -178,15 +178,14 @@
            </item>
            <item>
             <property name="text">
-             <string notr="true">Ribber: Circular</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
              <string>Ribber: Heart of Pluto</string>
             </property>
            </item>
            <item>
+            <property name="text">
+             <string notr="true">Ribber: Circular</string>
+            </property>
+           </item>
           </widget>
          </item>
          <item>

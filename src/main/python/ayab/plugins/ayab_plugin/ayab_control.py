@@ -32,13 +32,13 @@ import serial.tools.list_ports
 
 import pprint
 
-class Machinetype(Enum):
+class KnittingMode(Enum):
     SINGLEBED = 0
     CLASSIC_RIBBER_1 = 1            # Classic Ribber 1
     #CLASSIC_RIBBER_2 = 2            # Classic Ribber 2
     MIDDLECOLORSTWICE_RIBBER = 2    # Middle-Colors-Twice Ribber
-    HEARTOFPLUTO_RIBBER = 4         # Heart-of-Pluto Ribber
-    CIRCULAR_RIBBER = 3             # Circular Ribber
+    HEARTOFPLUTO_RIBBER = 3         # Heart-of-Pluto Ribber
+    CIRCULAR_RIBBER = 4             # Circular Ribber
 
 class AyabPluginControl(KnittingPlugin):
 
@@ -101,12 +101,12 @@ class AyabPluginControl(KnittingPlugin):
       self.__notify_user("Please choose a valid port.")
       return False
 
-    if conf.get("machine_type") == Machinetype.SINGLEBED.value \
+    if conf.get("knitting_mode") == KnittingMode.SINGLEBED.value \
             and conf.get("num_colors") >= 3:
         self.__notify_user("Singlebed knitting currently supports only 2 colors", "warning")
         return False
 
-    if conf.get("machine_type") == Machinetype.CIRCULAR_RIBBER.value \
+    if conf.get("knitting_mode") == KnittingMode.CIRCULAR_RIBBER.value \
             and conf.get("num_colors") >= 3:
         self.__notify_user("Circular knitting supports only 2 colors", "warning")
         return False
@@ -327,11 +327,9 @@ class AyabPluginControl(KnittingPlugin):
     self.conf["inf_repeat"] = \
         int(ui.findChild(QtWidgets.QCheckBox, "infRepeat_checkbox").isChecked())
 
-    machine_type_text = ui.findChild(QtWidgets.QComboBox, "machine_type_box").currentText()
-    self.conf["machine_type"] = str(machine_type_text)
-    machine_type_index = ui.findChild(QtWidgets.QComboBox, 
-                                      "machine_type_box").currentIndex()
-    self.conf["machine_type"] = machine_type_index
+    knitting_mode_index = ui.findChild(QtWidgets.QComboBox, 
+                                      "knitting_mode_box").currentIndex()
+    self.conf["knitting_mode"] = knitting_mode_index
 
     serial_port_text = ui.findChild(QtWidgets.QComboBox, "serial_port_dropdown").currentText()
     self.conf["portname"] = str(serial_port_text)
@@ -463,7 +461,7 @@ class AyabPluginControl(KnittingPlugin):
             #########################
             # decide which line to send according to machine type and amount of colors
             # singlebed, 2 color
-            if self.__machineType == Machinetype.SINGLEBED.value \
+            if self.__knitting_mode == KnittingMode.SINGLEBED.value \
                     and self.__numColors == 2:
 
                 # when knitting infinitely, keep the requested
@@ -487,7 +485,7 @@ class AyabPluginControl(KnittingPlugin):
                     lastLine = 0x01
 
             # doublebed, 2 color
-            elif self.__machineType == Machinetype.CLASSIC_RIBBER_1.value \
+            elif self.__knitting_mode == KnittingMode.CLASSIC_RIBBER_1.value \
                     and self.__numColors == 2:
 
                 # when knitting infinitely, keep the requested
@@ -525,7 +523,7 @@ class AyabPluginControl(KnittingPlugin):
                     lastLine = 0x01
 
             # doublebed, multicolor
-            elif self.__machineType == Machinetype.CLASSIC_RIBBER_1.value \
+            elif self.__knitting_mode == KnittingMode.CLASSIC_RIBBER_1.value \
                     and self.__numColors > 2:
 
                 # when knitting infinitely, keep the requested
@@ -555,7 +553,7 @@ class AyabPluginControl(KnittingPlugin):
                     lastLine = 0x01
 
             # Ribber, Middle-Colors-Twice
-            elif self.__machineType == Machinetype.MIDDLECOLORSTWICE_RIBBER.value:
+            elif self.__knitting_mode == KnittingMode.MIDDLECOLORSTWICE_RIBBER.value:
 
                 # doublebed middle-colors-twice multicolor
                 # 0-00 1-11 2-22 3-33 4-44 5-55 .. (imgRow)
@@ -593,7 +591,7 @@ class AyabPluginControl(KnittingPlugin):
                     lastLine = 0x01
 
             # doublebed, multicolor <3 of pluto - advances imgRow as soon as possible
-            elif self.__machineType == Machinetype.HEARTOFPLUTO_RIBBER.value \
+            elif self.__knitting_mode == KnittingMode.HEARTOFPLUTO_RIBBER.value \
                     and self.__numColors >= 2:
 
                 #Double the line minus the 2 you save from early advancing to next row
@@ -619,7 +617,7 @@ class AyabPluginControl(KnittingPlugin):
                     lastLine = 0x01
 
             # Ribber, Circular
-            elif self.__machineType == Machinetype.CIRCULAR_RIBBER.value \
+            elif self.__knitting_mode == KnittingMode.CIRCULAR_RIBBER.value \
                     and self.__numColors == 2:
 
                 # when knitting infinitely, keep the requested
@@ -661,10 +659,10 @@ class AyabPluginControl(KnittingPlugin):
                 imgStopNeedle = 199
 
             # set the bitarray
-            if (color == 0 and self.__machineType == Machinetype.CLASSIC_RIBBER_1.value)\
+            if (color == 0 and self.__knitting_mode == KnittingMode.CLASSIC_RIBBER_1.value)\
                     or ( color == self.__numColors - 1 \
-                            and (self.__machineType == Machinetype.MIDDLECOLORSTWICE_RIBBER.value \
-                                    or self.__machineType == Machinetype.HEARTOFPLUTO_RIBBER.value )):
+                            and (self.__knitting_mode == KnittingMode.MIDDLECOLORSTWICE_RIBBER.value \
+                                    or self.__knitting_mode == KnittingMode.HEARTOFPLUTO_RIBBER.value )):
 
                 for col in range(0, 200):
                     if col < imgStartNeedle \
@@ -704,7 +702,7 @@ class AyabPluginControl(KnittingPlugin):
                 #msg += ' ' + str((self.__image.imageExpanded())[indexToSend])
             self.__logger.debug(msg)
 
-            if self.__machineType == Machinetype.SINGLEBED.value:
+            if self.__knitting_mode == KnittingMode.SINGLEBED.value:
                 self.__emit_color("A/B")
             elif sendBlankLine == True:
                 self.__emit_color("Blank")
@@ -735,7 +733,7 @@ class AyabPluginControl(KnittingPlugin):
       self.__startLine = pImage.startLine()
 
       self.__numColors = pOptions["num_colors"]
-      self.__machineType = pOptions["machine_type"]
+      self.__knitting_mode = pOptions["knitting_mode"]
       self.__infRepeat = pOptions["inf_repeat"]
       self.__infRepeat_repeats = 0
 
