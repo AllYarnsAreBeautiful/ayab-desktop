@@ -32,6 +32,8 @@ build:osx:
   - mac-build/build.sh
   after_script:
   - ls -lisa dist/release
+  only:
+    - tags
 
 build:linux:
   image: python:3.5
@@ -47,22 +49,8 @@ build:linux:
   - linux-build/build.sh
   after_script:
   - ls -lisa dist/release
-
-#build:win7:
-#  tags:
-#    - win7
-#    - virtualbox
-#  stage: build
-#  artifacts:
-#    when: always
-#    paths:
-#    - dist/release/
-#  script:
-#  - windows-build/build.sh 7
-#  after_script:
-#  - cd dist/release
-#  - ls
-# - cd ../..
+  only:
+    -tags
 
 build:win10:
   tags:
@@ -77,27 +65,8 @@ build:win10:
   - windows-build/build.sh 10
   after_script:
   - ls -lisa dist/release
-
-#deploy:s3:
-#  tags:
-#    - linux
-#    - docker
-#  stage: deploy
-#  environment:
-#    name: s3
-#    url: http://ayab-debug.s3-website.eu-central-1.amazonaws.com
-#  image: python:latest
-#  before_script:
-#  - cp deploy/*.tpl dist/
-#  - cd dist/release
-#  - for i in `ls`; do echo "<li class=\"file\"><a href=\"$i\">$i</a></li>"; done > ../main.tpl
-#  - cd ../
-#  - cat header.tpl main.tpl footer.tpl > release/index.html
-#  - cd ../
-#  script:
-#  - pip install awscli
-# - aws s3 rm s3://$S3_BUCKET_NAME/ --recursive
-#  - aws s3 cp --acl public-read ./dist/release/ s3://$S3_BUCKET_NAME/ --recursive
+  only:
+    -tags
 
 #deploy:github:
 #  tags:
