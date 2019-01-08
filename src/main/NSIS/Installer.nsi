@@ -78,7 +78,7 @@ Section
   WriteRegStr SHCTX "${UNINST_KEY}" "QuietUninstallString" \
     "$\"$InstDir\uninstall.exe$\" /$MultiUser.InstallMode /S"
   WriteRegStr SHCTX "${UNINST_KEY}" "Publisher" "%{author}"
-  WriteRegStr SHCTX "${UNINST_KEY}" "Version" "%{version}"
+  WriteRegStr SHCTX "${UNINST_KEY}" "DisplayVersion" "%{version}"
   ${GetSize} "$InstDir" "/S=0K" $0 $1 $2
   IntFmt $0 "0x%08X" $0
   WriteRegDWORD SHCTX "${UNINST_KEY}" "EstimatedSize" "$0"
