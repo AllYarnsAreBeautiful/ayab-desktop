@@ -705,7 +705,7 @@ class AyabPluginControl(KnittingPlugin):
             self.__logger.debug(msg)
 
             if self.__knitting_mode == KnittingMode.SINGLEBED.value:
-                self.__emit_color("A/B")
+                self.__emit_color("")
             elif sendBlankLine == True:
                 self.__emit_color("Blank")
             else:

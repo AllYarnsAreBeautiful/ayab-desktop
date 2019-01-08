@@ -124,7 +124,10 @@ class GuiMain(QMainWindow):
 
     def update_color(self, color):
         '''Updates the current color.'''
-        self.ui.label_current_color.setText("Color: " + color)
+        text = ""
+        if color != "":
+            text += "Color: "
+        self.ui.label_current_color.setText(text + color)
             
     def updateStatus(self, hall_l, hall_r, carriage_type, carriage_position):
         options_ui = self.enabled_plugin.options_ui
