@@ -188,12 +188,12 @@ class AyabPluginControl(KnittingPlugin):
     left_side = math.trunc(width/2)
     self.options_ui.start_needle_edit.setValue(left_side)
     self.options_ui.stop_needle_edit.setValue(width - left_side)
-    self.options_ui.start_line_edit.setMaximum(height)
+    self.options_ui.start_row_edit.setMaximum(height)
 
   def __onStartLineChanged(self):
     """ """
-    start_line_edit = self.options_ui.start_line_edit.value()
-    self.__emit_progress(start_line_edit)
+    start_row_edit = self.options_ui.start_row_edit.value()
+    self.__emit_progress(start_row_edit)
 
   def setup_ui(self, parent_ui):
     """Sets up UI elements from ayab_options.Ui_DockWidget in parent_ui."""
@@ -262,8 +262,8 @@ class AyabPluginControl(KnittingPlugin):
     alignment_combo_box = self.options_ui.alignment_combo_box
     alignment_combo_box.currentIndexChanged.connect(self.__emit_alignment)
 
-    start_line_edit = self.options_ui.start_line_edit
-    start_line_edit.valueChanged.connect(self.__onStartLineChanged)
+    start_row_edit = self.options_ui.start_row_edit
+    start_row_edit.valueChanged.connect(self.__onStartLineChanged)
 
   def conf_button_function(self):
     self.configure()
@@ -306,7 +306,7 @@ class AyabPluginControl(KnittingPlugin):
     self.conf["num_colors"] = int(color_line_text)
 
     # Internally, we start counting from zero (for easier handling of arrays)
-    start_line_text = ui.findChild(QtWidgets.QSpinBox, "start_line_edit").value()
+    start_line_text = ui.findChild(QtWidgets.QSpinBox, "start_row_edit").value()
     self.conf["start_line"] = int(start_line_text) - 1
 
     start_needle_color = ui.findChild(QtWidgets.QComboBox, "start_needle_color").currentText()

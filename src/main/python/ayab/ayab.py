@@ -101,7 +101,7 @@ class GuiMain(QMainWindow):
         self.setupBehaviour()
 
         self.ui.label_notifications.setText("")
-        self.ui.label_current_line.setText("")
+        self.ui.label_current_row.setText("")
         self.ui.label_current_color.setText("")
 
     def update_progress(self, row, total=0, repeats=0):
@@ -112,12 +112,12 @@ class GuiMain(QMainWindow):
 
         # Update label
         if total != 0:
-            text = "Line {0}/{1}".format(row, total)
+            text = "Row {0}/{1}".format(row, total)
             if repeats != 0:
                 text += " ({0} repeats completed)".format(repeats)
         else:
             text = ""
-        self.ui.label_current_line.setText(text)
+        self.ui.label_current_row.setText(text)
         
         options_ui = self.enabled_plugin.options_ui
         options_ui.label_progress.setText("{0}/{1}".format(row, total))

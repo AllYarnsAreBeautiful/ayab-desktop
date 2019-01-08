@@ -214,12 +214,12 @@
          <item>
           <widget class="QLabel" name="label_5">
            <property name="text">
-            <string>Start Line</string>
+            <string>Start Row</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QSpinBox" name="start_line_edit">
+          <widget class="QSpinBox" name="start_row_edit">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
              <horstretch>0</horstretch>

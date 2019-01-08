@@ -48,7 +48,7 @@
          </layout>
         </item>
         <item alignment="Qt::AlignHCenter|Qt::AlignVCenter">
-         <widget class="QLabel" name="label_current_line">
+         <widget class="QLabel" name="label_current_row">
           <property name="font">
            <font>
             <pointsize>14</pointsize>
@@ -57,7 +57,7 @@
            </font>
           </property>
           <property name="text">
-           <string>label_current_line</string>
+           <string>label_current_row</string>
           </property>
          </widget>
         </item>
