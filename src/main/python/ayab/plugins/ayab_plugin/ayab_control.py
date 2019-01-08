@@ -82,6 +82,7 @@ class AyabPluginControl(KnittingPlugin):
 
         self.__image.setStartLine(conf.get("start_line"))
         self.__emit_progress(conf.get("start_line")+1, self.__image.imgHeight())
+        self.__emit_color("")
     else:
         parent_ui.ui.widget_knitcontrol.setEnabled(False)
         parent_ui.ui.knit_button.setEnabled(False)
