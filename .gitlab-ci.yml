@@ -17,6 +17,7 @@ cache:
 before_script:
   - TAG=$(git describe --tags | sed 's/-/.post/' | cut -f1 -d'-')
   - echo $TAG > src/main/resources/base/ayab/package_version
+  - cat src/build/settings/base.json | sed s/PACKAGE_VERSION/$TAG/ > src/build/settings/base.json
   - cat src/main/resources/base/ayab/package_version
 
 build:osx:
