@@ -22,6 +22,8 @@ GUI
 - Added Heart of Pluto Ribber mode (see AYAB manual)(#271)
 - Showing number of completed repeats in GUI (#248)
 - Showing current color in GUI (#226)
+- Fixing crash when pattern is outside left edge (#280)
+- Displaying row number larger (#225)
 
 
 0.91 (April 2018) (not released for public)
