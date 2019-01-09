@@ -375,8 +375,8 @@ class AyabPluginControl(KnittingPlugin):
 
   def __setPixel(self, bytearray_, pixel):
       numByte = int(pixel / 8)
-      bytearray_[numByte] = self.__setBit(
-          int(bytearray_[numByte]), pixel - (8 * numByte))
+      bytearray_[numByte] = self.__setBit(int(bytearray_[numByte]), 
+                                          pixel - (8 * numByte))
       return bytearray_
 
   def __checkSerial(self):
@@ -677,9 +677,9 @@ class AyabPluginControl(KnittingPlugin):
                 # take the image offset into account
                 if pxl == True and sendBlankLine == False:
                     pxlNumber = col + self.__image.imgStartNeedle()
-                    if pxlNumber < 200: # TODO implement for generic machine width
-                        bytes = self.__setPixel(
-                            bytes, pxlNumber)
+                    # TODO implement for generic machine width
+                    if  0 <= pxlNumber and pxlNumber < 200:
+                        bytes = self.__setPixel(bytes, pxlNumber)
 
             # TODO implement CRC8
             crc8 = 0x00
