@@ -71,7 +71,14 @@ Section
   WriteRegStr SHCTX "Software\%{app_name}" "" $InstDir
   WriteRegStr SHCTX "Software\%{app_name}" "Version" "%{version}"
   WriteUninstaller "$InstDir\uninstall.exe"
+;create desktop shortcut
+  CreateShortCut "$DESKTOP\%{app_name}.lnk" "$InstDir\%{app_name}.exe" ""
+
+;create start-menu items
+  CreateDirectory "$SMPROGRAMS\%{app_name}"
   CreateShortCut "$SMPROGRAMS\%{app_name}.lnk" "$InstDir\%{app_name}.exe"
+ 
+;write uninstall information to the registry
   WriteRegStr SHCTX "${UNINST_KEY}" "DisplayName" "%{app_name}"
   WriteRegStr SHCTX "${UNINST_KEY}" "UninstallString" \
     "$\"$InstDir\uninstall.exe$\" /$MultiUser.InstallMode"
@@ -91,7 +98,12 @@ SectionEnd
 Section "Uninstall"
 
   RMDir /r "$InstDir"
-  Delete "$SMPROGRAMS\%{app_name}.lnk"
+
+;Delete Shortcuts
+  Delete "$DESKTOP\%{app_name}.lnk"
+  Delete "$SMPROGRAMS\%{app_name}\*.*"
+  RmDir  "$SMPROGRAMS\%{app_name}"
+  
   DeleteRegKey /ifempty SHCTX "Software\%{app_name}"
   DeleteRegKey SHCTX "${UNINST_KEY}"
 
