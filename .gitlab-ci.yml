@@ -51,7 +51,7 @@ build:linux:
   after_script:
   - ls -lisa dist/release
   only:
-    -tags
+    - tags
 
 build:win10:
   tags:
