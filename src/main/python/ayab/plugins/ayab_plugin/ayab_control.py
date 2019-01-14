@@ -71,8 +71,8 @@ class AyabPluginControl(KnittingPlugin):
         return
 
     if self.validate_configuration(conf):
-        parent_ui.ui.widget_knitcontrol.setEnabled(True)
-        parent_ui.ui.knit_button.setEnabled(True)
+        self.__emit_widget_knitcontrol_enabled(True)
+        self.__emit_button_knit_enabled(True)
 
         if conf.get("start_needle") and conf.get("stop_needle"):
             self.__image.setKnitNeedles(conf.get("start_needle"),
@@ -84,8 +84,8 @@ class AyabPluginControl(KnittingPlugin):
         self.__emit_progress(conf.get("start_line")+1, self.__image.imgHeight())
         self.__emit_color("")
     else:
-        parent_ui.ui.widget_knitcontrol.setEnabled(False)
-        parent_ui.ui.knit_button.setEnabled(False)
+        self.__emit_widget_knitcontrol_enabled(False)
+        self.__emit_button_knit_enabled(False)
 
     return
 
@@ -157,6 +157,12 @@ class AyabPluginControl(KnittingPlugin):
     """Sends the updateStatus QtSignal"""
     self.__parent_ui.signalUpdateStatus.emit(hall_l, hall_r,
                                              carriage_type, carriage_position)
+
+  def __emit_button_knit_enabled(self, enabled):
+    self.__parent_ui.signalUpdateButtonKnitEnabled.emit(enabled)
+
+  def __emit_widget_knitcontrol_enabled(self, enabled):
+    self.__parent_ui.signalUpdateWidgetKnitcontrolEnabled.emit(enabled)
 
   def __emit_needles(self):
     """Sends the updateNeedles QtSignal."""
