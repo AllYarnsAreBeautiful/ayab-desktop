@@ -67,7 +67,7 @@ build:win10:
   after_script:
   - ls -lisa dist/release
   only:
-    -tags
+    - tags
 
 #deploy:github:
 #  tags:
