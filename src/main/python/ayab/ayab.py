@@ -78,6 +78,8 @@ class GuiMain(QMainWindow):
     signalUpdateAlignment = pyqtSignal('QString')
     signalDisplayBlockingPopUp = pyqtSignal('QString', 'QString')
     signalPlaysound = pyqtSignal('QString')
+    signalUpdateButtonKnitEnabled = pyqtSignal(bool)
+    signalUpdateWidgetKnitcontrolEnabled = pyqtSignal(bool)
 
     def __init__(self, app_context):
         super(GuiMain, self).__init__(None)
@@ -159,6 +161,12 @@ class GuiMain(QMainWindow):
         self.imageAlignment = alignment
         self.refresh_scene()
 
+    def slotUpdateWidgetKnitcontrolEnabled(self, enabled):
+        self.ui.widget_knitcontrol.setEnabled(enabled)        
+    
+    def slotUpdateButtonKnitEnabled(self, enabled):
+        self.ui.knit_button.setEnabled(enabled)
+
     def wheelEvent(self, event):
         '''Using mouse wheel events to zoom the pattern view'''
         if self.pil_image is not None:
@@ -213,6 +221,8 @@ class GuiMain(QMainWindow):
         self.signalUpdateNeedles.connect(self.slotUpdateNeedles)
         self.signalUpdateAlignment.connect(self.slotUpdateAlignment)
         self.signalPlaysound.connect(self.slotPlaysound)
+        self.signalUpdateWidgetKnitcontrolEnabled.connect(self.slotUpdateWidgetKnitcontrolEnabled)
+        self.signalUpdateButtonKnitEnabled.connect(self.slotUpdateButtonKnitEnabled)
 
         # This blocks the other thread until signal is done
         self.signalDisplayBlockingPopUp.connect(self.display_blocking_pop_up)
