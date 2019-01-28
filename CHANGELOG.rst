@@ -25,6 +25,15 @@ GUI
 - Fixing crash when pattern is outside left edge (#280)
 - Displaying row number larger (#225)
 
+Known Issues
+^^^^^^^^^^^^
+
+- macOS: the "Knit" button remains grey (but is usable) (#282)
+- Windows: Occasional crashes after clicking "configure" (#283)
+- Windows: Installation of v0.95 into a folder containing v0.9 files leads to a
+  broken installation (#288)
+- Windows: Uninstalling the AYAB removes everything contained in the program 
+  folder (e.g. custom pattern files and the log file) (#287)
 
 0.91 (April 2018) (not released for public)
 ~~~~~~~~~~~~~~~~
