@@ -16,7 +16,7 @@ Function .onInit
   ;Do not use InstallDir at all so we can detect empty $InstDir!
   ${If} $InstDir == "" ; /D not used
       ${If} $MultiUser.InstallMode == "AllUsers"
-          StrCpy $InstDir "C:\%{app_name}"
+          StrCpy $InstDir "C:\%{app_name}-v%{version}"
       ${Else}
           StrCpy $InstDir "$LOCALAPPDATA\%{app_name}"
       ${EndIf}
@@ -41,7 +41,7 @@ FunctionEnd
 ;--------------------------------
 ;Pages
 
-  !define MUI_WELCOMEPAGE_TEXT "This wizard will guide you through the installation of %{app_name} v%{version}.$\r$\n$\r$\n$\r$\nClick Next to continue."
+  !define MUI_WELCOMEPAGE_TEXT "This wizard will guide you through the installation of %{app_name} v%{version}.$\r$\n$\r$\nImportant:$\r$\nWhen chosing the installation directory, make sure that you do not overwrite any previous versions. Remove them or use another folder for installation.$\r$\nCurrenty, no spaces in the installation path are allowed.$\r$\n$\r$\nClick Next to continue."
   !insertmacro MUI_PAGE_WELCOME
   !insertmacro MUI_PAGE_DIRECTORY
   !insertmacro MUI_PAGE_INSTFILES
