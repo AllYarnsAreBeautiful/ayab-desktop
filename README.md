@@ -1,14 +1,13 @@
-# AYAB
-
-All Yarns Are Beautiful
+# AYAB - All Yarns Are Beautiful
 
 This is the GUI interface for AYAB.
 
-## Installation
+For information on how to install the release version of the software, see
+[http://manual.ayab-knitting.com](http://manual.ayab-knitting.com)
+
+## Running from Source & Development
 
 ### Linux
-
-#### Prerequisites
 
 You need Python 3.5 and from your package manager's repository.
 The other main dependencies can be found in requirements.txt
@@ -27,8 +26,6 @@ To be able to communicate with your Arduino, it might be necessary to add the ri
 
     sudo usermod -a -G tty [userName]
     sudo usermod -a -G dialout [userName]
-
-#### Running from Source & Development
 
 To install the development version you can checkout the git repository
 
@@ -50,16 +47,6 @@ To be able to work on GUI elements and translation files, the Qt Dev tools are n
     sudo apt-get install qttools5-dev-tools
 
 ### Windows
-
-#### Release Version
-
-The Windows version which is available at http://ayab-knitting.com has been packed with
-PyInstaller and should not require any additional dependencies.
-Just unzip the archive or use the Installer and run
-
-    C:\AYAB\AYAB.exe
-
-#### Running from source & Development (Tested on Win10 1809)
 
 You need Python Version 3.5.3 (Important: the 64 bit version!) and PyQt5 (we used 5.11.3).
 
@@ -87,15 +74,6 @@ Now start ayab with
     python -m fbs run
 
 ### macOS
-
-#### Release Version
-
-Download the DMG image, open the DMG image and copy the app to your Application folder.
-Then just run
-
-    AYAB
-
-#### Running from source & Development
 
 You need Python 3.5.3 and PyQt5.
 For Python I would recommend `pyenv`
@@ -131,7 +109,7 @@ Then install the remaining prerequisites with
     pip3 install -r requirements.txt
 
 To solve pip3 SSL:TLSV1_ALERT_PROTOCOL_VERSION problem:
-    
+
     curl https://bootstrap.pypa.io/get-pip.py | python3
 
 Now start ayab with
