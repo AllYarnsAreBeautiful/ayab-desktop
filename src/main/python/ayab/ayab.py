@@ -18,7 +18,7 @@
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
 """Provides an Interface for users to operate AYAB using a GUI."""
-from fbs_runtime.application_context import ApplicationContext
+from fbs_runtime.application_context.PyQt5 import ApplicationContext
 
 import sys
 import os
