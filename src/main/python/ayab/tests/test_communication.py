@@ -57,6 +57,13 @@ class TestCommunication(unittest.TestCase):
             mock_method.assert_called_once_with('dummyPortname', 115200,
                                                 timeout=0.1)
 
+    def test_update(self):
+        byte_array = bytearray([0xc0, 0xc1, 0xc0])
+        self.dummy_serial.write(byte_array)
+        result = self.comm_dummy.update()
+        expected_result = bytearray([0xc1])
+        assert result == expected_result
+
     def test_req_start(self):
         start_val, end_val, continuous_reporting = 0, 10, True
         self.comm_dummy.req_start(start_val, end_val, continuous_reporting)
@@ -92,10 +99,3 @@ class TestCommunication(unittest.TestCase):
         byte_array.append(0xc0)
         bytes_read = self.dummy_serial.read(len(byte_array))
         assert bytes_read == byte_array
-
-    def test_read_line(self):
-        byte_array = bytearray([0xc0, 0xc1, 0xc0])
-        self.dummy_serial.write(byte_array)
-        result = self.comm_dummy.update()
-        expected_result = bytearray([0xc1])
-        assert result == expected_result
