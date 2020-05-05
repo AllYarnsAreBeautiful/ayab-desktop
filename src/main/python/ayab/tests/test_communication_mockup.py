@@ -24,7 +24,6 @@ from ayab.plugins.ayab_plugin.ayab_communication_mockup \
 
 
 class TestAyabCommunicationMockup(unittest.TestCase):
-
     def setUp(self):
         self.comm_dummy = AyabCommunicationMockup()
 
@@ -56,6 +55,12 @@ class TestAyabCommunicationMockup(unittest.TestCase):
         bytes_read = self.comm_dummy.update()
         assert bytes_read == expected_result
 
+        # indState shall be sent automatically, also
+        expected_result = bytearray(
+            [0x84, 0x1, 0xFF, 0xFF, 0xFF, 0xFF, 0x1, 0x7F])
+        bytes_read = self.comm_dummy.update()
+        assert bytes_read == expected_result
+
     def test_req_test(self):
         expected_result = bytearray([0xC4, 0x1])
 
@@ -73,7 +78,10 @@ class TestAyabCommunicationMockup(unittest.TestCase):
 
     def test_req_line(self):
         self.comm_dummy.open_serial()
-        bytes_read = self.comm_dummy.update()
-        assert bytes_read == bytearray([0x82, 0])
-        bytes_read = self.comm_dummy.update()
-        assert bytes_read == bytearray([0x82, 1])
+        self.comm_dummy.req_start()
+
+        self.comm_dummy.update()  # cnfStart
+
+        for i in range(0, 256):
+            bytes_read = self.comm_dummy.update()
+            assert bytes_read == bytearray([0x82, i])
