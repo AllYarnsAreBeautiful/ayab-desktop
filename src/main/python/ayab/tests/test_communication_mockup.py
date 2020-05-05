@@ -40,9 +40,10 @@ class TestAyabCommunicationMockup(unittest.TestCase):
         assert self.comm_dummy.update() is None
 
     def test_req_start(self):
+        start_val, end_val, continuous_reporting = 0, 10, True
         expected_result = bytearray([0xC1, 0x1])
 
-        self.comm_dummy.req_start()
+        self.comm_dummy.req_start(start_val, end_val, continuous_reporting)
 
         bytes_read = self.comm_dummy.update()
         assert bytes_read == expected_result
@@ -78,7 +79,8 @@ class TestAyabCommunicationMockup(unittest.TestCase):
 
     def test_req_line(self):
         self.comm_dummy.open_serial()
-        self.comm_dummy.req_start()
+        start_val, end_val, continuous_reporting = 0, 10, True
+        self.comm_dummy.req_start(start_val, end_val, continuous_reporting)
 
         self.comm_dummy.update()  # cnfStart
 
