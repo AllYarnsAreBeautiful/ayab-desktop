@@ -19,6 +19,7 @@
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
 from .ayab_communication import AyabCommunication
+from .ayab_communication_mockup import AyabCommunicationMockup
 from . import ayab_image
 import math
 import logging
@@ -257,6 +258,9 @@ class AyabPluginControl(KnittingPlugin):
 
         populate(combo_box, port_list)
 
+        # Add Simulation item to indicate operation without machine
+        combo_box.addItem("Simulation")
+
     def setup_behaviour_ui(self):
         """Connects methods to UI elements."""
         conf_button = self.options_ui.configure_button
@@ -382,7 +386,6 @@ class AyabPluginControl(KnittingPlugin):
 
         # Copying from ayab_control
         self.__API_VERSION = 0x05
-        self.__ayabCom = AyabCommunication()
 
         self.__formerRequest = 0
         self.__lineBlock = 0
@@ -780,6 +783,11 @@ class AyabPluginControl(KnittingPlugin):
         API_VERSION = self.__API_VERSION
         curState = 's_init'
         oldState = 'none'
+
+        if pOptions["portname"] == "Simulation":
+            self.__ayabCom = AyabCommunicationMockup()
+        else:
+            self.__ayabCom = AyabCommunication()
 
         if not self.__ayabCom.open_serial(pOptions["portname"]):
             self.__logger.error("Could not open serial port")
