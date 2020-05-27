@@ -36,6 +36,8 @@ from ayab.plugins.ayab_plugin import AyabPluginControl
 from ayab.plugins.ayab_plugin.firmware_flash import FirmwareFlash
 from ayab.ayab_about import Ui_AboutForm
 
+from DAK2im import DAK2im
+
 # Temporal serial imports.
 import serial
 import serial.tools.list_ports
@@ -240,6 +242,18 @@ class GuiMain(QMainWindow):
         '''Loads an image into self.ui.image_pattern_view using a temporary QGraphicsScene'''
 
         # TODO Check for maximum width before loading the image
+
+        # check for DAK files
+        image_str_suffix = image_str[-4:].lower()
+        if (image_str_suffix == ".pat" or image_str_suffix == ".stp"):
+            # convert DAK file
+            dakfile_processor = DAK2im.DAK2im()
+            if (image_str_suffix == ".pat"):
+                self.pil_image = dakfile_processor.pat2png(image_str)
+            elif (image_str_suffix == ".stp"):
+                self.pil_image = dakfile_processor.stp2png(image_str)
+            # TODO else raise some kind of error maybe       
+
         self.pil_image = Image.open(image_str)
 
         self.pil_image = self.pil_image.convert("RGBA")
@@ -365,7 +379,7 @@ class GuiMain(QMainWindow):
             filePath = self.app_context.get_resource("patterns")
         else:
             filePath = ''
-        file_selected_route, _ = QtWidgets.QFileDialog.getOpenFileName(self, "Open file", filePath, 'Images (*.png *.PNG *.jpg *.JPG *.jpeg *.JPEG *.bmp *.BMP *.gif *.GIF *.tiff *.TIFF *.tif *.TIF)')
+        file_selected_route, _ = QtWidgets.QFileDialog.getOpenFileName(self, "Open file", filePath, 'Images (*.png *.PNG *.jpg *.JPG *.jpeg *.JPEG *.bmp *.BMP *.gif *.GIF *.tiff *.TIFF *.tif *.TIF *.pat *.PAT *.stp *.STP)')
         if file_selected_route:
             self.update_file_selected_text_field(file_selected_route)
             self.load_image_from_string(str(file_selected_route))
