@@ -36,7 +36,7 @@ from ayab.plugins.ayab_plugin import AyabPluginControl
 from ayab.plugins.ayab_plugin.firmware_flash import FirmwareFlash
 from ayab.ayab_about import Ui_AboutForm
 
-from DAK2im import DAK2im
+from DAKimport import DAKimport
 
 # Temporal serial imports.
 import serial
@@ -247,14 +247,14 @@ class GuiMain(QMainWindow):
         image_str_suffix = image_str[-4:].lower()
         if (image_str_suffix == ".pat" or image_str_suffix == ".stp"):
             # convert DAK file
-            dakfile_processor = DAK2im.DAK2im()
+            dakfile_processor = DAKimport.Importer()
             if (image_str_suffix == ".pat"):
-                self.pil_image = dakfile_processor.pat2png(image_str)
+                self.pil_image = dakfile_processor.pat2im(image_str)
             elif (image_str_suffix == ".stp"):
-                self.pil_image = dakfile_processor.stp2png(image_str)
+                self.pil_image = dakfile_processor.stp2im(image_str)
             # TODO else raise some kind of error maybe       
-
-        self.pil_image = Image.open(image_str)
+        else:
+            self.pil_image = Image.open(image_str)
 
         self.pil_image = self.pil_image.convert("RGBA")
 
