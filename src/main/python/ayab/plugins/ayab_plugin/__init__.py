@@ -1,4 +1,4 @@
-from . import ayab_control
+from . import ayab_plugin
 
 # This adds ayab_control.AyabControl to the upper namespace of the module.
-AyabPluginControl = ayab_control.AyabPluginControl
+AyabPlugin = ayab_plugin.AyabPlugin
