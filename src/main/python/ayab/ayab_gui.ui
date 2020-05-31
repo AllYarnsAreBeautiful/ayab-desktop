@@ -330,6 +330,7 @@
     </property>
     <addaction name="actionInvert"/>
     <addaction name="actionRepeat"/>
+    <addaction name="actionStretch"/>
     <addaction name="separator"/>
     <addaction name="actionVertical_Flip"/>
     <addaction name="actionMirror"/>
@@ -388,6 +389,14 @@
     <string>Ctrl+R</string>
    </property>
   </action>
+  <action name="actionStretch">
+   <property name="text">
+    <string>Stretch</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
+  </action>
   <action name="actionMirror">
    <property name="text">
     <string>Mirror</string>
@@ -410,11 +419,6 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Right</string>
-   </property>
-  </action>
-  <action name="actionSmart_Resize">
-   <property name="text">
-    <string>Smart Resize</string>
    </property>
   </action>
   <action name="actionVertical_Flip">
