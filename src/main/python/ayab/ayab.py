@@ -18,7 +18,7 @@
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
 """Provides an Interface for users to operate AYAB using a GUI."""
-from fbs_runtime.application_context import ApplicationContext
+from fbs_runtime.application_context.PyQt5 import ApplicationContext
 
 import sys
 import os
@@ -35,6 +35,8 @@ from ayab.ayab_gui import Ui_MainWindow
 from ayab.plugins.ayab_plugin import AyabPluginControl
 from ayab.plugins.ayab_plugin.firmware_flash import FirmwareFlash
 from ayab.ayab_about import Ui_AboutForm
+
+from DAKimport import DAKimport
 
 # Temporal serial imports.
 import serial
@@ -232,6 +234,7 @@ class GuiMain(QMainWindow):
         self.ui.actionMirror.triggered.connect(self.mirror_image)
         self.ui.actionInvert.triggered.connect(self.invert_image)
         self.ui.actionRepeat.triggered.connect(self.repeat_image)
+        self.ui.actionStretch.triggered.connect(self.stretch_image)
         self.ui.actionRotate_Left.triggered.connect(self.rotate_left)
         self.ui.actionRotate_Right.triggered.connect(self.rotate_right)
         self.ui.actionVertical_Flip.triggered.connect(self.flip_image)
@@ -240,7 +243,20 @@ class GuiMain(QMainWindow):
         '''Loads an image into self.ui.image_pattern_view using a temporary QGraphicsScene'''
 
         # TODO Check for maximum width before loading the image
-        self.pil_image = Image.open(image_str)
+
+        # check for DAK files
+        image_str_suffix = image_str[-4:].lower()
+        if (image_str_suffix == ".pat" or image_str_suffix == ".stp"):
+            # convert DAK file
+            dakfile_processor = DAKimport.Importer()
+            if (image_str_suffix == ".pat"):
+                self.pil_image = dakfile_processor.pat2im(image_str)
+            elif (image_str_suffix == ".stp"):
+                self.pil_image = dakfile_processor.stp2im(image_str)
+            else:
+                logging.error("unrecognized file suffix")
+        else:
+            self.pil_image = Image.open(image_str)
 
         self.pil_image = self.pil_image.convert("RGBA")
 
@@ -365,7 +381,7 @@ class GuiMain(QMainWindow):
             filePath = self.app_context.get_resource("patterns")
         else:
             filePath = ''
-        file_selected_route, _ = QtWidgets.QFileDialog.getOpenFileName(self, "Open file", filePath, 'Images (*.png *.PNG *.jpg *.JPG *.jpeg *.JPEG *.bmp *.BMP *.gif *.GIF *.tiff *.TIFF *.tif *.TIF)')
+        file_selected_route, _ = QtWidgets.QFileDialog.getOpenFileName(self, "Open file", filePath, 'Images (*.png *.PNG *.jpg *.JPG *.jpeg *.JPEG *.bmp *.BMP *.gif *.GIF *.tiff *.TIFF *.tif *.TIF *.pat *.PAT *.stp *.STP)')
         if file_selected_route:
             self.update_file_selected_text_field(file_selected_route)
             self.load_image_from_string(str(file_selected_route))
@@ -408,6 +424,24 @@ class GuiMain(QMainWindow):
         )
         self.apply_image_transform("repeat", v[0], h[0])
 
+    def stretch_image(self):
+        '''Public stretch current Image function.'''
+        v = QtWidgets.QInputDialog.getInt(
+            self,
+            "Stretch",
+            "Vertical",
+            value=1,
+            min=1
+        )
+        h = QtWidgets.QInputDialog.getInt(
+            self,
+            "Stretch",
+            "Horizontal",
+            value=1,
+            min=1
+        )
+        self.apply_image_transform("stretch", v[0], h[0])
+
     def mirror_image(self):
         '''Public mirror current Image function.'''
         self.apply_image_transform("mirror")
@@ -433,6 +467,7 @@ class GuiMain(QMainWindow):
         transform_dict = {
             'invert': self.__invert_image,
             'repeat': self.__repeat_image,
+            'stretch': self.__stretch_image,
             'mirror': self.__mirror_image,
             'flip': self.__flip_image,
             'rotate': self.__rotate_image,
@@ -461,6 +496,7 @@ class GuiMain(QMainWindow):
         self.refresh_scene()
 
     def __rotate_image(self, image, args):
+        # TODO crop width if it exceeds the maximum after transform
         if not args:
             logging.debug("image not altered on __rotate_image.")
             return image
@@ -491,6 +527,7 @@ class GuiMain(QMainWindow):
         return flipped_image
 
     def __repeat_image(self, image, args):
+        # TODO crop width if it exceeds the maximum after transform
         """
         Repeat image.
         Repeat pHorizontal times horizontally, pVertical times vertically
@@ -504,6 +541,20 @@ class GuiMain(QMainWindow):
         for h in range(0,new_h,old_h):
           for w in range(0,new_w,old_w):
             new_im.paste(image, (w,h))
+        return new_im
+
+    def __stretch_image(self, image, args):
+        # TODO crop width if it exceeds the maximum after transform
+        """
+        Stretch image.
+        Stretch pHorizontal times horizontally, pVertical times vertically
+        Tom Price 2020-05-30
+        """
+        old_h = image.size[1]
+        old_w = image.size[0]
+        new_h = old_h*args[0] # pVertical
+        new_w = old_w*args[1] # pHorizontal
+        new_im = image.resize((new_w,new_h),Image.BOX)
         return new_im
 
     def getSerialPorts(self):

@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'src/main/python/ayab/ayab_gui.ui'
+# Form implementation generated from reading ui file 'ayab_gui.ui'
 #
-# Created by: PyQt5 UI code generator 5.11.3
+# Created by: PyQt5 UI code generator 5.14.2
 #
 # WARNING! All changes made in this file will be lost!
 
+
 from PyQt5 import QtCore, QtGui, QtWidgets
+
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -185,14 +187,14 @@ class Ui_MainWindow(object):
         self.actionInvert.setObjectName("actionInvert")
         self.actionRepeat = QtWidgets.QAction(MainWindow)
         self.actionRepeat.setObjectName("actionRepeat")
+        self.actionStretch = QtWidgets.QAction(MainWindow)
+        self.actionStretch.setObjectName("actionStretch")
         self.actionMirror = QtWidgets.QAction(MainWindow)
         self.actionMirror.setObjectName("actionMirror")
         self.actionRotate_Left = QtWidgets.QAction(MainWindow)
         self.actionRotate_Left.setObjectName("actionRotate_Left")
         self.actionRotate_Right = QtWidgets.QAction(MainWindow)
         self.actionRotate_Right.setObjectName("actionRotate_Right")
-        self.actionSmart_Resize = QtWidgets.QAction(MainWindow)
-        self.actionSmart_Resize.setObjectName("actionSmart_Resize")
         self.actionVertical_Flip = QtWidgets.QAction(MainWindow)
         self.actionVertical_Flip.setObjectName("actionVertical_Flip")
         self.menuFile.addAction(self.actionQuit)
@@ -200,6 +202,7 @@ class Ui_MainWindow(object):
         self.menuTools.addAction(self.actionLoad_AYAB_Firmware)
         self.menuImage_Actions.addAction(self.actionInvert)
         self.menuImage_Actions.addAction(self.actionRepeat)
+        self.menuImage_Actions.addAction(self.actionStretch)
         self.menuImage_Actions.addSeparator()
         self.menuImage_Actions.addAction(self.actionVertical_Flip)
         self.menuImage_Actions.addAction(self.actionMirror)
@@ -243,13 +246,13 @@ class Ui_MainWindow(object):
         self.actionInvert.setShortcut(_translate("MainWindow", "Ctrl+I"))
         self.actionRepeat.setText(_translate("MainWindow", "Repeat"))
         self.actionRepeat.setShortcut(_translate("MainWindow", "Ctrl+R"))
+        self.actionStretch.setText(_translate("MainWindow", "Stretch"))
+        self.actionStretch.setShortcut(_translate("MainWindow", "Ctrl+S"))
         self.actionMirror.setText(_translate("MainWindow", "Mirror"))
         self.actionMirror.setShortcut(_translate("MainWindow", "Ctrl+Up"))
         self.actionRotate_Left.setText(_translate("MainWindow", "Rotate Left"))
         self.actionRotate_Left.setShortcut(_translate("MainWindow", "Ctrl+Left"))
         self.actionRotate_Right.setText(_translate("MainWindow", "Rotate Right"))
         self.actionRotate_Right.setShortcut(_translate("MainWindow", "Ctrl+Right"))
-        self.actionSmart_Resize.setText(_translate("MainWindow", "Smart Resize"))
         self.actionVertical_Flip.setText(_translate("MainWindow", "Vertical Flip"))
         self.actionVertical_Flip.setShortcut(_translate("MainWindow", "Ctrl+Down"))
-

@@ -9,7 +9,7 @@ For information on how to install the release version of the software, see
 
 ### Linux
 
-You need Python 3.5 and from your package manager's repository.
+You need Python 3.7 and from your package manager's repository.
 The other main dependencies can be found in requirements.txt
 
 *For Debian/Ubuntu*
@@ -34,7 +34,7 @@ To install the development version you can checkout the git repository
 Create a virtual enviroment in the cloned repository
 
     cd ayab-desktop
-    virtualenv -p python3 --system-site-packages venv/
+    virtualenv --python=/usr/bin/python3.7 --system-site-packages venv/
     source venv/bin/activate
     pip3 install -r requirements.txt
 
