@@ -231,13 +231,14 @@ class GuiMain(QMainWindow):
 
         self.ui.actionQuit.triggered.connect(QtCore.QCoreApplication.instance().quit)
         self.ui.actionAbout.triggered.connect(self.open_about_ui)
-        self.ui.actionMirror.triggered.connect(self.mirror_image)
         self.ui.actionInvert.triggered.connect(self.invert_image)
-        self.ui.actionRepeat.triggered.connect(self.repeat_image)
         self.ui.actionStretch.triggered.connect(self.stretch_image)
+        self.ui.actionRepeat.triggered.connect(self.repeat_image)
+        self.ui.actionReflect.triggered.connect(self.reflect_image)
+        self.ui.actionHorizontal_Flip.triggered.connect(self.hflip_image)
+        self.ui.actionVertical_Flip.triggered.connect(self.vflip_image)
         self.ui.actionRotate_Left.triggered.connect(self.rotate_left)
         self.ui.actionRotate_Right.triggered.connect(self.rotate_right)
-        self.ui.actionVertical_Flip.triggered.connect(self.flip_image)
 
     def load_image_from_string(self, image_str):
         '''Loads an image into self.ui.image_pattern_view using a temporary QGraphicsScene'''
@@ -381,7 +382,8 @@ class GuiMain(QMainWindow):
             filePath = self.app_context.get_resource("patterns")
         else:
             filePath = ''
-        file_selected_route, _ = QtWidgets.QFileDialog.getOpenFileName(self, "Open file", filePath, 'Images (*.png *.PNG *.jpg *.JPG *.jpeg *.JPEG *.bmp *.BMP *.gif *.GIF *.tiff *.TIFF *.tif *.TIF *.pat *.PAT *.stp *.STP)')
+        file_selected_route, _ = QtWidgets.QFileDialog.getOpenFileName(
+            self, "Open file", filePath, 'Images (*.png *.PNG *.jpg *.JPG *.jpeg *.JPEG *.bmp *.BMP *.gif *.GIF *.tiff *.TIFF *.tif *.TIF *.Pat *.pat *.PAT *.Stp *.stp *.STP)')
         if file_selected_route:
             self.update_file_selected_text_field(file_selected_route)
             self.load_image_from_string(str(file_selected_route))
@@ -442,13 +444,19 @@ class GuiMain(QMainWindow):
         )
         self.apply_image_transform("stretch", v[0], h[0])
 
-    def mirror_image(self):
-        '''Public mirror current Image function.'''
-        self.apply_image_transform("mirror")
+    def reflect_image(self):
+        '''Public reflect current Image function.'''
+        m = Mirrors()
+        if (m.result == QtWidgets.QDialog.Accepted):
+            self.apply_image_transform("reflect", m.mirrors)
 
-    def flip_image(self):
-        '''Public mirror current Image function.'''
-        self.apply_image_transform("flip")
+    def hflip_image(self):
+        '''Public horizontal flip current Image function.'''
+        self.apply_image_transform("hflip")
+
+    def vflip_image(self):
+        '''Public vertical flip current Image function.'''
+        self.apply_image_transform("vflip")
 
     def rotate_left(self):
         '''Public rotate left current Image function.'''
@@ -466,10 +474,11 @@ class GuiMain(QMainWindow):
         '''
         transform_dict = {
             'invert': self.__invert_image,
-            'repeat': self.__repeat_image,
             'stretch': self.__stretch_image,
-            'mirror': self.__mirror_image,
-            'flip': self.__flip_image,
+            'repeat': self.__repeat_image,
+            'reflect': self.__reflect_image,
+            'hflip': self.__hflip_image,
+            'vflip': self.__vflip_image,
             'rotate': self.__rotate_image,
         }
         transform = transform_dict.get(transform_type)
@@ -516,12 +525,12 @@ class GuiMain(QMainWindow):
 
         return inverted_image
 
-    def __mirror_image(self, image, args):
+    def __hflip_image(self, image, args):
         import PIL.ImageOps
         mirrored_image = PIL.ImageOps.mirror(image)
         return mirrored_image
 
-    def __flip_image(self, image, args):
+    def __vflip_image(self, image, args):
         import PIL.ImageOps
         flipped_image = PIL.ImageOps.flip(image)
         return flipped_image
@@ -541,6 +550,35 @@ class GuiMain(QMainWindow):
         for h in range(0,new_h,old_h):
           for w in range(0,new_w,old_w):
             new_im.paste(image, (w,h))
+        return new_im
+
+    def __reflect_image(self, image, args):
+        # TODO crop width if it exceeds the maximum after transform
+        """
+        Reflect image.
+        Mirrors Left, Right, Top, Bottom
+        Tom Price 2020-06-01
+        """
+        mirrors = args[0]
+        w = image.size[0]
+        h = image.size[1]
+        w0 = mirrors[0]
+        h0 = mirrors[2]
+        w1 = 1 + mirrors[0] + mirrors[1]
+        h1 = 1 + mirrors[2] + mirrors[3]
+        if w1 == 1:
+            row_im = image
+        else:
+            flip_im = self.__hflip_image(image, tuple())
+            row_im = self.__repeat_image(flip_im, (1,w1))
+            for i in range(w0, w1, 2):
+                row_im.paste(image, (i*w,0))
+        if h1 == 1:
+            return row_im
+        flip_im = self.__vflip_image(row_im, tuple())
+        new_im = self.__repeat_image(flip_im, (h1,1))
+        for i in range(h0, h1, 2):
+            new_im.paste(row_im, (0,i*h))
         return new_im
 
     def __stretch_image(self, image, args):
@@ -572,6 +610,56 @@ class GuiMain(QMainWindow):
         #if event == "finished":
         #    playsound(self.app_context.get_resource("assets/finish.wav"))
 
+class Mirrors:
+    '''Image relection options and GUI methods'''
+
+    def __init__(self):
+        self.mirrors = [False, False, False, False]
+        self.dialog = QtWidgets.QDialog()
+        self.result = self.reflectDialog()
+
+    def __toggled(self, box):
+        self.mirrors[box] = not self.mirrors[box]
+
+    def __toggled0(self):
+        self.__toggled(0)
+
+    def __toggled1(self):
+        self.__toggled(1)
+
+    def __toggled2(self):
+        self.__toggled(2)
+
+    def __toggled3(self):
+        self.__toggled(3)
+
+    def reflectDialog(self):
+        self.dialog.setWindowTitle("Reflect image")
+        self.dialog.setWindowModality(Qt.ApplicationModal)
+        self.dialog.resize(200,200)
+        group = QtWidgets.QGroupBox("Add mirrors")
+        group.setFlat(True)
+        check0 = QtWidgets.QCheckBox("Left")
+        check1 = QtWidgets.QCheckBox("Right")
+        check2 = QtWidgets.QCheckBox("Top")
+        check3 = QtWidgets.QCheckBox("Bottom")
+        check0.toggled.connect(self.__toggled0)
+        check1.toggled.connect(self.__toggled1)
+        check2.toggled.connect(self.__toggled2)
+        check3.toggled.connect(self.__toggled3)
+        enter = QtWidgets.QPushButton("OK")
+        enter.clicked.connect(self.dialog.accept)
+        layout = QtWidgets.QVBoxLayout()
+        layout.addWidget(check0)
+        layout.addWidget(check1)
+        layout.addWidget(check2)
+        layout.addWidget(check3)
+        layout.addWidget(enter)
+        group.setLayout(layout)
+        vbox = QtWidgets.QVBoxLayout()
+        vbox.addWidget(group)
+        self.dialog.setLayout(vbox)
+        return self.dialog.exec_()
 
 class GenericThread(QThread):
     '''A generic thread wrapper for functions on threads.'''
