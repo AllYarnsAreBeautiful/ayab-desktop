@@ -329,11 +329,12 @@
      <string>Image Actions</string>
     </property>
     <addaction name="actionInvert"/>
-    <addaction name="actionRepeat"/>
     <addaction name="actionStretch"/>
+    <addaction name="actionRepeat"/>
+    <addaction name="actionReflect"/>
     <addaction name="separator"/>
+    <addaction name="actionHorizontal_Flip"/>
     <addaction name="actionVertical_Flip"/>
-    <addaction name="actionMirror"/>
     <addaction name="separator"/>
     <addaction name="actionRotate_Left"/>
     <addaction name="actionRotate_Right"/>
@@ -381,14 +382,6 @@
     <string>Ctrl+I</string>
    </property>
   </action>
-  <action name="actionRepeat">
-   <property name="text">
-    <string>Repeat</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+R</string>
-   </property>
-  </action>
   <action name="actionStretch">
    <property name="text">
     <string>Stretch</string>
@@ -397,12 +390,36 @@
     <string>Ctrl+S</string>
    </property>
   </action>
-  <action name="actionMirror">
+  <action name="actionRepeat">
    <property name="text">
-    <string>Mirror</string>
+    <string>Repeat</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
+   </property>
+  </action>
+  <action name="actionReflect">
+   <property name="text">
+    <string>Reflect</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+M</string>
+   </property>
+  </action>
+  <action name="actionHorizontal_Flip">
+   <property name="text">
+    <string>Horizontal_Flip</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Up</string>
+   </property>
+  </action>
+  <action name="actionVertical_Flip">
+   <property name="text">
+    <string>Vertical Flip</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Down</string>
    </property>
   </action>
   <action name="actionRotate_Left">
@@ -419,14 +436,6 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Right</string>
-   </property>
-  </action>
-  <action name="actionVertical_Flip">
-   <property name="text">
-    <string>Vertical Flip</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+Down</string>
    </property>
   </action>
  </widget>
