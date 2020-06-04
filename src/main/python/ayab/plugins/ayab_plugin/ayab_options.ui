@@ -173,12 +173,12 @@
            </item>
            <item>
             <property name="text">
-             <string>Ribber: Middle-Colors-Twice</string>
+             <string notr="true">Ribber: Middle-Colors-Twice</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>Ribber: Heart of Pluto</string>
+             <string notr="true">Ribber: Heart of Pluto</string>
             </property>
            </item>
            <item>
