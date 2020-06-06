@@ -716,7 +716,7 @@ class AyabPluginControl(KnittingPlugin):
             for col in range(0, self.__image.imgWidth()):
                 pxl = (self.__image.imageExpanded())[indexToSend][col]
                 # take the image offset into account
-                if pxl is True and sendBlankLine is False:
+                if pxl == 1 and sendBlankLine is False:
                     pxlNumber = col + self.__image.imgStartNeedle()
                     # TODO implement for generic machine width
                     if 0 <= pxlNumber and pxlNumber < 200:
