@@ -23,6 +23,7 @@ from fbs_runtime.application_context.PyQt5 import ApplicationContext
 import sys
 import os
 import logging
+from math import ceil
 
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtWidgets import QMainWindow
@@ -45,6 +46,7 @@ import serial.tools.list_ports
 
 # from playsound import playsound
 
+MACHINE_WIDTH = 200
 
 logging.basicConfig(filename='ayab_log.txt',
                     level=logging.DEBUG,
@@ -301,7 +303,7 @@ class GuiMain(QMainWindow):
         qscene = QtWidgets.QGraphicsScene()
 
         # TODO move to generic configuration
-        machine_width = 200
+        machine_width = MACHINE_WIDTH
         bar_height = 5.0
 
         # add pattern and move accordingly to alignment
@@ -436,7 +438,8 @@ class GuiMain(QMainWindow):
             "Repeat",
             "Horizontal",
             value=1,
-            min=1
+            min=1,
+            max=ceil(MACHINE_WIDTH / self.pil_image.size[0])
         )
         self.apply_image_transform("repeat", v[0], h[0])
 
@@ -454,7 +457,8 @@ class GuiMain(QMainWindow):
             "Stretch",
             "Horizontal",
             value=1,
-            min=1
+            min=1,
+            max=ceil(MACHINE_WIDTH / self.pil_image.size[0])
         )
         self.apply_image_transform("stretch", v[0], h[0])
 
