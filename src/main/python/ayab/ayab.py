@@ -23,6 +23,7 @@ from fbs_runtime.application_context.PyQt5 import ApplicationContext
 import sys
 import os
 import logging
+from math import ceil
 
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtWidgets import QMainWindow
@@ -35,6 +36,7 @@ from ayab.ayab_gui import Ui_MainWindow
 from ayab.plugins.ayab_plugin import AyabPluginControl
 from ayab.plugins.ayab_plugin.firmware_flash import FirmwareFlash
 from ayab.ayab_about import Ui_AboutForm
+from ayab.ayab_preferences import Preferences
 
 from DAKimport import DAKimport
 
@@ -44,6 +46,7 @@ import serial.tools.list_ports
 
 # from playsound import playsound
 
+MACHINE_WIDTH = 200
 
 logging.basicConfig(filename='ayab_log.txt',
                     level=logging.DEBUG,
@@ -88,12 +91,14 @@ class GuiMain(QMainWindow):
 
         self.app_context = app_context
 
-        self.image_file_route = None        
+        self.image_file_route = None
+    
+        self.prefs = Preferences()
 
         self.pil_image = None
         self.start_needle = 80
         self.stop_needle = 119
-        self.imageAlignment = "center"
+        self.imageAlignment = self.prefs.settings.value("default_alignment")
         self.var_progress = 0
         self.zoomlevel = 3
 
@@ -101,6 +106,16 @@ class GuiMain(QMainWindow):
         self.ui.setupUi(self)
         self.enabled_plugin = AyabPluginControl()
         self.enabled_plugin.setup_ui(self)
+
+        knitting_mode_box = self.enabled_plugin.options_ui.knitting_mode_box
+        knitting_mode_box.setCurrentIndex(knitting_mode_box.findText(self.prefs.settings.value("default_knitting_mode")))
+        if self.prefs.settings.value("default_infinite_repeat"):
+            self.enabled_plugin.options_ui.infRepeat_checkbox.setCheckState(QtCore.Qt.Checked)
+        else:
+            self.enabled_plugin.options_ui.infRepeat_checkbox.setCheckState(QtCore.Qt.Unchecked)
+        alignment_combo_box = self.enabled_plugin.options_ui.alignment_combo_box
+        alignment_combo_box.setCurrentIndex(alignment_combo_box.findText(self.imageAlignment))
+        
         self.showMaximized()
         self.setupBehaviour()
 
@@ -239,6 +254,7 @@ class GuiMain(QMainWindow):
         self.ui.actionVertical_Flip.triggered.connect(self.vflip_image)
         self.ui.actionRotate_Left.triggered.connect(self.rotate_left)
         self.ui.actionRotate_Right.triggered.connect(self.rotate_right)
+        self.ui.actionSetPreferences.triggered.connect(self.set_preferences)
 
     def load_image_from_string(self, image_str):
         '''Loads an image into self.ui.image_pattern_view using a temporary QGraphicsScene'''
@@ -287,7 +303,7 @@ class GuiMain(QMainWindow):
         qscene = QtWidgets.QGraphicsScene()
 
         # TODO move to generic configuration
-        machine_width = 200
+        machine_width = MACHINE_WIDTH
         bar_height = 5.0
 
         # add pattern and move accordingly to alignment
@@ -422,7 +438,8 @@ class GuiMain(QMainWindow):
             "Repeat",
             "Horizontal",
             value=1,
-            min=1
+            min=1,
+            max=ceil(MACHINE_WIDTH / self.pil_image.size[0])
         )
         self.apply_image_transform("repeat", v[0], h[0])
 
@@ -440,7 +457,8 @@ class GuiMain(QMainWindow):
             "Stretch",
             "Horizontal",
             value=1,
-            min=1
+            min=1,
+            max=ceil(MACHINE_WIDTH / self.pil_image.size[0])
         )
         self.apply_image_transform("stretch", v[0], h[0])
 
@@ -595,6 +613,9 @@ class GuiMain(QMainWindow):
         new_im = image.resize((new_w,new_h),Image.BOX)
         return new_im
 
+    def set_preferences(self):
+        return self.prefs.setPrefsDialog()
+
     def getSerialPorts(self):
         """
         Returns a list of all USB Serial Ports
@@ -654,10 +675,10 @@ class Mirrors:
         layout.addWidget(check1)
         layout.addWidget(check2)
         layout.addWidget(check3)
-        layout.addWidget(enter)
         group.setLayout(layout)
         vbox = QtWidgets.QVBoxLayout()
         vbox.addWidget(group)
+        vbox.addWidget(enter)
         self.dialog.setLayout(vbox)
         return self.dialog.exec_()
 

@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'src/main/python/ayab/plugins/ayab_plugin/ayab_options.ui'
+# Form implementation generated from reading ui file 'ayab_options.ui'
 #
-# Created by: PyQt5 UI code generator 5.11.3
+# Created by: PyQt5 UI code generator 5.14.2
 #
 # WARNING! All changes made in this file will be lost!
 
+
 from PyQt5 import QtCore, QtGui, QtWidgets
+
 
 class Ui_DockWidget(object):
     def setupUi(self, DockWidget):
@@ -89,7 +91,9 @@ class Ui_DockWidget(object):
         self.knitting_mode_box.addItem("")
         self.knitting_mode_box.setItemText(1, "Ribber: Classic")
         self.knitting_mode_box.addItem("")
+        self.knitting_mode_box.setItemText(2, "Ribber: Middle-Colors-Twice")
         self.knitting_mode_box.addItem("")
+        self.knitting_mode_box.setItemText(3, "Ribber: Heart of Pluto")
         self.knitting_mode_box.addItem("")
         self.knitting_mode_box.setItemText(4, "Ribber: Circular")
         self.verticalLayout_3.addWidget(self.knitting_mode_box)
@@ -329,8 +333,6 @@ class Ui_DockWidget(object):
         self.groupBox.setTitle(_translate("DockWidget", "Port Selection"))
         self.refresh_ports_button.setText(_translate("DockWidget", "Refresh"))
         self.label_4.setText(_translate("DockWidget", "Knitting Mode"))
-        self.knitting_mode_box.setItemText(2, _translate("DockWidget", "Ribber: Middle-Colors-Twice"))
-        self.knitting_mode_box.setItemText(3, _translate("DockWidget", "Ribber: Heart of Pluto"))
         self.label_6.setText(_translate("DockWidget", "Colors"))
         self.label_5.setText(_translate("DockWidget", "Start Row"))
         self.infRepeat_checkbox.setText(_translate("DockWidget", "Infinite Repeat"))
@@ -351,4 +353,3 @@ class Ui_DockWidget(object):
         self.label_progress.setText(_translate("DockWidget", "progress"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_status), _translate("DockWidget", "Status"))
         self.configure_button.setText(_translate("DockWidget", "2. Configure"))
-

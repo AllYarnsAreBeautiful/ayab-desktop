@@ -321,6 +321,12 @@
     </property>
     <addaction name="actionLoad_AYAB_Firmware"/>
    </widget>
+   <widget class="QMenu" name="menuPreferences">
+    <property name="title">
+     <string>Preferences</string>
+    </property>
+    <addaction name="actionSetPreferences"/>
+   </widget>
    <widget class="QMenu" name="menuImage_Actions">
     <property name="enabled">
      <bool>false</bool>
@@ -343,6 +349,7 @@
    <addaction name="menuFile"/>
    <addaction name="menuImage_Actions"/>
    <addaction name="menuTools"/>
+   <addaction name="menuPreferences"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -436,6 +443,11 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Right</string>
+   </property>
+  </action>
+  <action name="actionSetPreferences">
+   <property name="text">
+    <string>Set Preferences</string>
    </property>
   </action>
  </widget>
