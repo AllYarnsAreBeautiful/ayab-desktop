@@ -80,17 +80,19 @@ class AYABControl(object):
     def get_progress(self):
         return self._progress
 
-    def __setBit(self, int_type, offset):
-        """ Helper to set a bit within a byte """
-        mask = 1 << int(offset)
-        return (int_type | mask)
+    def _set_bit(self, number: int, position: int) -> int:
+        """ Helper to set a bit within an integer number """
+        if number < 0:
+            raise(ValueError)
+        mask = 1 << int(position)
+        return (number | mask)
 
-    def __setPixel(self, bytearray_, pixel):
+    def _set_pixel(self, line: bytearray, pixel: int):
         """ Helper to set a Pixel within a line """
         numByte = int(pixel / 8)
-        bytearray_[numByte] = self.__setBit(int(bytearray_[numByte]),
-                                            pixel - (8 * numByte))
-        return bytearray_
+        line[numByte] = self._set_bit(int(line[numByte]),
+                                      pixel - (8 * numByte))
+        return
 
     def __checkSerial(self):
         msg = self.__ayabCom.update()
@@ -402,7 +404,7 @@ class AYABControl(object):
                 for col in range(0, 200):
                     if col < imgStartNeedle \
                             or col > imgStopNeedle:
-                        bytes = self.__setPixel(bytes, col)
+                        self._set_pixel(bytes, col)
 
             for col in range(0, self.__image.imgWidth()):
                 pxl = (self.__image.imageExpanded())[indexToSend][col]
@@ -411,7 +413,7 @@ class AYABControl(object):
                     pxlNumber = col + self.__image.imgStartNeedle()
                     # TODO implement for generic machine width
                     if 0 <= pxlNumber and pxlNumber < 200:
-                        bytes = self.__setPixel(bytes, pxlNumber)
+                        self._set_pixel(bytes, pxlNumber)
 
             # TODO implement CRC8
             crc8 = 0x00
