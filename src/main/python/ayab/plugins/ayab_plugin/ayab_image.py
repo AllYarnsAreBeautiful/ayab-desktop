@@ -89,8 +89,9 @@ class ayabImage(object):
     # Limit number of colors in image
     quantized = self.__image.quantize(num_colors,dither=None)
     # Order colors most-frequent first
-    # NB previously they were ordered lightest-first 
-    dest_map = list(np.argsort(self.__image.histogram[0:num_colors]))
+    # NB previously they were ordered lightest-first
+    histogram = self.__image.histogram()
+    dest_map = list(np.argsort(histogram[0:num_colors]))
     dest_map.reverse()
     self.__image = self.__image.remap_palette(dest_map)
     # Make internal representations of image
@@ -98,7 +99,7 @@ class ayabImage(object):
       for col in range(0, imgWidth):
         pxl = self.__image.getpixel((col, row))
         for color in range(0, num_colors):
-          if pxl = color:
+          if pxl == color:
             # color map
             self.__imageIntern[row][col]    = color
             # amount of bits per color per line
