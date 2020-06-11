@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'ayab_options.ui'
+# Form implementation generated from reading ui file 'src/main/python/ayab/plugins/ayab_plugin/ayab_options.ui'
 #
 # Created by: PyQt5 UI code generator 5.14.2
 #
@@ -186,6 +186,14 @@ class Ui_DockWidget(object):
         self.alignment_combo_box.addItem("")
         self.alignment_combo_box.setItemText(2, "right")
         self.verticalLayout_3.addWidget(self.alignment_combo_box)
+        self.autoMirror_checkbox = QtWidgets.QCheckBox(self.verticalLayoutWidget)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.autoMirror_checkbox.sizePolicy().hasHeightForWidth())
+        self.autoMirror_checkbox.setSizePolicy(sizePolicy)
+        self.autoMirror_checkbox.setObjectName("autoMirror_checkbox")
+        self.verticalLayout_3.addWidget(self.autoMirror_checkbox)
         self.checkBox_ContinuousReporting = QtWidgets.QCheckBox(self.verticalLayoutWidget)
         self.checkBox_ContinuousReporting.setObjectName("checkBox_ContinuousReporting")
         self.verticalLayout_3.addWidget(self.checkBox_ContinuousReporting)
@@ -339,6 +347,7 @@ class Ui_DockWidget(object):
         self.gbox_startneedle.setTitle(_translate("DockWidget", "Start Needle"))
         self.gbox_stopneedle.setTitle(_translate("DockWidget", "Stop Needle"))
         self.label_3.setText(_translate("DockWidget", "Alignment"))
+        self.autoMirror_checkbox.setText(_translate("DockWidget", "Mirror Image"))
         self.checkBox_ContinuousReporting.setText(_translate("DockWidget", "Continuous Status Reporting"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_knit), _translate("DockWidget", "Settings"))
         self.label_8.setText(_translate("DockWidget", "Hall Sensors"))

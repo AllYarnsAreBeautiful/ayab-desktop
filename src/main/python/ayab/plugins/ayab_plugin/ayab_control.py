@@ -32,7 +32,7 @@ from .ayab_options import Ui_DockWidget
 import serial.tools.list_ports
 
 import pprint
-
+from PIL import ImageOps
 
 class KnittingMode(Enum):
     SINGLEBED = 0
@@ -56,14 +56,16 @@ class AyabPluginControl(KnittingPlugin):
     def onconfigure(self, e):
         self.__logger.debug("called onconfigure on AYAB Knitting Plugin")
         # print ', '.join("%s: %s" % item for item in vars(e).items())
-        # FIXME: substitute setting parent_ui from self.__parent_ui
-        # self.__parent_ui = e.event.parent_ui
         parent_ui = self.__parent_ui
 
         # Start to knit with the bottom first
         pil_image = parent_ui.pil_image.rotate(180)
-
         conf = self.get_configuration_from_ui(parent_ui)
+
+        # Mirroring option
+        if conf.get("auto_mirror"):
+            pil_image = ImageOps.mirror(parent_ui.pil_image)
+
         # TODO: detect if previous conf had the same
         # image to avoid re-generating.
 
@@ -355,6 +357,10 @@ class AyabPluginControl(KnittingPlugin):
         self.conf["inf_repeat"] = \
             int(ui.findChild(QtWidgets.QCheckBox,
                              "infRepeat_checkbox").isChecked())
+
+        self.conf["auto_mirror"] = \
+            int(ui.findChild(QtWidgets.QCheckBox,
+                             "autoMirror_checkbox").isChecked())
 
         knitting_mode_index = ui.findChild(QtWidgets.QComboBox,
                                            "knitting_mode_box").currentIndex()

@@ -29,7 +29,7 @@ from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtWidgets import QMainWindow
 from PyQt5.QtCore import Qt, QThread, pyqtSignal, pyqtSlot
 
-from PIL import Image
+from PIL import Image,ImageOps
 from fysom import FysomError
 
 from ayab.ayab_gui import Ui_MainWindow
@@ -113,6 +113,10 @@ class GuiMain(QMainWindow):
             self.enabled_plugin.options_ui.infRepeat_checkbox.setCheckState(QtCore.Qt.Checked)
         else:
             self.enabled_plugin.options_ui.infRepeat_checkbox.setCheckState(QtCore.Qt.Unchecked)
+        if self.prefs.settings.value("automatic_mirroring"):
+            self.enabled_plugin.options_ui.autoMirror_checkbox.setCheckState(QtCore.Qt.Checked)
+        else:
+            self.enabled_plugin.options_ui.autoMirror_checkbox.setCheckState(QtCore.Qt.Unchecked)
         alignment_combo_box = self.enabled_plugin.options_ui.alignment_combo_box
         alignment_combo_box.setCurrentIndex(alignment_combo_box.findText(self.imageAlignment))
         
@@ -532,25 +536,20 @@ class GuiMain(QMainWindow):
         return rotated_image
 
     def __invert_image(self, image, args):
-        import PIL.ImageOps
-
         if image.mode == 'RGBA':
             r, g, b, a = image.split()
             rgb_image = Image.merge('RGB', (r, g, b))
-            inverted_image = PIL.ImageOps.invert(rgb_image)
+            inverted_image = ImageOps.invert(rgb_image)
         else:
-            inverted_image = PIL.ImageOps.invert(image)
-
+            inverted_image = ImageOps.invert(image)
         return inverted_image
 
     def __hflip_image(self, image, args):
-        import PIL.ImageOps
-        mirrored_image = PIL.ImageOps.mirror(image)
+        mirrored_image = ImageOps.mirror(image)
         return mirrored_image
 
     def __vflip_image(self, image, args):
-        import PIL.ImageOps
-        flipped_image = PIL.ImageOps.flip(image)
+        flipped_image = ImageOps.flip(image)
         return flipped_image
 
     def __repeat_image(self, image, args):
