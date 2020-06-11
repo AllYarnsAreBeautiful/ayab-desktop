@@ -14,7 +14,8 @@
 #    You should have received a copy of the GNU General Public License
 #    along with AYAB.  If not, see <http://www.gnu.org/licenses/>.
 #
-#    Copyright 2013 Christian Obersteiner, Andreas Müller, Christian Gerbrandt
+#    Copyright 2013-2020 Christian Obersteiner, Andreas Müller,
+#    Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
 from PIL import Image

@@ -33,7 +33,7 @@ from PIL import Image,ImageOps
 from fysom import FysomError
 
 from ayab.ayab_gui import Ui_MainWindow
-from ayab.plugins.ayab_plugin import AyabPluginControl
+from ayab.plugins.ayab_plugin import AyabPlugin
 from ayab.plugins.ayab_plugin.firmware_flash import FirmwareFlash
 from ayab.ayab_about import Ui_AboutForm
 from ayab.ayab_preferences import Preferences
@@ -104,7 +104,7 @@ class GuiMain(QMainWindow):
 
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-        self.enabled_plugin = AyabPluginControl()
+        self.enabled_plugin = AyabPlugin()
         self.enabled_plugin.setup_ui(self)
 
         knitting_mode_box = self.enabled_plugin.options_ui.knitting_mode_box
