@@ -649,8 +649,8 @@ class AyabPluginControl(KnittingPlugin):
                 else:
                     color = self.__numColors - 1 - int(
                         ((lineNumber + 1) % (self.__numColors * 2)) / 2)
-                # use color to adjust index
-                indexToSend += color
+                    # use color to adjust index
+                    indexToSend += color
 
                 if imgRow == imgHeight - 1\
                         and lineNumber % passesPerRow == passesPerRow - 1:
