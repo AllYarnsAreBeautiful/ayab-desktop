@@ -40,13 +40,14 @@ class KnittingState(Enum):
 
 class AYABControlKnitResult(Enum):
     NONE = 0
-    ERROR_SERIAL_PORT = 1
-    CONNECTING_TO_MACHINE = 2
-    WAIT_FOR_INIT = 3
-    ERROR_WRONG_API = 4
-    PLEASE_KNIT = 5
-    DEVICE_NOT_READY = 6
-    FINISHED = 7
+    ERROR_INVALID_SETTINGS = 1
+    ERROR_SERIAL_PORT = 2
+    CONNECTING_TO_MACHINE = 3
+    WAIT_FOR_INIT = 4
+    ERROR_WRONG_API = 5
+    PLEASE_KNIT = 6
+    DEVICE_NOT_READY = 7
+    FINISHED = 8
 
 
 class KnittingMode(Enum):
@@ -79,6 +80,25 @@ class AYABControl(object):
 
     def get_progress(self):
         return self._progress
+
+    def __get_knit_func(self):
+        '''Select function that decides which line of data to send according to the machine type and number of colors'''
+        if self.__knitting_mode == KnittingMode.SINGLEBED.value and self.__numColors == 2:
+            self.__knit_func = self.__singlebed_2col
+        elif self.__knitting_mode == KnittingMode.CLASSIC_RIBBER_1.value and self.__numColors == 2:
+            self.__knit_func = self.__doublebed_2col
+        elif self.__knitting_mode == KnittingMode.CLASSIC_RIBBER_1.value and self.__numColors > 2:
+            self.__knit_func = self.__doublebed_multicol
+        elif self.__knitting_mode == KnittingMode.MIDDLECOLORSTWICE_RIBBER.value:
+            self.__knit_func = self.__middlecoltwice
+        elif self.__knitting_mode == KnittingMode.HEARTOFPLUTO_RIBBER.value and self.__numColors >= 2:
+            self.__knit_func = self.__heartofpluto
+        elif self.__knitting_mode == KnittingMode.CIRCULAR_RIBBER.value and self.__numColors == 2:
+            self.__knit_func = self.__circular_ribber
+        else:
+            self.__logger.error("Fallthrough error in __cnfLine: knitting mode not recognized.")
+            return False # knit function not found
+        return True
 
     def _set_bit(self, number: int, position: int) -> int:
         """ Helper to set a bit within an integer number """
@@ -153,10 +173,6 @@ class AYABControl(object):
     def __cnfLine(self, lineNumber):
         imgHeight = self.__image.imgHeight()
         lenImgExpanded = len(self.__image.imageExpanded())
-        color = 0
-        indexToSend = 0
-        sendBlankLine = False
-        lastLine = 0x00
 
         # TODO optimize performance
         # initialize bytearray to 0x00
@@ -170,217 +186,16 @@ class AYABControl(object):
             # lines
             if self.__formerRequest == 255 and lineNumber == 0:
                 self.__lineBlock += 1
+
             # store requested line number for next request
             self.__formerRequest = lineNumber
-            reqestedLine = lineNumber
+            requestedLine = lineNumber
 
             # adjust lineNumber with current block
-            lineNumber = lineNumber \
-                + (self.__lineBlock * 256)
+            lineNumber = lineNumber + 256 * self.__lineBlock
 
-            #########################
-            # decide which line to send according to machine type
-            # and amount of colors
-
-            # singlebed, 2 color
-            if self.__knitting_mode == KnittingMode.SINGLEBED.value \
-                    and self.__numColors == 2:
-
-                # when knitting infinitely, keep the requested
-                # lineNumber in its limits
-                if self.__infRepeat:
-                    lineNumber = lineNumber % imgHeight
-
-                # color is always 0 in singlebed,
-                # because both colors are knitted at once
-                color = 0
-
-                # calculate imgRow
-                imgRow = (lineNumber + self.__startLine) % imgHeight
-
-                # 0   1   2   3   4 .. (imgRow)
-                # |   |   |   |   |
-                # 0 1 2 3 4 5 6 7 8 .. (imageExpanded)
-                indexToSend = imgRow * 2
-                # Check if the last line of the image was requested
-                if imgRow == imgHeight - 1:
-                    lastLine = 0x01
-
-            # doublebed, 2 color
-            elif self.__knitting_mode == KnittingMode.CLASSIC_RIBBER_1.value \
-                    and self.__numColors == 2:
-
-                # when knitting infinitely, keep the requested
-                # lineNumber in its limits
-                if self.__infRepeat:
-                    lineNumber = lineNumber % lenImgExpanded
-
-                # calculate imgRow
-                imgRow = (int(lineNumber / 2) + self.__startLine) % imgHeight
-
-                # 0 0 1 1 2 2 3 3 4 4 .. (imgRow)
-                # 0 1 2 3 4 5 6 7 8 9 .. (lineNumber)
-                # | |  X  | |  X  | |
-                # 0 1 3 2 4 5 7 6 8 9 .. (imageExpanded)
-                # A B B A A B B A A B .. (color)
-                indexToSend = self.__startLine * 2
-
-                color = 0  # A
-                if reqestedLine % 4 == 1 or reqestedLine % 4 == 2:
-                    color = 1  # B
-
-                # Decide if lineNumber has to be switched or not
-                if reqestedLine % 4 == 2:
-                    indexToSend += lineNumber + 1
-                elif reqestedLine % 4 == 3:
-                    indexToSend += lineNumber - 1
-                else:
-                    indexToSend += lineNumber
-
-                indexToSend = indexToSend % lenImgExpanded
-
-                # Decide whether to send lastLine Flag
-                if (imgRow == imgHeight - 1) \
-                        and (lineNumber % 4 == 1 or lineNumber % 4 == 3):
-                    lastLine = 0x01
-
-            # doublebed, multicolor
-            elif self.__knitting_mode == KnittingMode.CLASSIC_RIBBER_1.value \
-                    and self.__numColors > 2:
-
-                # when knitting infinitely, keep the requested
-                # lineNumber in its limits
-                if self.__infRepeat:
-                    # *2 because of BLANK lines in between
-                    lineNumber = lineNumber % (2 * lenImgExpanded)
-
-                # calculate imgRow
-                imgRow = (int(lineNumber / (self.__numColors * 2)) +
-                          self.__startLine) % imgHeight
-
-                if (lineNumber % 2) == 1:
-                    sendBlankLine = True
-                else:
-                    self.__logger.debug("COLOR" + str(color))
-
-                color = int((lineNumber / 2) % self.__numColors)
-
-                # indexToSend = self.__startLine * self.__numColors
-                indexToSend = int((imgRow * self.__numColors) + color)
-
-                indexToSend = indexToSend % lenImgExpanded
-
-                if (indexToSend == (lenImgExpanded-1)) \
-                        and (sendBlankLine is True):
-                    lastLine = 0x01
-
-            # Ribber, Middle-Colors-Twice
-            elif self.__knitting_mode \
-                    is KnittingMode.MIDDLECOLORSTWICE_RIBBER.value:
-
-                # doublebed middle-colors-twice multicolor
-                # 0-00 1-11 2-22 3-33 4-44 5-55 .. (imgRow)
-                # 0123 4567 8911 1111 1111 2222.. (lineNumber)
-                #             01 2345 6789 0123
-                #
-                # 0-21 4-53 6-87 1-19 1-11 1-11 .. (imageExpanded)
-                #                0 1  2 43 6 75
-                #
-                # A-CB B-CA A-CB B-CA A-CB B-CA .. (color)
-
-                # Double the line minus the 2 you save on the begin
-                # and end of each imgRow
-                passesPerRow = self.__numColors * 2 - 2
-
-                imgRow = self.__startLine + int(lineNumber / passesPerRow)
-
-                if self.__infRepeat:
-                    imgRow = imgRow % imgHeight
-
-                indexToSend = imgRow * self.__numColors
-
-                if imgRow % 2 != 0:
-                    color = int(((lineNumber % passesPerRow) + 1) / 2)
-                else:
-                    color = int(
-                        (passesPerRow - (lineNumber % passesPerRow)) / 2)
-
-                if lineNumber % passesPerRow == 0 or (
-                        lineNumber +
-                        1) % passesPerRow == 0 or lineNumber % 2 == 0:
-                    sendBlankLine = False
-                else:
-                    sendBlankLine = True
-
-                indexToSend += color
-
-                if imgRow == imgHeight - 1 \
-                        and lineNumber % passesPerRow == passesPerRow - 1:
-                    lastLine = 0x01
-
-            # doublebed, multicolor <3 of pluto
-            # advances imgRow as soon as possible
-            elif self.__knitting_mode is \
-                    KnittingMode.HEARTOFPLUTO_RIBBER.value \
-                    and self.__numColors >= 2:
-
-                # Double the line minus the 2 you save from
-                # early advancing to next row
-                passesPerRow = self.__numColors * 2 - 2
-
-                imgRow = self.__startLine + int(lineNumber / passesPerRow)
-
-                if self.__infRepeat:
-                    imgRow = imgRow % imgHeight
-
-                indexToSend = imgRow * self.__numColors
-
-                # check if it's time to send a blank line
-                if lineNumber % passesPerRow != 0 and lineNumber % 2 == 0:
-                    sendBlankLine = True
-                # if not set a color
-                else:
-                    color = self.__numColors - 1 - int(
-                        ((lineNumber + 1) % (self.__numColors * 2)) / 2)
-                    # use color to adjust index
-                    indexToSend += color
-
-                if imgRow == imgHeight - 1\
-                        and lineNumber % passesPerRow == passesPerRow - 1:
-                    lastLine = 0x01
-
-            # Ribber, Circular
-            elif self.__knitting_mode == KnittingMode.CIRCULAR_RIBBER.value \
-                    and self.__numColors == 2:
-
-                # when knitting infinitely, keep the requested
-                # lineNumber in its limits
-                if self.__infRepeat:
-                    # *2 because of BLANK lines in between
-                    lineNumber = lineNumber % (2 * lenImgExpanded)
-
-                imgRow = (int(lineNumber / 4) + self.__startLine) % imgHeight
-
-                # Color      A B  A B  A B
-                # ImgRow     0-0- 1-1- 2-2-
-                # Index2Send 0 1  2 3  4 5
-                # LineNumber 0123 4567 8911
-                #                        01
-
-                if (lineNumber % 2) == 1:
-                    sendBlankLine = True
-
-                indexToSend = self.__startLine * self.__numColors
-                indexToSend += lineNumber / 2
-                indexToSend = int(indexToSend)
-
-                indexToSend = indexToSend % lenImgExpanded
-
-                if (indexToSend == (lenImgExpanded-1)) \
-                        and (sendBlankLine is True):
-                    lastLine = 0x01
-
-            #########################
+            # work out which line of data to send
+            color, imgRow, indexToSend, sendBlankLine, lastLine = self.__knit_func(lineNumber, imgHeight, lenImgExpanded)
 
             # assign pixeldata
             imgStartNeedle = self.__image.imgStartNeedle()
@@ -392,14 +207,10 @@ class AYABControl(object):
                 imgStopNeedle = 199
 
             # set the bitarray
-            if (color == 0 and
-                    self.__knitting_mode
-                    is KnittingMode.CLASSIC_RIBBER_1.value)\
+            if (color == 0 and self.__knitting_mode == KnittingMode.CLASSIC_RIBBER_1.value) \
                     or (color == self.__numColors - 1
-                        and (self.__knitting_mode
-                             is KnittingMode.MIDDLECOLORSTWICE_RIBBER.value
-                             or self.__knitting_mode
-                             is KnittingMode.HEARTOFPLUTO_RIBBER.value)):
+                        and (self.__knitting_mode == KnittingMode.MIDDLECOLORSTWICE_RIBBER.value
+                             or self.__knitting_mode == KnittingMode.HEARTOFPLUTO_RIBBER.value)):
 
                 for col in range(0, 200):
                     if col < imgStartNeedle \
@@ -420,15 +231,15 @@ class AYABControl(object):
 
             # send line to machine
             if self.__infRepeat:
-                self.__ayabCom.cnf_line(reqestedLine, bytes, 0, crc8)
+                self.__ayabCom.cnf_line(requestedLine, bytes, 0, crc8)
             else:
-                self.__ayabCom.cnf_line(reqestedLine, bytes, lastLine, crc8)
+                self.__ayabCom.cnf_line(requestedLine, bytes, lastLine, crc8)
 
             # screen output
             colorNames = "A", "B", "C", "D"
             msg = str(self.__lineBlock)  # Block
             msg += ' ' + str(lineNumber)  # Total Line Number
-            msg += ' reqLine: ' + str(reqestedLine)
+            msg += ' reqLine: ' + str(requestedLine)
             msg += ' imgRow: ' + str(imgRow)
             msg += ' color: ' + colorNames[color]
             if sendBlankLine is True:
@@ -459,20 +270,192 @@ class AYABControl(object):
         if lastLine:
             if self.__infRepeat:
                 self.__infRepeat_repeats += 1
-                return 0  # keep knitting
+                return False # keep knitting
             else:
-                return 1  # image finished
+                return True  # image finished
         else:
-            return 0  # keep knitting
+            return False     # keep knitting
+
+    # singlebed, 2 color
+    def __singlebed_2col(self, lineNumber, imgHeight, lenImgExpanded):
+
+        # when knitting infinitely, keep the requested
+        # lineNumber in its limits
+        if self.__infRepeat:
+            lineNumber = lineNumber % imgHeight
+
+        # color is always 0 in singlebed,
+        # because both colors are knitted at once
+        color = 0
+
+        # calculate imgRow
+        imgRow = (self.__startLine + lineNumber) % imgHeight
+
+        # 0   1   2   3   4 .. (imgRow)
+        # |   |   |   |   |
+        # 0 1 2 3 4 5 6 7 8 .. (imageExpanded)
+        indexToSend = 2 * imgRow
+
+        # Check if the last line of the image was requested
+        lastLine = (imgRow == imgHeight - 1)
+
+        sendBlankLine = False
+        return color, imgRow, indexToSend, sendBlankLine, lastLine
+
+    # doublebed, 2 color
+    def __doublebed_2col(self, lineNumber, imgHeight, lenImgExpanded):
+
+        # when knitting infinitely, keep the requested
+        # lineNumber in its limits
+        if self.__infRepeat:
+            lineNumber = lineNumber % lenImgExpanded
+
+        # calculate imgRow
+        imgRow = (self.__startLine + lineNumber // 2) % imgHeight
+
+        # 0 0 1 1 2 2 3 3 4 4 .. (imgRow)
+        # 0 1 2 3 4 5 6 7 8 9 .. (lineNumber)
+        # | |  X  | |  X  | |
+        # 0 1 3 2 4 5 7 6 8 9 .. (imageExpanded)
+        # A B B A A B B A A B .. (color)
+
+        i = lineNumber % 4
+        color = [0,1,1,0][i] # 0 = A, 1 = B
+
+        indexToSend = (2 * self.__startLine + lineNumber + [0,0,1,-1][i]) % lenImgExpanded
+
+        lastLine = (imgRow == imgHeight - 1) and (lineNumber % 4 == 1 or lineNumber % 4 == 3)
+
+        sendBlankLine = False
+        return color, imgRow, indexToSend, sendBlankLine, lastLine
+
+    # doublebed, multicolor
+    def __doublebed_multicol(self, lineNumber, imgHeight, lenImgExpanded):
+
+        # when knitting infinitely, keep the requested
+        # lineNumber in its limits
+        if self.__infRepeat:
+            # *2 because of BLANK lines in between
+            lineNumber = lineNumber % (2 * lenImgExpanded)
+
+        # calculate imgRow
+        imgRow = (self.__startLine + lineNumber // (2 * self.__numColors)) % imgHeight
+
+        color = (lineNumber // 2) % self.__numColors
+
+        # indexToSend = self.__startLine * self.__numColors
+        indexToSend = (color + imgRow * self.__numColors) % lenImgExpanded
+
+        if lineNumber % 2 == 1:
+            sendBlankLine = True
+        else:
+            sendBlankLine = False
+            self.__logger.debug("COLOR" + str(color))
+
+        lastLine = (indexToSend == lenImgExpanded - 1) and (sendBlankLine is True)
+
+        return color, imgRow, indexToSend, sendBlankLine, lastLine
+
+    # Ribber, Middle-Colors-Twice
+    def __middlecoltwice(self, lineNumber, imgHeight, lenImgExpanded):
+
+        # doublebed middle-colors-twice multicolor
+        # 0-00 1-11 2-22 3-33 4-44 5-55 .. (imgRow)
+        # 0123 4567 8911 1111 1111 2222.. (lineNumber)
+        #             01 2345 6789 0123
+        #
+        # 0-21 4-53 6-87 1-19 1-11 1-11 .. (imageExpanded)
+        #                0 1  2 43 6 75
+        #
+        # A-CB B-CA A-CB B-CA A-CB B-CA .. (color)
+
+        # Double the line minus the 2 you save on the begin
+        # and end of each imgRow
+        passesPerRow = 2 * self.__numColors - 2
+
+        imgRow = self.__startLine + lineNumber // passesPerRow
+
+        if self.__infRepeat:
+            imgRow = imgRow % imgHeight
+
+        if imgRow % 2 != 0:
+            color = ((lineNumber % passesPerRow) + 1) // 2
+        else:
+            color = (passesPerRow - (lineNumber % passesPerRow)) // 2
+
+        indexToSend = imgRow * self.__numColors + color
+
+        sendBlankLine = not (lineNumber % passesPerRow == 0) and not ((lineNumber + 1) % passesPerRow == 0) and not (lineNumber % 2 == 0)
+
+        lastLine = (imgRow == imgHeight - 1) and (lineNumber % passesPerRow == passesPerRow - 1)
+
+        return color, imgRow, indexToSend, sendBlankLine, lastLine
+
+    # doublebed, multicolor <3 of pluto
+    # advances imgRow as soon as possible
+    def __heartofpluto(self, lineNumber, imgHeight, lenImgExpanded):
+
+        # Double the line minus the 2 you save from
+        # early advancing to next row
+        passesPerRow = 2 * self.__numColors - 2
+
+        imgRow = self.__startLine + lineNumber // passesPerRow
+
+        if self.__infRepeat:
+            imgRow = imgRow % imgHeight
+
+        indexToSend = imgRow * self.__numColors
+
+        # check if it's time to send a blank line
+        if lineNumber % passesPerRow != 0 and lineNumber % 2 == 0:
+            color = 0
+            sendBlankLine = True
+        else:
+            # if not set a color
+            color = self.__numColors - 1 - ((lineNumber + 1) % (self.__numColors * 2)) // 2
+            # use color to adjust index
+            indexToSend += color
+            sendBlankLine = False
+
+        lastLine = (imgRow == imgHeight - 1) and (lineNumber % passesPerRow == passesPerRow - 1)
+
+        return color, imgRow, indexToSend, sendBlankLine, lastLine
+
+    # Ribber, Circular
+    def __circular_ribber(self, lineNumber, imgHeight, lenImgExpanded):
+
+        # when knitting infinitely, keep the requested
+        # lineNumber in its limits
+        if self.__infRepeat:
+            # *2 because of BLANK lines in between
+            lineNumber = lineNumber % (2 * lenImgExpanded)
+
+        color = 0
+
+        imgRow = (self.__startLine + lineNumber // 4) % imgHeight
+
+        # Color      A B  A B  A B
+        # ImgRow     0-0- 1-1- 2-2-
+        # Index2Send 0 1  2 3  4 5
+        # LineNumber 0123 4567 8911
+        #                        01
+
+        indexToSend = (self.__startLine * self.__numColors + lineNumber // 2) % lenImgExpanded
+
+        sendBlankLine = (lineNumber % 2 == 1)
+
+        lastLine = (indexToSend == lenImgExpanded - 1) and (sendBlankLine is True)
+
+        return color, imgRow, indexToSend, sendBlankLine, lastLine
 
     def knit(self, pImage, pOptions):
-
+        '''Finite State Machine'''
         result = AYABControlKnitResult.NONE
 
-        if self._current_state is not KnittingState.SETUP:
+        if self._current_state != KnittingState.SETUP:
             rcvMsg, rcvParam = self.__checkSerial()
 
-        if self._current_state is KnittingState.SETUP:
+        if self._current_state == KnittingState.SETUP:
             self.__formerRequest = 0
             self.__lineBlock = 0
             self.__image = pImage
@@ -484,16 +467,19 @@ class AYABControl(object):
 
             self.__infRepeat_repeats = 0
 
-            if pOptions["portname"] == "Simulation":
-                self.__ayabCom = AyabCommunicationMockup()
+            if not self.__get_knit_func():
+                result = AYABControlKnitResult.ERROR_INVALID_SETTINGS
             else:
-                self.__ayabCom = AyabCommunication()
-
-            if not self.__ayabCom.open_serial(pOptions["portname"]):
-                self.__logger.error("Could not open serial port")
-                result = AYABControlKnitResult.ERROR_SERIAL_PORT
-
-            self._current_state = KnittingState.INIT
+                if pOptions["portname"] == "Simulation":
+                    self.__ayabCom = AyabCommunicationMockup()
+                else:
+                    self.__ayabCom = AyabCommunication()
+ 
+                if not self.__ayabCom.open_serial(pOptions["portname"]):
+                    self.__logger.error("Could not open serial port")
+                    result = AYABControlKnitResult.ERROR_SERIAL_PORT
+ 
+                self._current_state = KnittingState.INIT
 
         elif self._current_state == KnittingState.INIT:
             if rcvMsg == 'cnfInfo':
