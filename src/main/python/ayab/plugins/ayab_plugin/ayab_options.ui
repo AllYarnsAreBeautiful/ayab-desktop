@@ -396,6 +396,19 @@
           </widget>
          </item>
          <item>
+          <widget class="QCheckBox" name="autoMirror_checkbox">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Mirror Image</string>
+           </property>
+          </widget>
+         </item>
+         <item>
           <widget class="QCheckBox" name="checkBox_ContinuousReporting">
            <property name="text">
             <string>Continuous Status Reporting</string>

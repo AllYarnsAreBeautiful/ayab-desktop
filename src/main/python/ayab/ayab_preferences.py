@@ -104,10 +104,8 @@ class Preferences:
         group2.setLayout(vbox2)
         group2.setFlat(True)
 
-        self.automatic_mirroring_checkbox = QtWidgets.QCheckBox("Automatic Mirroring")
+        self.automatic_mirroring_checkbox = QtWidgets.QCheckBox("Default Mirroring")
         self.automatic_mirroring_checkbox.toggled.connect(self.__toggle_automatic_mirroring_setting)
-        # disable checkbox because this option is not implemented yet
-        self.automatic_mirroring_checkbox.setEnabled(False)
 
         reset = QtWidgets.QPushButton("Reset")
         reset.clicked.connect(self.__reset_and_refresh)
@@ -139,19 +137,28 @@ class Preferences:
     def __update_default_knitting_mode_setting(self):
         self.settings.setValue("default_knitting_mode",
                                self.default_knitting_mode_box.itemText(self.default_knitting_mode_box.currentIndex()))
+        return
 
     def __toggle_default_infinite_repeat_setting(self):
-        self.settings.setValue("default_infinite_repeat",
-                               not self.settings.value("default_infinite_repeat"))
+        if self.default_infinite_repeat_checkbox.checkState():
+            self.settings.setValue("default_infinite_repeat",True)
+        else:
+            self.settings.setValue("default_infinite_repeat",False)
+        return
 
     def __update_default_alignment_setting(self):
         self.settings.setValue("default_alignment",
                                self.default_alignment_box.itemText(self.default_alignment_box.currentIndex()))
+        return
 
     def __toggle_automatic_mirroring_setting(self):
-        self.settings.setValue("automatic_mirroring",
-                               not self.settings.value("automatic_mirroring"))
+        if self.automatic_mirroring_checkbox.checkState():
+            self.settings.setValue("automatic_mirroring",True)
+        else:
+            self.settings.setValue("automatic_mirroring",False)
+        return
 
     def __reset_and_refresh(self):
         self.reset()
         self.refresh()
+        return
