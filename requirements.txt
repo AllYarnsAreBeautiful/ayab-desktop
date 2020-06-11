@@ -7,5 +7,6 @@ playsound==1.2.2
 fbs==0.8.6
 PyInstaller==3.4
 pytest==5.4.1
+mock==3.0.5
 DAKimport==0.0.4
 
