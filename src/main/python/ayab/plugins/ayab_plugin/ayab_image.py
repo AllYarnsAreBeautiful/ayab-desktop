@@ -93,6 +93,7 @@ class ayabImage(object):
     histogram = self.__image.histogram()
     dest_map = list(np.argsort(histogram[0:num_colors]))
     dest_map.reverse()
+    self.__image = quantized
     self.__image = self.__image.remap_palette(dest_map)
     # Make internal representations of image
     for row in range(0, imgHeight):
