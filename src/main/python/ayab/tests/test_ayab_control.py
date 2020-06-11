@@ -27,32 +27,3 @@ class TestAYABControl(unittest.TestCase):
     def setUp(self):
         pass
 
-    def test_set_bit(self):
-        ayab_control = AYABControl()
-        assert ayab_control._set_bit(0, 0) == 1
-        assert ayab_control._set_bit(1, 0) == 1
-        assert ayab_control._set_bit(0, 1) == 2
-        assert ayab_control._set_bit(0, 8) == 256
-        assert ayab_control._set_bit(0, 16) == 65536
-
-        with pytest.raises(ValueError):
-            ayab_control._set_bit(0, -1)
-        with pytest.raises(ValueError):
-            ayab_control._set_bit(-1, 0)
-
-    def test_set_pixel(self):
-        ayab_control = AYABControl()
-
-        line = bytearray([0, 0, 0])
-        expected_line = bytearray([1, 0, 0])
-        ayab_control._set_pixel(line, 0)
-        assert line == expected_line
-
-        line = bytearray([0, 0, 0])
-        expected_line = bytearray([0, 0, 0x80])
-        ayab_control._set_pixel(line, 23)
-        assert line == expected_line
-
-        line = bytearray([0, 0, 0])
-        with pytest.raises(IndexError):
-            ayab_control._set_pixel(line, 24)

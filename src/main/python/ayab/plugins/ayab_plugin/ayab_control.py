@@ -24,9 +24,11 @@ from .ayab_communication_mockup import AyabCommunicationMockup
 
 import logging
 import pprint
+from bitarray import bitarray
 
 from enum import Enum
 
+MACHINE_WIDTH = 200
 
 class KnittingState(Enum):
     NONE = 0
@@ -79,20 +81,6 @@ class AYABControl(object):
 
     def get_progress(self):
         return self._progress
-
-    def _set_bit(self, number: int, position: int) -> int:
-        """ Helper to set a bit within an integer number """
-        if number < 0:
-            raise(ValueError)
-        mask = 1 << int(position)
-        return (number | mask)
-
-    def _set_pixel(self, line: bytearray, pixel: int):
-        """ Helper to set a Pixel within a line """
-        numByte = int(pixel / 8)
-        line[numByte] = self._set_bit(int(line[numByte]),
-                                      pixel - (8 * numByte))
-        return
 
     def __checkSerial(self):
         msg = self.__ayabCom.update()
@@ -158,11 +146,8 @@ class AYABControl(object):
         sendBlankLine = False
         lastLine = 0x00
 
-        # TODO optimize performance
-        # initialize bytearray to 0x00
-        bytes = bytearray(25)
-        for x in range(0, 25):
-            bytes[x] = 0x00
+        # initialize bitarray to 0x00
+        bits = bitarray([False] * MACHINE_WIDTH, endian="little")
 
         if lineNumber < 256:
             # TODO some better algorithm for block wrapping
@@ -388,8 +373,8 @@ class AYABControl(object):
                 imgStartNeedle = 0
 
             imgStopNeedle = self.__image.imgStopNeedle()
-            if imgStopNeedle > 199:
-                imgStopNeedle = 199
+            if imgStopNeedle > MACHINE_WIDTH - 1:
+                imgStopNeedle = MACHINE_WIDTH - 1
 
             # set the bitarray
             if (color == 0 and
@@ -401,10 +386,10 @@ class AYABControl(object):
                              or self.__knitting_mode
                              is KnittingMode.HEARTOFPLUTO_RIBBER.value)):
 
-                for col in range(0, 200):
+                for col in range(0, MACHINE_WIDTH):
                     if col < imgStartNeedle \
                             or col > imgStopNeedle:
-                        self._set_pixel(bytes, col)
+                        bits[col] = True
 
             for col in range(0, self.__image.imgWidth()):
                 pxl = (self.__image.imageExpanded())[indexToSend][col]
@@ -412,17 +397,17 @@ class AYABControl(object):
                 if pxl == 1 and sendBlankLine is False:
                     pxlNumber = col + self.__image.imgStartNeedle()
                     # TODO implement for generic machine width
-                    if 0 <= pxlNumber and pxlNumber < 200:
-                        self._set_pixel(bytes, pxlNumber)
+                    if 0 <= pxlNumber and pxlNumber < MACHINE_WIDTH:
+                        bits[pxlNumber] = True
 
             # TODO implement CRC8
             crc8 = 0x00
 
             # send line to machine
             if self.__infRepeat:
-                self.__ayabCom.cnf_line(reqestedLine, bytes, 0, crc8)
+                self.__ayabCom.cnf_line(reqestedLine, bits.tobytes(), 0, crc8)
             else:
-                self.__ayabCom.cnf_line(reqestedLine, bytes, lastLine, crc8)
+                self.__ayabCom.cnf_line(reqestedLine, bits.tobytes(), lastLine, crc8)
 
             # screen output
             colorNames = "A", "B", "C", "D"
