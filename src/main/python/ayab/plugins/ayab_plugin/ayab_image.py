@@ -112,8 +112,7 @@ class ayabImage(object):
     def __calcImgStartStopNeedles(self):
         if self.__imgPosition == 'center':
             needleWidth = (self.__knitStopNeedle - self.__knitStartNeedle) + 1
-            self.__imgStartNeedle = (self.__knitStartNeedle + needleWidth/2) \
-                - self.__imgWidth/2
+            self.__imgStartNeedle = int((self.__knitStartNeedle + needleWidth / 2) - self.__imgWidth / 2)
             self.__imgStopNeedle = self.__imgStartNeedle + self.__imgWidth - 1
         elif self.__imgPosition == 'left':
             self.__imgStartNeedle = self.__knitStartNeedle
