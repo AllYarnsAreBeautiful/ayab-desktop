@@ -230,9 +230,9 @@ class AYABControl(object):
 
             # send line to machine
             if self.__infRepeat:
-                self.__ayabCom.cnf_line(reqestedLine, bits.tobytes(), 0, crc8)
+                self.__ayabCom.cnf_line(requestedLine, bits.tobytes(), 0, crc8)
             else:
-                self.__ayabCom.cnf_line(reqestedLine, bits.tobytes(), lastLine, crc8)
+                self.__ayabCom.cnf_line(requestedLine, bits.tobytes(), lastLine, crc8)
 
             # screen output
             colorNames = "A", "B", "C", "D"
