@@ -30,17 +30,18 @@ class TestAYABControl(unittest.TestCase):
     def test__singlebed_2col(self):
         ayab_control = AYABControl()
         ayab_control._startLine = 0
-        ayab_control._infRepeat = True
+        ayab_control._infRepeat = False
         assert ayab_control._singlebed_2col(0,3,6) == (0,0,0,False,False)
         assert ayab_control._singlebed_2col(1,3,6) == (1,0,2,False,False)
         assert ayab_control._singlebed_2col(2,3,6) == (2,0,4,False,True )
+        ayab_control._infRepeat = True
         assert ayab_control._singlebed_2col(3,3,6) == (0,0,0,False,False)
         assert ayab_control._singlebed_2col(4,3,6) == (1,0,2,False,False)
 
     def test__doublebed_2col(self):
         ayab_control = AYABControl()
         ayab_control._startLine = 0
-        ayab_control._infRepeat = True
+        ayab_control._infRepeat = False
         assert ayab_control._doublebed_2col( 0,5,10) == (0,0,0,False,False)
         assert ayab_control._doublebed_2col( 1,5,10) == (0,1,1,False,False)
         assert ayab_control._doublebed_2col( 2,5,10) == (1,1,3,False,False)
@@ -51,6 +52,7 @@ class TestAYABControl(unittest.TestCase):
         assert ayab_control._doublebed_2col( 7,5,10) == (3,0,6,False,False)
         assert ayab_control._doublebed_2col( 8,5,10) == (4,0,8,False,False)
         assert ayab_control._doublebed_2col( 9,5,10) == (4,1,9,False,True )
+        ayab_control._infRepeat = True
         assert ayab_control._doublebed_2col(10,5,10) == (0,1,1,False,False)
         assert ayab_control._doublebed_2col(11,5,10) == (0,0,0,False,False)
         assert ayab_control._doublebed_2col(12,5,10) == (1,0,2,False,False)
@@ -60,7 +62,7 @@ class TestAYABControl(unittest.TestCase):
         ayab_control = AYABControl()
         ayab_control._numColors = 3
         ayab_control._startLine = 0
-        ayab_control._infRepeat = True
+        ayab_control._infRepeat = False
         assert ayab_control._doublebed_multicol( 0,3,9) == (0,0,0,False,False)
         assert ayab_control._doublebed_multicol( 1,3,9) == (0,0,0,True ,False)
         assert ayab_control._doublebed_multicol( 2,3,9) == (0,1,1,False,False)
@@ -79,13 +81,14 @@ class TestAYABControl(unittest.TestCase):
         assert ayab_control._doublebed_multicol(15,3,9) == (2,1,7,True ,False)
         assert ayab_control._doublebed_multicol(16,3,9) == (2,2,8,False,False)
         assert ayab_control._doublebed_multicol(17,3,9) == (2,2,8,True ,True )
+        ayab_control._infRepeat = True
         assert ayab_control._doublebed_multicol(18,3,9) == (0,0,0,False,False)
 
     def test__middlecoltwice(self):
         ayab_control = AYABControl()
         ayab_control._numColors = 3
         ayab_control._startLine = 0
-        ayab_control._infRepeat = True
+        ayab_control._infRepeat = False
         assert ayab_control._middlecoltwice( 0,5,15) == (0,0, 0,False,False)
         assert ayab_control._middlecoltwice( 1,5,15) == (0,2, 2,True ,False)
         assert ayab_control._middlecoltwice( 2,5,15) == (0,2, 2,False,False)
@@ -106,6 +109,7 @@ class TestAYABControl(unittest.TestCase):
         assert ayab_control._middlecoltwice(17,5,15) == (4,2,14,True ,False)
         assert ayab_control._middlecoltwice(18,5,15) == (4,2,14,False,False)
         assert ayab_control._middlecoltwice(19,5,15) == (4,1,13,False,True )
+        ayab_control._infRepeat = True
         assert ayab_control._middlecoltwice(20,5,15) == (0,1, 1,False,False)
         assert ayab_control._middlecoltwice(21,5,15) == (0,2, 2,True ,False)
         assert ayab_control._middlecoltwice(22,5,15) == (0,2, 2,False,False)
@@ -116,7 +120,7 @@ class TestAYABControl(unittest.TestCase):
         ayab_control = AYABControl()
         ayab_control._numColors = 3
         ayab_control._startLine = 0
-        ayab_control._infRepeat = True
+        ayab_control._infRepeat = False
         assert ayab_control._heartofpluto( 0,5,15) == (0,2, 2,False,False)
         assert ayab_control._heartofpluto( 1,5,15) == (0,1, 1,False,False)
         assert ayab_control._heartofpluto( 2,5,15) == (0,1, 1,True ,False)
@@ -137,6 +141,7 @@ class TestAYABControl(unittest.TestCase):
         assert ayab_control._heartofpluto(17,5,15) == (4,2,14,False,False)
         assert ayab_control._heartofpluto(18,5,15) == (4,2,14,True ,False)
         assert ayab_control._heartofpluto(19,5,15) == (4,1,13,False,True )
+        ayab_control._infRepeat = True
         assert ayab_control._heartofpluto(20,5,15) == (0,1, 1,False,False)
         assert ayab_control._heartofpluto(21,5,15) == (0,0, 0,False,False)
         assert ayab_control._heartofpluto(22,5,15) == (0,0, 0,True ,False)
@@ -147,7 +152,7 @@ class TestAYABControl(unittest.TestCase):
         ayab_control = AYABControl()
         ayab_control._numColors = 3
         ayab_control._startLine = 0
-        ayab_control._infRepeat = True
+        ayab_control._infRepeat = False
         assert ayab_control._circular_ribber( 0,3,9) == (0,0, 0,False,False)
         assert ayab_control._circular_ribber( 1,3,9) == (0,0, 0,True ,False)
         assert ayab_control._circular_ribber( 2,3,9) == (0,1, 1,False,False)
@@ -166,4 +171,5 @@ class TestAYABControl(unittest.TestCase):
         assert ayab_control._circular_ribber(15,3,9) == (2,1, 7,True ,False)
         assert ayab_control._circular_ribber(16,3,9) == (2,2, 8,False,False)
         assert ayab_control._circular_ribber(17,3,9) == (2,2, 8,True ,True )
+        ayab_control._infRepeat = True
         assert ayab_control._circular_ribber(18,3,9) == (0,0, 0,False,False)
