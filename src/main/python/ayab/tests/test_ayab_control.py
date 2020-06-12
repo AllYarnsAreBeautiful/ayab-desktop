@@ -79,7 +79,7 @@ class TestAYABControl(unittest.TestCase):
         assert ayab_control.__doublebed_multicol(15,3,9) == (2,1,7,True ,False)
         assert ayab_control.__doublebed_multicol(16,3,9) == (2,2,8,False,False)
         assert ayab_control.__doublebed_multicol(17,3,9) == (2,2,8,True ,True )
-        assert ayab_control.__doublebed_multicol(18,3,9) == (0,0,0,False,False)=
+        assert ayab_control.__doublebed_multicol(18,3,9) == (0,0,0,False,False)
 
     def test__middlecoltwice(self):
         ayab_control = AYABControl()
