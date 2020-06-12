@@ -431,7 +431,7 @@ class AYABControl(object):
 
         indexToSend = imgRow * self.__numColors + color
 
-        sendBlankLine = not firstCol and not lastCol and even(lineNumber):
+        sendBlankLine = not firstCol and not lastCol and even(lineNumber)
 
         lastLine = (imgRow == imgHeight - 1) and lastCol
 
