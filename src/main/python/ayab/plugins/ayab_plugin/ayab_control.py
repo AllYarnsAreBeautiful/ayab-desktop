@@ -94,15 +94,15 @@ class AYABControl(object):
         if self.__knitting_mode == KnittingMode.SINGLEBED.value and self.__numColors == 2:
             self.__knit_func = self.__singlebed_2col
         elif self.__knitting_mode == KnittingMode.CLASSIC_RIBBER_1.value and self.__numColors == 2:
-            self.__knit_func = self.__doublebed_2col
+            self.__knit_func = self._doublebed_2col
         elif self.__knitting_mode == KnittingMode.CLASSIC_RIBBER_1.value and self.__numColors > 2:
-            self.__knit_func = self.__doublebed_multicol
+            self.__knit_func = self._doublebed_multicol
         elif self.__knitting_mode == KnittingMode.MIDDLECOLORSTWICE_RIBBER.value and self.__numColors >= 2:
-            self.__knit_func = self.__middlecoltwice
+            self.__knit_func = self._middlecoltwice
         elif self.__knitting_mode == KnittingMode.HEARTOFPLUTO_RIBBER.value and self.__numColors >= 2:
-            self.__knit_func = self.__heartofpluto
+            self.__knit_func = self._heartofpluto
         elif self.__knitting_mode == KnittingMode.CIRCULAR_RIBBER.value: # not restricted to 2 colors
-            self.__knit_func = self.__circular_ribber
+            self.__knit_func = self._circular_ribber
         else:
             self.__logger.error("Fallthrough error in __get_knit_func: invalid knitting options")
             return False # knit function not found
@@ -282,7 +282,7 @@ class AYABControl(object):
             return False     # keep knitting
 
     # singlebed, 2 color
-    def __singlebed_2col(self, lineNumber, imgHeight, lenImgExpanded):
+    def _singlebed_2col(self, lineNumber, imgHeight, lenImgExpanded):
 
         # when knitting infinitely, keep the requested
         # lineNumber in its limits
@@ -309,7 +309,7 @@ class AYABControl(object):
         return imgRow, color, indexToSend, sendBlankLine, lastLine
 
     # doublebed, 2 color
-    def __doublebed_2col(self, lineNumber, imgHeight, lenImgExpanded):
+    def _doublebed_2col(self, lineNumber, imgHeight, lenImgExpanded):
         i = lineNumber % 4
 
         # when knitting infinitely, keep the requested
@@ -336,7 +336,7 @@ class AYABControl(object):
         return imgRow, color, indexToSend, sendBlankLine, lastLine
 
     # doublebed, multicolor
-    def __doublebed_multicol(self, lineNumber, imgHeight, lenImgExpanded):
+    def _doublebed_multicol(self, lineNumber, imgHeight, lenImgExpanded):
 
         # when knitting infinitely, keep the requested
         # lineNumber in its limits
@@ -362,7 +362,7 @@ class AYABControl(object):
         return imgRow, color, indexToSend, sendBlankLine, lastLine
 
     # Ribber, Middle-Colors-Twice
-    def __middlecoltwice(self, lineNumber, imgHeight, lenImgExpanded):
+    def _middlecoltwice(self, lineNumber, imgHeight, lenImgExpanded):
 
         # doublebed middle-colors-twice multicolor
         # 0-00 1-11 2-22 3-33 4-44 5-55 .. (imgRow)
@@ -402,7 +402,7 @@ class AYABControl(object):
 
     # doublebed, multicolor <3 of pluto
     # rotates middle colors
-    def __heartofpluto(self, lineNumber, imgHeight, lenImgExpanded):
+    def _heartofpluto(self, lineNumber, imgHeight, lenImgExpanded):
 
         # doublebed <3 of pluto multicolor
         # 0-00 1-11 2-22 3-33 4-44 5-55 .. (imgRow)
@@ -439,7 +439,7 @@ class AYABControl(object):
 
     # Ribber, Circular
     # not restricted to 2 colors
-    def __circular_ribber(self, lineNumber, imgHeight, lenImgExpanded):
+    def _circular_ribber(self, lineNumber, imgHeight, lenImgExpanded):
 
         # Color      A B  A B  A B
         # ImgRow     0-0- 1-1- 2-2-
