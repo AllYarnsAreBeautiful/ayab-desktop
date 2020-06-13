@@ -268,22 +268,23 @@ class AYABControl(object):
 
     # singlebed, 2 color
     def _singlebed_2col(self, lineNumber, imgHeight, lenImgExpanded):
+        lineNumber += self._startLine
 
         # when knitting infinitely, keep the requested
         # lineNumber in its limits
         if self._infRepeat:
             lineNumber = lineNumber % imgHeight
 
-        # calculate imgRow
-        imgRow = (self._startLine + lineNumber) % imgHeight
+        imgRow = lineNumber
+
+        # 0   1   2   3   4 .. (imgRow)
+        # |   |   |   |   |
+        # 0 1 2 3 4 5 6 7 8 .. (imageExpanded)
 
         # color is always 0 in singlebed,
         # because both colors are knitted at once
         color = 0
 
-        # 0   1   2   3   4 .. (imgRow)
-        # |   |   |   |   |
-        # 0 1 2 3 4 5 6 7 8 .. (imageExpanded)
         indexToSend = 2 * imgRow
 
         sendBlankLine = False
@@ -295,6 +296,9 @@ class AYABControl(object):
 
     # doublebed, 2 color
     def _doublebed_2col(self, lineNumber, imgHeight, lenImgExpanded):
+        lineNumber += 2 * self._startLine
+
+        # calculate line number index for colors
         i = lineNumber % 4
 
         # when knitting infinitely, keep the requested
@@ -302,17 +306,17 @@ class AYABControl(object):
         if self._infRepeat:
             lineNumber = lineNumber % lenImgExpanded
 
-        imgRow = (self._startLine + lineNumber // 2) % imgHeight
+        imgRow = lineNumber // 2
 
         # 0 0 1 1 2 2 3 3 4 4 .. (imgRow)
         # 0 1 2 3 4 5 6 7 8 9 .. (lineNumber)
         # | |  X  | |  X  | |
-        # 0 1 3 2 4 5 7 6 8 9 .. (imageExpanded)
+        # 0 1 3 2 4 5 7 6 8 9 .. (indexToSend)
         # A B B A A B B A A B .. (color)
 
         color = [0,1,1,0][i] # 0 = A, 1 = B
 
-        indexToSend = (2 * self._startLine + lineNumber + [0,0,1,-1][i]) % lenImgExpanded
+        indexToSend = (lineNumber + [0,0,1,-1][i]) % lenImgExpanded
 
         sendBlankLine = False
 
@@ -322,27 +326,25 @@ class AYABControl(object):
 
     # doublebed, multicolor
     def _doublebed_multicol(self, lineNumber, imgHeight, lenImgExpanded):
+        # halve lineNumber because every second line is BLANK
+        sendBlankLine = odd(lineNumber)
+        h = lineNumber // 2
 
-        # when knitting infinitely, keep the requested
-        # lineNumber in its limits
+        h += self._numColors * self._startLine
+
+        # when knitting infinitely, keep the
+        # half lineNumber within its limits
         if self._infRepeat:
-            # *2 because of BLANK lines in between
-            lineNumber = lineNumber % (2 * lenImgExpanded)
+            h = h % lenImgExpanded
 
-        imgRow = (self._startLine + lineNumber // (2 * self._numColors)) % imgHeight
+        imgRow, color = divmod(h, self._numColors)
 
-        color = (lineNumber // 2) % self._numColors
+        indexToSend = imgRow * self._numColors + color
 
-        # indexToSend = self._startLine * self._numColors
-        indexToSend = (color + imgRow * self._numColors) % lenImgExpanded
+        lastLine = (indexToSend == lenImgExpanded - 1) and sendBlankLine
 
-        if odd(lineNumber):
-            sendBlankLine = True
-        else:
-            sendBlankLine = False
+        if not sendBlankLine:
             self.__logger.debug("COLOR" + str(color))
-
-        lastLine = (indexToSend == lenImgExpanded - 1) and (sendBlankLine is True)
 
         return imgRow, color, indexToSend, sendBlankLine, lastLine
 
@@ -351,10 +353,10 @@ class AYABControl(object):
 
         # doublebed middle-colors-twice multicolor
         # 0-00 1-11 2-22 3-33 4-44 5-55 .. (imgRow)
-        # 0123 4567 8911 1111 1111 2222.. (lineNumber)
+        # 0123 4567 8911 1111 1111 2222 .. (lineNumber)
         #             01 2345 6789 0123
         #
-        # 0-21 4-53 6-87 1-19 1-11 1-11 .. (imageExpanded)
+        # 0-21 4-53 6-87 1-19 1-11 1-11 .. (indexToSend)
         #                0 1  2 43 6 75
         #
         # A-CB B-CA A-CB B-CA A-CB B-CA .. (color)
@@ -363,21 +365,22 @@ class AYABControl(object):
         # and end of each imgRow
         passesPerRow = 2 * self._numColors - 2
 
-        q, r = divmod(lineNumber, passesPerRow)
+        lineNumber += passesPerRow * self._startLine
+
+        imgRow, r = divmod(lineNumber, passesPerRow)
+
         firstCol = (r == 0)
         lastCol = (r == passesPerRow - 1)
 
-        imgRow = self._startLine + q
+        if firstCol or lastCol:
+            color = (lastCol + imgRow) % 2
+        else:
+            color = (r + 3) // 2
 
         if self._infRepeat:
             imgRow = imgRow % imgHeight
 
-        if firstCol or lastCol:
-            color = (lastCol + q) % 2
-        else:
-            color = (r + 3) // 2
-
-        indexToSend = imgRow * self._numColors + color
+        indexToSend = self._numColors * imgRow + color
 
         sendBlankLine = not firstCol and not lastCol and odd(lineNumber)
 
@@ -391,10 +394,10 @@ class AYABControl(object):
 
         # doublebed <3 of pluto multicolor
         # 0-00 1-11 2-22 3-33 4-44 5-55 .. (imgRow)
-        # 0123 4567 8911 1111 1111 2222.. (lineNumber)
+        # 0123 4567 8911 1111 1111 2222 .. (lineNumber)
         #             01 2345 6789 0123
         #
-        # 02-1 3-54 76-8 1-19 1-11 11-1 .. (imageExpanded)
+        # 02-1 3-54 76-8 1-19 1-11 11-1 .. (indexToSend)
         #                1 0  2 43 65 7
         #
         # CB-A A-CB BA-C C-BA A-CB BA-C .. (color)
@@ -403,18 +406,19 @@ class AYABControl(object):
         # early advancing to next row
         passesPerRow = 2 * self._numColors - 2
 
-        q, r = divmod(lineNumber, passesPerRow)
-        firstCol = (r == 0)
-        lastCol = (r == passesPerRow - 1)
+        lineNumber += passesPerRow * self._startLine
 
-        imgRow = self._startLine + q
+        imgRow, r = divmod(lineNumber, passesPerRow)
 
         if self._infRepeat:
             imgRow = imgRow % imgHeight
 
+        firstCol = (r == 0)
+        lastCol = (r == passesPerRow - 1)
+
         color = self._numColors - 1 - ((lineNumber + 1) % (2 * self._numColors)) // 2
 
-        indexToSend = imgRow * self._numColors + color
+        indexToSend = self._numColors * imgRow + color
 
         sendBlankLine = not firstCol and not lastCol and even(lineNumber)
 
@@ -426,26 +430,24 @@ class AYABControl(object):
     # not restricted to 2 colors
     def _circular_ribber(self, lineNumber, imgHeight, lenImgExpanded):
 
-        # Color      A B  A B  A B
-        # ImgRow     0-0- 1-1- 2-2-
-        # Index2Send 0 1  2 3  4 5
-        # LineNumber 0123 4567 8911
-        #                        01
+        # A B  A B  A B  .. (color)
+        # 0-0- 1-1- 2-2- .. (imgRow)
+        # 0 1  2 3  4 5  .. (indexToSend)
+        # 0123 4567 8911 .. (lineNumber)
+        #             01
 
         # halve lineNumber because every second line is BLANK
         sendBlankLine = odd(lineNumber)
         h = lineNumber // 2
 
+        h += self._numColors * self._startLine
+
         if self._infRepeat:
             h  = h % lenImgExpanded
 
-        q, color = divmod(h, self._numColors)
+        imgRow, color = divmod(h, self._numColors)
 
-        # not strictly necessary to take modulus
-        imgRow = (self._startLine + q) % imgHeight
-
-        # not strictly necessary to take modulus
-        indexToSend = (imgRow * self._numColors + color) % lenImgExpanded
+        indexToSend = h
 
         lastLine = (indexToSend == lenImgExpanded - 1) and sendBlankLine
 
