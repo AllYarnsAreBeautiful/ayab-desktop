@@ -37,11 +37,11 @@ class TestAyabCommunicationMockup(unittest.TestCase):
         assert self.comm_dummy.is_open()
 
     def test_update(self):
-        assert self.comm_dummy.update() is None
+        assert self.comm_dummy.update() == (None, 'none', 0)
 
     def test_req_start(self):
         start_val, end_val, continuous_reporting = 0, 10, True
-        expected_result = bytearray([0xC1, 0x1])
+        expected_result = (b'\xc1\x01', 'cnfStart', 1)
 
         self.comm_dummy.req_start(start_val, end_val, continuous_reporting)
 
@@ -49,7 +49,7 @@ class TestAyabCommunicationMockup(unittest.TestCase):
         assert bytes_read == expected_result
 
     def test_req_info(self):
-        expected_result = bytearray([0xC3, 5, 0xFF, 0xFF])
+        expected_result = (b'\xc3\x05\xff\xff', 'cnfInfo', 5)
 
         self.comm_dummy.req_info()
 
@@ -57,13 +57,12 @@ class TestAyabCommunicationMockup(unittest.TestCase):
         assert bytes_read == expected_result
 
         # indState shall be sent automatically, also
-        expected_result = bytearray(
-            [0x84, 0x1, 0xFF, 0xFF, 0xFF, 0xFF, 0x1, 0x7F])
+        expected_result = (b'\x84\x01\xff\xff\xff\xff\x01\x7f', 'indState', 1)
         bytes_read = self.comm_dummy.update()
         assert bytes_read == expected_result
 
     def test_req_test(self):
-        expected_result = bytearray([0xC4, 0x1])
+        expected_result = (b'\xc4\x01', 'cnfTest', 1)
 
         self.comm_dummy.req_test()
 
@@ -86,4 +85,4 @@ class TestAyabCommunicationMockup(unittest.TestCase):
 
         for i in range(0, 256):
             bytes_read = self.comm_dummy.update()
-            assert bytes_read == bytearray([0x82, i])
+            assert bytes_read == (bytearray([0x82, i]), 'reqLine', i)

@@ -58,10 +58,10 @@ class TestCommunication(unittest.TestCase):
                                                 timeout=0.1)
 
     def test_update(self):
-        byte_array = bytearray([0xc0, 0xc1, 0xc0])
+        byte_array = bytearray([0xc0, 0xc1, 0x01, 0xc0])
         self.dummy_serial.write(byte_array)
         result = self.comm_dummy.update()
-        expected_result = bytearray([0xc1])
+        expected_result = (b'\xc1\x01', 'cnfStart', 1)
         assert result == expected_result
 
     def test_req_start(self):
