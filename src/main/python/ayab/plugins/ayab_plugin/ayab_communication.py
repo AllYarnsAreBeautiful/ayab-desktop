@@ -27,8 +27,18 @@ The initializer can also be overriden with a dummy serial object.
 
 import serial
 import sliplib
+from enum import Enum
 
 import logging
+import pprint
+
+
+class MessageToken(Enum):
+    cnfStart = 0xC1
+    cnfInfo = 0xC3
+    reqLine = 0x82
+    cnfTest = 0xC4
+    indState = 0x84
 
 
 class AyabCommunication(object):
@@ -87,9 +97,23 @@ class AyabCommunication(object):
                 self.__rxMsgList.extend(self.__driver.receive(data))
 
             if len(self.__rxMsgList) > 0:
-                return self.__rxMsgList.pop(0)
+                return self.parse_update(self.__rxMsgList.pop(0))
 
-        return None
+        return None, 'none', 0
+
+    def parse_update(self, msg):
+        if msg is None:
+            return None, "none", 0
+
+        for t in list(MessageToken):
+            if msg[0] == t.value:
+                return msg, t.name, msg[1]
+
+        # fallthrough
+        self.__logger.debug("unknown message: ")  # drop crlf
+        pp = pprint.PrettyPrinter(indent=4)
+        pp.pprint(msg)
+        return msg, "unknown", 0
 
     def req_start(self, startNeedle, stopNeedle, continuousReporting):
         """Sends a start message to the controller."""

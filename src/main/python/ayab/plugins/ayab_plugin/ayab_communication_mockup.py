@@ -20,10 +20,12 @@
 Mockup Class of AYABCommunication for Test/Simulation purposes
 """
 
+from .ayab_communication import AyabCommunication
+
 import logging
 
 
-class AyabCommunicationMockup(object):
+class AyabCommunicationMockup(AyabCommunication):
     """Class Handling the serial communication protocol."""
     def __init__(self) -> None:
         logging.basicConfig(level=logging.DEBUG)
@@ -54,9 +56,9 @@ class AyabCommunicationMockup(object):
             self.__rxMsgList.append(reqLine)
 
         if len(self.__rxMsgList) > 0:
-            return self.__rxMsgList.pop(0)
+            return self.parse_update(self.__rxMsgList.pop(0))
 
-        return None
+        return None, "none", 0
 
     def req_start(self, startNeedle, stopNeedle, continuousReporting) -> None:
         self.__is_started = True

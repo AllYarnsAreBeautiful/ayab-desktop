@@ -23,9 +23,8 @@ from .ayab_communication import AyabCommunication
 from .ayab_communication_mockup import AyabCommunicationMockup
 
 import logging
-import pprint
-from bitarray import bitarray
 
+from bitarray import bitarray
 from enum import Enum
 
 MACHINE_WIDTH = 200
@@ -123,60 +122,46 @@ class AYABControl(object):
         return
 
     def __checkSerial(self):
-        msg = self.__ayabCom.update()
+        msg, token, param = self.__ayabCom.update()
 
-        if msg is None:
-            return ("none", 0)
+        if token == "cnfInfo":
+            self.__log_cnfInfo(msg)
 
-        msgId = msg[0]
-        if msgId == 0xC1:  # cnfStart
-            # print "> cnfStart: " + str(ord(line[1]))
-            return ("cnfStart", msg[1])
+        elif token == "indState":
+            self.__get_carriage_info(msg)
 
-        elif msgId == 0xC3:  # cnfInfo
-            # print "> cnfInfo: Version=" + str(ord(line[1]))
-            api = msg[1]
-            log = "API v" + str(api)
+        return token, param
 
-            if api >= 5:
-                log += ", FW v" + str(msg[2]) + "." + str(msg[3])
+    def __log_cnfInfo(self, msg):
+        api = msg[1]
+        log = "API v" + str(api)
 
-            self.__logger.info(log)
-            return ("cnfInfo", msg[1])
+        if api >= 5:
+            log += ", FW v" + str(msg[2]) + "." + str(msg[3])
 
-        elif msgId == 0x82:  # reqLine
-            # print "> reqLine: " + str(ord(line[1]))
-            return ("reqLine", msg[1])
+        self.__logger.info(log)
+        return
 
-        elif msgId == 0xC4:  # cnfTest
-            return ("cnfTest", msg[1])
+    def __get_carriage_info(self, msg):
+        hall_l = int((msg[2] << 8) + msg[3])
+        hall_r = int((msg[4] << 8) + msg[5])
 
-        elif msgId == 0x84:
-            hall_l = int((msg[2] << 8) + msg[3])
-            hall_r = int((msg[4] << 8) + msg[5])
-
-            carriage_type = ""
-            if msg[6] == 1:
-                carriage_type = "K Carriage"
-            elif msg[6] == 2:
-                carriage_type = "L Carriage"
-            elif msg[6] == 3:
-                carriage_type = "G Carriage"
-
-            carriage_position = int(msg[7])
-
-            self._progress["hall_l"] = hall_l
-            self._progress["hall_r"] = hall_r
-            self._progress["carriage_type"] = carriage_type
-            self._progress["carriage_position"] = carriage_position
-
-            return ("indState", msg[1])
-
+        if msg[6] == 1:
+            carriage_type = "K Carriage"
+        elif msg[6] == 2:
+            carriage_type = "L Carriage"
+        elif msg[6] == 3:
+            carriage_type = "G Carriage"
         else:
-            self.__logger.debug("unknown message: ")  # drop crlf
-            pp = pprint.PrettyPrinter(indent=4)
-            pp.pprint(msg)
-            return ("unknown", 0)
+            carriage_type = ""
+
+        carriage_position = int(msg[7])
+
+        self._progress["hall_l"] = hall_l
+        self._progress["hall_r"] = hall_r
+        self._progress["carriage_type"] = carriage_type
+        self._progress["carriage_position"] = carriage_position
+        return
 
     def __cnfLine(self, lineNumber):
         imgHeight = self.__image.imgHeight()
