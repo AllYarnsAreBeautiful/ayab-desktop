@@ -41,14 +41,6 @@ class MessageToken(Enum):
     indState = 0x84
 
 
-class MessageToken(Enum):
-    cnfStart = 0xC1
-    cnfInfo = 0xC3
-    reqLine = 0x82
-    cnfTest = 0xC4
-    indState = 0x84
-
-
 class AyabCommunication(object):
     """Class Handling the serial communication protocol."""
 
