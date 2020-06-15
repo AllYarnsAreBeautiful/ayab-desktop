@@ -393,14 +393,14 @@ class AYABControl(object):
     def _heartofpluto(self, lineNumber, imgHeight, lenImgExpanded):
 
         # doublebed <3 of pluto multicolor
-        # 0-00 1-11 2-22 3-33 4-44 5-55 .. (imgRow)
+        # 0000 1111 2222 3333 4444 5555 .. (imgRow)
         # 0123 4567 8911 1111 1111 2222 .. (lineNumber)
         #             01 2345 6789 0123
         #
-        # 02-1 3-54 76-8 1-19 1-11 11-1 .. (indexToSend)
-        #                1 0  2 43 65 7
+        # 02-1 35-4 76-8 11-9 11-1 11-1 .. (indexToSend)
+        #                10   24 3 65 7
         #
-        # CB-A A-CB BA-C C-BA A-CB BA-C .. (color)
+        # CB-A AC-B BA-C CB-A AC-B BA-C .. (color)
 
         # Double the number of colors minus the 2 you save from
         # early advancing to next row
