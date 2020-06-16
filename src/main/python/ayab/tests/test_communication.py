@@ -86,11 +86,11 @@ class TestCommunication(unittest.TestCase):
         assert bytes_read == byte_array
 
     def test_cnf_line(self):
-        lineNumber = 13
-        lineData = [0x23, 0x24]
-        flags = 0x12
-        crc8 = 0x57
-        self.comm_dummy.cnf_line(lineNumber, lineData, flags, crc8)
+        lineNumber = 0
+        lineData = b'\0\xde\xad\xbe\xef\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0'
+        flags = 1
+        crc8 = 0xE9
+        self.comm_dummy.cnf_line(lineNumber, lineData, flags)
         byte_array = bytearray([0xc0, 0x42])
         byte_array.append(lineNumber)
         byte_array.extend(lineData)

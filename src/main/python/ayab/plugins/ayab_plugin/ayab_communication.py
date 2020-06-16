@@ -135,7 +135,7 @@ class AyabCommunication(object):
         data = self.__driver.send(b'\x04')
         self.__ser.write(data)
 
-    def cnf_line(self, lineNumber, lineData, flags, crc8):
+    def cnf_line(self, lineNumber, lineData, flags):
         """Sends a line of data via the serial port.
 
         Sends a line of data to the serial port, all arguments are mandatory.
@@ -146,7 +146,6 @@ class AyabCommunication(object):
           lineNumber (int): The line number to be sent.
           lineData (bytes): The bytearray to be sent to needles.
           flags (bytes): The flags sent to the controller.
-          crc8 (bytes, optional): The CRC-8 checksum for transmission.
 
         """
         data = bytearray()
@@ -154,9 +153,24 @@ class AyabCommunication(object):
         data.append(lineNumber)
         data.extend(lineData)
         data.append(flags)
-        data.append(crc8)
+        hash = 0
+        hash = add_crc(hash, data)
+        data.append(hash)
         data = self.__driver.send(bytes(data))
         self.__ser.write(data)
+
+
+# CRC algorithm after Maxim/Dallas
+def add_crc(crc, data):
+    for i in range(len(data)):
+        n = data[i]
+        for j in range(8):
+            f = (crc ^ n) & 1
+            crc >>= 1
+            if f:
+                crc ^= 0x8C
+            n >>= 1
+    return crc & 0xFF
 
 
 class CommunicationException(Exception):
