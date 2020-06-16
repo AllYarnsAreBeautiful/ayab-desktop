@@ -19,17 +19,19 @@
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
 from PIL import Image
+from bitarray import bitarray
 import numpy as np
 
+MACHINE_WIDTH = 200
 
 class ayabImage(object):
     def __init__(self, pil_image, pNumColors=2):
         self.__numColors = pNumColors
         self.__imgPosition = 'center'
-        self.__imgStartNeedle = '0'
-        self.__imgStopNeedle = '0'
+        self.__imgStartNeedle = 0
+        self.__imgStopNeedle = 0
         self.__knitStartNeedle = 0
-        self.__knitStopNeedle = 199
+        self.__knitStopNeedle = MACHINE_WIDTH - 1
         self.__startLine = 0
         self.__image = pil_image
         self.__updateImageData()
@@ -85,7 +87,7 @@ class ayabImage(object):
         self.__imageColors = \
             [[0 for i in range(num_colors)] for j in range(imgHeight)]
         self.__imageExpanded = \
-            [[0 for i in range(imgWidth)] for j in range(num_colors*imgHeight)]
+            [bitarray([False] * imgWidth) for j in range(num_colors * imgHeight)]
         # Limit number of colors in image
         quantized = self.__image.quantize(num_colors, dither=None)
         # Order colors most-frequent first
@@ -96,33 +98,33 @@ class ayabImage(object):
         self.__image = quantized
         self.__image = self.__image.remap_palette(dest_map)
         # Make internal representations of image
-        for row in range(0, imgHeight):
-            for col in range(0, imgWidth):
+        for row in range(imgHeight):
+            for col in range(imgWidth):
                 pxl = self.__image.getpixel((col, row))
-                for color in range(0, num_colors):
+                for color in range(num_colors):
                     if pxl == color:
                         # color map
                         self.__imageIntern[row][col] = color
                         # amount of bits per color per line
                         self.__imageColors[row][color] += 1
                         # colors separated per line
-                        self.__imageExpanded[(num_colors*row)+color][col] = 1
+                        self.__imageExpanded[(num_colors * row)+color][col] = True
         return
 
     def __calcImgStartStopNeedles(self):
         if self.__imgPosition == 'center':
-            needleWidth = (self.__knitStopNeedle - self.__knitStartNeedle) + 1
+            needleWidth = self.__knitStopNeedle - self.__knitStartNeedle + 1
             self.__imgStartNeedle = int((self.__knitStartNeedle + needleWidth / 2) - self.__imgWidth / 2)
             self.__imgStopNeedle = self.__imgStartNeedle + self.__imgWidth - 1
         elif self.__imgPosition == 'left':
             self.__imgStartNeedle = self.__knitStartNeedle
-            self.__imgStopNeedle = self.__imgStartNeedle + self.__imgWidth
+            self.__imgStopNeedle = self.__imgStartNeedle + self.__imgWidth - 1
         elif self.__imgPosition == 'right':
             self.__imgStopNeedle = self.__knitStopNeedle
-            self.__imgStartNeedle = self.__imgStopNeedle - self.__imgWidth
-        elif int(self.__imgPosition) > 0 and int(self.__imgPosition) < 200:
+            self.__imgStartNeedle = self.__imgStopNeedle - self.__imgWidth + 1
+        elif int(self.__imgPosition) > 0 and int(self.__imgPosition) < MACHINE_WIDTH:
             self.__imgStartNeedle = int(self.__imgPosition)
-            self.__imgStopNeedle = self.__imgStartNeedle + self.__imgWidth
+            self.__imgStopNeedle = self.__imgStartNeedle + self.__imgWidth - 1
         else:
             return False
         return True
@@ -156,8 +158,8 @@ class ayabImage(object):
         """
         resize the image to a given width, keeping the aspect ratio
         """
-        wpercent = (pNewWidth/float(self.__image.size[0]))
-        hsize = int((float(self.__image.size[1])*float(wpercent)))
+        wpercent = (pNewWidth / float(self.__image.size[0]))
+        hsize = int((float(self.__image.size[1]) * float(wpercent)))
         self.__image = self.__image.resize((pNewWidth, hsize), Image.ANTIALIAS)
         self.__updateImageData()
         return
@@ -170,8 +172,8 @@ class ayabImage(object):
         """
         old_h = self.__image.size[1]
         old_w = self.__image.size[0]
-        new_h = old_h*pVertical
-        new_w = old_w*pHorizontal
+        new_h = old_h * pVertical
+        new_w = old_w * pHorizontal
         new_im = Image.new('P', (new_w, new_h))
         for h in range(0, new_h, old_h):
             for w in range(0, new_w, old_w):
@@ -184,7 +186,7 @@ class ayabImage(object):
         """
         set the start and stop needle
         """
-        if (pKnitStart < pKnitStop) and pKnitStart >= 0 and pKnitStop < 200:
+        if (pKnitStart < pKnitStop) and pKnitStart >= 0 and pKnitStop < MACHINE_WIDTH:
             self.__knitStartNeedle = pKnitStart
             self.__knitStopNeedle = pKnitStop
         self.__updateImageData()
@@ -194,13 +196,8 @@ class ayabImage(object):
         """
         set the position of the pattern
         """
-        ok = False
-        if pImgPosition == 'left' or \
-           pImgPosition == 'center' or pImgPosition == 'right':
-            ok = True
-        elif (int(pImgPosition) >= 0 and int(pImgPosition) < 200):
-            ok = True
-        if ok:
+        if pImgPosition == 'left' or pImgPosition == 'center' or pImgPosition == 'right' \
+            or (int(pImgPosition) >= 0 and int(pImgPosition) < MACHINE_WIDTH):
             self.__imgPosition = pImgPosition
             self.__updateImageData()
         return
@@ -210,7 +207,6 @@ class ayabImage(object):
         set the line where to start knitting
         """
         # Check if StartLine is in valid range (picture height)
-        if pStartLine >= 0 and \
-           pStartLine < self.__image.size[1]:
+        if pStartLine >= 0 and pStartLine < self.__image.size[1]:
             self.__startLine = pStartLine
         return
