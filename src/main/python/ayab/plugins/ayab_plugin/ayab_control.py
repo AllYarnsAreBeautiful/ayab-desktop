@@ -21,14 +21,18 @@
 
 from .ayab_communication import AyabCommunication
 from .ayab_communication_mockup import AyabCommunicationMockup
-
+from . import ayab_image
+import numpy as np
 import logging
+from PIL import Image
+# from time import sleep
 
 from bitarray import bitarray
 from enum import Enum
 
 MACHINE_WIDTH = 200
 BLOCK_LENGTH = 256
+
 
 class KnittingState(Enum):
     NONE = 0
@@ -60,6 +64,59 @@ class KnittingMode(Enum):
     HEARTOFPLUTO_RIBBER = 3  # Heart-of-Pluto Ribber
     CIRCULAR_RIBBER = 4  # Circular Ribber
 
+    def row_multiplier(self, ncolors):
+        if self.name == "SINGLEBED":
+            return 1
+        elif (self.name == "CLASSIC_RIBBER_1" and ncolors > 2) \
+            or self.name == "CIRCULAR_RIBBER":
+            # every second line is blank
+            return 2 * ncolors
+        elif self.name == "MIDDLECOLORSTWICE_RIBBER" \
+            or self.name == "HEARTOFPLUTO_RIBBER":
+            # only middle lines doubled
+            return 2 * ncolors - 2
+        else:
+            # one line per color
+            return ncolors
+
+
+class KnitRow:
+
+    def __init__(self, ayab_control):
+        self.ayab_control = ayab_control
+        self.carriage = ""
+        self.swipe = 0
+        self.dir = 0
+        self.symbol = 0
+        self.lineNumber = -1
+        self.lineBlock = 0
+
+    def get_row(self, lineNumber):
+        self.lineNumber = lineNumber
+        self.imgRow, self.color, self.indexToSend, self.sendBlankLine, self.lastLine = self.ayab_control._knit_func(lineNumber)
+        self.bits = self.ayab_control._choose_needles(self.color, self.indexToSend, self.sendBlankLine)
+
+
+class Progress:
+
+    def __init__(self):
+        self.reset()
+
+    def reset(self):
+        self.first_row = 0
+        self.current_row = 0
+        self.total_rows = 0
+        self.repeats = -1
+        self.colorSymbol = ""
+        self.hall_l = 0
+        self.hall_r = 0
+        self.carriage_type = ""
+        self.carriage_position = 0
+        self.lineNumber = 0
+        self.color = 0
+        self.alt_color = None
+        self.bits = bitarray()
+
 
 def even(x):
     return x % 2 == 0
@@ -67,62 +124,60 @@ def even(x):
 def odd(x):
     return x % 2 == 1
 
+
 class AYABControl(object):
+
     def __init__(self):
         self.__logger = logging.getLogger(type(self).__name__)
-
-        self._API_VERSION = 0x05
-
-        self._current_state = KnittingState.SETUP
-        self._progress = dict(current_row=0,
-                              total_rows=0,
-                              repeats=0,
-                              color="",
-                              hall_l=0,
-                              hall_r=0,
-                              carriage_type="",
-                              carriage_position=0)
+        self.__API_VERSION = 0x05
+        self.__ayabCom = AyabCommunication()
+        self.__current_state = KnittingState.SETUP
+        self.__progress = Progress()
 
     def close(self):
         self.__ayabCom.close_serial()
 
+    def get_row_multiplier(self):
+        return KnittingMode(self.__knitting_mode).row_multiplier(self.__numColors)
+
     def get_progress(self):
-        return self._progress
+        return self.__progress
+
+    def setImage(self, im: Image):
+        self.__image = im
+
+    def setKnittingMode(self, mode: int):
+        self.__knitting_mode = mode
+
+    def setNumColors(self, n: int):
+        self.__numColors = n
+
+    def setStartLine(self, n: int):
+        self.__startLine = n
+
+    def setInfRepeat(self, x: bool):
+        self.__infRepeat = x
 
     def __get_knit_func(self):
         '''Select function that decides which line of data to send according to the machine type and number of colors'''
-        if self._knitting_mode == KnittingMode.SINGLEBED.value and self._numColors == 2:
-            self._knit_func = self._singlebed_2col
-        elif self._knitting_mode == KnittingMode.CLASSIC_RIBBER_1.value and self._numColors == 2:
-            self._knit_func = self._doublebed_2col
-        elif self._knitting_mode == KnittingMode.CLASSIC_RIBBER_1.value and self._numColors > 2:
-            self._knit_func = self._doublebed_multicol
-        elif self._knitting_mode == KnittingMode.MIDDLECOLORSTWICE_RIBBER.value and self._numColors >= 2:
-            self._knit_func = self._middlecoltwice
-        elif self._knitting_mode == KnittingMode.HEARTOFPLUTO_RIBBER.value and self._numColors >= 2:
-            self._knit_func = self._heartofpluto
-        elif self._knitting_mode == KnittingMode.CIRCULAR_RIBBER.value: # not restricted to 2 colors
-            self._knit_func = self._circular_ribber
+        if self.__knitting_mode == KnittingMode.SINGLEBED.value and self.__numColors == 2:
+            self.__knit_func = self._singlebed_2col
+        elif self.__knitting_mode == KnittingMode.CLASSIC_RIBBER_1.value and self.__numColors == 2:
+            self.__knit_func = self._doublebed_2col
+        elif self.__knitting_mode == KnittingMode.CLASSIC_RIBBER_1.value and self.__numColors > 2:
+            self.__knit_func = self._doublebed_multicol
+        elif self.__knitting_mode == KnittingMode.MIDDLECOLORSTWICE_RIBBER.value and self.__numColors >= 2:
+            self.__knit_func = self._middlecoltwice
+        elif self.__knitting_mode == KnittingMode.HEARTOFPLUTO_RIBBER.value and self.__numColors >= 2:
+            self.__knit_func = self._heartofpluto
+        elif self.__knitting_mode == KnittingMode.CIRCULAR_RIBBER.value: # not restricted to 2 colors
+            self.__knit_func = self._circular_ribber
         else:
-            self.__logger.error("Fallthrough error in __get_knit_func: invalid knitting options")
+            self.__logger.error("Fallthrough error in _get_knit_func: invalid knitting options")
             return False # knit function not found
         return True
 
-    def _set_bit(self, number: int, position: int) -> int:
-        """ Helper to set a bit within an integer number """
-        if number < 0:
-            raise(ValueError)
-        mask = 1 << int(position)
-        return (number | mask)
-
-    def _set_pixel(self, line: bytearray, pixel: int):
-        """ Helper to set a Pixel within a line """
-        numByte = int(pixel / 8)
-        line[numByte] = self._set_bit(int(line[numByte]),
-                                      pixel - (8 * numByte))
-        return
-
-    def __checkSerial(self):
+    def _checkSerial(self):
         msg, token, param = self.__ayabCom.update()
 
         if token == "cnfInfo":
@@ -158,10 +213,10 @@ class AYABControl(object):
 
         carriage_position = int(msg[7])
 
-        self._progress["hall_l"] = hall_l
-        self._progress["hall_r"] = hall_r
-        self._progress["carriage_type"] = carriage_type
-        self._progress["carriage_position"] = carriage_position
+        self.__progress.hall_l = hall_l
+        self.__progress.hall_r = hall_r
+        self.__progress.carriage_type = carriage_type
+        self.__progress.carriage_position = carriage_position
         return
 
     def __cnfLine(self, lineNumber):
@@ -181,10 +236,10 @@ class AYABControl(object):
             # adjust lineNumber with current block
             lineNumber += BLOCK_LENGTH * self.__lineBlock
 
-            imgHeight = self._image.imgHeight()
+            imgHeight = self.__image.imgHeight()
         
             # work out which line of data to send
-            imgRow, color, indexToSend, sendBlankLine, lastLine = self._knit_func(lineNumber, imgHeight)
+            imgRow, color, indexToSend, sendBlankLine, lastLine = self.__knit_func(lineNumber)
             
             # create bitarray
             bits = self._select_needles(color, indexToSend, sendBlankLine)
@@ -193,38 +248,44 @@ class AYABControl(object):
             crc8 = 0x00
 
             # send line to machine
-            if self._infRepeat:
+            if self.__infRepeat:
                 self.__ayabCom.cnf_line(requestedLine, bits.tobytes(), 0, crc8)
             else:
                 self.__ayabCom.cnf_line(requestedLine, bits.tobytes(), lastLine, crc8)
 
             # screen output
-            colorNames = "A", "B", "C", "D"
+            colorSymbols = "A", "B", "C", "D"
             msg = str(self.__lineBlock)  # Block
             msg += ' ' + str(lineNumber)  # Total Line Number
+            msg += ' ' + str(self.__startLine)  # Total Line Number
             msg += ' reqLine: ' + str(requestedLine)
             msg += ' imgRow: ' + str(imgRow)
-            msg += ' color: ' + colorNames[color]
+            msg += ' color: ' + colorSymbols[color]
             if sendBlankLine is True:
                 msg += ' BLANK LINE'
             else:
                 msg += ' indexToSend: ' + str(indexToSend)
-                msg += ' color: ' + str(color)
-                # msg += ' ' + str((self._image.imageExpanded())[indexToSend])
-                self._progress["color"] = colorNames[color]
+                msg += ' color: ' + colorSymbols[color]
             self.__logger.debug(msg)
 
-            if self._knitting_mode == KnittingMode.SINGLEBED.value:
-                self._progress["color"] = ""
-
             # sending line progress to gui
-            self._progress["current_row"] = imgRow + 1
-            self._progress["total_rows"] = imgHeight
-            self._progress["repeats"] = self.__infRepeat_repeats
+            if self.__knitting_mode == KnittingMode.SINGLEBED.value:
+                self.__progress.alt_color = self.__image.palette[1]
+                self.__progress.colorSymbol = "A/B"
+            else:
+                self.__progress.alt_color = None
+                self.__progress.colorSymbol = colorSymbols[color]
+            if self.__infRepeat:
+                self.__progress.repeats = self.__infRepeat_repeats
+            self.__progress.current_row = imgRow + 1
+            self.__progress.total_rows = self.__image.imgHeight()
+            self.__progress.lineNumber = lineNumber
+            self.__progress.color = self.__image.palette[color]
+            self.__progress.bits = bits[self.__firstneedle:self.__lastneedle]
 
         if not lastLine:
             return False # keep knitting
-        elif self._infRepeat:
+        elif self.__infRepeat:
             self.__infRepeat_repeats += 1
             return False # keep knitting
         else:
@@ -232,37 +293,39 @@ class AYABControl(object):
 
     def _select_needles(self, color, indexToSend, sendBlankLine):
         bits = bitarray([False] * MACHINE_WIDTH, endian="little")
-        firstneedle = max(0, self._image.imgStartNeedle())
-        lastneedle = min(self._image.imgWidth() + self._image.imgStartNeedle(), MACHINE_WIDTH)
+        firstneedle = max(0, self.__image.imgStartNeedle())
+        lastneedle = min(self.__image.imgWidth() + self.__image.imgStartNeedle(), MACHINE_WIDTH)
 
-        if (color == 0 and self._knitting_mode == KnittingMode.CLASSIC_RIBBER_1.value) \
-                or (color == self._numColors - 1
-                    and (self._knitting_mode == KnittingMode.MIDDLECOLORSTWICE_RIBBER.value
-                         or self._knitting_mode == KnittingMode.HEARTOFPLUTO_RIBBER.value)):
+        if (color == 0 and self.__knitting_mode == KnittingMode.CLASSIC_RIBBER_1.value) \
+                or (color == self.__numColors - 1
+                    and (self.__knitting_mode == KnittingMode.MIDDLECOLORSTWICE_RIBBER.value
+                         or self.__knitting_mode == KnittingMode.HEARTOFPLUTO_RIBBER.value)):
             bits[0:firstneedle] = True
             bits[lastneedle:MACHINE_WIDTH] = True
 
         if not sendBlankLine:
-            firstpixel = firstneedle - self._image.imgStartNeedle()
-            lastpixel = lastneedle - self._image.imgStartNeedle()
-            bits[firstneedle:lastneedle] = (self._image.imageExpanded())[indexToSend][firstpixel:lastpixel]
+            firstpixel = firstneedle - self.__image.imgStartNeedle()
+            lastpixel = lastneedle - self.__image.imgStartNeedle()
+            bits[firstneedle:lastneedle] = (self.__image.imageExpanded())[indexToSend][firstpixel:lastpixel]
 
+        self.__firstneedle = firstneedle
+        self.__lastneedle = lastneedle
         return bits
     
     # singlebed, 2 color
-    def _singlebed_2col(self, lineNumber, imgHeight):
-        lineNumber += self._startLine
+    def _singlebed_2col(self, lineNumber):
+        imgHeight = self.__image.imgHeight()
+        lineNumber += self.__startLine
 
         # when knitting infinitely, keep the requested
         # lineNumber in its limits
-        if self._infRepeat:
+        if self.__infRepeat:
             lineNumber = lineNumber % imgHeight
-
         imgRow = lineNumber
 
         # 0   1   2   3   4 .. (imgRow)
         # |   |   |   |   |
-        # 0 1 2 3 4 5 6 7 8 .. (imageExpanded)
+        # 0 1 2 3 4 5 6 7 8 .. (indexToSend)
 
         # color is always 0 in singlebed,
         # because both colors are knitted at once
@@ -278,17 +341,18 @@ class AYABControl(object):
         return imgRow, color, indexToSend, sendBlankLine, lastLine
 
     # doublebed, 2 color
-    def _doublebed_2col(self, lineNumber, imgHeight):
+    def _doublebed_2col(self, lineNumber):
+        imgHeight = self.__image.imgHeight()
         lenImgExpanded = 2 * imgHeight
         
-        lineNumber += 2 * self._startLine
+        lineNumber += 2 * self.__startLine
 
         # calculate line number index for colors
         i = lineNumber % 4
 
         # when knitting infinitely, keep the requested
         # lineNumber in its limits
-        if self._infRepeat:
+        if self.__infRepeat:
             lineNumber = lineNumber % lenImgExpanded
 
         imgRow = lineNumber // 2
@@ -310,23 +374,23 @@ class AYABControl(object):
         return imgRow, color, indexToSend, sendBlankLine, lastLine
 
     # doublebed, multicolor
-    def _doublebed_multicol(self, lineNumber, imgHeight):
-        lenImgExpanded = self._numColors * imgHeight
+    def _doublebed_multicol(self, lineNumber):
+        lenImgExpanded = self.__numColors * self.__image.imgHeight()
         
         # halve lineNumber because every second line is BLANK
         sendBlankLine = odd(lineNumber)
         h = lineNumber // 2
 
-        h += self._numColors * self._startLine
+        h += self.__numColors * self.__startLine
 
         # when knitting infinitely, keep the
         # half lineNumber within its limits
-        if self._infRepeat:
+        if self.__infRepeat:
             h = h % lenImgExpanded
 
-        imgRow, color = divmod(h, self._numColors)
+        imgRow, color = divmod(h, self.__numColors)
 
-        indexToSend = imgRow * self._numColors + color
+        indexToSend = imgRow * self.__numColors + color
 
         lastLine = (indexToSend == lenImgExpanded - 1) and sendBlankLine
 
@@ -336,7 +400,8 @@ class AYABControl(object):
         return imgRow, color, indexToSend, sendBlankLine, lastLine
 
     # Ribber, Middle-Colors-Twice
-    def _middlecoltwice(self, lineNumber, imgHeight):
+    def _middlecoltwice(self, lineNumber):
+        imgHeight = self.__image.imgHeight()
 
         # doublebed middle-colors-twice multicolor
         # 0-00 1-11 2-22 3-33 4-44 5-55 .. (imgRow)
@@ -350,9 +415,9 @@ class AYABControl(object):
 
         # Double the line minus the 2 you save on the begin
         # and end of each imgRow
-        passesPerRow = 2 * self._numColors - 2
+        passesPerRow = 2 * self.__numColors - 2
 
-        lineNumber += passesPerRow * self._startLine
+        lineNumber += passesPerRow * self.__startLine
 
         imgRow, r = divmod(lineNumber, passesPerRow)
 
@@ -364,10 +429,10 @@ class AYABControl(object):
         else:
             color = (r + 3) // 2
 
-        if self._infRepeat:
+        if self.__infRepeat:
             imgRow = imgRow % imgHeight
 
-        indexToSend = self._numColors * imgRow + color
+        indexToSend = self.__numColors * imgRow + color
 
         sendBlankLine = not firstCol and not lastCol and odd(lineNumber)
 
@@ -377,7 +442,8 @@ class AYABControl(object):
 
     # doublebed, multicolor <3 of pluto
     # rotates middle colors
-    def _heartofpluto(self, lineNumber, imgHeight):
+    def _heartofpluto(self, lineNumber):
+        imgHeight = self.__image.imgHeight()
         
         # doublebed <3 of pluto multicolor
         # 0000 1111 2222 3333 4444 5555 .. (imgRow)
@@ -391,21 +457,21 @@ class AYABControl(object):
 
         # Double the number of colors minus the 2 you save from
         # early advancing to next row
-        passesPerRow = 2 * self._numColors - 2
+        passesPerRow = 2 * self.__numColors - 2
 
-        lineNumber += passesPerRow * self._startLine
+        lineNumber += passesPerRow * self.__startLine
 
         imgRow, r = divmod(lineNumber, passesPerRow)
 
-        if self._infRepeat:
+        if self.__infRepeat:
             imgRow = imgRow % imgHeight
 
         firstCol = (r == 0)
         lastCol = (r == passesPerRow - 1)
 
-        color = self._numColors - 1 - ((lineNumber + 1) % (2 * self._numColors)) // 2
+        color = self.__numColors - 1 - ((lineNumber + 1) % (2 * self.__numColors)) // 2
 
-        indexToSend = self._numColors * imgRow + color
+        indexToSend = self.__numColors * imgRow + color
 
         sendBlankLine = not firstCol and not lastCol and even(lineNumber)
 
@@ -415,8 +481,8 @@ class AYABControl(object):
 
     # Ribber, Circular
     # not restricted to 2 colors
-    def _circular_ribber(self, lineNumber, imgHeight):
-        lenImgExpanded = self._numColors * imgHeight
+    def _circular_ribber(self, lineNumber):
+        lenImgExpanded = self.__numColors * self.__image.imgHeight()
         
         # A B  A B  A B  .. (color)
         # 0-0- 1-1- 2-2- .. (imgRow)
@@ -428,12 +494,12 @@ class AYABControl(object):
         sendBlankLine = odd(lineNumber)
         h = lineNumber // 2
 
-        h += self._numColors * self._startLine
+        h += self.__numColors * self.__startLine
 
-        if self._infRepeat:
+        if self.__infRepeat:
             h  = h % lenImgExpanded
 
-        imgRow, color = divmod(h, self._numColors)
+        imgRow, color = divmod(h, self.__numColors)
 
         indexToSend = h
 
@@ -445,20 +511,19 @@ class AYABControl(object):
         '''Finite State Machine'''
         result = AYABControlKnitResult.NONE
 
-        if self._current_state != KnittingState.SETUP:
-            rcvMsg, rcvParam = self.__checkSerial()
+        if self.__current_state != KnittingState.SETUP:
+            rcvMsg, rcvParam = self._checkSerial()
 
-        if self._current_state == KnittingState.SETUP:
+        if self.__current_state == KnittingState.SETUP:
             self.__formerRequest = 0
             self.__lineBlock = 0
-            self._image = pImage
-            self._startLine = pImage.startLine()
-
-            self._numColors = pOptions["num_colors"]
-            self._knitting_mode = pOptions["knitting_mode"]
-            self._infRepeat = pOptions["inf_repeat"]
-
+            self.__image = pImage
+            self.__startLine = pImage.startLine()
+            self.__numColors = pOptions["num_colors"]
+            self.__knitting_mode = pOptions["knitting_mode"]
+            self.__infRepeat = pOptions["inf_repeat"]
             self.__infRepeat_repeats = 0
+            self.__progress.reset()
 
             if not self.__get_knit_func():
                 result = AYABControlKnitResult.ERROR_INVALID_SETTINGS
@@ -472,46 +537,46 @@ class AYABControl(object):
                     self.__logger.error("Could not open serial port")
                     result = AYABControlKnitResult.ERROR_SERIAL_PORT
  
-                self._current_state = KnittingState.INIT
+                self.__current_state = KnittingState.INIT
 
-        elif self._current_state == KnittingState.INIT:
+        elif self.__current_state == KnittingState.INIT:
             if rcvMsg == 'cnfInfo':
-                if rcvParam == self._API_VERSION:
-                    self._current_state = KnittingState.WAIT_FOR_INIT
+                if rcvParam == self.__API_VERSION:
+                    self.__current_state = KnittingState.WAIT_FOR_INIT
                     result = AYABControlKnitResult.WAIT_FOR_INIT
                 else:
                     self.__logger.error("wrong API version: " +
                                         str(rcvParam) + (" ,expected: ") +
-                                        str(self._API_VERSION))
+                                        str(self.__API_VERSION))
                     result = AYABControlKnitResult.ERROR_WRONG_API
             else:
                 self.__ayabCom.req_info()
                 result = AYABControlKnitResult.CONNECTING_TO_MACHINE
 
-        elif self._current_state == KnittingState.WAIT_FOR_INIT:
+        elif self.__current_state == KnittingState.WAIT_FOR_INIT:
             if rcvMsg == "indState":
                 if rcvParam == 1:
-                    self.__ayabCom.req_start(self._image.knitStartNeedle(),
-                                             self._image.knitStopNeedle(),
+                    self.__ayabCom.req_start(self.__image.knitStartNeedle(),
+                                             self.__image.knitStopNeedle(),
                                              pOptions["continuousReporting"])
-                    self._current_state = KnittingState.START
+                    self.__current_state = KnittingState.START
                 else:
                     self.__logger.debug("init failed")
 
-        elif self._current_state == KnittingState.START:
+        elif self.__current_state == KnittingState.START:
             if rcvMsg == 'cnfStart':
                 if rcvParam == 1:
-                    self._current_state = KnittingState.OPERATE
+                    self.__current_state = KnittingState.OPERATE
                     result = AYABControlKnitResult.PLEASE_KNIT
                 else:
                     self.__logger.error("device not ready")
                     result = AYABControlKnitResult.DEVICE_NOT_READY
 
-        elif self._current_state == KnittingState.OPERATE:
+        elif self.__current_state == KnittingState.OPERATE:
             if rcvMsg == 'reqLine':
                 imageFinished = self.__cnfLine(rcvParam)
                 if imageFinished:
-                    self._current_state = KnittingState.SETUP
+                    self.__current_state = KnittingState.SETUP
                     result = AYABControlKnitResult.FINISHED
 
         return result

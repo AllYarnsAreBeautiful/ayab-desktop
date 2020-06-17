@@ -24,19 +24,23 @@ import sys
 import os
 import logging
 from math import ceil
+from bitarray import bitarray
+import numpy as np
 
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtWidgets import QMainWindow
-from PyQt5.QtCore import Qt, QThread, pyqtSignal, pyqtSlot
+from PyQt5.QtCore import Qt, QThread, pyqtSignal
 
 from PIL import Image,ImageOps
 from fysom import FysomError
 
 from ayab.ayab_gui import Ui_MainWindow
-from ayab.plugins.ayab_plugin import AyabPlugin
-from ayab.plugins.ayab_plugin.firmware_flash import FirmwareFlash
 from ayab.ayab_about import Ui_AboutForm
 from ayab.ayab_preferences import Preferences
+from ayab.plugins.ayab_plugin import AyabPlugin
+from ayab.plugins.ayab_plugin.firmware_flash import FirmwareFlash
+from ayab.plugins.ayab_plugin.ayab_progress import Ui_Progress
+from ayab.plugins.ayab_plugin.ayab_control import KnittingMode, Progress
 
 from DAKimport import DAKimport
 
@@ -47,6 +51,12 @@ import serial.tools.list_ports
 # from playsound import playsound
 
 MACHINE_WIDTH = 200
+
+# TODO move to generic configuration
+MACHINE_WIDTH = 200
+BAR_HEIGHT = 5.0
+LIMIT_BAR_WIDTH = 0.5
+
 
 logging.basicConfig(filename='ayab_log.txt',
                     level=logging.DEBUG,
@@ -65,18 +75,51 @@ if hasattr(Qt, 'AA_UseHighDpiPixmaps'):
     QtWidgets.QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
 # Remove Help Button
 if hasattr(Qt, 'AA_DisableWindowContextHelpButton'):
-    QtWidgets.QApplication.setAttribute(Qt.AA_DisableWindowContextHelpButton,
-                                        True)
+    QtWidgets.QApplication.setAttribute(Qt.AA_DisableWindowContextHelpButton, True)
+
+
+def label(text):
+    table = "<table><tbody><tr height='12'><td style='font-weight: normal;'>" + text + "</td></tr></tbody></table>"
+    label = QtWidgets.QLabel()
+    label.setText(table)
+    label.setTextFormat(Qt.RichText)
+    return label
+
+def stitch(color, symbol, bit, alt_color=None):
+    table = "<table style='font-weight: normal;'><tbody><tr height='12'><td width='12' align='center' "
+    if bit:
+        table = table + "style='border: 1 solid black; color: #{:06x}; background-color: #{:06x};'>".format(contrast_color(color), color) + chr(symbol)
+    elif alt_color is not None:
+        table = table + "style='border: 1 solid black; color: #{:06x}; background-color: #{:06x};'>".format(contrast_color(alt_color), alt_color) + chr(symbol)
+    else:
+        table = table + "style='border: 1 dotted black;'>"
+    table = table + "</td></tr></tbody></table>"
+    label = QtWidgets.QLabel()
+    label.setText(table)
+    label.setTextFormat(Qt.RichText)
+    return label
+
+def rgb2array(color):
+    return np.array([color // 0x1000, (color // 0x100) & 0xFF, color & 0xFF])
+
+def greyscale(rgb):
+    return np.dot([.299, .587, .114], rgb)
+
+def contrast_color(color):
+    return [0x000000,0xFFFFFF][greyscale(rgb2array(color)) < 0x80]
+
 
 class GuiMain(QMainWindow):
     """GuiMain is the main object that handles the instance of AYAB's GUI from ayab_gui.UiForm .
 
-    GuiMain inherits from QMainWindow and instanciates a window with the form components form ayab_gui.UiForm.
+    GuiMain inherits from QMainWindow and instantiates a window with the form components form ayab_gui.UiForm.
     """
-
+    signalNewProgressWindow = pyqtSignal(int, int, int, int)
+    signalShowProgressWindow = pyqtSignal()
     signalUpdateProgress = pyqtSignal(int, int, int)
-    signalUpdateColor = pyqtSignal('QString')
+    signalUpdateColorSymbol = pyqtSignal('QString')
     signalUpdateStatus = pyqtSignal(int, int, 'QString', int)
+    signalUpdateKnitrow = pyqtSignal(Progress, int)
     signalUpdateNotification = pyqtSignal('QString')
     signalDisplayPopUp = pyqtSignal('QString', 'QString')
     signalUpdateNeedles = pyqtSignal(int, int)
@@ -127,16 +170,26 @@ class GuiMain(QMainWindow):
         self.ui.label_current_row.setText("")
         self.ui.label_current_color.setText("")
 
-    def update_progress(self, row, total=0, repeats=0):
+    def newProgressWindow(self):
+        '''Generates knit progress window.'''
+        try:
+            self.kp.pd.close()
+        except:
+            pass
+        self.kp = Ui_Progress()
+        self.kp.pd.canceled.connect(self.cancel_knitting_process)
+        return
+
+    def updateProgress(self, row, total=0, repeats=0):
         '''Updates the Progress Bar.'''
-        #Store to local variable
+        # Store to local variable
         self.var_progress = row
         self.refresh_scene()
 
         # Update label
         if total != 0:
             text = "Row {0}/{1}".format(row, total)
-            if repeats != 0:
+            if repeats >= 0:
                 text += " ({0} repeats completed)".format(repeats)
         else:
             text = ""
@@ -145,12 +198,12 @@ class GuiMain(QMainWindow):
         options_ui = self.enabled_plugin.options_ui
         options_ui.label_progress.setText("{0}/{1}".format(row, total))
 
-    def update_color(self, color):
-        '''Updates the current color.'''
+    def updateColorSymbol(self, colorSymbol):
+        '''Updates the current color symbol.'''
         text = ""
-        if color != "":
+        if colorSymbol != "":
             text += "Color "
-        self.ui.label_current_color.setText(text + color)
+        self.ui.label_current_color.setText(text + colorSymbol)
             
     def updateStatus(self, hall_l, hall_r, carriage_type, carriage_position):
         options_ui = self.enabled_plugin.options_ui
@@ -160,6 +213,41 @@ class GuiMain(QMainWindow):
         options_ui.label_hall_r.setText(str(hall_r))
         options_ui.slider_position.setValue(carriage_position)
         options_ui.label_carriage.setText(carriage_type)
+
+    def updateKnitrow(self, progress, row_multiplier):
+        if progress.lineNumber > self.kp.row:
+            self.kp.row += 1
+        if progress.lineNumber == self.kp.row:
+            row, swipe = divmod(progress.lineNumber, row_multiplier)
+            if row < progress.total_rows or progress.repeats >= 0:
+                # row header on new line
+                direction = progress.lineNumber % 2
+                w0 = label("Row")
+                self.kp.grid.addWidget(w0, progress.lineNumber, 0)
+                w1 = label(str(row + 1))
+                self.kp.grid.addWidget(w1, progress.lineNumber, 1, 1, 1, Qt.AlignRight)
+                w2 = label("Pass " + str(swipe + 1))
+                self.kp.grid.addWidget(w2, progress.lineNumber, 2)
+                if progress.colorSymbol == "":
+                    w3 = label("")
+                else:
+                    w3 = label("Color " + progress.colorSymbol)
+                    self.kp.grid.addWidget(w3, progress.lineNumber, 3)
+                # TODO: report carriage
+                # w4 = label("KR") # self.carriage
+                w4 = label(["\u2192 ","\u2190 "][direction])
+                self.kp.grid.addWidget(w4, progress.lineNumber, 4)
+                # TODO: hints, notes, memos
+                # self.kp.area.ensureWidgetVisible(w0)
+            # graph line of stitches
+            for c in range(len(progress.bits)):
+                wc = stitch(progress.color, 0, progress.bits[c], progress.alt_color)
+                self.kp.grid.addWidget(wc, self.kp.row, 6 + c)
+            # if not infinite repeats, update progress bar
+            if progress.repeats < 0 and progress.total_rows > 0:  
+                self.kp.pd.setValue(100 * (row + 1) / progress.total_rows)
+            self.kp.pd.update()
+        return
         
     def update_file_selected_text_field(self, route):
         '''Sets self.image_file_route and ui.filename_lineedit to route.'''
@@ -210,11 +298,12 @@ class GuiMain(QMainWindow):
         self.ui.widget_optionsdock.setEnabled(False)
         self.ui.knit_button.setEnabled(False)
         self.ui.cancel_button.setEnabled(True)
-
+        # start thread for knit plugin
         self.gt = GenericThread(self.enabled_plugin.knit, parent_window=self)
         self.gt.start()
 
     def cancel_knitting_process(self):
+        self.kp.pd.reset()
         self.enabled_plugin.cancel()
 
     def resetUI(self):
@@ -234,9 +323,11 @@ class GuiMain(QMainWindow):
         self.ui.actionLoad_AYAB_Firmware.triggered.connect(self.generate_firmware_ui)
         self.ui.image_pattern_view.setDragMode(QtWidgets.QGraphicsView.ScrollHandDrag)
         # Connecting Signals.
-        self.signalUpdateProgress.connect(self.update_progress)
-        self.signalUpdateColor.connect(self.update_color)
+        self.signalNewProgressWindow.connect(self.newProgressWindow)
+        self.signalUpdateProgress.connect(self.updateProgress)
+        self.signalUpdateColorSymbol.connect(self.updateColorSymbol)
         self.signalUpdateStatus.connect(self.updateStatus)
+        self.signalUpdateKnitrow.connect(self.updateKnitrow)
         self.signalUpdateNotification.connect(self.slotUpdateNotification)
         self.signalDisplayPopUp.connect(self.display_blocking_pop_up)
         self.signalUpdateNeedles.connect(self.slotUpdateNeedles)
@@ -288,8 +379,7 @@ class GuiMain(QMainWindow):
         self.ui.menuImage_Actions.setEnabled(True)
         # Tell loaded plugin elements about changed parameters
         width, height = self.pil_image.size
-        self.enabled_plugin.slotSetImageDimensions(width,
-                                                   height)
+        self.enabled_plugin.slotSetImageDimensions(width, height)
 
     def refresh_scene(self):
         '''Updates the current scene '''
@@ -306,10 +396,6 @@ class GuiMain(QMainWindow):
 
         qscene = QtWidgets.QGraphicsScene()
 
-        # TODO move to generic configuration
-        machine_width = MACHINE_WIDTH
-        bar_height = 5.0
-
         # add pattern and move accordingly to alignment
         pattern = qscene.addPixmap(pixmap)
         if self.imageAlignment == 'left':
@@ -318,7 +404,7 @@ class GuiMain(QMainWindow):
                 0)
         elif self.imageAlignment == 'center':
             pattern.setPos(
-                -(pixmap.width()/2.0)+((self.start_needle+self.stop_needle)/2) - 100,
+                -(pixmap.width() / 2.0) + ((self.start_needle + self.stop_needle) / 2) - 100,
                 0)
         elif self.imageAlignment == 'right':
             pattern.setPos(
@@ -329,41 +415,39 @@ class GuiMain(QMainWindow):
 
         # Draw "machine"
         rect_orange = QtWidgets.QGraphicsRectItem(
-            -(machine_width/2.0),
-            -bar_height,
-            (machine_width/2.0),
-            bar_height)
+            -(MACHINE_WIDTH / 2.0),
+            -BAR_HEIGHT,
+            (MACHINE_WIDTH / 2.0),
+            BAR_HEIGHT)
         rect_orange.setBrush(QtGui.QBrush(QtGui.QColor("orange")))
         rect_green = QtWidgets.QGraphicsRectItem(
             0.0,
-            -bar_height,
-            (machine_width/2.0),
-            bar_height)
+            -BAR_HEIGHT,
+            (MACHINE_WIDTH / 2.0),
+            BAR_HEIGHT)
         rect_green.setBrush(QtGui.QBrush(QtGui.QColor("green")))
 
         qscene.addItem(rect_orange)
         qscene.addItem(rect_green)
 
         # Draw limiting lines (start/stop needle)
-        limit_bar_width = 0.5
-
         qscene.addItem(
             QtWidgets.QGraphicsRectItem(self.start_needle - 101,
-                                        -bar_height,
-                                        limit_bar_width,
-                                        pixmap.height() + 2*bar_height))
+                                        -BAR_HEIGHT,
+                                        LIMIT_BAR_WIDTH,
+                                        pixmap.height() + 2 * BAR_HEIGHT))
         qscene.addItem(
             QtWidgets.QGraphicsRectItem(self.stop_needle - 100,
-                                        -bar_height,
-                                        limit_bar_width,
-                                        pixmap.height() + 2*bar_height))
+                                        -BAR_HEIGHT,
+                                        LIMIT_BAR_WIDTH,
+                                        pixmap.height() + 2 * BAR_HEIGHT))
 
         # Draw knitting progress
         qscene.addItem(
-            QtWidgets.QGraphicsRectItem(-(machine_width/2.0),
+            QtWidgets.QGraphicsRectItem(-(MACHINE_WIDTH / 2.0),
                                         pixmap.height() - self.var_progress,
-                                        machine_width,
-                                        limit_bar_width))
+                                        MACHINE_WIDTH,
+                                        LIMIT_BAR_WIDTH))
 
         qv = self.ui.image_pattern_view
         qv.resetTransform()
@@ -521,15 +605,14 @@ class GuiMain(QMainWindow):
 
         # Update maximum values
         width, height = self.pil_image.size
-        self.enabled_plugin.slotSetImageDimensions(width,
-                                                   height)
+        self.enabled_plugin.slotSetImageDimensions(width, height)
         # Draw canvas
         self.refresh_scene()
 
     def __rotate_image(self, image, args):
         # TODO crop width if it exceeds the maximum after transform
         if not args:
-            logging.debug("image not altered on __rotate_image.")
+            logging.debug("image not altered on _rotate_image.")
             return image
         logging.debug("rotating image")
         rotated_image = image.rotate(args[0], expand=1)
@@ -561,12 +644,12 @@ class GuiMain(QMainWindow):
         """
         old_h = image.size[1]
         old_w = image.size[0]
-        new_h = old_h*args[0] # pVertical
-        new_w = old_w*args[1] # pHorizontal
-        new_im = Image.new('RGB', (new_w,new_h))
-        for h in range(0,new_h,old_h):
-          for w in range(0,new_w,old_w):
-            new_im.paste(image, (w,h))
+        new_h = old_h * args[0] # pVertical
+        new_w = old_w * args[1] # pHorizontal
+        new_im = Image.new('RGB', (new_w, new_h))
+        for h in range(0, new_h, old_h):
+            for w in range(0, new_w, old_w):
+                new_im.paste(image, (w, h))
         return new_im
 
     def __reflect_image(self, image, args):
@@ -586,16 +669,16 @@ class GuiMain(QMainWindow):
         if w1 == 1:
             row_im = image
         else:
-            flip_im = self.__hflip_image(image, tuple())
-            row_im = self.__repeat_image(flip_im, (1,w1))
+            flip_im = self._hflip_image(image, tuple())
+            row_im = self._repeat_image(flip_im, (1, w1))
             for i in range(w0, w1, 2):
-                row_im.paste(image, (i*w,0))
+                row_im.paste(image, (i * w, 0))
         if h1 == 1:
             return row_im
-        flip_im = self.__vflip_image(row_im, tuple())
-        new_im = self.__repeat_image(flip_im, (h1,1))
+        flip_im = self._vflip_image(row_im, tuple())
+        new_im = self._repeat_image(flip_im, (h1, 1))
         for i in range(h0, h1, 2):
-            new_im.paste(row_im, (0,i*h))
+            new_im.paste(row_im, (0, i * h))
         return new_im
 
     def __stretch_image(self, image, args):
@@ -609,7 +692,7 @@ class GuiMain(QMainWindow):
         old_w = image.size[0]
         new_h = old_h*args[0] # pVertical
         new_w = old_w*args[1] # pHorizontal
-        new_im = image.resize((new_w,new_h),Image.BOX)
+        new_im = image.resize((new_w, new_h), Image.BOX)
         return new_im
 
     def set_preferences(self):
@@ -623,12 +706,12 @@ class GuiMain(QMainWindow):
 
     def slotPlaysound(self, event):
         return
-        #if event == "start":
-        #    playsound(self.app_context.get_resource("assets/start.wav"))
-        #if event == "nextline":
-        #    playsound(self.app_context.get_resource("assets/nextline.wav"))
-        #if event == "finished":
-        #    playsound(self.app_context.get_resource("assets/finish.wav"))
+        # if event == "start":
+        #     playsound(self.app_context.get_resource("assets/start.wav"))
+        # if event == "nextline":
+        #     playsound(self.app_context.get_resource("assets/nextline.wav"))
+        # if event == "finished":
+        #     playsound(self.app_context.get_resource("assets/finish.wav"))
 
 class Mirrors:
     '''Image relection options and GUI methods'''
@@ -642,31 +725,31 @@ class Mirrors:
         self.mirrors[box] = not self.mirrors[box]
 
     def __toggled0(self):
-        self.__toggled(0)
+        self._toggled(0)
 
     def __toggled1(self):
-        self.__toggled(1)
+        self._toggled(1)
 
     def __toggled2(self):
-        self.__toggled(2)
+        self._toggled(2)
 
     def __toggled3(self):
-        self.__toggled(3)
+        self._toggled(3)
 
     def reflectDialog(self):
         self.dialog.setWindowTitle("Reflect image")
         self.dialog.setWindowModality(Qt.ApplicationModal)
-        self.dialog.resize(200,200)
+        self.dialog.resize(200, 200)
         group = QtWidgets.QGroupBox("Add mirrors")
         group.setFlat(True)
         check0 = QtWidgets.QCheckBox("Left")
         check1 = QtWidgets.QCheckBox("Right")
         check2 = QtWidgets.QCheckBox("Top")
         check3 = QtWidgets.QCheckBox("Bottom")
-        check0.toggled.connect(self.__toggled0)
-        check1.toggled.connect(self.__toggled1)
-        check2.toggled.connect(self.__toggled2)
-        check3.toggled.connect(self.__toggled3)
+        check0.toggled.connect(self._toggled0)
+        check1.toggled.connect(self._toggled1)
+        check2.toggled.connect(self._toggled2)
+        check3.toggled.connect(self._toggled3)
         enter = QtWidgets.QPushButton("OK")
         enter.clicked.connect(self.dialog.accept)
         layout = QtWidgets.QVBoxLayout()
