@@ -19,21 +19,26 @@
 """
 Mockup Class of AYABCommunication for Test/Simulation purposes
 """
-
+from PyQt5 import QtWidgets
 from .ayab_communication import AyabCommunication
 
 import logging
+from time import sleep
 
 
 class AyabCommunicationMockup(AyabCommunication):
     """Class Handling the serial communication protocol."""
-    def __init__(self) -> None:
+    def __init__(self, delay = True, step = False) -> None:
         logging.basicConfig(level=logging.DEBUG)
         self.__logger = logging.getLogger(type(self).__name__)
         self.__is_open = False
         self.__is_started = False
         self.__rxMsgList = list()
         self.__line_count = 0
+        self.__delay = delay
+        self.__step = step
+        if self.__delay:
+            sleep(5) # wait for knitting progress dialog
 
     def __del__(self) -> None:
         pass
@@ -54,6 +59,20 @@ class AyabCommunicationMockup(AyabCommunication):
             self.__line_count += 1
             self.__line_count %= 256
             self.__rxMsgList.append(reqLine)
+            if self.__delay:
+                sleep(1) # wait for knitting progress dialog to update
+
+            # step through output line by line
+            if self.__step:
+                # pop up box waits for user input before moving on to next line
+                msg = QtWidgets.QMessageBox()
+                msg.setIcon(QtWidgets.QMessageBox.Information)
+                msg.setText("Line number = " + str(self.__line_count))
+                msg.setStandardButtons(QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel)
+                ret = None
+                ret = msg.exec_()
+                while ret == None:
+                    pass
 
         if len(self.__rxMsgList) > 0:
             return self.parse_update(self.__rxMsgList.pop(0))
@@ -76,5 +95,5 @@ class AyabCommunicationMockup(AyabCommunication):
         cnfTest = bytearray([0xC4, 0x1])
         self.__rxMsgList.append(cnfTest)
 
-    def cnf_line(self, lineNumber, lineData, flags, crc8) -> bool:
+    def cnf_line(self, lineNumber, lineData, flags) -> bool:
         return True

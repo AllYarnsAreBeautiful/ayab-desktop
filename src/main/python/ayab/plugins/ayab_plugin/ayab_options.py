@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'src/main/python/ayab/plugins/ayab_plugin/ayab_options.ui'
+# Form implementation generated from reading ui file 'ayab_options.ui'
 #
 # Created by: PyQt5 UI code generator 5.14.2
 #

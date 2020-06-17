@@ -24,6 +24,11 @@ import numpy as np
 
 MACHINE_WIDTH = 200
 
+
+def array2rgb(a):
+    return (a[0] & 0xFF) * 0x10000 + (a[1] & 0xFF) * 0x100 + (a[2] & 0xFF)
+
+
 class ayabImage(object):
     def __init__(self, pil_image, pNumColors=2):
         self.__numColors = pNumColors
@@ -85,18 +90,34 @@ class ayabImage(object):
         self.__imageIntern = \
             [[0 for i in range(imgWidth)] for j in range(imgHeight)]
         self.__imageColors = \
-            [[0 for i in range(num_colors)] for j in range(imgHeight)]
+            [[0 for i in range(num_colors)] for j in range(imgHeight)]  # unused?
         self.__imageExpanded = \
             [bitarray([False] * imgWidth) for j in range(num_colors * imgHeight)]
+
         # Limit number of colors in image
-        quantized = self.__image.quantize(num_colors, dither=None)
+        self.__image = self.__image.quantize(num_colors, dither=None)
+
         # Order colors most-frequent first
         # NB previously they were ordered lightest-first
         histogram = self.__image.histogram()
         dest_map = list(np.argsort(histogram[0:num_colors]))
         dest_map.reverse()
-        self.__image = quantized
         self.__image = self.__image.remap_palette(dest_map)
+
+        # reduce number of colors if necessary
+        actual_num_colors = sum(map(lambda x: x > 0, self.__image.histogram()))
+        if actual_num_colors < num_colors:
+            # TODO: issue warning if number of colors is less than expected
+            # TODO: reduce number of colors
+            # self.__numColors = num_colors = actual_num_colors
+            # TODO: reduce number of colors in configuration box
+            pass
+
+        # get palette
+        rgb = self.__image.getpalette()[slice(0, 3 * num_colors)]
+        col_array = np.reshape(rgb, (num_colors, 3))
+        self.palette = list(map(array2rgb, col_array))
+
         # Make internal representations of image
         for row in range(imgHeight):
             for col in range(imgWidth):
