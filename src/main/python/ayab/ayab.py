@@ -29,10 +29,13 @@ from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtWidgets import QMainWindow
 from PyQt5.QtCore import Qt, QThread, pyqtSignal, pyqtSlot
 
-from PIL import Image,ImageOps
+from PIL import Image
 from fysom import FysomError
 
 from ayab.ayab_gui import Ui_MainWindow
+from ayab.ayab_about import Ui_AboutForm
+from .ayab_transforms import Transformable, Mirrors
+from ayab.ayab_preferences import Preferences
 from ayab.plugins.ayab_plugin import AyabPlugin
 from ayab.plugins.ayab_plugin.firmware_flash import FirmwareFlash
 from ayab.ayab_about import Ui_AboutForm
@@ -65,8 +68,8 @@ if hasattr(Qt, 'AA_UseHighDpiPixmaps'):
     QtWidgets.QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
 # Remove Help Button
 if hasattr(Qt, 'AA_DisableWindowContextHelpButton'):
-    QtWidgets.QApplication.setAttribute(Qt.AA_DisableWindowContextHelpButton,
-                                        True)
+    QtWidgets.QApplication.setAttribute(Qt.AA_DisableWindowContextHelpButton, True)
+
 
 class GuiMain(QMainWindow):
     """GuiMain is the main object that handles the instance of AYAB's GUI from ayab_gui.UiForm .
@@ -160,7 +163,7 @@ class GuiMain(QMainWindow):
         options_ui.label_hall_r.setText(str(hall_r))
         options_ui.slider_position.setValue(carriage_position)
         options_ui.label_carriage.setText(carriage_type)
-        
+
     def update_file_selected_text_field(self, route):
         '''Sets self.image_file_route and ui.filename_lineedit to route.'''
         self.ui.filename_lineedit.setText(route)
@@ -488,30 +491,19 @@ class GuiMain(QMainWindow):
         '''Public rotate right current Image function.'''
         self.apply_image_transform("rotate", -90.0)
 
-    def apply_image_transform(self, transform_type, *args):
+    def apply_image_transform(self, method, *args):
         '''Executes an image transform specified by key and args.
 
-        Calls a function from transform_dict, forwarding args and the image,
+        Calls a transform function, forwarding args and the image,
         and replaces the QtImage on scene.
         '''
-        transform_dict = {
-            'invert': self.__invert_image,
-            'stretch': self.__stretch_image,
-            'repeat': self.__repeat_image,
-            'reflect': self.__reflect_image,
-            'hflip': self.__hflip_image,
-            'vflip': self.__vflip_image,
-            'rotate': self.__rotate_image,
-        }
-        transform = transform_dict.get(transform_type)
-        image = self.pil_image
-        if not image:
-            return
-        # Executes the transform function
+        transform = getattr(Transformable, method)
         try:
-            image = transform(image, args)
+            image = transform(self.pil_image, args)
         except:
             logging.error("Error on executing transform")
+        if not image:
+            return
 
         # Update the view
         self.pil_image = image
@@ -525,92 +517,6 @@ class GuiMain(QMainWindow):
                                                    height)
         # Draw canvas
         self.refresh_scene()
-
-    def __rotate_image(self, image, args):
-        # TODO crop width if it exceeds the maximum after transform
-        if not args:
-            logging.debug("image not altered on __rotate_image.")
-            return image
-        logging.debug("rotating image")
-        rotated_image = image.rotate(args[0], expand=1)
-        return rotated_image
-
-    def __invert_image(self, image, args):
-        if image.mode == 'RGBA':
-            r, g, b, a = image.split()
-            rgb_image = Image.merge('RGB', (r, g, b))
-            inverted_image = ImageOps.invert(rgb_image)
-        else:
-            inverted_image = ImageOps.invert(image)
-        return inverted_image
-
-    def __hflip_image(self, image, args):
-        mirrored_image = ImageOps.mirror(image)
-        return mirrored_image
-
-    def __vflip_image(self, image, args):
-        flipped_image = ImageOps.flip(image)
-        return flipped_image
-
-    def __repeat_image(self, image, args):
-        # TODO crop width if it exceeds the maximum after transform
-        """
-        Repeat image.
-        Repeat pHorizontal times horizontally, pVertical times vertically
-        Sturla Lange 2017-12-30
-        """
-        old_h = image.size[1]
-        old_w = image.size[0]
-        new_h = old_h*args[0] # pVertical
-        new_w = old_w*args[1] # pHorizontal
-        new_im = Image.new('RGB', (new_w,new_h))
-        for h in range(0,new_h,old_h):
-          for w in range(0,new_w,old_w):
-            new_im.paste(image, (w,h))
-        return new_im
-
-    def __reflect_image(self, image, args):
-        # TODO crop width if it exceeds the maximum after transform
-        """
-        Reflect image.
-        Mirrors Left, Right, Top, Bottom
-        Tom Price 2020-06-01
-        """
-        mirrors = args[0]
-        w = image.size[0]
-        h = image.size[1]
-        w0 = mirrors[0]
-        h0 = mirrors[2]
-        w1 = 1 + mirrors[0] + mirrors[1]
-        h1 = 1 + mirrors[2] + mirrors[3]
-        if w1 == 1:
-            row_im = image
-        else:
-            flip_im = self.__hflip_image(image, tuple())
-            row_im = self.__repeat_image(flip_im, (1,w1))
-            for i in range(w0, w1, 2):
-                row_im.paste(image, (i*w,0))
-        if h1 == 1:
-            return row_im
-        flip_im = self.__vflip_image(row_im, tuple())
-        new_im = self.__repeat_image(flip_im, (h1,1))
-        for i in range(h0, h1, 2):
-            new_im.paste(row_im, (0,i*h))
-        return new_im
-
-    def __stretch_image(self, image, args):
-        # TODO crop width if it exceeds the maximum after transform
-        """
-        Stretch image.
-        Stretch pHorizontal times horizontally, pVertical times vertically
-        Tom Price 2020-05-30
-        """
-        old_h = image.size[1]
-        old_w = image.size[0]
-        new_h = old_h*args[0] # pVertical
-        new_w = old_w*args[1] # pHorizontal
-        new_im = image.resize((new_w,new_h),Image.BOX)
-        return new_im
 
     def set_preferences(self):
         return self.prefs.setPrefsDialog()
@@ -629,57 +535,6 @@ class GuiMain(QMainWindow):
         #    playsound(self.app_context.get_resource("assets/nextline.wav"))
         #if event == "finished":
         #    playsound(self.app_context.get_resource("assets/finish.wav"))
-
-class Mirrors:
-    '''Image relection options and GUI methods'''
-
-    def __init__(self):
-        self.mirrors = [False, False, False, False]
-        self.dialog = QtWidgets.QDialog()
-        self.result = self.reflectDialog()
-
-    def __toggled(self, box):
-        self.mirrors[box] = not self.mirrors[box]
-
-    def __toggled0(self):
-        self.__toggled(0)
-
-    def __toggled1(self):
-        self.__toggled(1)
-
-    def __toggled2(self):
-        self.__toggled(2)
-
-    def __toggled3(self):
-        self.__toggled(3)
-
-    def reflectDialog(self):
-        self.dialog.setWindowTitle("Reflect image")
-        self.dialog.setWindowModality(Qt.ApplicationModal)
-        self.dialog.resize(200,200)
-        group = QtWidgets.QGroupBox("Add mirrors")
-        group.setFlat(True)
-        check0 = QtWidgets.QCheckBox("Left")
-        check1 = QtWidgets.QCheckBox("Right")
-        check2 = QtWidgets.QCheckBox("Top")
-        check3 = QtWidgets.QCheckBox("Bottom")
-        check0.toggled.connect(self.__toggled0)
-        check1.toggled.connect(self.__toggled1)
-        check2.toggled.connect(self.__toggled2)
-        check3.toggled.connect(self.__toggled3)
-        enter = QtWidgets.QPushButton("OK")
-        enter.clicked.connect(self.dialog.accept)
-        layout = QtWidgets.QVBoxLayout()
-        layout.addWidget(check0)
-        layout.addWidget(check1)
-        layout.addWidget(check2)
-        layout.addWidget(check3)
-        group.setLayout(layout)
-        vbox = QtWidgets.QVBoxLayout()
-        vbox.addWidget(group)
-        vbox.addWidget(enter)
-        self.dialog.setLayout(vbox)
-        return self.dialog.exec_()
 
 class GenericThread(QThread):
     '''A generic thread wrapper for functions on threads.'''
