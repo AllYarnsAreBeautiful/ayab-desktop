@@ -13,6 +13,8 @@ jobs:
     steps:
     - uses: actions/checkout@v2
       submodules: recursive
+    - name: Set GIT_TAG variable
+      run: echo ""::set-env name=GIT_TAG::$(git describe --tags)"
     - name: Set up Python 3.7
       uses: actions/setup-python@v2
       with:
@@ -28,10 +30,10 @@ jobs:
     - name: Create installer
       run: |
         python -m fbs installer
-    - name: Upload Artefact
+    - name: Upload Artifact
       uses: actions/upload-artifact@v2
       with:
-        name: AYABSetup.exe
+        name: AYABSetup-${GIT_TAG}.exe
         path: target/AYABSetup.exe
 
         
