@@ -110,7 +110,7 @@ class AyabPlugin(KnittingPlugin):
 
         # Mirroring option
         if conf.get("auto_mirror"):
-            pil_image = ImageOps.mirror(parent_ui.pil_image)
+            pil_image = ImageOps.mirror(pil_image)
 
         # TODO: detect if previous conf had the same
         # image to avoid re-generating.
