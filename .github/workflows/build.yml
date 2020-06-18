@@ -12,7 +12,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-      submodules: recursive
+      with:
+        submodules: recursive
     - name: Set GIT_TAG variable
       run: echo ""::set-env name=GIT_TAG::$(git describe --tags)"
     - name: Set up Python 3.7
