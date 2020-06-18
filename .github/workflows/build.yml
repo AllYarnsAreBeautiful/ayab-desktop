@@ -35,7 +35,7 @@ jobs:
     - name: Upload Artifact
       uses: actions/upload-artifact@v2
       with:
-        name: AYABSetup-${GIT_TAG}.exe
+        name: AYABSetup-${{env.GIT_TAG}}.exe
         path: target/AYABSetup.exe
 
         
