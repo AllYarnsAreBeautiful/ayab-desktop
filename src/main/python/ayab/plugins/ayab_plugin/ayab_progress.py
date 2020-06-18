@@ -23,7 +23,6 @@ from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtCore import Qt
 from bitarray import bitarray
 import numpy as np
-from time import sleep
 
 
 class Progress:
