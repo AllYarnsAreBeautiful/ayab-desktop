@@ -53,8 +53,6 @@ import serial.tools.list_ports
 
 # TODO move to generic configuration
 MACHINE_WIDTH = 200
-BAR_HEIGHT = 5.0
-LIMIT_BAR_WIDTH = 0.5
 
 
 logging.basicConfig(filename='ayab_log.txt',
@@ -83,7 +81,6 @@ class GuiMain(QMainWindow):
     GuiMain inherits from QMainWindow and instantiates a window with the form components form ayab_gui.UiForm.
     """
     signalResetProgressWindow = pyqtSignal()
-    signalShowProgressWindow = pyqtSignal()
     signalUpdateProgress = pyqtSignal(int, int, int)
     signalUpdateColorSymbol = pyqtSignal('QString')
     signalUpdateStatus = pyqtSignal(int, int, 'QString', int)
@@ -96,6 +93,9 @@ class GuiMain(QMainWindow):
     signalPlaysound = pyqtSignal('QString')
     signalUpdateButtonKnitEnabled = pyqtSignal(bool)
     signalUpdateWidgetKnitcontrolEnabled = pyqtSignal(bool)
+
+    BAR_HEIGHT = 5.0
+    LIMIT_BAR_WIDTH = 0.5
 
     def __init__(self, app_context):
         super(GuiMain, self).__init__(None)
@@ -238,7 +238,7 @@ class GuiMain(QMainWindow):
         self.gt.start()
 
     def cancel_knitting_process(self):
-        self.kp.reset()
+        # some kind of reset required?
         self.enabled_plugin.cancel()
 
     def resetUI(self):
@@ -264,7 +264,7 @@ class GuiMain(QMainWindow):
         self.signalUpdateStatus.connect(self.updateStatus)
         self.signalUpdateKnitProgress.connect(self.updateKnitProgress)
         self.signalUpdateNotification.connect(self.slotUpdateNotification)
-        self.signalDisplayPopUp.connect(self.display_blocking_pop_up)
+        self.signalDisplayPopUp.connect(self.displayBlockingPopUp)
         self.signalUpdateNeedles.connect(self.slotUpdateNeedles)
         self.signalUpdateAlignment.connect(self.slotUpdateAlignment)
         self.signalPlaysound.connect(self.slotPlaysound)
@@ -272,7 +272,7 @@ class GuiMain(QMainWindow):
         self.signalUpdateButtonKnitEnabled.connect(self.slotUpdateButtonKnitEnabled)
 
         # This blocks the other thread until signal is done
-        self.signalDisplayBlockingPopUp.connect(self.display_blocking_pop_up)
+        self.signalDisplayBlockingPopUp.connect(self.displayBlockingPopUp)
 
         self.ui.actionQuit.triggered.connect(QtCore.QCoreApplication.instance().quit)
         self.ui.actionAbout.triggered.connect(self.open_about_ui)
@@ -351,15 +351,15 @@ class GuiMain(QMainWindow):
         # Draw "machine"
         rect_orange = QtWidgets.QGraphicsRectItem(
             -(MACHINE_WIDTH / 2.0),
-            -BAR_HEIGHT,
+            -self.BAR_HEIGHT,
             (MACHINE_WIDTH / 2.0),
-            BAR_HEIGHT)
+            self.BAR_HEIGHT)
         rect_orange.setBrush(QtGui.QBrush(QtGui.QColor("orange")))
         rect_green = QtWidgets.QGraphicsRectItem(
             0.0,
-            -BAR_HEIGHT,
+            -self.BAR_HEIGHT,
             (MACHINE_WIDTH / 2.0),
-            BAR_HEIGHT)
+            self.BAR_HEIGHT)
         rect_green.setBrush(QtGui.QBrush(QtGui.QColor("green")))
 
         qscene.addItem(rect_orange)
@@ -368,21 +368,21 @@ class GuiMain(QMainWindow):
         # Draw limiting lines (start/stop needle)
         qscene.addItem(
             QtWidgets.QGraphicsRectItem(self.start_needle - 101,
-                                        -BAR_HEIGHT,
-                                        LIMIT_BAR_WIDTH,
-                                        pixmap.height() + 2 * BAR_HEIGHT))
+                                        -self.BAR_HEIGHT,
+                                        self.LIMIT_BAR_WIDTH,
+                                        pixmap.height() + 2 * self.BAR_HEIGHT))
         qscene.addItem(
             QtWidgets.QGraphicsRectItem(self.stop_needle - 100,
-                                        -BAR_HEIGHT,
-                                        LIMIT_BAR_WIDTH,
-                                        pixmap.height() + 2 * BAR_HEIGHT))
+                                        -self.BAR_HEIGHT,
+                                        self.LIMIT_BAR_WIDTH,
+                                        pixmap.height() + 2 * self.BAR_HEIGHT))
 
         # Draw knitting progress
         qscene.addItem(
             QtWidgets.QGraphicsRectItem(-(MACHINE_WIDTH / 2.0),
                                         pixmap.height() - self.var_progress,
                                         MACHINE_WIDTH,
-                                        LIMIT_BAR_WIDTH))
+                                        self.LIMIT_BAR_WIDTH))
 
         qv = self.ui.image_pattern_view
         qv.resetTransform()
@@ -393,7 +393,7 @@ class GuiMain(QMainWindow):
         text = "{} - {}".format(width, height)
         self.ui.label_notifications.setText("Image Dimensions: " + text)
 
-    def display_blocking_pop_up(self, message="", message_type="info"):
+    def displayBlockingPopUp(self, message="", message_type="info"):
         logging.debug("MessageBox {}: '{}'".format(message_type, message))
         box_function = {
             "error": QtWidgets.QMessageBox.critical,

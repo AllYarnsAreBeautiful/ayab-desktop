@@ -31,29 +31,32 @@ class AyabCommunicationMockup(AyabCommunication):
     def __init__(self, delay = True, step = False) -> None:
         logging.basicConfig(level=logging.DEBUG)
         self.__logger = logging.getLogger(type(self).__name__)
+        self.__delay = delay
+        self.__step = step
+        self.reset()
+
+    def __del__(self) -> None:
+        pass
+
+    def reset(self):
         self.__is_open = False
         self.__is_started = False
         self.__rxMsgList = list()
         self.__line_count = 0
-        self.__delay = delay
-        self.__step = step
-        if self.__delay:
-            sleep(2) # wait for knitting progress dialog
-
-    def __del__(self) -> None:
-        pass
 
     def is_open(self) -> bool:
         return self.__is_open
 
     def close_serial(self) -> None:
-        self.__is_open = False
+        self.reset()
 
     def open_serial(self, pPortname=None) -> bool:
         self.__is_open = True
+        if self.__delay:
+            sleep(2) # wait for knitting progress dialog
         return True
 
-    def update(self) -> list:
+    def update(self) -> tuple:
         if self.__is_open and self.__is_started:
             reqLine = bytearray([0x82, self.__line_count])
             self.__line_count += 1

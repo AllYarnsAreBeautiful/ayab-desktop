@@ -43,7 +43,9 @@ class AyabPlugin(KnittingPlugin):
         self.__ayab_control.close()
 
     def onknit(self, e):
-        self.__logger.debug("called onknit on AyabPlugin")
+        self.__logger.debug("called `ayab_plugin.onknit()`")
+
+        self.__emit_reset_progress_window()
 
         if self.conf["continuousReporting"] is True:
             self.options_ui.tabWidget.setCurrentIndex(1)
@@ -64,19 +66,17 @@ class AyabPlugin(KnittingPlugin):
 
         if result is AYABControlKnitResult.WAIT_FOR_INIT:
             self.__updateNotification(
-                        "Please init machine. (Set the carriage to mode KC-I "
-                        "or KC-II and move the carriage over the left "
-                        "turn mark)."
-                    )
+                "Please init machine. (Set the carriage to mode KC-I "
+                "or KC-II and move the carriage over the left turn mark).")
+
         if result is AYABControlKnitResult.ERROR_WRONG_API:
             self.__notify_user(
                 "Wrong Arduino Firmware Version. " +
                 "Please check if you have flashed " +
-                "the latest version. (" + str(self.__API_VERSION) + ")")
+                f"the latest version. ({self.__ayab_control.API_VERSION})")
 
         if result is AYABControlKnitResult.PLEASE_KNIT:
             self.__updateNotification("Please Knit")
-            self.__emit_show_progress_window()
             self.__emit_playsound("start")
 
         if result is AYABControlKnitResult.DEVICE_NOT_READY:
@@ -85,9 +85,9 @@ class AyabPlugin(KnittingPlugin):
                 "Device not ready, configure and try again.")
 
         if result is AYABControlKnitResult.FINISHED:
-            self.__updateNotification("Image transmission finished. "
-                                      "Please knit until you hear the "
-                                      "double beep sound.")
+            self.__updateNotification(
+                "Image transmission finished. Please knit until you "
+                "hear the double beep sound.")
             self.__emit_playsound("finished")
 
     def __knit_progress_handler(self, progress, row_multiplier):
@@ -102,13 +102,12 @@ class AyabPlugin(KnittingPlugin):
         self.__emit_knitprogress(progress, row_multiplier)
 
     def onconfigure(self, e):
-        self.__logger.debug("called onconfigure on AYAB Knitting Plugin")
-        # print ', '.join("%s: %s" % item for item in vars(e).items())
+        self.__logger.debug("called `ayab_plugin.onconfigure()`")
         parent_ui = self.__parent_ui
+        conf = self.get_configuration_from_ui(parent_ui)
 
         # Start to knit with the bottom first
         pil_image = parent_ui.pil_image.rotate(180)
-        conf = self.get_configuration_from_ui(parent_ui)
 
         # Mirroring option
         if conf.get("auto_mirror"):
@@ -117,17 +116,17 @@ class AyabPlugin(KnittingPlugin):
         # TODO: detect if previous conf had the same
         # image to avoid re-generating.
 
-        self.__image = ayab_image.ayabImage(pil_image, self.conf["num_colors"])
         try:
             self.__image = ayab_image.ayabImage(pil_image, self.conf["num_colors"])
         except:
             self.__notify_user("You need to set an image.", "error")
             return
 
-        if self.validate_configuration(conf):
-            self.__emit_widget_knitcontrol_enabled(True)
-            self.__emit_button_knit_enabled(True)
-
+        valid = self.validate_configuration(conf)
+        self.__emit_widget_knitcontrol_enabled(valid)
+        self.__emit_button_knit_enabled(valid)
+        if valid:
+            self.__emit_colorSymbol("")
             if conf.get("start_needle") and conf.get("stop_needle"):
                 self.__image.setKnitNeedles(conf.get("start_needle"),
                                             conf.get("stop_needle"))
@@ -137,20 +136,13 @@ class AyabPlugin(KnittingPlugin):
             self.__image.setStartLine(conf.get("start_line"))
             self.__emit_progress(conf.get("start_line") + 1,
                                  self.__image.imgHeight())
-            self.__emit_colorSymbol("")
-        else:
-            self.__emit_widget_knitcontrol_enabled(False)
-            self.__emit_button_knit_enabled(False)
-
-        # reset knit progress window but keep it hidden for now
-        self.__emit_reset_progress_window()
-        return
 
     def validate_configuration(self, conf):
         if conf.get("start_needle") and conf.get("stop_needle"):
             if conf.get("start_needle") > conf.get("stop_needle"):
                 self.__notify_user("Invalid needle start and end.", "warning")
                 return False
+
         if conf.get("start_line") > self.__image.imgHeight():
             self.__notify_user("Start Line is larger than the image.")
             return False
@@ -175,17 +167,19 @@ class AyabPlugin(KnittingPlugin):
         return True
 
     def onfinish(self, e):
+        self.__logger.debug("called `ayab_plugin.onfinish()`")
         self.__logger.info("Finished Knitting.")
         self.__ayab_control.close()
         self.__parent_ui.resetUI()
 
     def cancel(self):
-        self.__updateNotification("Knitting cancelled")
+        self.__updateNotification("Knitting canceled.")
         self.__knitImage = False
 
-    def onerror(self, e):
+    def onfail(self, e):
+        self.__logger.debug("called `ayab_plugin.onerror()`")
         # TODO add message info from event
-        self.__logger.error("Error while Knitting.")
+        self.__logger.error("Error while knitting.")
         self.__ayab_control.close()
 
     def __wait_for_user_action(self, message="", message_type="info"):
@@ -209,10 +203,6 @@ class AyabPlugin(KnittingPlugin):
     def __emit_reset_progress_window(self):
         """Sends the resetProgressWindow QtSignal."""
         self.__parent_ui.signalResetProgressWindow.emit()
-
-    def __emit_show_progress_window(self):
-        """Sends the showProgressWindow QtSignal."""
-        self.__parent_ui.signalShowProgressWindow.emit()
 
     def __emit_progress(self, row, total=0, repeats=0):
         """Sends the updateProgress QtSignal."""
@@ -373,7 +363,6 @@ class AyabPlugin(KnittingPlugin):
       dict: A dict with configuration.
 
     """
-
         self.conf = {}
         continuousReporting = ui.findChild(
             QtWidgets.QCheckBox, "checkBox_ContinuousReporting").isChecked()
