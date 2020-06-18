@@ -15,9 +15,11 @@ jobs:
       with:
         submodules: recursive
         fetch-depth: 0
-    - name: Set GIT_TAG variable and Package Version
+    - name: Set GIT_TAG variable
       run: |
         echo "::set-env name=GIT_TAG::$(git describe --tags)"
+    - name: Set PACKAGE_VERSION
+      run: |
         echo ${{env.GIT_TAG}} > src/main/resources/base/ayab/package_version
         sed -i.tmp s/PACKAGE_VERSION/${{env.GIT_TAG}}/ src/build/settings/base.json
         cat src/main/resources/base/ayab/package_version
