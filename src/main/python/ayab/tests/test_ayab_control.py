@@ -20,7 +20,7 @@
 
 import pytest
 import unittest
-from ayab.plugins.ayab_plugin.ayab_control import AYABControl
+from ayab.plugins.ayab_plugin.ayab_control import AYABControl, KnittingMode
 from ayab.plugins.ayab_plugin.ayab_image import ayabImage
 from PIL import Image
 from bitarray import bitarray
@@ -229,3 +229,47 @@ class TestAYABControl(unittest.TestCase):
         ayab_control.setKnittingMode(2)
         assert ayab_control._select_needles(0, 0, False) == bitarray([True] * MACHINE_WIDTH)
         
+    def test_row_multiplier(self):
+        assert KnittingMode(0).row_multiplier(2) == 1
+        assert KnittingMode(1).row_multiplier(2) == 2
+        assert KnittingMode(1).row_multiplier(3) == 6
+        assert KnittingMode(2).row_multiplier(3) == 4
+        assert KnittingMode(3).row_multiplier(4) == 6
+        assert KnittingMode(4).row_multiplier(2) == 4
+        
+    def test_good_ncolors(self):
+        assert KnittingMode(0).good_ncolors(2)
+        assert not KnittingMode(0).good_ncolors(3)
+        assert KnittingMode(1).good_ncolors(2)
+        assert KnittingMode(1).good_ncolors(3)
+        assert KnittingMode(2).good_ncolors(2)
+        assert KnittingMode(2).good_ncolors(3)
+        assert KnittingMode(3).good_ncolors(2)
+        assert KnittingMode(3).good_ncolors(3)
+        assert KnittingMode(4).good_ncolors(2)
+        assert not KnittingMode(4).good_ncolors(3)
+        
+    def test_knit_func(self):
+        assert KnittingMode(0).knit_func(2) == "_singlebed"
+        assert KnittingMode(1).knit_func(2) == "_classic_ribber_2col"
+        assert KnittingMode(1).knit_func(3) == "_classic_ribber_multicol"
+        assert KnittingMode(2).knit_func(3) == "_middlecolorstwice_ribber"
+        assert KnittingMode(3).knit_func(4) == "_heartofpluto_ribber"
+        assert KnittingMode(4).knit_func(2) == "_circular_ribber"
+        
+    def test_flanking_needles(self):
+        assert not KnittingMode(0).flanking_needles(0, 2)
+        assert not KnittingMode(0).flanking_needles(1, 2)
+        assert KnittingMode(1).flanking_needles(0, 2)
+        assert not KnittingMode(1).flanking_needles(1, 2)
+        assert KnittingMode(1).flanking_needles(0, 3)
+        assert not KnittingMode(1).flanking_needles(1, 3)
+        assert not KnittingMode(1).flanking_needles(2, 3)
+        assert not KnittingMode(2).flanking_needles(0, 3)
+        assert not KnittingMode(2).flanking_needles(1, 3)
+        assert KnittingMode(2).flanking_needles(2, 3)
+        assert not KnittingMode(3).flanking_needles(0, 3)
+        assert not KnittingMode(3).flanking_needles(1, 3)
+        assert KnittingMode(3).flanking_needles(2, 3)
+        assert not KnittingMode(4).flanking_needles(0, 2)
+        assert not KnittingMode(4).flanking_needles(1, 2)

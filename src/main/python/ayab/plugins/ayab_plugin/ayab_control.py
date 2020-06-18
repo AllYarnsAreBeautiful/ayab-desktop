@@ -91,7 +91,7 @@ class KnittingMode(Enum):
     def knit_func(self, ncolors):
         method = "_" + self.name.lower()
         if self.name == "CLASSIC_RIBBER":
-            method += ["2col", "multicol"][ncolors > 2]
+            method += ["_2col", "_multicol"][ncolors > 2]
         return method
 
     def flanking_needles(self, color, ncolors):
