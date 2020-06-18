@@ -38,7 +38,7 @@ class AyabCommunicationMockup(AyabCommunication):
         self.__delay = delay
         self.__step = step
         if self.__delay:
-            sleep(5) # wait for knitting progress dialog
+            sleep(2) # wait for knitting progress dialog
 
     def __del__(self) -> None:
         pass

@@ -40,7 +40,7 @@ from .ayab_transforms import Transformable, Mirrors
 from ayab.ayab_preferences import Preferences
 from ayab.plugins.ayab_plugin import AyabPlugin
 from ayab.plugins.ayab_plugin.firmware_flash import FirmwareFlash
-from ayab.plugins.ayab_plugin.ayab_progress import Ui_Progress
+from ayab.plugins.ayab_plugin.ayab_progress import KnitProgress
 from ayab.plugins.ayab_plugin.ayab_control import KnittingMode, Progress
 
 from DAKimport import DAKimport
@@ -82,12 +82,12 @@ class GuiMain(QMainWindow):
 
     GuiMain inherits from QMainWindow and instantiates a window with the form components form ayab_gui.UiForm.
     """
-    signalNewProgressWindow = pyqtSignal(int, int, int, int)
+    signalResetProgressWindow = pyqtSignal()
     signalShowProgressWindow = pyqtSignal()
     signalUpdateProgress = pyqtSignal(int, int, int)
     signalUpdateColorSymbol = pyqtSignal('QString')
     signalUpdateStatus = pyqtSignal(int, int, 'QString', int)
-    signalUpdateKnitrow = pyqtSignal(Progress, int)
+    signalUpdateKnitProgress = pyqtSignal(Progress, int)
     signalUpdateNotification = pyqtSignal('QString')
     signalDisplayPopUp = pyqtSignal('QString', 'QString')
     signalUpdateNeedles = pyqtSignal(int, int)
@@ -138,14 +138,13 @@ class GuiMain(QMainWindow):
         self.ui.label_current_row.setText("")
         self.ui.label_current_color.setText("")
 
-    def newProgressWindow(self):
-        '''Generates knit progress window.'''
+    def resetProgressWindow(self):
+        '''Reset knit progress frame.'''
         try:
-            self.kp.pd.close()
+            self.kp.close()
         except:
             pass
-        self.kp = Ui_Progress()
-        self.kp.pd.canceled.connect(self.cancel_knitting_process)
+        self.kp = KnitProgress(self.ui)
         return
 
     def updateProgress(self, row, total=0, repeats=0):
@@ -182,7 +181,7 @@ class GuiMain(QMainWindow):
         options_ui.slider_position.setValue(carriage_position)
         options_ui.label_carriage.setText(carriage_type)
 
-    def updateKnitrow(self, progress, row_multiplier):
+    def updateKnitProgress(self, progress, row_multiplier):
         self.kp.update(progress, row_multiplier)
         
     def update_file_selected_text_field(self, route):
@@ -239,7 +238,7 @@ class GuiMain(QMainWindow):
         self.gt.start()
 
     def cancel_knitting_process(self):
-        self.kp.pd.reset()
+        self.kp.reset()
         self.enabled_plugin.cancel()
 
     def resetUI(self):
@@ -259,11 +258,11 @@ class GuiMain(QMainWindow):
         self.ui.actionLoad_AYAB_Firmware.triggered.connect(self.generate_firmware_ui)
         self.ui.image_pattern_view.setDragMode(QtWidgets.QGraphicsView.ScrollHandDrag)
         # Connecting Signals.
-        self.signalNewProgressWindow.connect(self.newProgressWindow)
+        self.signalResetProgressWindow.connect(self.resetProgressWindow)
         self.signalUpdateProgress.connect(self.updateProgress)
         self.signalUpdateColorSymbol.connect(self.updateColorSymbol)
         self.signalUpdateStatus.connect(self.updateStatus)
-        self.signalUpdateKnitrow.connect(self.updateKnitrow)
+        self.signalUpdateKnitProgress.connect(self.updateKnitProgress)
         self.signalUpdateNotification.connect(self.slotUpdateNotification)
         self.signalDisplayPopUp.connect(self.display_blocking_pop_up)
         self.signalUpdateNeedles.connect(self.slotUpdateNeedles)

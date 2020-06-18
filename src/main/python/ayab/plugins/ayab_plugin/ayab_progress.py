@@ -66,52 +66,31 @@ class Progress:
         self.carriage_position = carriage_position
 
 
-class Ui_Progress:
+class KnitProgress:
 
-    def __init__(self):
-        self.pd = QtWidgets.QProgressDialog()
-        self.pd.setMinimumSize(800, 400)
-        self.pd.setModal(False)
-        self.pd.setAutoClose(False)
-        self.pd.setWindowTitle("Knitting Progress")
-        ok_button = QtWidgets.QPushButton("Hide", self.pd)
-        ok_button.clicked.connect(self.pd.accept)
-        cancel_button = QtWidgets.QPushButton("Cancel", self.pd)
-        cancel_button.clicked.connect(self.pd.reject)
-        self.pd.setCancelButton(cancel_button)
-        ok_button.clicked.connect(self.pd.accept)
-        bar = QtWidgets.QProgressBar()
-        self.pd.setBar(bar)
-        group = QtWidgets.QGroupBox()
-        group.setAlignment(Qt.AlignLeft)
-        group.setFlat(True)
-        group.setContentsMargins(3, 0, 3, 3)
-        group.setMinimumSize(150, 100)
-        self.grid = QtWidgets.QGridLayout()
+    def __init__(self, parent):
+        self.area = parent.area
+        self.area.setContentsMargins(1, 1, 1, 1)
+        self.container = QtWidgets.QWidget()
+        self.container.setMinimumSize(100,100)
+        self.grid = QtWidgets.QGridLayout(self.container)
         self.grid.setContentsMargins(1, 1, 1, 1)
         self.grid.setSpacing(0)
         self.grid.setSizeConstraint(QtWidgets.QLayout.SetMinAndMaxSize)
-        group.setLayout(self.grid)
-        self.area = QtWidgets.QScrollArea()
-        self.area.setWidget(group)
-        layout = QtWidgets.QGridLayout()
-        layout.addWidget(self.area, 0, 0, 1, 14)
-        layout.addWidget(ok_button, 1, 0)
-        layout.addWidget(bar, 1, 2, 1, 10)
-        layout.addWidget(cancel_button, 1, 13)
-        self.pd.setLayout(layout)
+        self.area.setWidget(self.container)
         self.row = -1
-        self.swipe = -1
-        self.pd.show()
 
     def show(self):
-        self.pd.show()
+        self.container.show()
 
     def hide(self):
-        self.pd.hide()
+        self.container.hide()
+
+    def reset(self):
+        self.row = -1
 
     def close(self):
-        self.pd.done()
+        self.container.close()
 
     def update(self, progress, row_multiplier):
         if progress.lineNumber > self.row:
@@ -137,15 +116,20 @@ class Ui_Progress:
                 w4 = label(["\u2192 ","\u2190 "][direction])
                 self.grid.addWidget(w4, progress.lineNumber, 4)
                 # TODO: hints, notes, memos
-                # self.area.ensureWidgetVisible(w0)
+                w0.show()
+                w1.show()
+                w2.show()
+                w3.show()
+                w4.show()
+                self.area.ensureWidgetVisible(w0)
             # graph line of stitches
             for c in range(len(progress.bits)):
                 wc = stitch(progress.color, progress.bits[c], progress.alt_color)
                 self.grid.addWidget(wc, self.row, 6 + c)
             # if not infinite repeats, update progress bar
-            if progress.repeats < 0 and progress.total_rows > 0:  
-                self.pd.setValue(100 * (row + 1) / progress.total_rows)
-            self.pd.update()
+            # if progress.repeats < 0 and progress.total_rows > 0:  
+            #     self.pd.setValue(100 * (row + 1) / progress.total_rows)
+            # self.pd.update()
         return
         
 

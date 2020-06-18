@@ -99,7 +99,7 @@ class AyabPlugin(KnittingPlugin):
                            progress.hall_r,
                            progress.carriage_type,
                            progress.carriage_position)
-        self.__emit_knitrow(progress, row_multiplier)
+        self.__emit_knitprogress(progress, row_multiplier)
 
     def onconfigure(self, e):
         self.__logger.debug("called onconfigure on AYAB Knitting Plugin")
@@ -112,7 +112,7 @@ class AyabPlugin(KnittingPlugin):
 
         # Mirroring option
         if conf.get("auto_mirror"):
-            pil_image = ImageOps.mirror(parent_ui.pil_image)
+            pil_image = ImageOps.mirror(pil_image)
 
         # TODO: detect if previous conf had the same
         # image to avoid re-generating.
@@ -134,7 +134,7 @@ class AyabPlugin(KnittingPlugin):
             if conf.get("alignment"):
                 self.__image.setImagePosition(conf.get("alignment"))
 
-            self.__image.setStartLine(conf.get("start_line") - 1)
+            self.__image.setStartLine(conf.get("start_line"))
             self.__emit_progress(conf.get("start_line") + 1,
                                  self.__image.imgHeight())
             self.__emit_colorSymbol("")
@@ -142,11 +142,8 @@ class AyabPlugin(KnittingPlugin):
             self.__emit_widget_knitcontrol_enabled(False)
             self.__emit_button_knit_enabled(False)
 
-        # generate knit progress window but keep it hidden for now
-        self.__emit_new_progress_window(conf.get("knitting_mode"),
-                                        self.__image.imgWidth(),
-                                        self.__image.imgHeight(),
-                                        self.__image.numColors())
+        # reset knit progress window but keep it hidden for now
+        self.__emit_reset_progress_window()
         return
 
     def validate_configuration(self, conf):
@@ -209,9 +206,9 @@ class AyabPlugin(KnittingPlugin):
         """Sends the signalUpdateNotification signal"""
         self.__parent_ui.signalUpdateNotification.emit(message)
 
-    def __emit_new_progress_window(self, mode, width, height, ncolors):
-        """Sends the newProgressWindow QtSignal."""
-        self.__parent_ui.signalNewProgressWindow.emit(mode, width, height, ncolors)
+    def __emit_reset_progress_window(self):
+        """Sends the resetProgressWindow QtSignal."""
+        self.__parent_ui.signalResetProgressWindow.emit()
 
     def __emit_show_progress_window(self):
         """Sends the showProgressWindow QtSignal."""
@@ -230,9 +227,9 @@ class AyabPlugin(KnittingPlugin):
         self.__parent_ui.signalUpdateStatus.emit(hall_l, hall_r, carriage_type,
                                                  carriage_position)
 
-    def __emit_knitrow(self, progress, row_multiplier):
-        """Sends the updateKnitrow QtSignal."""
-        self.__parent_ui.signalUpdateKnitrow.emit(progress, row_multiplier)
+    def __emit_knitprogress(self, progress, row_multiplier):
+        """Sends the updateKnitProgress QtSignal."""
+        self.__parent_ui.signalUpdateKnitProgress.emit(progress, row_multiplier)
 
     def __emit_button_knit_enabled(self, enabled):
         self.__parent_ui.signalUpdateButtonKnitEnabled.emit(enabled)
@@ -393,7 +390,7 @@ class AyabPlugin(KnittingPlugin):
         # (for easier handling of arrays)
         start_line_text = ui.findChild(QtWidgets.QSpinBox,
                                        "start_row_edit").value()
-        self.conf["start_line"] = int(start_line_text)
+        self.conf["start_line"] = int(start_line_text) - 1
 
         start_needle_color = ui.findChild(QtWidgets.QComboBox,
                                           "start_needle_color").currentText()

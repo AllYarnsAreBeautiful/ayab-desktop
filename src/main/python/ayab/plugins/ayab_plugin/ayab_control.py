@@ -161,11 +161,11 @@ class AYABControl(object):
 
     def __get_knit_func(self):
         '''Select function that decides which line of data to send according to the machine type and number of colors'''
-        if not self.__knitting_mode.good_ncolors(self.__numColors):
+        if not KnittingMode(self.__knitting_mode).good_ncolors(self.__numColors):
             self.__logger.error("Wrong number of colours for the knitting mode")
             return False
         # else
-        func_name = self.__knitting_mode.knit_func(self.__numColors)
+        func_name = KnittingMode(self.__knitting_mode).knit_func(self.__numColors)
         if not hasattr(AYABControl, func_name):
             return False
         # else
@@ -203,7 +203,7 @@ class AYABControl(object):
             lineNumber += BLOCK_LENGTH * self.__lineBlock
 
             # get data for next line of knitting
-            imgRow, color, indexToSend, sendBlankLine, lastLine = self.__knit_func(lineNumber)
+            imgRow, color, indexToSend, sendBlankLine, lastLine = self.__knit_func(self, lineNumber)
             bits = self._select_needles(color, indexToSend, sendBlankLine)
 
             # send line to machine
