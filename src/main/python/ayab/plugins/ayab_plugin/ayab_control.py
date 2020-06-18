@@ -167,6 +167,7 @@ class AYABControl(object):
         # else
         func_name = KnittingMode(self.__knitting_mode).knit_func(self.__numColors)
         if not hasattr(AYABControl, func_name):
+            self.__logger.error("Unrecognized value returned from KnittingMode.knit_func()")
             return False
         # else
         self.__knit_func = getattr(AYABControl, func_name)
@@ -207,7 +208,7 @@ class AYABControl(object):
             bits = self._select_needles(color, indexToSend, sendBlankLine)
 
             # send line to machine
-            self.__ayabCom.cnf_line(requestedLine, bits.tobytes(), lastLine & self.__infRepeat)
+            self.__ayabCom.cnf_line(requestedLine, bits.tobytes(), lastLine and not self.__infRepeat)
 
             # screen output
             msg = f"{self.__lineBlock} {lineNumber} reqLine: {requestedLine} imgRow: {imgRow}"
