@@ -23,7 +23,7 @@ jobs:
         pip install -r windows-build\windows_build_requirements.txt
     - name: Build app
       run: |
-        python -m fbs freeze
+        python -m fbs freeze --debug
     - name: Create installer
       run: |
         python -m fbs installer
