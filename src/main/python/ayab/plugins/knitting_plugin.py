@@ -98,7 +98,7 @@ class KnittingPlugin(Fysom):
              {'name': 'configure', 'src': 'error', 'dst': 'configured'},
              {'name': 'knit', 'src': 'configured', 'dst': 'knitting'},
              {'name': 'finish', 'src': 'knitting', 'dst': 'finished'},
-             {'name': 'fail', 'src': 'knittng', 'dst': 'error'}
+             {'name': 'fail', 'src': 'knitting', 'dst': 'error'}
          ],
          'callbacks':  callbacks_dict
          })
