@@ -19,41 +19,63 @@
 """
 Mockup Class of AYABCommunication for Test/Simulation purposes
 """
-
+from PyQt5 import QtWidgets
 from .ayab_communication import AyabCommunication
 
 import logging
+from time import sleep
 
 
 class AyabCommunicationMockup(AyabCommunication):
     """Class Handling the serial communication protocol."""
-    def __init__(self) -> None:
+    def __init__(self, delay = True, step = False) -> None:
         logging.basicConfig(level=logging.DEBUG)
         self.__logger = logging.getLogger(type(self).__name__)
+        self.__delay = delay
+        self.__step = step
+        self.reset()
+
+    def __del__(self) -> None:
+        pass
+
+    def reset(self):
         self.__is_open = False
         self.__is_started = False
         self.__rxMsgList = list()
         self.__line_count = 0
 
-    def __del__(self) -> None:
-        pass
-
     def is_open(self) -> bool:
         return self.__is_open
 
     def close_serial(self) -> None:
-        self.__is_open = False
+        self.reset()
 
     def open_serial(self, pPortname=None) -> bool:
         self.__is_open = True
+        if self.__delay:
+            sleep(2) # wait for knitting progress dialog
         return True
 
-    def update(self) -> list:
+    def update(self) -> tuple:
         if self.__is_open and self.__is_started:
             reqLine = bytearray([0x82, self.__line_count])
             self.__line_count += 1
             self.__line_count %= 256
             self.__rxMsgList.append(reqLine)
+            if self.__delay:
+                sleep(1) # wait for knitting progress dialog to update
+
+            # step through output line by line
+            if self.__step:
+                # pop up box waits for user input before moving on to next line
+                msg = QtWidgets.QMessageBox()
+                msg.setIcon(QtWidgets.QMessageBox.Information)
+                msg.setText("Line number = " + str(self.__line_count))
+                msg.setStandardButtons(QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel)
+                ret = None
+                ret = msg.exec_()
+                while ret == None:
+                    pass
 
         if len(self.__rxMsgList) > 0:
             return self.parse_update(self.__rxMsgList.pop(0))
@@ -76,5 +98,5 @@ class AyabCommunicationMockup(AyabCommunication):
         cnfTest = bytearray([0xC4, 0x1])
         self.__rxMsgList.append(cnfTest)
 
-    def cnf_line(self, lineNumber, lineData, flags, crc8) -> bool:
+    def cnf_line(self, lineNumber, lineData, flags) -> bool:
         return True

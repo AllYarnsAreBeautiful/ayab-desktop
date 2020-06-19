@@ -74,7 +74,7 @@ class TestAyabCommunicationMockup(unittest.TestCase):
         lineData = [0x23, 0x24]
         flags = 0x12
         crc8 = 0x57
-        assert self.comm_dummy.cnf_line(lineNumber, lineData, flags, crc8)
+        assert self.comm_dummy.cnf_line(lineNumber, lineData, flags)
 
     def test_req_line(self):
         self.comm_dummy.open_serial()

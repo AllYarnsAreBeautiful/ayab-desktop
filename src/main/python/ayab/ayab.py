@@ -24,10 +24,12 @@ import sys
 from os import path, mkdir
 import logging
 from math import ceil
+from bitarray import bitarray
+import numpy as np
 
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtWidgets import QMainWindow
-from PyQt5.QtCore import Qt, QThread, pyqtSignal, pyqtSlot
+from PyQt5.QtCore import Qt, QThread, pyqtSignal
 
 from PIL import Image
 from fysom import FysomError
@@ -35,11 +37,11 @@ from fysom import FysomError
 from ayab.ayab_gui import Ui_MainWindow
 from ayab.ayab_about import Ui_AboutForm
 from .ayab_transforms import Transformable, Mirrors
-from ayab.ayab_preferences import Preferences
+from ayab.ayab_preferences import Preferences, str2bool
 from ayab.plugins.ayab_plugin import AyabPlugin
 from ayab.plugins.ayab_plugin.firmware_flash import FirmwareFlash
-from ayab.ayab_about import Ui_AboutForm
-from ayab.ayab_preferences import Preferences, str2bool
+from ayab.plugins.ayab_plugin.ayab_progress import KnitProgress
+from ayab.plugins.ayab_plugin.ayab_control import KnittingMode, Progress
 
 from DAKimport import DAKimport
 
@@ -49,6 +51,7 @@ import serial.tools.list_ports
 
 # from playsound import playsound
 
+# TODO move to generic configuration
 MACHINE_WIDTH = 200
 
 userdata_path = path.expanduser(path.join("~", "AYAB"))
@@ -75,16 +78,17 @@ if hasattr(Qt, 'AA_UseHighDpiPixmaps'):
 if hasattr(Qt, 'AA_DisableWindowContextHelpButton'):
     QtWidgets.QApplication.setAttribute(Qt.AA_DisableWindowContextHelpButton, True)
 
-
+    
 class GuiMain(QMainWindow):
     """GuiMain is the main object that handles the instance of AYAB's GUI from ayab_gui.UiForm .
 
-    GuiMain inherits from QMainWindow and instanciates a window with the form components form ayab_gui.UiForm.
+    GuiMain inherits from QMainWindow and instantiates a window with the form components form ayab_gui.UiForm.
     """
-
+    signalResetProgressWindow = pyqtSignal()
     signalUpdateProgress = pyqtSignal(int, int, int)
-    signalUpdateColor = pyqtSignal('QString')
+    signalUpdateColorSymbol = pyqtSignal('QString')
     signalUpdateStatus = pyqtSignal(int, int, 'QString', int)
+    signalUpdateKnitProgress = pyqtSignal(Progress, int)
     signalUpdateNotification = pyqtSignal('QString')
     signalDisplayPopUp = pyqtSignal('QString', 'QString')
     signalUpdateNeedles = pyqtSignal(int, int)
@@ -93,6 +97,9 @@ class GuiMain(QMainWindow):
     signalPlaysound = pyqtSignal('QString')
     signalUpdateButtonKnitEnabled = pyqtSignal(bool)
     signalUpdateWidgetKnitcontrolEnabled = pyqtSignal(bool)
+
+    BAR_HEIGHT = 5.0
+    LIMIT_BAR_WIDTH = 0.5
 
     def __init__(self, app_context):
         super(GuiMain, self).__init__(None)
@@ -135,16 +142,25 @@ class GuiMain(QMainWindow):
         self.ui.label_current_row.setText("")
         self.ui.label_current_color.setText("")
 
-    def update_progress(self, row, total=0, repeats=0):
+    def resetProgressWindow(self):
+        '''Reset knit progress frame.'''
+        try:
+            self.kp.close()
+        except:
+            pass
+        self.kp = KnitProgress(self.ui)
+        return
+
+    def updateProgress(self, row, total=0, repeats=0):
         '''Updates the Progress Bar.'''
-        #Store to local variable
+        # Store to local variable
         self.var_progress = row
         self.refresh_scene()
 
         # Update label
         if total != 0:
             text = "Row {0}/{1}".format(row, total)
-            if repeats != 0:
+            if repeats >= 0:
                 text += " ({0} repeats completed)".format(repeats)
         else:
             text = ""
@@ -153,12 +169,12 @@ class GuiMain(QMainWindow):
         options_ui = self.enabled_plugin.options_ui
         options_ui.label_progress.setText("{0}/{1}".format(row, total))
 
-    def update_color(self, color):
-        '''Updates the current color.'''
+    def updateColorSymbol(self, colorSymbol):
+        '''Updates the current color symbol.'''
         text = ""
-        if color != "":
+        if colorSymbol != "":
             text += "Color "
-        self.ui.label_current_color.setText(text + color)
+        self.ui.label_current_color.setText(text + colorSymbol)
             
     def updateStatus(self, hall_l, hall_r, carriage_type, carriage_position):
         options_ui = self.enabled_plugin.options_ui
@@ -169,6 +185,9 @@ class GuiMain(QMainWindow):
         options_ui.slider_position.setValue(carriage_position)
         options_ui.label_carriage.setText(carriage_type)
 
+    def updateKnitProgress(self, progress, row_multiplier):
+        self.kp.update(progress, row_multiplier)
+        
     def update_file_selected_text_field(self, route):
         '''Sets self.image_file_route and ui.filename_lineedit to route.'''
         self.ui.filename_lineedit.setText(route)
@@ -218,11 +237,12 @@ class GuiMain(QMainWindow):
         self.ui.widget_optionsdock.setEnabled(False)
         self.ui.knit_button.setEnabled(False)
         self.ui.cancel_button.setEnabled(True)
-
+        # start thread for knit plugin
         self.gt = GenericThread(self.enabled_plugin.knit, parent_window=self)
         self.gt.start()
 
     def cancel_knitting_process(self):
+        # some kind of reset required?
         self.enabled_plugin.cancel()
 
     def resetUI(self):
@@ -242,11 +262,13 @@ class GuiMain(QMainWindow):
         self.ui.actionLoad_AYAB_Firmware.triggered.connect(self.generate_firmware_ui)
         self.ui.image_pattern_view.setDragMode(QtWidgets.QGraphicsView.ScrollHandDrag)
         # Connecting Signals.
-        self.signalUpdateProgress.connect(self.update_progress)
-        self.signalUpdateColor.connect(self.update_color)
+        self.signalResetProgressWindow.connect(self.resetProgressWindow)
+        self.signalUpdateProgress.connect(self.updateProgress)
+        self.signalUpdateColorSymbol.connect(self.updateColorSymbol)
         self.signalUpdateStatus.connect(self.updateStatus)
+        self.signalUpdateKnitProgress.connect(self.updateKnitProgress)
         self.signalUpdateNotification.connect(self.slotUpdateNotification)
-        self.signalDisplayPopUp.connect(self.display_blocking_pop_up)
+        self.signalDisplayPopUp.connect(self.displayBlockingPopUp)
         self.signalUpdateNeedles.connect(self.slotUpdateNeedles)
         self.signalUpdateAlignment.connect(self.slotUpdateAlignment)
         self.signalPlaysound.connect(self.slotPlaysound)
@@ -254,7 +276,7 @@ class GuiMain(QMainWindow):
         self.signalUpdateButtonKnitEnabled.connect(self.slotUpdateButtonKnitEnabled)
 
         # This blocks the other thread until signal is done
-        self.signalDisplayBlockingPopUp.connect(self.display_blocking_pop_up)
+        self.signalDisplayBlockingPopUp.connect(self.displayBlockingPopUp)
 
         self.ui.actionQuit.triggered.connect(QtCore.QCoreApplication.instance().quit)
         self.ui.actionAbout.triggered.connect(self.open_about_ui)
@@ -296,8 +318,7 @@ class GuiMain(QMainWindow):
         self.ui.menuImage_Actions.setEnabled(True)
         # Tell loaded plugin elements about changed parameters
         width, height = self.pil_image.size
-        self.enabled_plugin.slotSetImageDimensions(width,
-                                                   height)
+        self.enabled_plugin.slotSetImageDimensions(width, height)
 
     def refresh_scene(self):
         '''Updates the current scene '''
@@ -314,10 +335,6 @@ class GuiMain(QMainWindow):
 
         qscene = QtWidgets.QGraphicsScene()
 
-        # TODO move to generic configuration
-        machine_width = MACHINE_WIDTH
-        bar_height = 5.0
-
         # add pattern and move accordingly to alignment
         pattern = qscene.addPixmap(pixmap)
         if self.imageAlignment == 'left':
@@ -326,7 +343,7 @@ class GuiMain(QMainWindow):
                 0)
         elif self.imageAlignment == 'center':
             pattern.setPos(
-                -(pixmap.width()/2.0)+((self.start_needle+self.stop_needle)/2) - 100,
+                -(pixmap.width() / 2.0) + ((self.start_needle + self.stop_needle) / 2) - 100,
                 0)
         elif self.imageAlignment == 'right':
             pattern.setPos(
@@ -337,41 +354,39 @@ class GuiMain(QMainWindow):
 
         # Draw "machine"
         rect_orange = QtWidgets.QGraphicsRectItem(
-            -(machine_width/2.0),
-            -bar_height,
-            (machine_width/2.0),
-            bar_height)
+            -(MACHINE_WIDTH / 2.0),
+            -self.BAR_HEIGHT,
+            (MACHINE_WIDTH / 2.0),
+            self.BAR_HEIGHT)
         rect_orange.setBrush(QtGui.QBrush(QtGui.QColor("orange")))
         rect_green = QtWidgets.QGraphicsRectItem(
             0.0,
-            -bar_height,
-            (machine_width/2.0),
-            bar_height)
+            -self.BAR_HEIGHT,
+            (MACHINE_WIDTH / 2.0),
+            self.BAR_HEIGHT)
         rect_green.setBrush(QtGui.QBrush(QtGui.QColor("green")))
 
         qscene.addItem(rect_orange)
         qscene.addItem(rect_green)
 
         # Draw limiting lines (start/stop needle)
-        limit_bar_width = 0.5
-
         qscene.addItem(
             QtWidgets.QGraphicsRectItem(self.start_needle - 101,
-                                        -bar_height,
-                                        limit_bar_width,
-                                        pixmap.height() + 2*bar_height))
+                                        -self.BAR_HEIGHT,
+                                        self.LIMIT_BAR_WIDTH,
+                                        pixmap.height() + 2 * self.BAR_HEIGHT))
         qscene.addItem(
             QtWidgets.QGraphicsRectItem(self.stop_needle - 100,
-                                        -bar_height,
-                                        limit_bar_width,
-                                        pixmap.height() + 2*bar_height))
+                                        -self.BAR_HEIGHT,
+                                        self.LIMIT_BAR_WIDTH,
+                                        pixmap.height() + 2 * self.BAR_HEIGHT))
 
         # Draw knitting progress
         qscene.addItem(
-            QtWidgets.QGraphicsRectItem(-(machine_width/2.0),
+            QtWidgets.QGraphicsRectItem(-(MACHINE_WIDTH / 2.0),
                                         pixmap.height() - self.var_progress,
-                                        machine_width,
-                                        limit_bar_width))
+                                        MACHINE_WIDTH,
+                                        self.LIMIT_BAR_WIDTH))
 
         qv = self.ui.image_pattern_view
         qv.resetTransform()
@@ -382,7 +397,7 @@ class GuiMain(QMainWindow):
         text = "{} - {}".format(width, height)
         self.ui.label_notifications.setText("Image Dimensions: " + text)
 
-    def display_blocking_pop_up(self, message="", message_type="info"):
+    def displayBlockingPopUp(self, message="", message_type="info"):
         logging.debug("MessageBox {}: '{}'".format(message_type, message))
         box_function = {
             "error": QtWidgets.QMessageBox.critical,
@@ -518,8 +533,7 @@ class GuiMain(QMainWindow):
 
         # Update maximum values
         width, height = self.pil_image.size
-        self.enabled_plugin.slotSetImageDimensions(width,
-                                                   height)
+        self.enabled_plugin.slotSetImageDimensions(width, height)
         # Draw canvas
         self.refresh_scene()
 
@@ -534,12 +548,13 @@ class GuiMain(QMainWindow):
 
     def slotPlaysound(self, event):
         return
-        #if event == "start":
-        #    playsound(self.app_context.get_resource("assets/start.wav"))
-        #if event == "nextline":
-        #    playsound(self.app_context.get_resource("assets/nextline.wav"))
-        #if event == "finished":
-        #    playsound(self.app_context.get_resource("assets/finish.wav"))
+        # if event == "start":
+        #     playsound(self.app_context.get_resource("assets/start.wav"))
+        # if event == "nextline":
+        #     playsound(self.app_context.get_resource("assets/nextline.wav"))
+        # if event == "finished":
+        #     playsound(self.app_context.get_resource("assets/finish.wav"))
+
 
 class GenericThread(QThread):
     '''A generic thread wrapper for functions on threads.'''
