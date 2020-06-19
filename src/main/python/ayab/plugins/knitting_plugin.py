@@ -87,7 +87,7 @@ class KnittingPlugin(Fysom):
     raise NotImplementedError(self.__NOT_IMPLEMENTED_ERROR.format("`get_configuration_from_ui`. It loads options with a given parent UI object."))
 
   def __init__(self, callbacks_dict):
-    self.__NOT_IMPLEMENTED_ERROR = "Classes that inherit from KnittingPlugin should implement {0}"
+    self.__NOT_IMPLEMENTED_ERROR = "Classes that inherit from `KnittingPlugin` should implement {0}"
 
     callbacks_dict = {
         'onconfigure': self.onconfigure,
@@ -104,7 +104,7 @@ class KnittingPlugin(Fysom):
              {'name': 'configure', 'src': 'error', 'dst': 'configured'},
              {'name': 'knit', 'src': 'configured', 'dst': 'knitting'},
              {'name': 'finish', 'src': 'knitting', 'dst': 'finished'},
-             {'name': 'fail', 'src': 'knitting', 'dst': 'error'}
+             {'name': 'fail', 'src': 'knitting', 'dst': 'error'},
          ],
          'callbacks':  callbacks_dict
          })
