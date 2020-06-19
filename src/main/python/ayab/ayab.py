@@ -39,7 +39,7 @@ from ayab.ayab_preferences import Preferences
 from ayab.plugins.ayab_plugin import AyabPlugin
 from ayab.plugins.ayab_plugin.firmware_flash import FirmwareFlash
 from ayab.ayab_about import Ui_AboutForm
-from ayab.ayab_preferences import Preferences
+from ayab.ayab_preferences import Preferences, str2bool
 
 from DAKimport import DAKimport
 
@@ -117,11 +117,11 @@ class GuiMain(QMainWindow):
 
         knitting_mode_box = self.enabled_plugin.options_ui.knitting_mode_box
         knitting_mode_box.setCurrentIndex(knitting_mode_box.findText(self.prefs.settings.value("default_knitting_mode")))
-        if self.prefs.settings.value("default_infinite_repeat"):
+        if str2bool(self.prefs.settings.value("default_infinite_repeat")):
             self.enabled_plugin.options_ui.infRepeat_checkbox.setCheckState(QtCore.Qt.Checked)
         else:
             self.enabled_plugin.options_ui.infRepeat_checkbox.setCheckState(QtCore.Qt.Unchecked)
-        if self.prefs.settings.value("automatic_mirroring"):
+        if str2bool(self.prefs.settings.value("automatic_mirroring")):
             self.enabled_plugin.options_ui.autoMirror_checkbox.setCheckState(QtCore.Qt.Checked)
         else:
             self.enabled_plugin.options_ui.autoMirror_checkbox.setCheckState(QtCore.Qt.Unchecked)

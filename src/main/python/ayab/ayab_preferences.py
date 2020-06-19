@@ -29,8 +29,12 @@ from os import path, mkdir
 from shutil import copy
 
 
-def str2bool(s):
-    return s.lower() == "true"
+def str2bool(qvariant):
+    if type(qvariant) == str:
+        return qvariant.lower() == "true"
+    else:
+        return qvariant
+
 
 class Preferences:
             
@@ -51,23 +55,26 @@ class Preferences:
 
     def reset(self):
         '''Reset preferences to default values'''
-        self.settings.setValue("automatic_mirroring",False)
-        self.settings.setValue("default_knitting_mode","Singlebed")
-        self.settings.setValue("default_infinite_repeat",False)
-        self.settings.setValue("default_alignment","center")
+        self.settings.setValue("automatic_mirroring", False)
+        self.settings.setValue("default_knitting_mode", "Singlebed")
+        self.settings.setValue("default_infinite_repeat", False)
+        self.settings.setValue("default_alignment", "center")
 
     def refresh(self):
         '''Update preferences GUI to current values'''
+        print(self.settings.childKeys())
+        print(self.settings.value("default_infinite_repeat"))
+        print(self.settings.value("automatic_mirroring"))
         self.default_knitting_mode_box.setCurrentIndex(self.default_knitting_mode_box.findText(self.settings.value("default_knitting_mode")))
-        if self.settings.value("default_infinite_repeat"):
-            self.default_infinite_repeat_checkbox.setCheckState(QtCore.Qt.Checked)
+        if str2bool(self.settings.value("default_infinite_repeat")):
+            self.default_infinite_repeat_checkbox.setCheckState(Qt.Checked)
         else:
-            self.default_infinite_repeat_checkbox.setCheckState(QtCore.Qt.Unchecked)
+            self.default_infinite_repeat_checkbox.setCheckState(Qt.Unchecked)
         self.default_alignment_box.setCurrentIndex(self.default_alignment_box.findText(self.settings.value("default_alignment")))
-        if self.settings.value("automatic_mirroring"):
-            self.automatic_mirroring_checkbox.setCheckState(QtCore.Qt.Checked)
+        if str2bool(self.settings.value("automatic_mirroring")):
+            self.automatic_mirroring_checkbox.setCheckState(Qt.Checked)
         else:
-            self.automatic_mirroring_checkbox.setCheckState(QtCore.Qt.Unchecked)
+            self.automatic_mirroring_checkbox.setCheckState(Qt.Unchecked)
 
     def setPrefsDialog(self):
         '''GUI to set preferences'''
@@ -140,10 +147,10 @@ class Preferences:
         return
 
     def __toggle_default_infinite_repeat_setting(self):
-        if self.default_infinite_repeat_checkbox.checkState():
-            self.settings.setValue("default_infinite_repeat",True)
+        if self.default_infinite_repeat_checkbox.isChecked():
+            self.settings.setValue("default_infinite_repeat", True)
         else:
-            self.settings.setValue("default_infinite_repeat",False)
+            self.settings.setValue("default_infinite_repeat", False)
         return
 
     def __update_default_alignment_setting(self):
@@ -152,10 +159,10 @@ class Preferences:
         return
 
     def __toggle_automatic_mirroring_setting(self):
-        if self.automatic_mirroring_checkbox.checkState():
-            self.settings.setValue("automatic_mirroring",True)
+        if self.automatic_mirroring_checkbox.isChecked():
+            self.settings.setValue("automatic_mirroring", True)
         else:
-            self.settings.setValue("automatic_mirroring",False)
+            self.settings.setValue("automatic_mirroring", False)
         return
 
     def __reset_and_refresh(self):
