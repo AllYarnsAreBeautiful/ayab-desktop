@@ -37,7 +37,7 @@ from fysom import FysomError
 from ayab.ayab_gui import Ui_MainWindow
 from ayab.ayab_about import Ui_AboutForm
 from .ayab_transforms import Transformable, Mirrors
-from ayab.ayab_preferences import Preferences
+from ayab.ayab_preferences import Preferences, str2bool
 from ayab.plugins.ayab_plugin import AyabPlugin
 from ayab.plugins.ayab_plugin.firmware_flash import FirmwareFlash
 from ayab.plugins.ayab_plugin.ayab_progress import KnitProgress
@@ -120,11 +120,11 @@ class GuiMain(QMainWindow):
 
         knitting_mode_box = self.enabled_plugin.options_ui.knitting_mode_box
         knitting_mode_box.setCurrentIndex(knitting_mode_box.findText(self.prefs.settings.value("default_knitting_mode")))
-        if self.prefs.settings.value("default_infinite_repeat"):
+        if str2bool(self.prefs.settings.value("default_infinite_repeat")):
             self.enabled_plugin.options_ui.infRepeat_checkbox.setCheckState(QtCore.Qt.Checked)
         else:
             self.enabled_plugin.options_ui.infRepeat_checkbox.setCheckState(QtCore.Qt.Unchecked)
-        if self.prefs.settings.value("automatic_mirroring"):
+        if str2bool(self.prefs.settings.value("automatic_mirroring")):
             self.enabled_plugin.options_ui.autoMirror_checkbox.setCheckState(QtCore.Qt.Checked)
         else:
             self.enabled_plugin.options_ui.autoMirror_checkbox.setCheckState(QtCore.Qt.Unchecked)
@@ -149,6 +149,12 @@ class GuiMain(QMainWindow):
 
     def updateProgress(self, row, total=0, repeats=0):
         '''Updates the Progress Bar.'''
+<<<<<<< HEAD
+        if row < 0:
+            return
+
+=======
+>>>>>>> 1.0.0-dev
         # Store to local variable
         self.var_progress = row
         self.refresh_scene()

@@ -32,6 +32,7 @@ from . import ayab_image
 from ayab.plugins.knitting_plugin import KnittingPlugin
 from .ayab_control import AYABControl, AYABControlKnitResult, KnittingMode
 
+from time import sleep
 
 class AyabPlugin(KnittingPlugin):
     def __init__(self):
@@ -43,7 +44,7 @@ class AyabPlugin(KnittingPlugin):
         self.__ayab_control.close()
 
     def onknit(self, e):
-        self.__logger.debug("called `ayab_plugin.onknit()`")
+        self.__logger.debug("callback to `ayab_plugin.onknit()`")
 
         self.__emit_reset_progress_window()
 
@@ -57,6 +58,8 @@ class AyabPlugin(KnittingPlugin):
                                          self.__ayab_control.get_row_multiplier())
             self.__knit_feedback_handler(result)
             if result is AYABControlKnitResult.FINISHED:
+                # allow time for signalUpdateKnitProgress to propagate
+                sleep(1)
                 break
         self.finish()
 
@@ -102,7 +105,7 @@ class AyabPlugin(KnittingPlugin):
         self.__emit_knitprogress(progress, row_multiplier)
 
     def onconfigure(self, e):
-        self.__logger.debug("called `ayab_plugin.onconfigure()`")
+        self.__logger.debug("callback to `ayab_plugin.onconfigure()`")
         parent_ui = self.__parent_ui
         conf = self.get_configuration_from_ui(parent_ui)
 
@@ -167,7 +170,7 @@ class AyabPlugin(KnittingPlugin):
         return True
 
     def onfinish(self, e):
-        self.__logger.debug("called `ayab_plugin.onfinish()`")
+        self.__logger.debug("callback to `ayab_plugin.onfinish()`")
         self.__logger.info("Finished Knitting.")
         self.__ayab_control.close()
         self.__parent_ui.resetUI()
@@ -177,7 +180,7 @@ class AyabPlugin(KnittingPlugin):
         self.__knitImage = False
 
     def onfail(self, e):
-        self.__logger.debug("called `ayab_plugin.onerror()`")
+        self.__logger.debug("callback to `ayab_plugin.onerror()`")
         # TODO add message info from event
         self.__logger.error("Error while knitting.")
         self.__ayab_control.close()

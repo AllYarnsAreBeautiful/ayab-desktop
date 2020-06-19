@@ -31,18 +31,28 @@ class Progress:
         self.reset()
 
     def reset(self):
-        self.current_row = 0
-        self.total_rows = 0
+        self.current_row = -1
+        self.total_rows = -1
         self.repeats = -1
         self.colorSymbol = ""
         self.hall_l = 0
         self.hall_r = 0
         self.carriage_type = ""
         self.carriage_position = 0
-        self.lineNumber = 0
-        self.color = 0
+        self.lineNumber = -1
+        self.color = -1
         self.alt_color = None
         self.bits = bitarray()
+
+    def print(self):
+        print(self.current_row)
+        print(self.total_rows)
+        print(self.repeats)
+        print(self.colorSymbol)
+        print(self.lineNumber)
+        print(self.color)
+        print(self.alt_color)
+        print(self.bits)
 
     def get_carriage_info(self, msg):
         hall_l = int((msg[2] << 8) + msg[3])
@@ -92,43 +102,36 @@ class KnitProgress:
         self.container.close()
 
     def update(self, progress, row_multiplier):
-        if progress.lineNumber > self.row:
-            self.row += 1
-        if progress.lineNumber == self.row:
-            row, swipe = divmod(progress.lineNumber, row_multiplier)
-            if row < progress.total_rows or progress.repeats >= 0:
-                # row header on new line
-                direction = progress.lineNumber % 2
-                w0 = label("Row")
-                self.grid.addWidget(w0, progress.lineNumber, 0)
-                w1 = label(str(row + 1))
-                self.grid.addWidget(w1, progress.lineNumber, 1, 1, 1, Qt.AlignRight)
-                w2 = label("Pass " + str(swipe + 1))
-                self.grid.addWidget(w2, progress.lineNumber, 2)
-                if progress.colorSymbol == "":
-                    w3 = label("")
-                else:
-                    w3 = label("Color " + progress.colorSymbol)
-                    self.grid.addWidget(w3, progress.lineNumber, 3)
-                # TODO: report carriage
-                # w4 = label("KR") # progress.carriage
-                w4 = label(["\u2192 ","\u2190 "][direction])
-                self.grid.addWidget(w4, progress.lineNumber, 4)
-                # TODO: hints, notes, memos
-                w0.show()
-                w1.show()
-                w2.show()
-                w3.show()
-                w4.show()
-                self.area.ensureWidgetVisible(w0)
-            # graph line of stitches
-            for c in range(len(progress.bits)):
-                wc = stitch(progress.color, progress.bits[c], progress.alt_color)
-                self.grid.addWidget(wc, self.row, 6 + c)
-            # if not infinite repeats, update progress bar
-            # if progress.repeats < 0 and progress.total_rows > 0:  
-            #     self.pd.setValue(100 * (row + 1) / progress.total_rows)
-            # self.pd.update()
+        if progress.current_row < 0:
+            return
+        row, swipe = divmod(progress.lineNumber, row_multiplier)
+        direction = progress.lineNumber % 2
+        w0 = label("Row")
+        self.grid.addWidget(w0, progress.lineNumber, 0)
+        w1 = label(str(progress.current_row))
+        self.grid.addWidget(w1, progress.lineNumber, 1, 1, 1, Qt.AlignRight)
+        w2 = label("Pass " + str(swipe + 1))
+        self.grid.addWidget(w2, progress.lineNumber, 2)
+        if progress.colorSymbol == "":
+            w3 = label("")
+        else:
+            w3 = label("Color " + progress.colorSymbol)
+            self.grid.addWidget(w3, progress.lineNumber, 3)
+        # TODO: report carriage
+        # w4 = label("KR") # progress.carriage
+        w4 = label(["\u2192 ","\u2190 "][direction])
+        self.grid.addWidget(w4, progress.lineNumber, 4)
+        # TODO: hints, notes, memos
+        w0.show()
+        w1.show()
+        w2.show()
+        w3.show()
+        w4.show()
+        self.area.ensureWidgetVisible(w0)
+        # graph line of stitches
+        for c in range(len(progress.bits)):
+            wc = stitch(progress.color, progress.bits[c], progress.alt_color)
+            self.grid.addWidget(wc, progress.lineNumber, 6 + c)
         return
         
 
