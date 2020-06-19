@@ -232,7 +232,7 @@ class AYABControl(object):
         self.__progress.total_rows = self.__image.imgHeight()
         self.__progress.lineNumber = lineNumber
         if self.__infRepeat:
-            self.progress.repeats = self.__infRepeat_repeats
+            self.__progress.repeats = self.__infRepeat_repeats
         if self.__knitting_mode == KnittingMode.SINGLEBED.value:
             self.__progress.alt_color = self.__image.palette[1]
             self.__progress.colorSymbol = "A/B"

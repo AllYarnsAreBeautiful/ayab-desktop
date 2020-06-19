@@ -21,7 +21,7 @@
 from fbs_runtime.application_context.PyQt5 import ApplicationContext
 
 import sys
-import os
+from os import path, mkdir
 import logging
 from math import ceil
 from bitarray import bitarray
@@ -54,8 +54,12 @@ import serial.tools.list_ports
 # TODO move to generic configuration
 MACHINE_WIDTH = 200
 
+userdata_path = path.expanduser(path.join("~", "AYAB"))
+if not path.isdir(userdata_path):
+    mkdir(userdata_path)
 
-logging.basicConfig(filename='ayab_log.txt',
+logfile = path.join(userdata_path, "ayab_log.txt")
+logging.basicConfig(filename=logfile,
                     level=logging.DEBUG,
                     format='%(asctime)s %(name)-8s %(levelname)-8s %(message)s',
                     datefmt='%y-%m-%d %H:%M:%S')
