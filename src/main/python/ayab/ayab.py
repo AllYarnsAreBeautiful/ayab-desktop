@@ -153,6 +153,9 @@ class GuiMain(QMainWindow):
 
     def updateProgress(self, row, total=0, repeats=0):
         '''Updates the Progress Bar.'''
+        if row < 0:
+            return
+
         # Store to local variable
         self.var_progress = row
         self.refresh_scene()

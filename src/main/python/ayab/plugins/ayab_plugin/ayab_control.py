@@ -179,7 +179,7 @@ class AYABControl(object):
         api = msg[1]
         log = f"API v{api}"
         if api >= 5:
-            log += ", FW v{msg[2]}.{msg[3]}"
+            log += f", FW v{msg[2]}.{msg[3]}"
         self.__logger.info(log)
         return
 
@@ -509,9 +509,6 @@ class AYABControl(object):
                     result = AYABControlKnitResult.DEVICE_NOT_READY
 
         elif self.__current_state == KnittingState.OPERATE:
-            if rcvMsg == "none":
-                print("quitting")
-                sys.exit()
             if rcvMsg == 'reqLine':
                 imageFinished = self.__cnfLine(rcvParam)
                 if imageFinished:
