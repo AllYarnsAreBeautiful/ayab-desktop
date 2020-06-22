@@ -237,7 +237,7 @@ class Ui_MainWindow(object):
         self.load_file_button.setText(_translate("MainWindow", "1. Load Image File"))
         self.load_file_button.setShortcut(_translate("MainWindow", "Ctrl+O"))
         self.knitting_options_dock.setWindowTitle(_translate("MainWindow", "Knitting Options"))
-        self.knit_button.setText(_translate("MainWindow", "3. Knit!"))
+        self.knit_button.setText(_translate("MainWindow", "2. Knit!"))
         self.knit_button.setShortcut(_translate("MainWindow", "Ctrl+Return"))
         self.cancel_button.setText(_translate("MainWindow", "Cancel Knitting"))
         self.cancel_button.setShortcut(_translate("MainWindow", "Esc"))

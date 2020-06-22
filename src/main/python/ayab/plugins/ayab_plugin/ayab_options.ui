@@ -43,7 +43,7 @@
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
     <property name="spacing">
-     <number>6</number>
+     <number>8</number>
     </property>
     <property name="topMargin">
      <number>0</number>
@@ -64,7 +64,7 @@
       </property>
       <property name="maximumSize">
        <size>
-        <width>0</width>
+        <width>220</width>
         <height>16777215</height>
        </size>
       </property>
@@ -135,16 +135,19 @@
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_3">
          <property name="leftMargin">
-          <number>6</number>
+          <number>8</number>
          </property>
          <property name="topMargin">
-          <number>6</number>
+          <number>16</number>
          </property>
          <property name="rightMargin">
-          <number>6</number>
+          <number>12</number>
          </property>
          <property name="bottomMargin">
-          <number>6</number>
+          <number>8</number>
+         </property>
+         <property name="spacing">
+          <number>0</number>
          </property>
          <item>
           <widget class="QLabel" name="label_4">
@@ -260,6 +263,9 @@
              <width>0</width>
              <height>60</height>
             </size>
+           </property>
+           <property name="flat">
+            <bool>True</bool>
            </property>
            <property name="title">
             <string>Start Needle</string>
@@ -433,16 +439,19 @@
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_4">
          <property name="leftMargin">
-          <number>6</number>
+          <number>8</number>
          </property>
          <property name="topMargin">
-          <number>6</number>
+          <number>8</number>
          </property>
          <property name="rightMargin">
-          <number>6</number>
+          <number>12</number>
          </property>
          <property name="bottomMargin">
-          <number>6</number>
+          <number>8</number>
+         </property>
+         <property name="spacing">
+          <number>0</number>
          </property>
          <item alignment="Qt::AlignHCenter">
           <widget class="QLabel" name="label_8">
@@ -661,13 +670,6 @@
         </layout>
        </widget>
       </widget>
-     </widget>
-    </item>
-    <item>
-     <widget class="QPushButton" name="configure_button">
-      <property name="text">
-       <string>2. Configure</string>
-      </property>
      </widget>
     </item>
    </layout>

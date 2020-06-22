@@ -96,6 +96,7 @@ class GuiMain(QMainWindow):
     signalUpdateAlignment = pyqtSignal('QString')
     signalImageLoaded = pyqtSignal()
     signalImageTransformed = pyqtSignal()
+    signalConfigured = pyqtSignal()
     signalDoneKnitProgress = pyqtSignal()
     signalDoneKnitting = pyqtSignal()
 
