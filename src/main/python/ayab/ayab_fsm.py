@@ -73,12 +73,12 @@ class FSM (object):
     def transitions(self):
         """Define transitions between states for Finite State Machine"""
  
+        # Events that trigger state changes
         self.NO_IMAGE.addTransition(self.__parent.signalImageLoaded, self.GOT_IMAGE)
-        self.NOT_CONFIGURED.addTransition(self.__parent.plugin.ui.configure_button.clicked, self.CONFIGURING)
-        self.CONFIGURING.addTransition(self.__parent.plugin.ui.configure_button.clicked, self.CONFIGURING)
+        self.NOT_CONFIGURED.addTransition(self.__parent.ui.knit_button.clicked, self.CONFIGURING)
         self.CONFIGURING.addTransition(self.__parent.signalImageLoaded, self.NOT_CONFIGURED)
         self.CONFIGURING.addTransition(self.__parent.signalImageTransformed, self.NOT_CONFIGURED)
-        self.CONFIGURING.addTransition(self.__parent.ui.knit_button.clicked, self.KNITTING)
+        self.CONFIGURING.addTransition(self.__parent.signalConfigured, self.KNITTING)
         self.OPERATING.addTransition(self.__parent.ui.cancel_button.clicked, self.FINISHING)
         self.OPERATING.addTransition(self.__parent.signalDoneKnitProgress, self.FINISHING)
         self.FINISHING.addTransition(self.__parent.signalDoneKnitting, self.NOT_CONFIGURED)
@@ -89,7 +89,7 @@ class FSM (object):
         # self.ERROR_CLEARED.addTransition(..., self.ERROR_RAISED)
         # self.ERROR_RAISED.addTransition(..., self.ERROR_CLEARED)
 
-        # State transition events
+        # Actions triggered by state changes
         self.NO_IMAGE.entered.connect(lambda: logging.debug("Entered state NO_IMAGE"))
         self.NOT_CONFIGURED.entered.connect(lambda: logging.debug("Entered state NOT_CONFIGURED"))
         self.CONFIGURING.entered.connect(lambda: logging.debug("Entered state CONFIGURING"))
@@ -105,32 +105,10 @@ class FSM (object):
 
     def properties(self):
         """Define properties for GUI elements linked to states in Finite State Machine"""
- 
-        # Image transform menu item properties
-        # self.actionImageActions = self.__parent.ui.menuImageActions.menuAction()
-        # self.GOT_IMAGE.entered.connect(lambda: self.__parent.ui.menubar.addAction(self.actionImageActions))
-        # self.NOT_CONFIGURED.entered.connect(self.__parent.ui.menuImageActions.show)
-        # self.CONFIGURING.entered.connect(self.__parent.ui.menuImageActions.hide)
-
-        # Plugin elements properties
-        # self.NO_IMAGE.assignProperty(self.__parent.ui.widget_optionsdock, "enabled", "False")
-        # self.NOT_CONFIGURED.assignProperty(self.__parent.ui.widget_optionsdock, "enabled", "True")
-        # self.KNITTING.assignProperty(self.__parent.ui.widget_optionsdock, "enabled", "False")
-
-        # Load image button properties
-        # self.NO_IMAGE.assignProperty(self.__parent.ui.load_file_button, "enabled", "True")
-        # self.NOT_CONFIGURED.assignProperty(self.__parent.ui.load_file_button, "enabled", "True")
-        # self.KNITTING.assignProperty(self.__parent.ui.load_file_button, "enabled", "False")
-
-        # Options dock properties
-        # self.NO_IMAGE.assignProperty(self.__parent.ui.widget_optionsdock, "enabled", "True")
-        # self.NOT_CONFIGURED.assignProperty(self.__parent.ui.widget_optionsdock, "enabled", "True")
-        # self.KNITTING.assignProperty(self.__parent.ui.widget_optionsdock, "enabled", "False")
 
         # Knit button
         self.NO_IMAGE.assignProperty(self.__parent.ui.knit_button, "enabled", "False")
-        self.NOT_CONFIGURED.assignProperty(self.__parent.ui.knit_button, "enabled", "False")
-        self.CONFIGURING.assignProperty(self.__parent.ui.knit_button, "enabled", "True")
+        self.NOT_CONFIGURED.assignProperty(self.__parent.ui.knit_button, "enabled", "True")
         self.KNITTING.assignProperty(self.__parent.ui.knit_button, "enabled", "False")
 
         # Cancel button
@@ -147,6 +125,3 @@ class FSM (object):
         # self.UNPAUSED.assignProperty(self.__parent.ui.pause_button, "text", "Pause")
         # self.PAUSED.assignProperty(self.__parent.ui.pause_button, "text", "Resume")
         # self.ui.pause_button.clicked.connect(self.enabled_plugin.pause)
-
-        # any of the following causes a CONFIGURED to NOT_CONFIGURED transition:
-        # Any dock operation

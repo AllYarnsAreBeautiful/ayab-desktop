@@ -280,7 +280,7 @@
            <item>
             <widget class="QPushButton" name="knit_button">
              <property name="text">
-              <string>3. Knit!</string>
+              <string>2. Knit!</string>
              </property>
              <property name="shortcut">
               <string>Ctrl+Return</string>

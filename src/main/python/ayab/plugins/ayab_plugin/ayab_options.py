@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'ayab_options.ui'
+# Form implementation generated from reading ui file 'src/main/python/ayab/plugins/ayab_plugin/ayab_options.ui'
 #
 # Created by: PyQt5 UI code generator 5.14.2
 #
@@ -32,7 +32,7 @@ class Ui_DockWidget(object):
         self.ayab_config.setObjectName("ayab_config")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.ayab_config)
         self.verticalLayout.setContentsMargins(-1, 0, -1, -1)
-        self.verticalLayout.setSpacing(6)
+        self.verticalLayout.setSpacing(8)
         self.verticalLayout.setObjectName("verticalLayout")
         self.groupBox = QtWidgets.QGroupBox(self.ayab_config)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
@@ -41,7 +41,7 @@ class Ui_DockWidget(object):
         sizePolicy.setHeightForWidth(self.groupBox.sizePolicy().hasHeightForWidth())
         self.groupBox.setSizePolicy(sizePolicy)
         self.groupBox.setMinimumSize(QtCore.QSize(220, 0))
-        self.groupBox.setMaximumSize(QtCore.QSize(0, 16777215))
+        self.groupBox.setMaximumSize(QtCore.QSize(220, 16777215))
         self.groupBox.setObjectName("groupBox")
         self.horizontalLayout_3 = QtWidgets.QHBoxLayout(self.groupBox)
         self.horizontalLayout_3.setObjectName("horizontalLayout_3")
@@ -74,7 +74,8 @@ class Ui_DockWidget(object):
         self.verticalLayoutWidget.setGeometry(QtCore.QRect(-1, -1, 224, 414))
         self.verticalLayoutWidget.setObjectName("verticalLayoutWidget")
         self.verticalLayout_3 = QtWidgets.QVBoxLayout(self.verticalLayoutWidget)
-        self.verticalLayout_3.setContentsMargins(6, 6, 6, 6)
+        self.verticalLayout_3.setContentsMargins(8, 16, 12, 8)
+        self.verticalLayout_3.setSpacing(0)
         self.verticalLayout_3.setObjectName("verticalLayout_3")
         self.label_4 = QtWidgets.QLabel(self.verticalLayoutWidget)
         self.label_4.setObjectName("label_4")
@@ -135,6 +136,7 @@ class Ui_DockWidget(object):
         self.verticalLayout_3.addWidget(self.infRepeat_checkbox)
         self.gbox_startneedle = QtWidgets.QGroupBox(self.verticalLayoutWidget)
         self.gbox_startneedle.setMinimumSize(QtCore.QSize(0, 60))
+        self.gbox_startneedle.setFlat(False)
         self.gbox_startneedle.setObjectName("gbox_startneedle")
         self.start_needle_color = QtWidgets.QComboBox(self.gbox_startneedle)
         self.start_needle_color.setGeometry(QtCore.QRect(60, 20, 81, 31))
@@ -204,7 +206,8 @@ class Ui_DockWidget(object):
         self.verticalLayoutWidget_2.setGeometry(QtCore.QRect(0, -1, 211, 333))
         self.verticalLayoutWidget_2.setObjectName("verticalLayoutWidget_2")
         self.verticalLayout_4 = QtWidgets.QVBoxLayout(self.verticalLayoutWidget_2)
-        self.verticalLayout_4.setContentsMargins(6, 6, 6, 6)
+        self.verticalLayout_4.setContentsMargins(8, 8, 12, 8)
+        self.verticalLayout_4.setSpacing(0)
         self.verticalLayout_4.setObjectName("verticalLayout_4")
         self.label_8 = QtWidgets.QLabel(self.verticalLayoutWidget_2)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
@@ -327,9 +330,6 @@ class Ui_DockWidget(object):
         self.verticalLayout_4.addWidget(self.label_progress, 0, QtCore.Qt.AlignHCenter)
         self.tabWidget.addTab(self.tab_status, "")
         self.verticalLayout.addWidget(self.tabWidget)
-        self.configure_button = QtWidgets.QPushButton(self.ayab_config)
-        self.configure_button.setObjectName("configure_button")
-        self.verticalLayout.addWidget(self.configure_button)
         DockWidget.setWidget(self.ayab_config)
 
         self.retranslateUi(DockWidget)
@@ -361,4 +361,3 @@ class Ui_DockWidget(object):
         self.label_9.setText(_translate("DockWidget", "Progress"))
         self.label_progress.setText(_translate("DockWidget", "progress"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_status), _translate("DockWidget", "Status"))
-        self.configure_button.setText(_translate("DockWidget", "2. Configure"))

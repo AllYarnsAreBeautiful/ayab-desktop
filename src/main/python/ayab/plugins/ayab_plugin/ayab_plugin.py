@@ -125,8 +125,6 @@ class AyabPlugin(object):
             return
 
         valid = self.__validate_configuration(conf)
-        self.__emit_widget_knitcontrol_enabled(valid)
-        self.__emit_button_knit_enabled(valid)
         if valid:
             self.__emit_colorSymbol("")
             if conf.get("start_needle") and conf.get("stop_needle"):
@@ -138,6 +136,7 @@ class AyabPlugin(object):
             self.__image.setStartLine(conf.get("start_line"))
             self.__emit_progress(conf.get("start_line") + 1,
                                  self.__image.imgHeight())
+            self.__parent.signalConfigured.emit()
 
     def __get_configuration_from_ui(self, ui):
         """Creates a configuration dict from the ui elements.
