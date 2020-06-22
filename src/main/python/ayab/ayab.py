@@ -23,27 +23,24 @@ from fbs_runtime.application_context.PyQt5 import ApplicationContext
 import sys
 from os import path, mkdir
 import logging
-from math import ceil
 from bitarray import bitarray
 import numpy as np
 
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtWidgets import QMainWindow
-from PyQt5.QtCore import Qt, QThread, pyqtSignal
+from PyQt5.QtCore import Qt, QState, QObject, QThread, pyqtSignal
 
 from PIL import Image
-from fysom import FysomError
 
-from ayab.ayab_gui import Ui_MainWindow
-from ayab.ayab_about import Ui_AboutForm
-from .ayab_transforms import Transformable, Mirrors
-from ayab.ayab_preferences import Preferences, str2bool
-from ayab.plugins.ayab_plugin import AyabPlugin
-from ayab.plugins.ayab_plugin.firmware_flash import FirmwareFlash
-from ayab.plugins.ayab_plugin.ayab_progress import KnitProgress
-from ayab.plugins.ayab_plugin.ayab_control import KnittingMode, Progress
-
-from DAKimport import DAKimport
+from .ayab_gui import Ui_MainWindow
+from .ayab_about import Ui_AboutForm
+from .ayab_fsm import FSM
+from .ayab_scene import Scene
+from .ayab_preferences import Preferences, str2bool
+from .plugins.ayab_plugin import AyabPlugin
+from .plugins.ayab_plugin.firmware_flash import FirmwareFlash
+from .plugins.ayab_plugin.ayab_progress import KnitProgress
+from .plugins.ayab_plugin.ayab_control import KnittingMode, Progress
 
 # Temporal serial imports.
 import serial
@@ -84,22 +81,23 @@ class GuiMain(QMainWindow):
 
     GuiMain inherits from QMainWindow and instantiates a window with the form components form ayab_gui.UiForm.
     """
-    signalResetProgressWindow = pyqtSignal()
-    signalUpdateProgress = pyqtSignal(int, int, int)
+    signalUpdateProgressBar = pyqtSignal(int, int, int)
     signalUpdateColorSymbol = pyqtSignal('QString')
     signalUpdateStatus = pyqtSignal(int, int, 'QString', int)
-    signalUpdateKnitProgress = pyqtSignal(Progress, int)
     signalUpdateNotification = pyqtSignal('QString')
     signalDisplayPopUp = pyqtSignal('QString', 'QString')
-    signalUpdateNeedles = pyqtSignal(int, int)
-    signalUpdateAlignment = pyqtSignal('QString')
     signalDisplayBlockingPopUp = pyqtSignal('QString', 'QString')
     signalPlaysound = pyqtSignal('QString')
     signalUpdateButtonKnitEnabled = pyqtSignal(bool)
-    signalUpdateWidgetKnitcontrolEnabled = pyqtSignal(bool)
-
-    BAR_HEIGHT = 5.0
-    LIMIT_BAR_WIDTH = 0.5
+    signalUpdateWidgetKnitControlEnabled = pyqtSignal(bool)
+    signalResetKnitProgress = pyqtSignal()
+    signalUpdateKnitProgress = pyqtSignal(Progress, int)
+    signalUpdateNeedles = pyqtSignal(int, int)
+    signalUpdateAlignment = pyqtSignal('QString')
+    signalImageLoaded = pyqtSignal()
+    signalImageTransformed = pyqtSignal()
+    signalDoneKnitProgress = pyqtSignal()
+    signalDoneKnitting = pyqtSignal()
 
     def __init__(self, app_context):
         super(GuiMain, self).__init__(None)
@@ -110,295 +108,101 @@ class GuiMain(QMainWindow):
     
         self.prefs = Preferences()
 
-        self.pil_image = None
-        self.start_needle = 80
-        self.stop_needle = 119
-        self.imageAlignment = self.prefs.settings.value("default_alignment")
-        self.var_progress = 0
-        self.zoomlevel = 3
-
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-        self.enabled_plugin = AyabPlugin()
-        self.enabled_plugin.setup_ui(self)
+        self.__setupMenuBar()
+        self.scene = Scene(self)
+        self.kp = KnitProgress(self.ui)
+        self.plugin = AyabPlugin()
+        self.plugin.setupUi(self)
 
-        knitting_mode_box = self.enabled_plugin.options_ui.knitting_mode_box
+        # set initial knitting configuration options
+        knitting_mode_box = self.plugin.ui.knitting_mode_box
         knitting_mode_box.setCurrentIndex(knitting_mode_box.findText(self.prefs.settings.value("default_knitting_mode")))
         if str2bool(self.prefs.settings.value("default_infinite_repeat")):
-            self.enabled_plugin.options_ui.infRepeat_checkbox.setCheckState(QtCore.Qt.Checked)
+            self.plugin.ui.infRepeat_checkbox.setCheckState(QtCore.Qt.Checked)
         else:
-            self.enabled_plugin.options_ui.infRepeat_checkbox.setCheckState(QtCore.Qt.Unchecked)
+            self.plugin.ui.infRepeat_checkbox.setCheckState(QtCore.Qt.Unchecked)
         if str2bool(self.prefs.settings.value("automatic_mirroring")):
-            self.enabled_plugin.options_ui.autoMirror_checkbox.setCheckState(QtCore.Qt.Checked)
+            self.plugin.ui.autoMirror_checkbox.setCheckState(QtCore.Qt.Checked)
         else:
-            self.enabled_plugin.options_ui.autoMirror_checkbox.setCheckState(QtCore.Qt.Unchecked)
-        alignment_combo_box = self.enabled_plugin.options_ui.alignment_combo_box
-        alignment_combo_box.setCurrentIndex(alignment_combo_box.findText(self.imageAlignment))
+            self.plugin.ui.autoMirror_checkbox.setCheckState(QtCore.Qt.Unchecked)
+        self.scene.imageAlignment = self.prefs.settings.value("default_alignment")
+        alignment_combo_box = self.plugin.ui.alignment_combo_box
+        alignment_combo_box.setCurrentIndex(alignment_combo_box.findText(self.scene.imageAlignment))
         
         self.showMaximized()
-        self.setupBehaviour()
+        self.__setup_behavior()
 
+        # clear progress and status bar
         self.ui.label_notifications.setText("")
+        self.resetProgressBar()
+
+        # initialize FSM
+        self.fs = FSM(self)
+        self.fs.transitions()
+        self.fs.properties()
+        self.fs.machine.start()
+
+    def resetProgressBar(self):
         self.ui.label_current_row.setText("")
         self.ui.label_current_color.setText("")
 
-    def resetProgressWindow(self):
-        '''Reset knit progress frame.'''
-        try:
-            self.kp.close()
-        except:
-            pass
-        self.kp = KnitProgress(self.ui)
-        return
-
-    def updateProgress(self, row, total=0, repeats=0):
+    def updateProgressBar(self, row, total=0, repeats=0):
         '''Updates the Progress Bar.'''
         if row < 0:
             return
 
         # Store to local variable
         self.var_progress = row
-        self.refresh_scene()
+        self.scene.refresh()
 
         # Update label
-        if total != 0:
+        if total == 0:
+            text = ""
+        else:
             text = "Row {0}/{1}".format(row, total)
             if repeats >= 0:
                 text += " ({0} repeats completed)".format(repeats)
-        else:
-            text = ""
         self.ui.label_current_row.setText(text)
         
-        options_ui = self.enabled_plugin.options_ui
-        options_ui.label_progress.setText("{0}/{1}".format(row, total))
+        self.plugin.ui.label_progress.setText("{0}/{1}".format(row, total))
 
     def updateColorSymbol(self, colorSymbol):
         '''Updates the current color symbol.'''
-        text = ""
-        if colorSymbol != "":
-            text += "Color "
-        self.ui.label_current_color.setText(text + colorSymbol)
+        if colorSymbol == "":
+            text = ""
+        else:
+            text = "Color " + colorSymbol
+        self.ui.label_current_color.setText(text)
             
     def updateStatus(self, hall_l, hall_r, carriage_type, carriage_position):
-        options_ui = self.enabled_plugin.options_ui
-        options_ui.progress_hall_l.setValue(hall_l)
-        options_ui.label_hall_l.setText(str(hall_l))
-        options_ui.progress_hall_r.setValue(hall_r)
-        options_ui.label_hall_r.setText(str(hall_r))
-        options_ui.slider_position.setValue(carriage_position)
-        options_ui.label_carriage.setText(carriage_type)
-
-    def updateKnitProgress(self, progress, row_multiplier):
-        self.kp.update(progress, row_multiplier)
+        self.plugin.ui.progress_hall_l.setValue(hall_l)
+        self.plugin.ui.label_hall_l.setText(str(hall_l))
+        self.plugin.ui.progress_hall_r.setValue(hall_r)
+        self.plugin.ui.label_hall_r.setText(str(hall_r))
+        self.plugin.ui.slider_position.setValue(carriage_position)
+        self.plugin.ui.label_carriage.setText(carriage_type)
         
-    def update_file_selected_text_field(self, route):
-        '''Sets self.image_file_route and ui.filename_lineedit to route.'''
-        self.ui.filename_lineedit.setText(route)
-        self.image_file_route = route
-
-    def slotUpdateNotification(self, text):
+    def updateNotification(self, text):
         '''Updates the Notification field'''
         logging.info("Notification: " + text)
         self.ui.label_notifications.setText(text)
 
-    def slotUpdateNeedles(self, start_needle, stop_needle):
-        '''Updates the position of the start/stop needle visualisation'''
-        self.start_needle = start_needle
-        self.stop_needle = stop_needle
-        self.refresh_scene()
+    def slotPlaysound(self, event):
+        return
+        # if event == "start":
+        #     playsound(self.app_context.get_resource("assets/start.wav"))
+        # if event == "nextline":
+        #     playsound(self.app_context.get_resource("assets/nextline.wav"))
+        # if event == "finished":
+        #     playsound(self.app_context.get_resource("assets/finish.wav"))
 
-    def slotUpdateAlignment(self, alignment):
-        '''Updates the alignment of the image between start/stop needle'''
-        self.imageAlignment = alignment
-        self.refresh_scene()
-
-    def slotUpdateWidgetKnitcontrolEnabled(self, enabled):
+    def updateWidgetKnitControlEnabled(self, enabled):
         self.ui.widget_knitcontrol.setEnabled(enabled)        
     
-    def slotUpdateButtonKnitEnabled(self, enabled):
+    def updateButtonKnitEnabled(self, enabled):
         self.ui.knit_button.setEnabled(enabled)
-
-    def wheelEvent(self, event):
-        '''Using mouse wheel events to zoom the pattern view'''
-        if self.pil_image is not None:
-            # angleDelta.y is 120 or -120 when scrolling
-            zoom = event.angleDelta().y() / 120
-
-            self.zoomlevel = self.zoomlevel + zoom
-            if self.zoomlevel <= 1:
-                self.zoomlevel = 1
-            elif self.zoomlevel >= 5:
-                self.zoomlevel = 5
-            self.refresh_scene()
-
-    def start_knitting_process(self):
-        # Disable everything which should not be touched
-        # during knitting
-        self.ui.menuTools.setEnabled(False)
-        self.ui.widget_imgload.setEnabled(False)
-        self.ui.menuImage_Actions.setEnabled(False)
-        self.ui.widget_optionsdock.setEnabled(False)
-        self.ui.knit_button.setEnabled(False)
-        self.ui.cancel_button.setEnabled(True)
-        # start thread for knit plugin
-        self.gt = GenericThread(self.enabled_plugin.knit, parent_window=self)
-        self.gt.start()
-
-    def cancel_knitting_process(self):
-        # some kind of reset required?
-        self.enabled_plugin.cancel()
-
-    def resetUI(self):
-        # (Re-)enable UI elements
-        self.ui.menuTools.setEnabled(True)
-        self.ui.widget_imgload.setEnabled(True)
-        self.ui.menuImage_Actions.setEnabled(True)
-        self.ui.widget_optionsdock.setEnabled(True)
-        self.ui.knit_button.setEnabled(False)
-        self.ui.cancel_button.setEnabled(False)
-
-    def setupBehaviour(self):
-        # Connecting UI elements.
-        self.ui.load_file_button.clicked.connect(self.file_select_dialog)
-        self.ui.knit_button.clicked.connect(self.start_knitting_process)
-        self.ui.cancel_button.clicked.connect(self.cancel_knitting_process)
-        self.ui.actionLoad_AYAB_Firmware.triggered.connect(self.generate_firmware_ui)
-        self.ui.image_pattern_view.setDragMode(QtWidgets.QGraphicsView.ScrollHandDrag)
-        # Connecting Signals.
-        self.signalResetProgressWindow.connect(self.resetProgressWindow)
-        self.signalUpdateProgress.connect(self.updateProgress)
-        self.signalUpdateColorSymbol.connect(self.updateColorSymbol)
-        self.signalUpdateStatus.connect(self.updateStatus)
-        self.signalUpdateKnitProgress.connect(self.updateKnitProgress)
-        self.signalUpdateNotification.connect(self.slotUpdateNotification)
-        self.signalDisplayPopUp.connect(self.displayBlockingPopUp)
-        self.signalUpdateNeedles.connect(self.slotUpdateNeedles)
-        self.signalUpdateAlignment.connect(self.slotUpdateAlignment)
-        self.signalPlaysound.connect(self.slotPlaysound)
-        self.signalUpdateWidgetKnitcontrolEnabled.connect(self.slotUpdateWidgetKnitcontrolEnabled)
-        self.signalUpdateButtonKnitEnabled.connect(self.slotUpdateButtonKnitEnabled)
-
-        # This blocks the other thread until signal is done
-        self.signalDisplayBlockingPopUp.connect(self.displayBlockingPopUp)
-
-        self.ui.actionQuit.triggered.connect(QtCore.QCoreApplication.instance().quit)
-        self.ui.actionAbout.triggered.connect(self.open_about_ui)
-        self.ui.actionInvert.triggered.connect(self.invert_image)
-        self.ui.actionStretch.triggered.connect(self.stretch_image)
-        self.ui.actionRepeat.triggered.connect(self.repeat_image)
-        self.ui.actionReflect.triggered.connect(self.reflect_image)
-        self.ui.actionHorizontal_Flip.triggered.connect(self.hflip_image)
-        self.ui.actionVertical_Flip.triggered.connect(self.vflip_image)
-        self.ui.actionRotate_Left.triggered.connect(self.rotate_left)
-        self.ui.actionRotate_Right.triggered.connect(self.rotate_right)
-        self.ui.actionSetPreferences.triggered.connect(self.set_preferences)
-
-    def load_image_from_string(self, image_str):
-        '''Loads an image into self.ui.image_pattern_view using a temporary QGraphicsScene'''
-
-        # TODO Check for maximum width before loading the image
-
-        # check for DAK files
-        image_str_suffix = image_str[-4:].lower()
-        if (image_str_suffix == ".pat" or image_str_suffix == ".stp"):
-            # convert DAK file
-            dakfile_processor = DAKimport.Importer()
-            if (image_str_suffix == ".pat"):
-                self.pil_image = dakfile_processor.pat2im(image_str)
-            elif (image_str_suffix == ".stp"):
-                self.pil_image = dakfile_processor.stp2im(image_str)
-            else:
-                logging.error("unrecognized file suffix")
-        else:
-            self.pil_image = Image.open(image_str)
-
-        self.pil_image = self.pil_image.convert("RGBA")
-
-        self.refresh_scene()
-        self.statusBar().showMessage(image_str)
-        # Enable plugin elements after first load of image
-        self.ui.widget_optionsdock.setEnabled(True)
-        self.ui.menuImage_Actions.setEnabled(True)
-        # Tell loaded plugin elements about changed parameters
-        width, height = self.pil_image.size
-        self.enabled_plugin.slotSetImageDimensions(width, height)
-
-    def refresh_scene(self):
-        '''Updates the current scene '''
-        width, height = self.pil_image.size
-
-        data = self.pil_image.convert("RGBA").tobytes("raw", "RGBA")
-        qim = QtGui.QImage(data,
-                           self.pil_image.size[0],
-                           self.pil_image.size[1],
-                           QtGui.QImage.Format_ARGB32)
-        pixmap = QtGui.QPixmap.fromImage(qim)
-
-        self.set_dimensions_on_gui(pixmap.width(), pixmap.height())
-
-        qscene = QtWidgets.QGraphicsScene()
-
-        # add pattern and move accordingly to alignment
-        pattern = qscene.addPixmap(pixmap)
-        if self.imageAlignment == 'left':
-            pattern.setPos(
-                (self.start_needle - 100),
-                0)
-        elif self.imageAlignment == 'center':
-            pattern.setPos(
-                -(pixmap.width() / 2.0) + ((self.start_needle + self.stop_needle) / 2) - 100,
-                0)
-        elif self.imageAlignment == 'right':
-            pattern.setPos(
-                (self.stop_needle - 100 - pixmap.width()),
-                0)
-        else:
-            logging.warning("invalid alignment")
-
-        # Draw "machine"
-        rect_orange = QtWidgets.QGraphicsRectItem(
-            -(MACHINE_WIDTH / 2.0),
-            -self.BAR_HEIGHT,
-            (MACHINE_WIDTH / 2.0),
-            self.BAR_HEIGHT)
-        rect_orange.setBrush(QtGui.QBrush(QtGui.QColor("orange")))
-        rect_green = QtWidgets.QGraphicsRectItem(
-            0.0,
-            -self.BAR_HEIGHT,
-            (MACHINE_WIDTH / 2.0),
-            self.BAR_HEIGHT)
-        rect_green.setBrush(QtGui.QBrush(QtGui.QColor("green")))
-
-        qscene.addItem(rect_orange)
-        qscene.addItem(rect_green)
-
-        # Draw limiting lines (start/stop needle)
-        qscene.addItem(
-            QtWidgets.QGraphicsRectItem(self.start_needle - 101,
-                                        -self.BAR_HEIGHT,
-                                        self.LIMIT_BAR_WIDTH,
-                                        pixmap.height() + 2 * self.BAR_HEIGHT))
-        qscene.addItem(
-            QtWidgets.QGraphicsRectItem(self.stop_needle - 100,
-                                        -self.BAR_HEIGHT,
-                                        self.LIMIT_BAR_WIDTH,
-                                        pixmap.height() + 2 * self.BAR_HEIGHT))
-
-        # Draw knitting progress
-        qscene.addItem(
-            QtWidgets.QGraphicsRectItem(-(MACHINE_WIDTH / 2.0),
-                                        pixmap.height() - self.var_progress,
-                                        MACHINE_WIDTH,
-                                        self.LIMIT_BAR_WIDTH))
-
-        qv = self.ui.image_pattern_view
-        qv.resetTransform()
-        qv.scale(self.zoomlevel, self.zoomlevel)
-        qv.setScene(qscene)
-
-    def set_dimensions_on_gui(self, width, height):
-        text = "{} - {}".format(width, height)
-        self.ui.label_notifications.setText("Image Dimensions: " + text)
 
     def displayBlockingPopUp(self, message="", message_type="info"):
         logging.debug("MessageBox {}: '{}'".format(message_type, message))
@@ -419,20 +223,136 @@ class GuiMain(QMainWindow):
         if ret == QtWidgets.QMessageBox.Ok:
             return True
 
-    def conf_button_function(self):
-        self.enabled_plugin.configure(self)
+    def resetKnitProgress(self):
+        '''Reset knit progress frame.'''
+        self.kp.reset()
+
+    def updateKnitProgress(self, progress, row_multiplier):
+        self.kp.update(progress, row_multiplier)
+        if progress.current_row > 0 and progress.current_row == progress.total_rows:
+            self.signalDoneKnitProgress.emit()
+
+    def wheelEvent(self, event):
+        self.scene.zoom(event)
+
+    def __setup_behavior(self):
+        # UI actions
+        self.ui.load_file_button.clicked.connect(self.file_select_dialog)
+        self.ui.filename_lineedit.returnPressed.connect(self.file_select_dialog)
+        self.ui.cancel_button.clicked.connect(self.plugin.cancel)
+        self.ui.actionLoad_AYAB_Firmware.triggered.connect(self.generate_firmware_ui)
+        self.ui.image_pattern_view.setDragMode(QtWidgets.QGraphicsView.ScrollHandDrag)
+
+        # Menu actions
+        self.ui.actionSetPreferences.triggered.connect(self.set_preferences)
+        self.ui.actionAbout.triggered.connect(self.open_about_ui)
+        self.ui.actionQuit.triggered.connect(QtCore.QCoreApplication.instance().quit)
+        self.ui.actionInvert.triggered.connect(self.scene.invert_image)
+        self.ui.actionStretch.triggered.connect(self.scene.stretch_image)
+        self.ui.actionRepeat.triggered.connect(self.scene.repeat_image)
+        self.ui.actionReflect.triggered.connect(self.scene.reflect_image)
+        self.ui.actionHorizontalFlip.triggered.connect(self.scene.hflip_image)
+        self.ui.actionVerticalFlip.triggered.connect(self.scene.vflip_image)
+        self.ui.actionRotateLeft.triggered.connect(self.scene.rotate_left)
+        self.ui.actionRotateRight.triggered.connect(self.scene.rotate_right)
+
+        # Signal actions
+        self.signalUpdateProgressBar.connect(self.updateProgressBar)
+        self.signalUpdateColorSymbol.connect(self.updateColorSymbol)
+        self.signalUpdateStatus.connect(self.updateStatus)
+        self.signalUpdateNotification.connect(self.updateNotification)
+        self.signalPlaysound.connect(self.slotPlaysound)
+        self.signalUpdateWidgetKnitControlEnabled.connect(self.updateWidgetKnitControlEnabled)
+        self.signalUpdateButtonKnitEnabled.connect(self.updateButtonKnitEnabled)
+        self.signalDisplayBlockingPopUp.connect(self.displayBlockingPopUp)
+        self.signalDisplayPopUp.connect(self.displayBlockingPopUp)
+        self.signalResetKnitProgress.connect(self.resetKnitProgress)
+        self.signalUpdateKnitProgress.connect(self.updateKnitProgress)
+        self.signalUpdateNeedles.connect(self.scene.updateNeedles)
+        self.signalUpdateAlignment.connect(self.scene.updateAlignment)
+
+    def start_knitting_process(self):
+        # disable UI elements at start of knitting
+        self.__depopulateMenuBar()
+        self.ui.filename_lineedit.setEnabled(False)        
+        self.ui.load_file_button.setEnabled(False)
+        self.ui.widget_optionsdock.setEnabled(False)
+        # start thread for knit plugin
+        self.gt = GenericThread(self.plugin.knit)
+        self.gt.start()
+
+    def reset_ui_after_knitting(self):
+        # (Re-)enable UI elements after knitting finishes
+        self.__repopulateMenuBar()
+        self.ui.filename_lineedit.setEnabled(True)        
+        self.ui.load_file_button.setEnabled(True)
+        self.ui.widget_optionsdock.setEnabled(True)
+
+    def __setupMenuBar(self):
+        self.__actionImageActions = self.ui.menuImageActions.menuAction()
+        self.__actionTools = self.ui.menuTools.menuAction()
+        self.__actionPreferences = self.ui.menuPreferences.menuAction()
+        self.__actionHelp = self.ui.menuHelp.menuAction()
+        self.ui.menubar.addAction(self.__actionTools)
+        self.ui.menubar.addAction(self.__actionPreferences)
+        self.ui.menubar.addAction(self.__actionHelp)
+
+    def __depopulateMenuBar(self):
+        try:
+            self.ui.menubar.removeAction(self.__actionImageActions)
+        except:
+            pass
+        self.ui.menubar.removeAction(self.__actionTools)
+
+    def __repopulateMenuBar(self):
+        self.ui.menubar.removeAction(self.__actionPreferences)
+        self.ui.menubar.removeAction(self.__actionHelp)
+        self.ui.menubar.addAction(self.__actionImageActions)
+        self.ui.menubar.addAction(self.__actionTools)
+        self.ui.menubar.addAction(self.__actionPreferences)
+        self.ui.menubar.addAction(self.__actionHelp)
+
+    def addImageActions(self):
+        # This workaround is necessary because 
+        # self.__actionImageActions.setEnabled(True)
+        # does not seems to work (at least, not on Ubuntu 16.04)
+        # Tom Price June 2020
+        self.__depopulateMenuBar()
+        self.__repopulateMenuBar()
 
     def file_select_dialog(self):
         filenameValue = self.ui.filename_lineedit.text()
         if filenameValue == '':
             filePath = self.app_context.get_resource("patterns")
         else:
-            filePath = ''
+            filePath = filenameValue
         file_selected_route, _ = QtWidgets.QFileDialog.getOpenFileName(
             self, "Open file", filePath, 'Images (*.png *.PNG *.jpg *.JPG *.jpeg *.JPEG *.bmp *.BMP *.gif *.GIF *.tiff *.TIFF *.tif *.TIF *.Pat *.pat *.PAT *.Stp *.stp *.STP)')
         if file_selected_route:
-            self.update_file_selected_text_field(file_selected_route)
-            self.load_image_from_string(str(file_selected_route))
+            self.__update_file_selected_text_field(file_selected_route)
+            self.__load_image_from_string(str(file_selected_route))
+
+    def __update_file_selected_text_field(self, route):
+        '''Sets self.image_file_route and ui.filename_lineedit to route.'''
+        self.ui.filename_lineedit.setText(route)
+        self.image_file_route = route
+
+    def __load_image_from_string(self, image_str):
+        '''Loads an image into self.ui.image_pattern_view using a temporary QGraphicsScene'''
+        # TODO Check maximum width of image
+        try:
+            self.scene.load_image_file(image_str)
+        except OSError:
+            logging.error("unable to load " + str(image_str))
+        except Exception as e:
+            logging.error(e)
+        else:
+            self.scene.refresh()
+            self.signalImageLoaded.emit()
+            self.statusBar().showMessage(image_str)
+            # Tell loaded plugin elements about changed parameters
+            width, height = self.scene.image.size
+            self.plugin.setImageDimensions(width, height)
 
     def generate_firmware_ui(self):
         self.__flash_ui = FirmwareFlash(self)
@@ -450,96 +370,6 @@ class GuiMain(QMainWindow):
         self.__about_ui.label_3.setText("Version " + __version__)
         self.__AboutForm.show()
 
-    def invert_image(self):
-        '''Public invert current Image function.'''
-        self.apply_image_transform("invert")
-
-    def repeat_image(self):
-        '''Public repeat current Image function.'''
-        v = QtWidgets.QInputDialog.getInt(
-            self,
-            "Repeat",
-            "Vertical",
-            value=1,
-            min=1
-        )
-        h = QtWidgets.QInputDialog.getInt(
-            self,
-            "Repeat",
-            "Horizontal",
-            value=1,
-            min=1,
-            max=ceil(MACHINE_WIDTH / self.pil_image.size[0])
-        )
-        self.apply_image_transform("repeat", v[0], h[0])
-
-    def stretch_image(self):
-        '''Public stretch current Image function.'''
-        v = QtWidgets.QInputDialog.getInt(
-            self,
-            "Stretch",
-            "Vertical",
-            value=1,
-            min=1
-        )
-        h = QtWidgets.QInputDialog.getInt(
-            self,
-            "Stretch",
-            "Horizontal",
-            value=1,
-            min=1,
-            max=ceil(MACHINE_WIDTH / self.pil_image.size[0])
-        )
-        self.apply_image_transform("stretch", v[0], h[0])
-
-    def reflect_image(self):
-        '''Public reflect current Image function.'''
-        m = Mirrors()
-        if (m.result == QtWidgets.QDialog.Accepted):
-            self.apply_image_transform("reflect", m.mirrors)
-
-    def hflip_image(self):
-        '''Public horizontal flip current Image function.'''
-        self.apply_image_transform("hflip")
-
-    def vflip_image(self):
-        '''Public vertical flip current Image function.'''
-        self.apply_image_transform("vflip")
-
-    def rotate_left(self):
-        '''Public rotate left current Image function.'''
-        self.apply_image_transform("rotate", 90.0)
-
-    def rotate_right(self):
-        '''Public rotate right current Image function.'''
-        self.apply_image_transform("rotate", -90.0)
-
-    def apply_image_transform(self, method, *args):
-        '''Executes an image transform specified by key and args.
-
-        Calls a transform function, forwarding args and the image,
-        and replaces the QtImage on scene.
-        '''
-        transform = getattr(Transformable, method)
-        try:
-            image = transform(self.pil_image, args)
-        except:
-            logging.error("Error on executing transform")
-        if not image:
-            return
-
-        # Update the view
-        self.pil_image = image
-
-        # Disable Knit Controls
-        self.ui.widget_knitcontrol.setEnabled(False)
-
-        # Update maximum values
-        width, height = self.pil_image.size
-        self.enabled_plugin.slotSetImageDimensions(width, height)
-        # Draw canvas
-        self.refresh_scene()
-
     def set_preferences(self):
         return self.prefs.setPrefsDialog()
 
@@ -548,15 +378,6 @@ class GuiMain(QMainWindow):
         Returns a list of all USB Serial Ports
         """
         return list(serial.tools.list_ports.grep("USB"))
-
-    def slotPlaysound(self, event):
-        return
-        # if event == "start":
-        #     playsound(self.app_context.get_resource("assets/start.wav"))
-        # if event == "nextline":
-        #     playsound(self.app_context.get_resource("assets/nextline.wav"))
-        # if event == "finished":
-        #     playsound(self.app_context.get_resource("assets/finish.wav"))
 
 
 class GenericThread(QThread):
@@ -575,9 +396,13 @@ class GenericThread(QThread):
     def run(self):
         try:
             self.function(*self.args, **self.kwargs)
-        except FysomError as fe:
-            logging.error(fe)
-        return
+        except Exception:
+            for arg in self.args:
+                print(arg)
+            for key, value in self.kwargs.items():
+                print(key, value)
+            raise
+
 
 def run(app_context):
     translator = QtCore.QTranslator()

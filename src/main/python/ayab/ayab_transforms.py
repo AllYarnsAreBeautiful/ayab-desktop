@@ -17,8 +17,6 @@
 #    Copyright 2014 Sebastian Oliva, Christian Obersteiner, Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
-"""Image transforms for AYAB GUI"""
-
 from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtCore import Qt
 from PIL import Image, ImageOps
@@ -26,6 +24,11 @@ import logging
 
 
 class Transformable(Image.Image):
+    """Image transforms for AYAB GUI.
+
+    @author Tom Price
+    @date   June 2020
+    """
 
     def rotate(self, args):
         # TODO crop width if it exceeds the maximum after transform

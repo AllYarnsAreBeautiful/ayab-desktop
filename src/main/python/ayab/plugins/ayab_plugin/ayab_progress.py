@@ -17,8 +17,6 @@
 #    Copyright 2014 Sebastian Oliva, Christian Obersteiner, Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
-"""Knitting progress window"""
-
 from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtCore import Qt
 from bitarray import bitarray
@@ -26,6 +24,11 @@ import numpy as np
 
 
 class Progress:
+    """Knitting progress window.
+
+    @author Tom Price
+    @date   June 2020
+    """
 
     def __init__(self):
         self.reset()
@@ -70,6 +73,8 @@ class KnitProgress:
     def __init__(self, parent):
         self.area = parent.area
         self.area.setContentsMargins(1, 1, 1, 1)
+
+    def reset(self):
         self.container = QtWidgets.QWidget()
         self.container.setMinimumSize(100,100)
         self.grid = QtWidgets.QGridLayout(self.container)
@@ -78,18 +83,6 @@ class KnitProgress:
         self.grid.setSizeConstraint(QtWidgets.QLayout.SetMinAndMaxSize)
         self.area.setWidget(self.container)
         self.row = -1
-
-    def show(self):
-        self.container.show()
-
-    def hide(self):
-        self.container.hide()
-
-    def reset(self):
-        self.row = -1
-
-    def close(self):
-        self.container.close()
 
     def update(self, progress, row_multiplier):
         if progress.current_row < 0:
