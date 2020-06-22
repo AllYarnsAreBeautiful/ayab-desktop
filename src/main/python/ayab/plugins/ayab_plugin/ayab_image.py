@@ -30,7 +30,7 @@ def array2rgb(a):
 
 
 class ayabImage(object):
-    def __init__(self, pil_image, pNumColors=2):
+    def __init__(self, image, pNumColors=2):
         self.__numColors = pNumColors
         self.__imgPosition = 'center'
         self.__imgStartNeedle = 0
@@ -38,7 +38,7 @@ class ayabImage(object):
         self.__knitStartNeedle = 0
         self.__knitStopNeedle = MACHINE_WIDTH - 1
         self.__startLine = 0
-        self.__image = pil_image
+        self.__image = image
         self.__updateImageData()
         return
 
@@ -95,7 +95,8 @@ class ayabImage(object):
             [bitarray([False] * imgWidth) for j in range(num_colors * imgHeight)]
 
         # Limit number of colors in image
-        self.__image = self.__image.quantize(num_colors, dither=None)
+        # self.__image = self.__image.quantize(num_colors, dither=None)
+        self.__image = self.__image.quantize(num_colors)
 
         # Order colors most-frequent first
         # NB previously they were ordered lightest-first

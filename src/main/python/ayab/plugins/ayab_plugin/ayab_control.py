@@ -180,9 +180,9 @@ class AYABControl(object):
 
     def __log_cnfInfo(self, msg):
         api = msg[1]
-        log = f"API v{api}"
+        log = "API v" + str(api)
         if api >= 5:
-            log += f", FW v{msg[2]}.{msg[3]}"
+            log += ", FW v" + str(msg[2]) + "." + str(msg[3])
         self.__logger.info(log)
         return
 
@@ -208,11 +208,12 @@ class AYABControl(object):
             self.__ayabCom.cnf_line(requestedLine, bits.tobytes(), lastLine and not self.__infRepeat)
 
             # screen output
-            msg = f"{self.__lineBlock} {lineNumber} reqLine: {requestedLine} imgRow: {self.__imgRow}"
+            msg = str(self.__lineBlock) + " " + str(lineNumber) + " reqLine: " + str(requestedLine) + \
+                " imgRow: " + str(self.__imgRow)
             if sendBlankLine:
                 msg += " BLANK LINE"
             else:
-                msg += f" indexToSend: {indexToSend} color: {self.COLOR_SYMBOLS[color]}"
+                msg += " indexToSend: " + str(indexToSend) + " color: " + str(self.COLOR_SYMBOLS[color])
             self.__logger.debug(msg)
 
             # get line progress to send to GUI
@@ -350,7 +351,7 @@ class AYABControl(object):
         lastLine = (indexToSend == lenImgExpanded - 1) and sendBlankLine
 
         if not sendBlankLine:
-            self.__logger.debug(f"COLOR {color}")
+            self.__logger.debug("COLOR " + str(color))
 
         return color, indexToSend, sendBlankLine, lastLine
 
@@ -489,8 +490,8 @@ class AYABControl(object):
                     self.__current_state = KnittingState.WAIT_FOR_INIT
                     result = AYABControlKnitResult.WAIT_FOR_INIT
                 else:
-                    self.__logger.error(f"wrong API version: {rcvParam}, " +
-                                        f"expected: {self.API_VERSION}")
+                    self.__logger.error("wrong API version: " + str(rcvParam) + ", " +
+                                        "expected: " + str(self.API_VERSION))
                     result = AYABControlKnitResult.ERROR_WRONG_API
             else:
                 self.__ayabCom.req_info()

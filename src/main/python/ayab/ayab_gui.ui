@@ -178,9 +178,6 @@
             </item>
             <item>
              <widget class="QLineEdit" name="filename_lineedit">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -230,9 +227,6 @@
         </item>
         <item alignment="Qt::AlignHCenter">
          <widget class="QWidget" name="widget_optionsdock" native="true">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
           <layout class="QVBoxLayout" name="verticalLayout_2">
            <property name="sizeConstraint">
             <enum>QLayout::SetMaximumSize</enum>
@@ -285,9 +279,6 @@
            </property>
            <item>
             <widget class="QPushButton" name="knit_button">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
              <property name="text">
               <string>3. Knit!</string>
              </property>
@@ -298,9 +289,6 @@
            </item>
            <item>
             <widget class="QPushButton" name="cancel_button">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
              <property name="text">
               <string>Cancel Knitting</string>
              </property>
@@ -351,31 +339,25 @@
     </property>
     <addaction name="actionSetPreferences"/>
    </widget>
-   <widget class="QMenu" name="menuImage_Actions">
-    <property name="enabled">
-     <bool>false</bool>
-    </property>
+   <widget class="QMenu" name="menuImageActions">
     <property name="title">
      <string>Image Actions</string>
     </property>
+    <action name="actionImageActions"/>
     <addaction name="actionInvert"/>
     <addaction name="actionStretch"/>
     <addaction name="actionRepeat"/>
     <addaction name="actionReflect"/>
     <addaction name="separator"/>
-    <addaction name="actionHorizontal_Flip"/>
-    <addaction name="actionVertical_Flip"/>
+    <addaction name="actionHorizontalFlip"/>
+    <addaction name="actionVerticalFlip"/>
     <addaction name="separator"/>
-    <addaction name="actionRotate_Left"/>
-    <addaction name="actionRotate_Right"/>
+    <addaction name="actionRotateLeft"/>
+    <addaction name="actionRotateRight"/>
     <addaction name="separator"/>
    </widget>
-   <addaction name="menuFile"/>
-   <addaction name="menuImage_Actions"/>
-   <addaction name="menuTools"/>
-   <addaction name="menuPreferences"/>
-   <addaction name="menuHelp"/>
-  </widget>
+    <addaction name="menuFile"/>
+   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionLoad_AYAB_Firmware">
    <property name="text">
@@ -437,7 +419,7 @@
     <string>Ctrl+M</string>
    </property>
   </action>
-  <action name="actionHorizontal_Flip">
+  <action name="actionHorizontalFlip">
    <property name="text">
     <string>Horizontal_Flip</string>
    </property>
@@ -445,7 +427,7 @@
     <string>Ctrl+Up</string>
    </property>
   </action>
-  <action name="actionVertical_Flip">
+  <action name="actionVerticalFlip">
    <property name="text">
     <string>Vertical Flip</string>
    </property>
@@ -453,7 +435,7 @@
     <string>Ctrl+Down</string>
    </property>
   </action>
-  <action name="actionRotate_Left">
+  <action name="actionRotateLeft">
    <property name="text">
     <string>Rotate Left</string>
    </property>
@@ -461,7 +443,7 @@
     <string>Ctrl+Left</string>
    </property>
   </action>
-  <action name="actionRotate_Right">
+  <action name="actionRotateRight">
    <property name="text">
     <string>Rotate Right</string>
    </property>
