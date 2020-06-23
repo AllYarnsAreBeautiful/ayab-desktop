@@ -33,7 +33,7 @@ class FSM (object):
     @date   June 2020
     """
     def __init__(self, parent):
-        """Define Heirarchical states for Finite State Machine"""
+        """Define Hierarchical states for Finite State Machine"""
 
         # garbage-collector-safe reference to parent
         self.__parent = parent  # weakref.ref(parent)
