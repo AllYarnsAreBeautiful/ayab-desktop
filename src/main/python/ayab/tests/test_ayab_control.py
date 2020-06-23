@@ -202,9 +202,11 @@ class TestAYABControl(unittest.TestCase):
 
     def test__select_needles(self):
         ayab_control = AYABControl()
-        ayab_control.setNumColors(3)
+        ayab_control.setNumColors(2)
         ayab_control.setStartLine(0)
-        ayab_control.setKnittingMode(KnittingMode.SINGLEBED.value)
+        
+        # 40 pixel image set to the center
+        ayab_control.setKnittingMode(KnittingMode.CIRCULAR_RIBBER.value)
         im = ayabImage(Image.new('P', (40, 1)), 2)
         im.setImagePosition('left')
         ayab_control.setImage(im)
@@ -225,7 +227,7 @@ class TestAYABControl(unittest.TestCase):
         ayab_control.setKnittingMode(KnittingMode.CLASSIC_RIBBER.value)
         assert ayab_control._select_needles(0, 0, True) == ~bits1
         ayab_control.setKnittingMode(KnittingMode.HEARTOFPLUTO_RIBBER.value)
-        assert ayab_control._select_needles(2, 0, True) == ~bits1
+        assert ayab_control._select_needles(0, 0, True) == ~bits1
         
         # image is wider than machine width
         # all pixels set
@@ -262,18 +264,18 @@ class TestAYABControl(unittest.TestCase):
         assert KnittingMode(KnittingMode.CIRCULAR_RIBBER.value).knit_func(2) == "_circular_ribber"
         
     def test_flanking_needles(self):
-        assert not KnittingMode(KnittingMode.SINGLEBED.value).flanking_needles(0, 2)
+        assert KnittingMode(KnittingMode.SINGLEBED.value).flanking_needles(0, 2)
         assert not KnittingMode(KnittingMode.SINGLEBED.value).flanking_needles(1, 2)
         assert KnittingMode(KnittingMode.CLASSIC_RIBBER.value).flanking_needles(0, 2)
         assert not KnittingMode(KnittingMode.CLASSIC_RIBBER.value).flanking_needles(1, 2)
         assert KnittingMode(KnittingMode.CLASSIC_RIBBER.value).flanking_needles(0, 3)
         assert not KnittingMode(KnittingMode.CLASSIC_RIBBER.value).flanking_needles(1, 3)
         assert not KnittingMode(KnittingMode.CLASSIC_RIBBER.value).flanking_needles(2, 3)
-        assert not KnittingMode(KnittingMode.MIDDLECOLORSTWICE_RIBBER.value).flanking_needles(0, 3)
+        assert KnittingMode(KnittingMode.MIDDLECOLORSTWICE_RIBBER.value).flanking_needles(0, 3)
         assert not KnittingMode(KnittingMode.MIDDLECOLORSTWICE_RIBBER.value).flanking_needles(1, 3)
-        assert KnittingMode(KnittingMode.MIDDLECOLORSTWICE_RIBBER.value).flanking_needles(2, 3)
-        assert not KnittingMode(KnittingMode.HEARTOFPLUTO_RIBBER.value).flanking_needles(0, 3)
+        assert not KnittingMode(KnittingMode.MIDDLECOLORSTWICE_RIBBER.value).flanking_needles(2, 3)
+        assert KnittingMode(KnittingMode.HEARTOFPLUTO_RIBBER.value).flanking_needles(0, 3)
         assert not KnittingMode(KnittingMode.HEARTOFPLUTO_RIBBER.value).flanking_needles(1, 3)
-        assert KnittingMode(KnittingMode.HEARTOFPLUTO_RIBBER.value).flanking_needles(2, 3)
+        assert not KnittingMode(KnittingMode.HEARTOFPLUTO_RIBBER.value).flanking_needles(2, 3)
         assert not KnittingMode(KnittingMode.CIRCULAR_RIBBER.value).flanking_needles(0, 2)
         assert not KnittingMode(KnittingMode.CIRCULAR_RIBBER.value).flanking_needles(1, 2)

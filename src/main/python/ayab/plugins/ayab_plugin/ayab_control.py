@@ -94,12 +94,14 @@ class KnittingMode(Enum):
             method += ["_2col", "_multicol"][ncolors > 2]
         return method
 
+    # FIXME this function is supposed to select needles
+    # to knit the background color along side the image pattern
     def flanking_needles(self, color, ncolors):
-        return (color == 0 and self.name == "CLASSIC_RIBBER") \
-            or (color == ncolors - 1
-                and (self.name == "MIDDLECOLORSTWICE_RIBBER"
-                    or self.name == "HEARTOFPLUTO_RIBBER"))
-
+        # return (color == 0 and self.name == "CLASSIC_RIBBER") \
+        #     or (color == ncolors - 1
+        #         and (self.name == "MIDDLECOLORSTWICE_RIBBER"
+        #             or self.name == "HEARTOFPLUTO_RIBBER"))
+        return color == 0 and self.name != "CIRCULAR_RIBBER"
 
 def even(x):
     return x % 2 == 0
@@ -112,6 +114,7 @@ class AYABControl(object):
     BLOCK_LENGTH = 256
     COLOR_SYMBOLS = "A", "B", "C", "D"
     API_VERSION = 0x05
+    FLANKING_NEEDLES = True
 
     def __init__(self):
         self.__logger = logging.getLogger(type(self).__name__)
@@ -240,13 +243,17 @@ class AYABControl(object):
             self.__progress.alt_color = None
             self.__progress.colorSymbol = self.COLOR_SYMBOLS[color]
         self.__progress.color = self.__image.palette[color]
-        self.__progress.bits = bits[self.__firstneedle:self.__lastneedle]
+        if self.FLANKING_NEEDLES:
+            self.__progress.bits = bits[self.__image.knitStartNeedle():self.__image.knitStopNeedle() + 1]
+        else:
+            self.__progress.bits = bits[self.__firstneedle:self.__lastneedle]
 
     def _select_needles(self, color, indexToSend, sendBlankLine):
         bits = bitarray([False] * MACHINE_WIDTH, endian="little")
         firstneedle = max(0, self.__image.imgStartNeedle())
         lastneedle = min(self.__image.imgWidth() + self.__image.imgStartNeedle(), MACHINE_WIDTH)
 
+        # select needles flanking the image if necessary to knit the background color
         if KnittingMode(self.__knitting_mode).flanking_needles(color, self.__numColors):
             bits[0:firstneedle] = True
             bits[lastneedle:MACHINE_WIDTH] = True
