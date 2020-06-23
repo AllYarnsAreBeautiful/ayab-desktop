@@ -32,6 +32,9 @@ from PyQt5.QtCore import Qt, QState, QObject, QThread, pyqtSignal
 
 from PIL import Image
 
+import simpleaudio as sa
+import wave
+
 from .ayab_gui import Ui_MainWindow
 from .ayab_about import Ui_AboutForm
 from .ayab_fsm import FSM
@@ -46,7 +49,6 @@ from .plugins.ayab_plugin.ayab_control import KnittingMode, Progress
 import serial
 import serial.tools.list_ports
 
-# from playsound import playsound
 
 # TODO move to generic configuration
 MACHINE_WIDTH = 200
@@ -81,15 +83,12 @@ class GuiMain(QMainWindow):
 
     GuiMain inherits from QMainWindow and instantiates a window with the form components form ayab_gui.UiForm.
     """
-    signalUpdateProgressBar = pyqtSignal(int, int, int)
-    signalUpdateColorSymbol = pyqtSignal('QString')
+    signalUpdateProgressBar = pyqtSignal(int, int, int, 'QString')
     signalUpdateStatus = pyqtSignal(int, int, 'QString', int)
     signalUpdateNotification = pyqtSignal('QString')
     signalDisplayPopUp = pyqtSignal('QString', 'QString')
     signalDisplayBlockingPopUp = pyqtSignal('QString', 'QString')
     signalPlaysound = pyqtSignal('QString')
-    signalUpdateButtonKnitEnabled = pyqtSignal(bool)
-    signalUpdateWidgetKnitControlEnabled = pyqtSignal(bool)
     signalResetKnitProgress = pyqtSignal()
     signalUpdateKnitProgress = pyqtSignal(Progress, int)
     signalUpdateNeedles = pyqtSignal(int, int)
@@ -149,13 +148,19 @@ class GuiMain(QMainWindow):
         self.ui.label_current_row.setText("")
         self.ui.label_current_color.setText("")
 
-    def updateProgressBar(self, row, total=0, repeats=0):
-        '''Updates the Progress Bar.'''
+    def updateProgressBar(self, row, total=0, repeats=0, colorSymbol=""):
+        '''Updates the color and row in progress bar'''
         if row < 0:
             return
 
+        if colorSymbol == "":
+            text = ""
+        else:
+            text = "Color " + colorSymbol
+        self.ui.label_current_color.setText(text)
+
         # Store to local variable
-        self.var_progress = row
+        self.scene.var_progress = row
         self.scene.refresh()
 
         # Update label
@@ -166,17 +171,8 @@ class GuiMain(QMainWindow):
             if repeats >= 0:
                 text += " ({0} repeats completed)".format(repeats)
         self.ui.label_current_row.setText(text)
-        
         self.plugin.ui.label_progress.setText("{0}/{1}".format(row, total))
 
-    def updateColorSymbol(self, colorSymbol):
-        '''Updates the current color symbol.'''
-        if colorSymbol == "":
-            text = ""
-        else:
-            text = "Color " + colorSymbol
-        self.ui.label_current_color.setText(text)
-            
     def updateStatus(self, hall_l, hall_r, carriage_type, carriage_position):
         self.plugin.ui.progress_hall_l.setValue(hall_l)
         self.plugin.ui.label_hall_l.setText(str(hall_l))
@@ -189,21 +185,6 @@ class GuiMain(QMainWindow):
         '''Updates the Notification field'''
         logging.info("Notification: " + text)
         self.ui.label_notifications.setText(text)
-
-    def slotPlaysound(self, event):
-        return
-        # if event == "start":
-        #     playsound(self.app_context.get_resource("assets/start.wav"))
-        # if event == "nextline":
-        #     playsound(self.app_context.get_resource("assets/nextline.wav"))
-        # if event == "finished":
-        #     playsound(self.app_context.get_resource("assets/finish.wav"))
-
-    def updateWidgetKnitControlEnabled(self, enabled):
-        self.ui.widget_knitcontrol.setEnabled(enabled)        
-    
-    def updateButtonKnitEnabled(self, enabled):
-        self.ui.knit_button.setEnabled(enabled)
 
     def displayBlockingPopUp(self, message="", message_type="info"):
         logging.debug("MessageBox {}: '{}'".format(message_type, message))
@@ -259,12 +240,9 @@ class GuiMain(QMainWindow):
 
         # Signal actions
         self.signalUpdateProgressBar.connect(self.updateProgressBar)
-        self.signalUpdateColorSymbol.connect(self.updateColorSymbol)
         self.signalUpdateStatus.connect(self.updateStatus)
         self.signalUpdateNotification.connect(self.updateNotification)
-        self.signalPlaysound.connect(self.slotPlaysound)
-        self.signalUpdateWidgetKnitControlEnabled.connect(self.updateWidgetKnitControlEnabled)
-        self.signalUpdateButtonKnitEnabled.connect(self.updateButtonKnitEnabled)
+        self.signalPlaysound.connect(self.playsound)
         self.signalDisplayBlockingPopUp.connect(self.displayBlockingPopUp)
         self.signalDisplayPopUp.connect(self.displayBlockingPopUp)
         self.signalResetKnitProgress.connect(self.resetKnitProgress)
@@ -379,6 +357,20 @@ class GuiMain(QMainWindow):
         Returns a list of all USB Serial Ports
         """
         return list(serial.tools.list_ports.grep("USB"))
+
+    def playsound(self, sound):
+        if str2bool(self.prefs.settings.value("quiet_mode")):
+            return 
+        dirname = path.join("..", "..", "resources", "base", "assets", path.dirname(__file__))
+        filename = sound + ".wav"
+        try:
+            wave_read = wave.open(path.join(dirname, filename), 'rb')
+        except:
+            logging.warning("File " + filename + " not found.")
+        else:
+            wave_obj = sa.WaveObject.from_wave_read(wave_read)
+            play_obj = wave_obj.play()
+            play_obj.wait_done()
 
 
 class GenericThread(QThread):
