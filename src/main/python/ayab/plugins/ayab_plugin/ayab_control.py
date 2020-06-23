@@ -18,20 +18,17 @@
 #    Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
-
+import sys
+import logging
+from enum import Enum
+import numpy as np
+from bitarray import bitarray
+from PIL import Image
+from . import ayab_image
 from .ayab_progress import Progress
 from .ayab_communication import AyabCommunication
 from .ayab_communication_mockup import AyabCommunicationMockup
-from . import ayab_image
-import numpy as np
-import logging
-from PIL import Image
-# from time import sleep
 
-from bitarray import bitarray
-from enum import Enum
-
-import sys
 
 MACHINE_WIDTH = 200
 

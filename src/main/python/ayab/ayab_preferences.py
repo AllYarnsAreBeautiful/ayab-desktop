@@ -51,6 +51,8 @@ class Preferences:
                                    str2bool(self.settings.value("automatic_mirroring")))
             self.settings.setValue("default_infinite_repeat",
                                    str2bool(self.settings.value("default_infinite_repeat")))
+            self.settings.setValue("quiet_mode",
+                                   str2bool(self.settings.value("quiet_mode")))
         self.dialog = None
 
     def reset(self):
@@ -59,12 +61,10 @@ class Preferences:
         self.settings.setValue("default_knitting_mode", "Singlebed")
         self.settings.setValue("default_infinite_repeat", False)
         self.settings.setValue("default_alignment", "center")
+        self.settings.setValue("quiet_mode", False)
 
     def refresh(self):
         '''Update preferences GUI to current values'''
-        print(self.settings.childKeys())
-        print(self.settings.value("default_infinite_repeat"))
-        print(self.settings.value("automatic_mirroring"))
         self.default_knitting_mode_box.setCurrentIndex(self.default_knitting_mode_box.findText(self.settings.value("default_knitting_mode")))
         if str2bool(self.settings.value("default_infinite_repeat")):
             self.default_infinite_repeat_checkbox.setCheckState(Qt.Checked)
@@ -75,6 +75,10 @@ class Preferences:
             self.automatic_mirroring_checkbox.setCheckState(Qt.Checked)
         else:
             self.automatic_mirroring_checkbox.setCheckState(Qt.Unchecked)
+        if str2bool(self.settings.value("quiet_mode")):
+            self.quiet_mode_checkbox.setCheckState(Qt.Checked)
+        else:
+            self.quiet_mode_checkbox.setCheckState(Qt.Unchecked)
 
     def setPrefsDialog(self):
         '''GUI to set preferences'''
@@ -114,6 +118,9 @@ class Preferences:
         self.automatic_mirroring_checkbox = QtWidgets.QCheckBox("Default Mirroring")
         self.automatic_mirroring_checkbox.toggled.connect(self.__toggle_automatic_mirroring_setting)
 
+        self.quiet_mode_checkbox = QtWidgets.QCheckBox("Quiet Mode")
+        self.quiet_mode_checkbox.toggled.connect(self.__toggle_quiet_mode_setting)
+
         reset = QtWidgets.QPushButton("Reset")
         reset.clicked.connect(self.__reset_and_refresh)
         enter = QtWidgets.QPushButton("OK")
@@ -129,6 +136,7 @@ class Preferences:
         layout.addWidget(self.default_infinite_repeat_checkbox)
         layout.addWidget(group2)
         layout.addWidget(self.automatic_mirroring_checkbox)
+        layout.addWidget(self.quiet_mode_checkbox)
         group = QtWidgets.QGroupBox("Preferences")
         group.setLayout(layout)
         group.setFlat(True)
@@ -163,6 +171,13 @@ class Preferences:
             self.settings.setValue("automatic_mirroring", True)
         else:
             self.settings.setValue("automatic_mirroring", False)
+        return
+
+    def __toggle_quiet_mode_setting(self):
+        if self.quiet_mode_checkbox.isChecked():
+            self.settings.setValue("quiet_mode", True)
+        else:
+            self.settings.setValue("quiet_mode", False)
         return
 
     def __reset_and_refresh(self):

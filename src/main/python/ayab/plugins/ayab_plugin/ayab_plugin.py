@@ -21,18 +21,13 @@
 import logging
 import os
 import weakref
-
-from PIL import ImageOps
-
-from PyQt5 import QtGui, QtWidgets, QtCore
-
-from .ayab_options import Ui_DockWidget
 import serial.tools.list_ports
-
-from . import ayab_image
-from .ayab_control import AYABControl, AYABControlKnitResult, KnittingMode
-
 from time import sleep
+from PIL import ImageOps
+from PyQt5 import QtGui, QtWidgets, QtCore
+from . import ayab_image
+from .ayab_options import Ui_DockWidget
+from .ayab_control import AYABControl, AYABControlKnitResult, KnittingMode
 
 
 MACHINE_WIDTH = 200
@@ -105,7 +100,6 @@ class AyabPlugin(object):
         return list(serial.tools.list_ports.grep("USB"))
 
     def configure(self):
-        self.__logger.debug("ayab_plugin.configure()")
         conf = self.__get_configuration_from_ui(self.__parent)
 
         # Start to knit with the bottom first
@@ -126,7 +120,6 @@ class AyabPlugin(object):
 
         valid = self.__validate_configuration(conf)
         if valid:
-            self.__emit_colorSymbol("")
             if conf.get("start_needle") and conf.get("stop_needle"):
                 self.__image.setKnitNeedles(conf.get("start_needle"),
                                             conf.get("stop_needle"))
@@ -135,7 +128,7 @@ class AyabPlugin(object):
 
             self.__image.setStartLine(conf.get("start_line"))
             self.__emit_progress(conf.get("start_line") + 1,
-                                 self.__image.imgHeight())
+                                 self.__image.imgHeight(), 0, "")
             self.__parent.signalConfigured.emit()
 
     def __get_configuration_from_ui(self, ui):
@@ -245,7 +238,6 @@ class AyabPlugin(object):
         return True
 
     def knit(self):
-        self.__logger.debug("ayab_plugin.knit()")
         self.__emit_reset_knit_progress()
 
         if self.conf["continuousReporting"] is True:
@@ -289,13 +281,13 @@ class AyabPlugin(object):
             self.__emit_notification(
                 "Image transmission finished. Please knit until you "
                 "hear the double beep sound.")
-            self.__emit_playsound("finished")
+            self.__emit_playsound("finish")
 
     def __knit_progress_handler(self, progress, row_multiplier):
         self.__emit_progress(progress.current_row,
                              progress.total_rows,
-                             progress.repeats)
-        self.__emit_colorSymbol(progress.colorSymbol)
+                             progress.repeats,
+                             progress.colorSymbol)
         self.__emit_status(progress.hall_l,
                            progress.hall_r,
                            progress.carriage_type,
@@ -303,14 +295,12 @@ class AyabPlugin(object):
         self.__emit_knit_progress(progress, row_multiplier)
 
     def cancel(self):
-        self.__logger.debug("ayab_plugin.cancel()")
         self.__emit_notification("Knitting canceled.")
         self.__canceled = True
         self.__parent.signalDoneKnitting.emit()
 
     def finish(self):
-        self.__logger.debug("ayab_plugin.finish()")
-        self.__logger.info("Finished Knitting.")
+        self.__logger.info("Finished knitting.")
         self.__ayab_control.close()
         self.__parent.signalDoneKnitting.emit()
 
@@ -369,24 +359,14 @@ class AyabPlugin(object):
         """Sends the updateKnitProgress QtSignal."""
         self.__parent.signalUpdateKnitProgress.emit(progress, row_multiplier)
 
-    def __emit_progress(self, row, total=0, repeats=0):
+    def __emit_progress(self, row, total=0, repeats=0, colorSymbol=""):
         """Sends the updateProgressBar QtSignal."""
-        self.__parent.signalUpdateProgressBar.emit(row, total, repeats)
-
-    def __emit_colorSymbol(self, colorSymbol):
-        """Sends the updateColorSymbol QtSignal."""
-        self.__parent.signalUpdateColorSymbol.emit(colorSymbol)
+        self.__parent.signalUpdateProgressBar.emit(row, total, repeats, colorSymbol)
 
     def __emit_status(self, hall_l, hall_r, carriage_type, carriage_position):
         """Sends the updateStatus QtSignal"""
         self.__parent.signalUpdateStatus.emit(hall_l, hall_r, carriage_type,
                                                  carriage_position)
-
-    def __emit_button_knit_enabled(self, enabled):
-        self.__parent.signalUpdateButtonKnitEnabled.emit(enabled)
-
-    def __emit_widget_knitcontrol_enabled(self, enabled):
-        self.__parent.signalUpdateWidgetKnitControlEnabled.emit(enabled)
 
     def __emit_needles(self):
         """Sends the signalUpdateNeedles QtSignal."""
