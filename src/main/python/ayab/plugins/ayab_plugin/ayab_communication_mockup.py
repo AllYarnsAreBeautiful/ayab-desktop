@@ -52,8 +52,8 @@ class AyabCommunicationMockup(AyabCommunication):
 
     def open_serial(self, pPortname=None) -> bool:
         self.__is_open = True
-        if self.__delay:
-            sleep(2) # wait for knitting progress dialog
+        # if self.__delay:
+        #     sleep(2) # wait for knitting progress dialog
         return True
 
     def update(self) -> tuple:
