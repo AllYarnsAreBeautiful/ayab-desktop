@@ -89,13 +89,13 @@ class GuiMain(QMainWindow):
     signalDisplayPopUp = pyqtSignal('QString', 'QString')
     signalDisplayBlockingPopUp = pyqtSignal('QString', 'QString')
     signalPlaysound = pyqtSignal('QString')
-    signalResetKnitProgress = pyqtSignal()
     signalUpdateKnitProgress = pyqtSignal(Progress, int)
     signalUpdateNeedles = pyqtSignal(int, int)
     signalUpdateAlignment = pyqtSignal('QString')
     signalImageLoaded = pyqtSignal()
     signalImageTransformed = pyqtSignal()
     signalConfigured = pyqtSignal()
+    signalPleaseKnit = pyqtSignal()
     signalDoneKnitProgress = pyqtSignal()
     signalDoneKnitting = pyqtSignal()
 
@@ -205,10 +205,6 @@ class GuiMain(QMainWindow):
         if ret == QtWidgets.QMessageBox.Ok:
             return True
 
-    def resetKnitProgress(self):
-        '''Reset knit progress frame.'''
-        self.kp.reset()
-
     def updateKnitProgress(self, progress, row_multiplier):
         self.kp.update(progress, row_multiplier)
         if progress.current_row > 0 and progress.current_row == progress.total_rows:
@@ -245,12 +241,15 @@ class GuiMain(QMainWindow):
         self.signalPlaysound.connect(self.playsound)
         self.signalDisplayBlockingPopUp.connect(self.displayBlockingPopUp)
         self.signalDisplayPopUp.connect(self.displayBlockingPopUp)
-        self.signalResetKnitProgress.connect(self.resetKnitProgress)
+        self.signalPleaseKnit.connect(QThread.yieldCurrentThread,
+                                      type=Qt.BlockingQueuedConnection)
         self.signalUpdateKnitProgress.connect(self.updateKnitProgress)
         self.signalUpdateNeedles.connect(self.scene.updateNeedles)
         self.signalUpdateAlignment.connect(self.scene.updateAlignment)
 
     def start_knitting_process(self):
+        # reset knit progress window
+        self.kp.reset()
         # disable UI elements at start of knitting
         self.__depopulateMenuBar()
         self.ui.filename_lineedit.setEnabled(False)        
@@ -361,7 +360,7 @@ class GuiMain(QMainWindow):
     def playsound(self, sound):
         if str2bool(self.prefs.settings.value("quiet_mode")):
             return 
-        dirname = self.app_context.get_resource("base/assets")
+        dirname = self.app_context.get_resource("assets")
         filename = sound + ".wav"
         try:
             wave_read = wave.open(path.join(dirname, filename), 'rb')

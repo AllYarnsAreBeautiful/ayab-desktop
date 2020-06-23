@@ -35,6 +35,7 @@ class Progress:
 
     def reset(self):
         self.current_row = -1
+        self.lineNumber = -1
         self.total_rows = -1
         self.repeats = -1
         self.colorSymbol = ""
@@ -42,7 +43,6 @@ class Progress:
         self.hall_r = 0
         self.carriage_type = ""
         self.carriage_position = 0
-        self.lineNumber = -1
         self.color = -1
         self.alt_color = None
         self.bits = bitarray()

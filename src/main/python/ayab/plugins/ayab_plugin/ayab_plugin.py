@@ -21,6 +21,7 @@
 import logging
 import os
 import weakref
+from copy import copy
 import serial.tools.list_ports
 from time import sleep
 from PIL import ImageOps
@@ -238,18 +239,17 @@ class AyabPlugin(object):
         return True
 
     def knit(self):
-        self.__emit_reset_knit_progress()
-
         if self.conf["continuousReporting"] is True:
             self.ui.tabWidget.setCurrentIndex(1)
-
         self.__canceled = False
         while True:
             # knit next row
             result = self.__ayab_control.knit(self.__image, self.conf)
-            self.__knit_progress_handler(self.__ayab_control.get_progress(),
-                                         self.__ayab_control.get_row_multiplier())
             self.__knit_feedback_handler(result)
+            # make copy of progress object to emit to UI thread
+            progress = copy(self.__ayab_control.get_progress())
+            row_mult = self.__ayab_control.get_row_multiplier()
+            self.__knit_progress_handler(progress, row_mult)
             if self.__canceled or result is AYABControlKnitResult.FINISHED:
                 return
 
@@ -271,6 +271,7 @@ class AyabPlugin(object):
         if result is AYABControlKnitResult.PLEASE_KNIT:
             self.__emit_notification("Please Knit")
             self.__emit_playsound("start")
+            self.__parent.signalPleaseKnit.emit()  # blocking connection waits until UI responds
 
         if result is AYABControlKnitResult.DEVICE_NOT_READY:
             self.__emit_notification()
@@ -350,10 +351,6 @@ class AyabPlugin(object):
     def __emit_notification(self, message=""):
         """Sends the signalUpdateNotification signal"""
         self.__parent.signalUpdateNotification.emit(message)
-
-    def __emit_reset_knit_progress(self):
-        """Sends the resetKnitProgress QtSignal."""
-        self.__parent.signalResetKnitProgress.emit()
 
     def __emit_knit_progress(self, progress, row_multiplier):
         """Sends the updateKnitProgress QtSignal."""
