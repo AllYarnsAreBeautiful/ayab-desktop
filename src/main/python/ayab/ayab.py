@@ -361,7 +361,7 @@ class GuiMain(QMainWindow):
     def playsound(self, sound):
         if str2bool(self.prefs.settings.value("quiet_mode")):
             return 
-        dirname = path.join("..", "..", "resources", "base", "assets", path.dirname(__file__))
+        dirname = self.app_context.get_resource("base/assets")
         filename = sound + ".wav"
         try:
             wave_read = wave.open(path.join(dirname, filename), 'rb')
