@@ -271,7 +271,6 @@ class AyabPlugin(object):
         if result is AYABControlKnitResult.PLEASE_KNIT:
             self.__emit_notification("Please Knit")
             self.__emit_playsound("start")
-            self.__parent.signalPleaseKnit.emit()  # blocking connection waits until UI responds
 
         if result is AYABControlKnitResult.DEVICE_NOT_READY:
             self.__emit_notification()
@@ -386,6 +385,7 @@ class AyabPlugin(object):
         self.__parent.signalUpdateAlignment.emit(alignment_text)
 
     def __emit_playsound(self, event):
+        # blocking connection means that thread waits until sound has finished playing
         self.__parent.signalPlaysound.emit(event)
 
     def __onStartLineChanged(self):

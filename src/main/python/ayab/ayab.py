@@ -95,7 +95,6 @@ class GuiMain(QMainWindow):
     signalImageLoaded = pyqtSignal()
     signalImageTransformed = pyqtSignal()
     signalConfigured = pyqtSignal()
-    signalPleaseKnit = pyqtSignal()
     signalDoneKnitProgress = pyqtSignal()
     signalDoneKnitting = pyqtSignal()
 
@@ -238,11 +237,10 @@ class GuiMain(QMainWindow):
         self.signalUpdateProgressBar.connect(self.updateProgressBar)
         self.signalUpdateStatus.connect(self.updateStatus)
         self.signalUpdateNotification.connect(self.updateNotification)
-        self.signalPlaysound.connect(self.playsound)
+        self.signalPlaysound.connect(self.playsound,
+                                     type=Qt.BlockingQueuedConnection)
         self.signalDisplayBlockingPopUp.connect(self.displayBlockingPopUp)
         self.signalDisplayPopUp.connect(self.displayBlockingPopUp)
-        self.signalPleaseKnit.connect(QThread.yieldCurrentThread,
-                                      type=Qt.BlockingQueuedConnection)
         self.signalUpdateKnitProgress.connect(self.updateKnitProgress)
         self.signalUpdateNeedles.connect(self.scene.updateNeedles)
         self.signalUpdateAlignment.connect(self.scene.updateAlignment)
