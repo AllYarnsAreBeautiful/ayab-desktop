@@ -57,10 +57,9 @@ class FSM (object):
         self.GOT_IMAGE.setInitialState(self.NOT_CONFIGURED)
 
         # Knitting states
-        self.STARTING = QState(self.KNITTING)
         self.OPERATING = QState(self.KNITTING)
         self.FINISHING = QState(self.KNITTING)
-        self.KNITTING.setInitialState(self.STARTING)
+        self.KNITTING.setInitialState(self.OPERATING)
 
         # Pause states (not implemented)
         # self.NOT_PAUSED = QState(self.DO_TALK)
@@ -80,8 +79,6 @@ class FSM (object):
         self.CONFIGURING.addTransition(self.__parent.signalImageLoaded, self.NOT_CONFIGURED)
         self.CONFIGURING.addTransition(self.__parent.signalImageTransformed, self.NOT_CONFIGURED)
         self.CONFIGURING.addTransition(self.__parent.signalConfigured, self.KNITTING)
-        self.STARTING.addTransition(self.__parent.signalPleaseKnit, self.OPERATING)
-        self.STARTING.addTransition(self.__parent.ui.cancel_button.clicked, self.FINISHING)
         self.OPERATING.addTransition(self.__parent.ui.cancel_button.clicked, self.FINISHING)
         self.OPERATING.addTransition(self.__parent.signalDoneKnitProgress, self.FINISHING)
         self.FINISHING.addTransition(self.__parent.signalDoneKnitting, self.NOT_CONFIGURED)
@@ -96,8 +93,6 @@ class FSM (object):
         self.NO_IMAGE.entered.connect(lambda: logging.debug("Entered state NO_IMAGE"))
         self.NOT_CONFIGURED.entered.connect(lambda: logging.debug("Entered state NOT_CONFIGURED"))
         self.CONFIGURING.entered.connect(lambda: logging.debug("Entered state CONFIGURING"))
-        self.STARTING.entered.connect(lambda: logging.debug("Entered state STARTING"))
-        self.OPERATING.entered.connect(lambda: logging.debug("Entered state OPERATING"))
         self.FINISHING.entered.connect(lambda: logging.debug("Entered state FINISHING"))
 
         self.GOT_IMAGE.entered.connect(self.__parent.addImageActions)
