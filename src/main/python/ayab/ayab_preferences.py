@@ -25,8 +25,7 @@ The method of configuration may differ depending on the OS.
 
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtCore import QSettings, Qt
-from os import path, mkdir
-from shutil import copy
+from .ayab_prefs_gui import Ui_PrefsDialog
 
 
 def str2bool(qvariant):
@@ -53,7 +52,6 @@ class Preferences:
                                    str2bool(self.settings.value("default_infinite_repeat")))
             self.settings.setValue("quiet_mode",
                                    str2bool(self.settings.value("quiet_mode")))
-        self.dialog = None
 
     def reset(self):
         '''Reset preferences to default values'''
@@ -63,109 +61,82 @@ class Preferences:
         self.settings.setValue("default_alignment", "center")
         self.settings.setValue("quiet_mode", False)
 
-    def refresh(self):
-        '''Update preferences GUI to current values'''
-        self.default_knitting_mode_box.setCurrentIndex(self.default_knitting_mode_box.findText(self.settings.value("default_knitting_mode")))
-        if str2bool(self.settings.value("default_infinite_repeat")):
-            self.default_infinite_repeat_checkbox.setCheckState(Qt.Checked)
-        else:
-            self.default_infinite_repeat_checkbox.setCheckState(Qt.Unchecked)
-        self.default_alignment_box.setCurrentIndex(self.default_alignment_box.findText(self.settings.value("default_alignment")))
-        if str2bool(self.settings.value("automatic_mirroring")):
-            self.automatic_mirroring_checkbox.setCheckState(Qt.Checked)
-        else:
-            self.automatic_mirroring_checkbox.setCheckState(Qt.Unchecked)
-        if str2bool(self.settings.value("quiet_mode")):
-            self.quiet_mode_checkbox.setCheckState(Qt.Checked)
-        else:
-            self.quiet_mode_checkbox.setCheckState(Qt.Unchecked)
-
     def setPrefsDialog(self):
-        '''GUI to set preferences'''
-        self.dialog = QtWidgets.QDialog()
-        self.dialog.setWindowTitle("Set Preferences")
-        self.dialog.setWindowModality(Qt.ApplicationModal)
+        return PrefsDialog(self).exec_()
 
-        self.default_knitting_mode_box = QtWidgets.QComboBox()
-        self.default_knitting_mode_box.addItem("Singlebed")
-        self.default_knitting_mode_box.addItem("Ribber: Classic")
-        self.default_knitting_mode_box.addItem("Ribber: Middle-Colors-Twice")
-        self.default_knitting_mode_box.addItem("Ribber: Heart of Pluto")
-        self.default_knitting_mode_box.addItem("Ribber: Circular")
-        self.default_knitting_mode_box.currentIndexChanged.connect(self.__update_default_knitting_mode_setting)
 
-        self.default_infinite_repeat_checkbox = QtWidgets.QCheckBox()
-        self.default_infinite_repeat_checkbox.toggled.connect(self.__toggle_default_infinite_repeat_setting)
+class PrefsDialog(QtWidgets.QDialog):
+    '''GUI to set preferences'''
 
-        self.default_alignment_box = QtWidgets.QComboBox()
-        self.default_alignment_box.addItem("center")
-        self.default_alignment_box.addItem("left")
-        self.default_alignment_box.addItem("right")
-        self.default_alignment_box.currentIndexChanged.connect(self.__update_default_alignment_setting)
-
-        self.automatic_mirroring_checkbox = QtWidgets.QCheckBox()
-        self.automatic_mirroring_checkbox.toggled.connect(self.__toggle_automatic_mirroring_setting)
-
-        self.quiet_mode_checkbox = QtWidgets.QCheckBox()
-        self.quiet_mode_checkbox.toggled.connect(self.__toggle_quiet_mode_setting)
-
-        reset = QtWidgets.QPushButton("Reset")
-        reset.clicked.connect(self.__reset_and_refresh)
-        enter = QtWidgets.QPushButton("OK")
-        enter.clicked.connect(self.dialog.accept)
-
-        form = QtWidgets.QFormLayout()
-        form.addRow(QtWidgets.QLabel("Default Knitting Mode"), self.default_knitting_mode_box)
-        form.addRow(QtWidgets.QLabel("Default Infinite Repeat"), self.default_infinite_repeat_checkbox)
-        form.addRow(QtWidgets.QLabel("Default Alignment"), self.default_alignment_box)
-        form.addRow(QtWidgets.QLabel("Default Mirroring"), self.automatic_mirroring_checkbox)
-        form.addRow(QtWidgets.QLabel("Quiet Mode"), self.quiet_mode_checkbox)
-
-        group = QtWidgets.QGroupBox("Settings")
-        group.setLayout(form)
-        group.setFlat(True)
-
-        grid = QtWidgets.QGridLayout()
-        grid.addWidget(group,0,0,1,5)
-        grid.addWidget(enter,1,0,1,1)
-        grid.addWidget(reset,1,4,1,1)
-        self.dialog.setLayout(grid)
-
-        self.refresh()
-        return self.dialog.exec_()
+    def __init__(self, parent):
+        super(PrefsDialog, self).__init__(None)
+        self.__reset = parent.reset
+        self.__settings = parent.settings
+        self.__ui = Ui_PrefsDialog()
+        self.__ui.setupUi(self)
+        self.__ui.default_knitting_mode_box.currentIndexChanged.connect(self.__update_default_knitting_mode_setting)
+        self.__ui.default_infinite_repeat_checkbox.toggled.connect(self.__toggle_default_infinite_repeat_setting)
+        self.__ui.default_alignment_box.currentIndexChanged.connect(self.__update_default_alignment_setting)
+        self.__ui.automatic_mirroring_checkbox.toggled.connect(self.__toggle_automatic_mirroring_setting)
+        self.__ui.quiet_mode_checkbox.toggled.connect(self.__toggle_quiet_mode_setting)
+        self.__ui.reset.clicked.connect(self.__reset_and_refresh)
+        self.__ui.enter.clicked.connect(self.accept)
+        self.__refresh()
 
     def __update_default_knitting_mode_setting(self):
-        self.settings.setValue("default_knitting_mode",
-                               self.default_knitting_mode_box.itemText(self.default_knitting_mode_box.currentIndex()))
+        self.__settings.setValue("default_knitting_mode",
+                               self.__ui.default_knitting_mode_box.itemText(self.__ui.default_knitting_mode_box.currentIndex()))
         return
 
     def __toggle_default_infinite_repeat_setting(self):
-        if self.default_infinite_repeat_checkbox.isChecked():
-            self.settings.setValue("default_infinite_repeat", True)
+        if self.__ui.default_infinite_repeat_checkbox.isChecked():
+            self.__settings.setValue("default_infinite_repeat", True)
         else:
-            self.settings.setValue("default_infinite_repeat", False)
+            self.__settings.setValue("default_infinite_repeat", False)
         return
 
     def __update_default_alignment_setting(self):
-        self.settings.setValue("default_alignment",
-                               self.default_alignment_box.itemText(self.default_alignment_box.currentIndex()))
+        self.__settings.setValue("default_alignment",
+                               self.__ui.default_alignment_box.itemText(self.__ui.default_alignment_box.currentIndex()))
         return
 
     def __toggle_automatic_mirroring_setting(self):
-        if self.automatic_mirroring_checkbox.isChecked():
-            self.settings.setValue("automatic_mirroring", True)
+        if self.__ui.automatic_mirroring_checkbox.isChecked():
+            self.__settings.setValue("automatic_mirroring", True)
         else:
-            self.settings.setValue("automatic_mirroring", False)
+            self.__settings.setValue("automatic_mirroring", False)
         return
 
     def __toggle_quiet_mode_setting(self):
-        if self.quiet_mode_checkbox.isChecked():
-            self.settings.setValue("quiet_mode", True)
+        if self.__ui.quiet_mode_checkbox.isChecked():
+            self.__settings.setValue("quiet_mode", True)
         else:
-            self.settings.setValue("quiet_mode", False)
+            self.__settings.setValue("quiet_mode", False)
         return
 
+    def __refresh(self):
+        '''Update preferences GUI to current values'''
+        self.__ui.default_knitting_mode_box.setCurrentIndex(
+            self.__ui.default_knitting_mode_box.findText(
+                self.__settings.value("default_knitting_mode")))
+        if str2bool(self.__settings.value("default_infinite_repeat")):
+            self.__ui.default_infinite_repeat_checkbox.setCheckState(Qt.Checked)
+        else:
+            self.__ui.default_infinite_repeat_checkbox.setCheckState(Qt.Unchecked)
+        self.__ui.default_alignment_box.setCurrentIndex(
+            self.__ui.default_alignment_box.findText(
+                self.__settings.value("default_alignment")))
+        if str2bool(self.__settings.value("automatic_mirroring")):
+            self.__ui.automatic_mirroring_checkbox.setCheckState(Qt.Checked)
+        else:
+            self.__ui.automatic_mirroring_checkbox.setCheckState(Qt.Unchecked)
+        if str2bool(self.__settings.value("quiet_mode")):
+            self.__ui.quiet_mode_checkbox.setCheckState(Qt.Checked)
+        else:
+            self.__ui.quiet_mode_checkbox.setCheckState(Qt.Unchecked)
+
     def __reset_and_refresh(self):
-        self.reset()
-        self.refresh()
+        self.__reset()
+        self.__refresh()
         return
+
