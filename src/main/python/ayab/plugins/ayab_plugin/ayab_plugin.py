@@ -21,9 +21,9 @@
 import logging
 import os
 import weakref
-from copy import copy
-import serial.tools.list_ports
+# from copy import copy
 from time import sleep
+import serial.tools.list_ports
 from PIL import ImageOps
 from PyQt5 import QtGui, QtWidgets, QtCore
 from . import ayab_image
@@ -246,12 +246,22 @@ class AyabPlugin(object):
             # knit next row
             result = self.__ayab_control.knit(self.__image, self.conf)
             self.__knit_feedback_handler(result)
-            # make copy of progress object to emit to UI thread
-            progress = copy(self.__ayab_control.get_progress())
+            # do not need to make copy of progress object to emit to UI thread
+            # because signalUpdateKnitProgress connection blocks this thread
+            # progress = copy(self.__ayab_control.get_progress())
+            progress = self.__ayab_control.get_progress()
             row_mult = self.__ayab_control.get_row_multiplier()
             self.__knit_progress_handler(progress, row_mult)
             if self.__canceled or result is AYABControlKnitResult.FINISHED:
-                return
+                break
+        self.__logger.info("Finished knitting.")
+        self.__ayab_control.close()
+
+        # small delay to finish printing to knit progress window
+        # before "finish.wav" sound plays
+        sleep(1)
+
+        self.__parent.signalDoneKnitting.emit(not self.__canceled)
 
     def __knit_feedback_handler(self, result):
         if result is AYABControlKnitResult.CONNECTING_TO_MACHINE:
@@ -281,7 +291,6 @@ class AyabPlugin(object):
             self.__emit_notification(
                 "Image transmission finished. Please knit until you "
                 "hear the double beep sound.")
-            self.__emit_playsound("finish")
 
     def __knit_progress_handler(self, progress, row_multiplier):
         self.__emit_progress(progress.current_row,
@@ -297,18 +306,12 @@ class AyabPlugin(object):
     def cancel(self):
         self.__emit_notification("Knitting canceled.")
         self.__canceled = True
-        self.__parent.signalDoneKnitting.emit()
-
-    def finish(self):
-        self.__logger.info("Finished knitting.")
-        self.__ayab_control.close()
-        self.__parent.signalDoneKnitting.emit()
 
     # never called
-    def fail(self):
-        # TODO add message info from event
-        self.__logger.error("Error while knitting.")
-        self.__ayab_control.close()
+    # def fail(self):
+    #     # TODO add message info from event
+    #     self.__logger.error("Error while knitting.")
+    #     self.__ayab_control.close()
 
     def setImageDimensions(self, width, height):
         """Called by Main UI on loading of an image to set Start/Stop needle
@@ -391,5 +394,6 @@ class AyabPlugin(object):
     def __onStartLineChanged(self):
         """ """
         start_row_edit = self.ui.start_row_edit.value()
-        self.__emit_progress(start_row_edit)
+        total_rows = self.__parent.scene.image.size[1]
+        self.__emit_progress(start_row_edit, total_rows, 0, "")
 

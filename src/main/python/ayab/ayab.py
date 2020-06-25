@@ -84,19 +84,19 @@ class GuiMain(QMainWindow):
     GuiMain inherits from QMainWindow and instantiates a window with the form components form ayab_gui.UiForm.
     """
     signalUpdateProgressBar = pyqtSignal(int, int, int, 'QString')
+    signalUpdateKnitProgress = pyqtSignal(Progress, int)
     signalUpdateStatus = pyqtSignal(int, int, 'QString', int)
     signalUpdateNotification = pyqtSignal('QString')
     signalDisplayPopUp = pyqtSignal('QString', 'QString')
     signalDisplayBlockingPopUp = pyqtSignal('QString', 'QString')
     signalPlaysound = pyqtSignal('QString')
-    signalUpdateKnitProgress = pyqtSignal(Progress, int)
     signalUpdateNeedles = pyqtSignal(int, int)
     signalUpdateAlignment = pyqtSignal('QString')
     signalImageLoaded = pyqtSignal()
     signalImageTransformed = pyqtSignal()
     signalConfigured = pyqtSignal()
-    signalDoneKnitProgress = pyqtSignal()
-    signalDoneKnitting = pyqtSignal()
+    # signalDoneKnitProgress = pyqtSignal()
+    signalDoneKnitting = pyqtSignal(bool)
 
     def __init__(self, app_context):
         super(GuiMain, self).__init__(None)
@@ -114,6 +114,7 @@ class GuiMain(QMainWindow):
         self.kp = KnitProgress(self.ui)
         self.plugin = AyabPlugin()
         self.plugin.setupUi(self)
+        self.gt = GenericThread(self.plugin.knit)
 
         # set initial knitting configuration options
         knitting_mode_box = self.plugin.ui.knitting_mode_box
@@ -206,8 +207,8 @@ class GuiMain(QMainWindow):
 
     def updateKnitProgress(self, progress, row_multiplier):
         self.kp.update(progress, row_multiplier)
-        if progress.current_row > 0 and progress.current_row == progress.total_rows:
-            self.signalDoneKnitProgress.emit()
+        # if progress.current_row > 0 and progress.current_row == progress.total_rows:
+        #     self.signalDoneKnitProgress.emit()
 
     def wheelEvent(self, event):
         self.scene.zoom(event)
@@ -241,9 +242,11 @@ class GuiMain(QMainWindow):
                                      type=Qt.BlockingQueuedConnection)
         self.signalDisplayBlockingPopUp.connect(self.displayBlockingPopUp)
         self.signalDisplayPopUp.connect(self.displayBlockingPopUp)
-        self.signalUpdateKnitProgress.connect(self.updateKnitProgress)
+        self.signalUpdateKnitProgress.connect(self.updateKnitProgress,
+                                              type=Qt.BlockingQueuedConnection)
         self.signalUpdateNeedles.connect(self.scene.updateNeedles)
         self.signalUpdateAlignment.connect(self.scene.updateAlignment)
+        self.signalDoneKnitting.connect(self.__reset_ui_after_knitting)
 
     def start_knitting_process(self):
         # reset knit progress window
@@ -252,17 +255,16 @@ class GuiMain(QMainWindow):
         self.__depopulateMenuBar()
         self.ui.filename_lineedit.setEnabled(False)        
         self.ui.load_file_button.setEnabled(False)
-        self.ui.widget_optionsdock.setEnabled(False)
         # start thread for knit plugin
-        self.gt = GenericThread(self.plugin.knit)
         self.gt.start()
 
-    def reset_ui_after_knitting(self):
+    def __reset_ui_after_knitting(self, audio: bool):
         # (Re-)enable UI elements after knitting finishes
         self.__repopulateMenuBar()
         self.ui.filename_lineedit.setEnabled(True)        
         self.ui.load_file_button.setEnabled(True)
-        self.ui.widget_optionsdock.setEnabled(True)
+        if audio:
+            self.__audio("finish")
 
     def __setupMenuBar(self):
         self.__actionImageActions = self.ui.menuImageActions.menuAction()
@@ -356,6 +358,11 @@ class GuiMain(QMainWindow):
         return list(serial.tools.list_ports.grep("USB"))
 
     def playsound(self, sound):
+        """Blocking -- call from external thread only"""
+        self.__audio(sound)
+
+    def __audio(self, sound):
+        """Play audio and wait until finished"""
         if str2bool(self.prefs.settings.value("quiet_mode")):
             return 
         dirname = self.app_context.get_resource("assets")
