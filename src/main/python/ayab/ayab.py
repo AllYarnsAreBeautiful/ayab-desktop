@@ -403,8 +403,9 @@ class GenericThread(QThread):
 
 def run(app_context):
     translator = QtCore.QTranslator()
-    ## Loading ayab_gui main translator.
+    ## Load translators
     translator.load(QtCore.QLocale.system(), "ayab_gui", ".", app_context.get_resource("ayab/translations"), ".qm")
+    translator.load(QtCore.QLocale.system(), "ayab_options", ".", app_context.get_resource("ayab/translations"), ".qm")
     app = QtWidgets.QApplication(sys.argv)
     app.installTranslator(translator)
     window = GuiMain(app_context)
