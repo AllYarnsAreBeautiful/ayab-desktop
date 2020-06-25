@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>PrefsDialog</class>
+ <widget class="QDialog" name="prefs_dialog">
+  <property name="modal">
+   <bool>true</bool>
+  </property>
+  <property name="windowTitle">
+   <string>Set Preferences</string>
+  </property>
+  <layout class="QGridLayout" name="prefs_grid">
+   <item row="0" column="0" rowspan="1" colspan="5">
+    <widget class="QGroupBox" name="prefs_group">
+     <property name="flat">
+      <bool>true</bool>
+     </property>
+     <property name="title">
+      <string>Settings</string>
+     </property>
+     <layout class="QGridLayout" name="prefs_form">
+      <item row="0" column="0">
+       <widget class="QLabel" name="default_knitting_mode_label">
+        <property name="text">
+         <string>Default Knitting Mode</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QComboBox" name="default_knitting_mode_box">
+        <item>
+         <property name="text">
+          <string notr="true">Singlebed</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string notr="true">Ribber: Classic</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string notr="true">Ribber: Middle-Colors-Twice</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string notr="true">Ribber: Heart of Pluto</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string notr="true">Ribber: Circular</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="default_infinite_repeat_label">
+        <property name="text">
+         <string>Default Infinite Repeat</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QCheckBox" name="default_infinite_repeat_checkbox"/>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="default_alignment_label">
+        <property name="text">
+         <string>Default Alignment</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QComboBox" name="default_alignment_box">
+        <item>
+         <property name="text">
+          <string notr="true">center</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string notr="true">left</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string notr="true">right</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="automatic_mirroring_label">
+        <property name="text">
+         <string>Default Mirroring</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QCheckBox" name="automatic_mirroring_checkbox"/>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="quiet_mode_label">
+        <property name="text">
+         <string>Quiet Mode</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1">
+       <widget class="QCheckBox" name="quiet_mode_checkbox"/>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="1" column="0" rowspan="1" colspan="1">
+    <widget class="QPushButton" name="enter">
+     <property name="text">
+      <string>OK</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="4" rowspan="1" colspan="1">
+    <widget class="QPushButton" name="reset">
+     <property name="text">
+      <string>Reset</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+ <slots/>
+</ui>

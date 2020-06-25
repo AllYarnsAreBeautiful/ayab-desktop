@@ -17,10 +17,11 @@
 #    Copyright 2014 Sebastian Oliva, Christian Obersteiner, Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
+import logging
 from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtCore import Qt
 from PIL import Image, ImageOps
-import logging
+from .ayab_mirrors import Ui_MirrorDialog
 
 
 class Transformable(Image.Image):
@@ -115,49 +116,21 @@ class Mirrors:
 
     def __init__(self):
         self.mirrors = [False, False, False, False]
-        self.dialog = QtWidgets.QDialog()
-        self.result = self.reflectDialog()
+        self.result = MirrorDialog(self).exec_()
 
-    def __toggled(self, box):
+    def toggled(self, box):
         self.mirrors[box] = not self.mirrors[box]
 
-    def __toggled0(self):
-        self.__toggled(0)
 
-    def __toggled1(self):
-        self.__toggled(1)
+class MirrorDialog(QtWidgets.QDialog):
+    '''GUI to set preferences'''
 
-    def __toggled2(self):
-        self.__toggled(2)
-
-    def __toggled3(self):
-        self.__toggled(3)
-
-    def reflectDialog(self):
-        self.dialog.setWindowTitle("Reflect image")
-        self.dialog.setWindowModality(Qt.ApplicationModal)
-        self.dialog.resize(200, 200)
-        group = QtWidgets.QGroupBox("Add mirrors")
-        group.setFlat(True)
-        check0 = QtWidgets.QCheckBox("Left")
-        check1 = QtWidgets.QCheckBox("Right")
-        check2 = QtWidgets.QCheckBox("Top")
-        check3 = QtWidgets.QCheckBox("Bottom")
-        check0.toggled.connect(self.__toggled0)
-        check1.toggled.connect(self.__toggled1)
-        check2.toggled.connect(self.__toggled2)
-        check3.toggled.connect(self.__toggled3)
-        enter = QtWidgets.QPushButton("OK")
-        enter.clicked.connect(self.dialog.accept)
-        layout = QtWidgets.QVBoxLayout()
-        layout.addWidget(check0)
-        layout.addWidget(check1)
-        layout.addWidget(check2)
-        layout.addWidget(check3)
-        group.setLayout(layout)
-        vbox = QtWidgets.QVBoxLayout()
-        vbox.addWidget(group)
-        vbox.addWidget(enter)
-        self.dialog.setLayout(vbox)
-        return self.dialog.exec_()
-
+    def __init__(self, parent):
+        super(MirrorDialog, self).__init__(None)
+        self.__ui = Ui_MirrorDialog()
+        self.__ui.setupUi(self)
+        self.__ui.check0.toggled.connect(lambda: parent.toggled(0))
+        self.__ui.check1.toggled.connect(lambda: parent.toggled(1))
+        self.__ui.check2.toggled.connect(lambda: parent.toggled(2))
+        self.__ui.check3.toggled.connect(lambda: parent.toggled(3))
+        self.__ui.enter.clicked.connect(self.accept)
