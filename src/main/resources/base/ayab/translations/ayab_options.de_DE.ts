@@ -56,7 +56,7 @@
     <message>
         <location filename="../../../../python/ayab/plugins/ayab_plugin/ayab_options.ui" line="413"/>
         <source>Mirror Image</source>
-        <translation>Muster Spiegeln</translation>
+        <translation>Muster spiegeln</translation>
     </message>
     <message>
         <location filename="../../../../python/ayab/plugins/ayab_plugin/ayab_options.ui" line="420"/>
