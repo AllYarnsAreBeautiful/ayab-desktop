@@ -1,141 +1,128 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS><TS version="2.0" language="de_DE" sourcelanguage="">
+<!DOCTYPE TS>
+<TS version="2.1" language="de_DE">
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="ayab_gui.py" line="221"/>
+        <location filename="../../../../python/ayab/ayab_gui.ui" line="14"/>
         <source>All Yarns Are Beautiful</source>
         <translation>All Yarns Are Beautiful</translation>
     </message>
     <message>
-        <location filename="ayab_gui.py" line="225"/>
-        <source>Knitting Options</source>
-        <translation>Strickeinstellungen</translation>
-    </message>
-    <message>
-        <location filename="ayab_gui.py" line="222"/>
-        <source>Asistant</source>
+        <location filename="../../../../python/ayab/ayab_gui.ui" line="126"/>
+        <source>Assistant</source>
         <translation>Assistent</translation>
     </message>
     <message>
-        <location filename="ayab_gui.ui" line="61"/>
-        <source>Select Module</source>
-        <translation type="obsolete">Modul wählen</translation>
-    </message>
-    <message>
-        <location filename="ayab_gui.ui" line="97"/>
-        <source>Load File</source>
-        <translation type="obsolete">Datei öffnen</translation>
-    </message>
-    <message>
-        <location filename="ayab_gui.ui" line="130"/>
-        <source>Control</source>
-        <translation type="obsolete">Bedienung</translation>
-    </message>
-    <message>
-        <location filename="ayab_gui.ui" line="137"/>
-        <source>Knit!</source>
-        <translation type="obsolete">Stricken!</translation>
-    </message>
-    <message>
-        <location filename="ayab_gui.py" line="229"/>
-        <source>File</source>
-        <translation>Datei</translation>
-    </message>
-    <message>
-        <location filename="ayab_gui.py" line="237"/>
-        <source>Help</source>
-        <translation>Hilfe</translation>
-    </message>
-    <message>
-        <location filename="ayab_gui.py" line="231"/>
-        <source>Tools</source>
-        <translation>Werkzeuge</translation>
-    </message>
-    <message>
-        <location filename="ayab_gui.py" line="233"/>
-        <source>Load AYAB Firmware</source>
-        <translation>AYAB Firmware aufspielen</translation>
-    </message>
-    <message>
-        <location filename="ayab_gui.py" line="234"/>
-        <source>Quit</source>
-        <translation>Beenden</translation>
-    </message>
-    <message>
-        <location filename="ayab_gui.py" line="235"/>
-        <source>Open Knitting Project</source>
-        <translation>Projekt öffnen</translation>
-    </message>
-    <message>
-        <location filename="ayab_gui.ui" line="221"/>
-        <source>About</source>
-        <translation type="obsolete">Über</translation>
-    </message>
-    <message>
-        <location filename="ayab_gui.py" line="223"/>
-        <source>Load Images and Mode</source>
-        <translation>Muster laden</translation>
-    </message>
-    <message>
-        <location filename="ayab_gui.py" line="224"/>
+        <location filename="../../../../python/ayab/ayab_gui.ui" line="219"/>
         <source>1. Load Image File</source>
         <translation>1. Muster öffnen</translation>
     </message>
     <message>
-        <location filename="ayab_gui.py" line="226"/>
-        <source>3. Knit!</source>
-        <translation>3. Stricken!</translation>
+        <location filename="../../../../python/ayab/ayab_gui.ui" line="250"/>
+        <source>Knitting Options</source>
+        <translation>Strickeinstellungen</translation>
     </message>
     <message>
-        <location filename="ayab_gui.py" line="227"/>
+        <location filename="../../../../python/ayab/ayab_gui.ui" line="283"/>
+        <source>2. Knit!</source>
+        <translation>2. Stricken!</translation>
+    </message>
+    <message>
+        <location filename="../../../../python/ayab/ayab_gui.ui" line="293"/>
         <source>Cancel Knitting</source>
         <translation>Stricken abbrechen</translation>
     </message>
     <message>
-        <location filename="ayab_gui.py" line="228"/>
-        <source>Image Dimensions</source>
-        <translation>Mustergröße</translation>
+        <location filename="../../../../python/ayab/ayab_gui.ui" line="320"/>
+        <source>File</source>
+        <translation>Datei</translation>
     </message>
     <message>
-        <location filename="ayab_gui.py" line="232"/>
+        <location filename="../../../../python/ayab/ayab_gui.ui" line="326"/>
+        <location filename="../../../../python/ayab/ayab_gui.ui" line="387"/>
+        <source>Help</source>
+        <translation>Hilfe</translation>
+    </message>
+    <message>
+        <location filename="../../../../python/ayab/ayab_gui.ui" line="332"/>
+        <source>Tools</source>
+        <translation>Werkzeuge</translation>
+    </message>
+    <message>
+        <location filename="../../../../python/ayab/ayab_gui.ui" line="338"/>
+        <source>Preferences</source>
+        <translation>Voreinstellungen</translation>
+    </message>
+    <message>
+        <location filename="../../../../python/ayab/ayab_gui.ui" line="344"/>
         <source>Image Actions</source>
         <translation>Musterbearbeitung</translation>
     </message>
     <message>
-        <location filename="ayab_gui.py" line="236"/>
+        <location filename="../../../../python/ayab/ayab_gui.ui" line="364"/>
+        <source>Load AYAB Firmware</source>
+        <translation>AYAB Firmware aufspielen</translation>
+    </message>
+    <message>
+        <location filename="../../../../python/ayab/ayab_gui.ui" line="369"/>
+        <source>Quit</source>
+        <translation>Beenden</translation>
+    </message>
+    <message>
+        <location filename="../../../../python/ayab/ayab_gui.ui" line="377"/>
+        <source>Open Knitting Project</source>
+        <translation>Projekt öffnen</translation>
+    </message>
+    <message>
+        <location filename="../../../../python/ayab/ayab_gui.ui" line="382"/>
         <source>Help - About</source>
         <translation>Hilfe - Über</translation>
     </message>
     <message>
-        <location filename="ayab_gui.py" line="238"/>
+        <location filename="../../../../python/ayab/ayab_gui.ui" line="392"/>
         <source>Invert</source>
         <translation>Invertieren</translation>
     </message>
     <message>
-        <location filename="ayab_gui.py" line="239"/>
-        <source>Mirror</source>
+        <location filename="../../../../python/ayab/ayab_gui.ui" line="400"/>
+        <source>Stretch</source>
+        <translation>Strecken</translation>
+    </message>
+    <message>
+        <location filename="../../../../python/ayab/ayab_gui.ui" line="408"/>
+        <source>Repeat</source>
+        <translation>Wiederholen</translation>
+    </message>
+    <message>
+        <location filename="../../../../python/ayab/ayab_gui.ui" line="416"/>
+        <source>Reflect</source>
         <translation>Spiegeln</translation>
     </message>
     <message>
-        <location filename="ayab_gui.py" line="240"/>
+        <location filename="../../../../python/ayab/ayab_gui.ui" line="424"/>
+        <source>Horizontal Flip</source>
+        <translation>Horizontal kippen</translation>
+    </message>
+    <message>
+        <location filename="../../../../python/ayab/ayab_gui.ui" line="432"/>
+        <source>Vertical Flip</source>
+        <translation>Vertikal kippen</translation>
+    </message>
+    <message>
+        <location filename="../../../../python/ayab/ayab_gui.ui" line="440"/>
         <source>Rotate Left</source>
         <translation>Links drehen</translation>
     </message>
     <message>
-        <location filename="ayab_gui.py" line="241"/>
+        <location filename="../../../../python/ayab/ayab_gui.ui" line="448"/>
         <source>Rotate Right</source>
         <translation>Rechts drehen</translation>
     </message>
     <message>
-        <location filename="ayab_gui.py" line="242"/>
-        <source>Smart Resize</source>
-        <translation>Smart Resize</translation>
-    </message>
-    <message>
-        <location filename="ayab_gui.py" line="243"/>
-        <source>Vertical Flip</source>
-        <translation>Vertikal kippen</translation>
+        <location filename="../../../../python/ayab/ayab_gui.ui" line="456"/>
+        <source>Set Preferences</source>
+        <translation>Voreinstellungen festlegen</translation>
     </message>
 </context>
 </TS>
