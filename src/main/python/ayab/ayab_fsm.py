@@ -42,29 +42,18 @@ class FSM (object):
         self.machine = QtCore.QStateMachine()
  
         # Image states
-        self.NO_IMAGE = QState()
-        self.GOT_IMAGE = QState()
+        self.NO_IMAGE = QState(self.machine)
+        self.NOT_CONFIGURED = QState(self.machine)
+        self.CONFIGURING = QState(self.machine)
+        self.KNITTING = QState(self.machine)
  
         # Set machine states
-        self.machine.addState(self.NO_IMAGE)
-        self.machine.addState(self.GOT_IMAGE)
         self.machine.setInitialState(self.NO_IMAGE)
 
-        # Configuration states
-        self.NOT_CONFIGURED = QState(self.GOT_IMAGE)
-        self.CONFIGURING = QState(self.GOT_IMAGE)
-        self.KNITTING = QState(self.GOT_IMAGE)
-        self.GOT_IMAGE.setInitialState(self.NOT_CONFIGURED)
-
-        # Knitting states
-        self.OPERATING = QState(self.KNITTING)
-        self.FINISHING = QState(self.KNITTING)
-        self.KNITTING.setInitialState(self.OPERATING)
-
         # Pause states (not implemented)
-        # self.NOT_PAUSED = QState(self.DO_TALK)
-        # self.PAUSED = QState(self.DO_TALK)
-        # self.DO_TALK.setInitialState(self.NOT_PAUSED)
+        # self.NOT_PAUSED = QState(self.KNITTING)
+        # self.PAUSED = QState(self.KNITTING)
+        # self.KNITTING.setInitialState(self.NOT_PAUSED)
 
         # Error states (not implemented)
         # self.ERROR_RAISED = QState()
@@ -74,14 +63,12 @@ class FSM (object):
         """Define transitions between states for Finite State Machine"""
  
         # Events that trigger state changes
-        self.NO_IMAGE.addTransition(self.__parent.signalImageLoaded, self.GOT_IMAGE)
+        self.NO_IMAGE.addTransition(self.__parent.signalImageLoaded, self.NOT_CONFIGURED)
         self.NOT_CONFIGURED.addTransition(self.__parent.ui.knit_button.clicked, self.CONFIGURING)
         self.CONFIGURING.addTransition(self.__parent.signalImageLoaded, self.NOT_CONFIGURED)
         self.CONFIGURING.addTransition(self.__parent.signalImageTransformed, self.NOT_CONFIGURED)
         self.CONFIGURING.addTransition(self.__parent.signalConfigured, self.KNITTING)
-        self.OPERATING.addTransition(self.__parent.ui.cancel_button.clicked, self.FINISHING)
-        self.OPERATING.addTransition(self.__parent.signalDoneKnitProgress, self.FINISHING)
-        self.FINISHING.addTransition(self.__parent.signalDoneKnitting, self.NOT_CONFIGURED)
+        self.KNITTING.addTransition(self.__parent.gt.finished, self.NOT_CONFIGURED)
  
         # self.UNPAUSED.addTransition(self.__parent.ui.pause_button.clicked, self.PAUSED)
         # self.PAUSED.addTransition(self.__parent.ui.pause_button.clicked, self.UNPAUSED)
@@ -93,17 +80,20 @@ class FSM (object):
         self.NO_IMAGE.entered.connect(lambda: logging.debug("Entered state NO_IMAGE"))
         self.NOT_CONFIGURED.entered.connect(lambda: logging.debug("Entered state NOT_CONFIGURED"))
         self.CONFIGURING.entered.connect(lambda: logging.debug("Entered state CONFIGURING"))
-        self.FINISHING.entered.connect(lambda: logging.debug("Entered state FINISHING"))
+        self.KNITTING.entered.connect(lambda: logging.debug("Entered state KNITTING"))
 
-        self.GOT_IMAGE.entered.connect(self.__parent.addImageActions)
+        self.NOT_CONFIGURED.entered.connect(self.__parent.addImageActions)
         self.NOT_CONFIGURED.entered.connect(self.__parent.resetProgressBar)
         self.CONFIGURING.entered.connect(self.__parent.plugin.configure)
         self.KNITTING.entered.connect(self.__parent.start_knitting_process)
-        self.FINISHING.entered.connect(self.__parent.plugin.finish)
-        self.KNITTING.exited.connect(self.__parent.reset_ui_after_knitting)
 
     def properties(self):
         """Define properties for GUI elements linked to states in Finite State Machine"""
+
+        # Options dock
+        self.NO_IMAGE.assignProperty(self.__parent.ui.widget_optionsdock, "enabled", "False")
+        self.NOT_CONFIGURED.assignProperty(self.__parent.ui.widget_optionsdock, "enabled", "True")
+        self.KNITTING.assignProperty(self.__parent.ui.widget_optionsdock, "enabled", "False")
 
         # Knit button
         self.NO_IMAGE.assignProperty(self.__parent.ui.knit_button, "enabled", "False")
@@ -118,9 +108,6 @@ class FSM (object):
         # Pause button properties
         # self.NO_IMAGE.assignProperty(self.__parent.ui.pause_button, "enabled", "False")
         # self.NOT_CONFIGURED.assignProperty(self.__parent.ui.pause_button, "enabled", "False")
-        # self.OPERATING.assignProperty(self.__parent.ui.pause_button, "enabled", "True")
-        # self.CANCELING.assignProperty(self.__parent.ui.pause_button, "enabled", "False")
-        # self.FINISHING.assignProperty(self.__parent.ui.pause_button, "enabled", "False")
         # self.UNPAUSED.assignProperty(self.__parent.ui.pause_button, "text", "Pause")
         # self.PAUSED.assignProperty(self.__parent.ui.pause_button, "text", "Resume")
         # self.ui.pause_button.clicked.connect(self.enabled_plugin.pause)
