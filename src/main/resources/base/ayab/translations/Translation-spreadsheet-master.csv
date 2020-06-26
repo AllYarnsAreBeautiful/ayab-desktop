@@ -1,0 +1,81 @@
+English US,English GB,Deutsch DE
+All Yarns Are Beautiful,All Yarns Are Beautiful,All Yarns Are Beautiful
+1. Load Image File,1. Load Image File,1. Muster öffnen
+Knitting Options,Knitting Options,Strickeinstellungen
+2. Knit!,2. Knit!,2. Stricken!
+Cancel Knitting,Cancel Knitting,Stricken abbrechen
+Assistant,Assistant,Assistent
+File,File,Datei
+Help,Help,Hilfe
+Tools,Tools,Werkzeuge
+Preferences,Preferences,Voreinstellungen
+Image Actions,Image Actions,Musterbearbeitung
+Load AYAB Firmware,Load AYAB Firmware,AYAB Firmware aufspielen
+Quit,Quit,Beenden
+Open Knitting Project,Open Knitting Project,Projekt öffnen
+Help - About,Help - About,Hilfe - Über
+Invert,Invert,Invertieren
+Stretch,Stretch,Strecken
+Repeat,Repeat,Wiederholen
+Reflect,Reflect,Spiegeln
+Horizontal Flip,Horizontal Flip,Horizontal kippen
+Vertical Flip,Vertical Flip,Vertikal kippen
+Rotate Left,Rotate Left,Links drehen
+Rotate Right,Rotate Right,Rechts drehen
+Set Preferences,Set Preferences,Voreinstellungen festlegen
+Reflect image,Reflect image,Muster spiegeln
+Add mirrors,Add mirrors,Spiegel hinzufügen
+Left,Left,Links
+Right,Right,Rechts
+Top,Top,Oben
+Bottom,Bottom,Unter
+OK,OK,OK
+Port Selection,Port Selection,Port wählen
+Refresh,Refresh,Aktualisieren
+Settings,Settings,Einstellungen
+Knitting Mode,Knitting Mode,Strickmodus
+Colors,Colours,Farben
+Start Row,Start Row,Startzeile
+Infinite Repeat,Infinite Repeat,Unendlich wiederholen
+Start Needle,Start Needle,Startnadel
+Stop Needle,Stop Needle,Stopnadel
+Alignment,Alignment,Ausrichtung
+Mirror Image,Mirror Image,Muster spiegeln
+Continuous Status Reporting,Continuous Status Reporting,Kontinuierlich Berichterstattung
+Status,Status,Status
+Hall Sensors,Hall Sensors,Hall-Effekt-Sensoren
+Hall Left,Hall Left,Hall links
+Hall Right,Hall Right,Hall rechts
+Carriage,Carriage,Schlitten
+No carriage detected,No carriage detected,Kein Schlitten erkannt
+direction,direction,Richtung
+Progress,Progress,Fortschritt
+progress,progress,Fortschritt
+Simulation,Simulation,Simulation
+You need to set an image.,You need to set an image.,Sie müssen ein Muster hochladen.
+Invalid needle start and end.,Invalid needle start and end.,Ungültige Startnadel und Endnadel.
+Start row is larger than the image.,Start row is larger than the image.,Die Startzeile ist größer als das Muster.
+Please choose a valid port.,Please choose a valid port.,Bitte wählen Sie einen gültigen Port.
+Singlebed knitting currently supports only 2 colors.,Singlebed knitting currently supports only 2 colours.,Einbettstricken unterstützt nur 2 Farben.
+Circular knitting supports only 2 colors.,Circular knitting supports only 2 colours.,Rundstricken unterstützt nur 2 Farben.
+Connecting to machine...,Connecting to machine...,Verbindung zur Maschine...
+Please start machine. (Set the carriage to mode KC-I or KC-II and move the carriage over the left turn mark).,Please start machine. (Set the carriage to mode KC-I or KC-II and move the carriage over the left turn mark).,Bitte starten Sie die Maschine. (Stellen Sie den Schlitten auf KC-I oder KC-II und bewegen Sie den Schlitten über die linke Abbiegemarke.)
+Wrong Arduino firmware version. Please check that you have flashed the latest version.,Wrong Arduino firmware version. Please check that you have flashed the latest version.,Falsche Arduino-Firmware-Version.
+Please knit,Please knit,Bitte fangen Sie an zu stricken.
+"Device not ready, try again.","Device not ready, try again.","Gerät nicht bereit, bitte versuchen Sie es erneut."
+Image transmission finished. Please knit until you hear the double beep sound.,Image transmission finished. Please knit until you hear the double beep sound.,"Musterübertragung beendet. Bitte stricken Sie, bis Sie den doppelten Piepton hören."
+Knitting canceled.,Knitting cancelled.,Stricken abgebrochen.
+Set Preferences,Set Preferences,Voreinstellungen festlegen
+Settings,Settings,Voreinstellungen
+Default Knitting Mode,Default Knitting Mode,Strickmodus
+Default Infinite Repeat,Default Infinite Repeat,Unendlich wiederholen
+Default Alignment,Default Alignment,Ausrichtung
+Default Mirroring,Default Mirroring,Spiegelung
+Quiet Mode,Quiet Mode,Lautlos
+OK,OK,OK
+Reset,Reset,Zurücksetzen
+Carriage,Carriage,Schlitten
+Row,Row,Zeile
+Pass,Pass,Übergang
+Color,Colour,Farbe
+
