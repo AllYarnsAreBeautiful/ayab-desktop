@@ -406,6 +406,9 @@ def run(app_context):
     ## Load translators
     translator.load(QtCore.QLocale.system(), "ayab_gui", ".", app_context.get_resource("ayab/translations"), ".qm")
     translator.load(QtCore.QLocale.system(), "ayab_options", ".", app_context.get_resource("ayab/translations"), ".qm")
+    translator.load(QtCore.QLocale.system(), "ayab_prefs_gui", ".", app_context.get_resource("ayab/translations"), ".qm")
+    translator.load(QtCore.QLocale.system(), "ayab_mirrors", ".", app_context.get_resource("ayab/translations"), ".qm")
+    translator.load(QtCore.QLocale.system(), "ayab_progress", ".", app_context.get_resource("ayab/translations"), ".qm")
     app = QtWidgets.QApplication(sys.argv)
     app.installTranslator(translator)
     window = GuiMain(app_context)
