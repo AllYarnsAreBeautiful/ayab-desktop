@@ -24,7 +24,7 @@
     <message>
         <location filename="../../../../python/ayab/plugins/ayab_plugin/ayab_progress.py" line="107"/>
         <source>Color</source>
-        <translation>Color</translation>
+        <translation>Colour</translation>
     </message>
 </context>
 </TS>

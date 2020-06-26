@@ -41,12 +41,12 @@
     <message>
         <location filename="../../../../python/ayab/ayab_prefs_gui.ui" line="119"/>
         <source>OK</source>
-        <translation></translation>
+        <translation>OK</translation>
     </message>
     <message>
         <location filename="../../../../python/ayab/ayab_prefs_gui.ui" line="126"/>
         <source>Reset</source>
-        <translation></translation>
+        <translation>Zurücksetzen</translation>
     </message>
 </context>
 </TS>

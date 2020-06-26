@@ -1,0 +1,80 @@
+All Yarns Are Beautiful
+1. Load Image File
+Knitting Options
+2. Knit!
+Cancel Knitting
+Assistant
+File
+Help
+Tools
+Preferences
+Image Actions
+Load AYAB Firmware
+Quit
+Open Knitting Project
+Help - About
+Invert
+Stretch
+Repeat
+Reflect
+Horizontal Flip
+Vertical Flip
+Rotate Left
+Rotate Right
+Set Preferences
+Reflect image
+Add mirrors
+Left
+Right
+Top
+Bottom
+OK
+Port Selection
+Refresh
+Settings
+Knitting Mode
+Colors
+Start Row
+Infinite Repeat
+Start Needle
+Stop Needle
+Alignment
+Mirror Image
+Continuous Status Reporting
+Status
+Hall Sensors
+ type="unfinished"
+Hall Left
+Hall Right
+Carriage
+No carriage detected
+direction
+Progress
+progress
+Simulation
+You need to set an image.
+Invalid needle start and end.
+Start row is larger than the image.
+Please choose a valid port.
+Singlebed knitting currently supports only 2 colours.
+Circular knitting supports only 2 colours.
+Connecting to machine...
+Please start machine. (Set the carriage to mode KC-I or KC-II and move the carriage over the left turn mark).
+Wrong Arduino firmware version. Please check that you have flashed the latest version.
+Please knit
+Device not ready, try again.
+Image transmission finished. Please knit until you hear the double beep sound.
+Knitting cancelled.
+Set Preferences
+Settings
+Default Knitting Mode
+Default Infinite Repeat
+Default Alignment
+Default Mirroring
+Quiet Mode
+OK
+Reset
+Carriage
+Row
+Pass
+Colour

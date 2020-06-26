@@ -6,7 +6,7 @@
     <message>
         <location filename="../../../../python/ayab/plugins/ayab_plugin/ayab_progress.py" line="63"/>
         <source>Carriage</source>
-        <translation>Carriage</translation>
+        <translation>Schlitten</translation>
     </message>
 </context>
 <context>
@@ -14,17 +14,17 @@
     <message>
         <location filename="../../../../python/ayab/plugins/ayab_plugin/ayab_progress.py" line="96"/>
         <source>Row</source>
-        <translation>Row</translation>
+        <translation>Zeile</translation>
     </message>
     <message>
         <location filename="../../../../python/ayab/plugins/ayab_plugin/ayab_progress.py" line="101"/>
         <source>Pass</source>
-        <translation>Pass</translation>
+        <translation>Übergang</translation>
     </message>
     <message>
         <location filename="../../../../python/ayab/plugins/ayab_plugin/ayab_progress.py" line="107"/>
         <source>Color</source>
-        <translation>Color</translation>
+        <translation>Farbe</translation>
     </message>
 </context>
 </TS>
