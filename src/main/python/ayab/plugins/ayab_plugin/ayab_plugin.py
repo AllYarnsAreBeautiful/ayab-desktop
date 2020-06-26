@@ -44,8 +44,8 @@ class AyabPlugin(object):
 
     def setupUi(self, parent):
         """Sets up UI elements from ayab_options.Ui_DockWidget in parent."""
-        self.__set_translator()
         self.__parent = parent  # weakref.ref(parent)
+        self.__set_translator()
         self.ui = Ui_DockWidget()
         self.dock = parent.ui.knitting_options_dock
         self.ui.setupUi(self.dock)
@@ -56,15 +56,18 @@ class AyabPlugin(object):
 
         # Disable "continuous reporting" checkbox and Status tab for now
         parent.findChild(QtWidgets.QCheckBox,
-                            "checkBox_ContinuousReporting").setVisible(False)
+                         "checkBox_ContinuousReporting").setVisible(False)
         parent.findChild(QtWidgets.QTabWidget, "tabWidget").removeTab(1)
 
     def __set_translator(self):
-        dirname = os.path.dirname(__file__)
+        app = QtCore.QCoreApplication.instance()
         self.translator = QtCore.QTranslator()
         self.translator.load(QtCore.QLocale.system(), "ayab_options", ".",
-                             dirname, ".qm")
-        app = QtCore.QCoreApplication.instance()
+                             self.__parent.app_context.get_resource("ayab/translations"), ".qm")
+        self.translator.load(QtCore.QLocale.system(), "ayab_progress", ".",
+                             self.__parent.app_context.get_resource("ayab/translations"), ".qm")
+        self.translator.load(QtCore.QLocale.system(), "ayab_plugin", ".",
+                             self.__parent.app_context.get_resource("ayab/translations"), ".qm")
         app.installTranslator(self.translator)
 
     def __setup_behavior(self):
@@ -80,14 +83,13 @@ class AyabPlugin(object):
 
     def __populate_ports(self, combo_box=None, port_list=None):
         if not combo_box:
-            combo_box = self.__parent.findChild(QtWidgets.QComboBox,
-                                                   "serial_port_dropdown")
+            combo_box = self.__parent.findChild(QtWidgets.QComboBox, "serial_port_dropdown")
         if not port_list:
             port_list = self.__get_serial_ports()
         combo_box.clear()
         self.__populate(combo_box, port_list)
         # Add Simulation item to indicate operation without machine
-        combo_box.addItem("Simulation")
+        combo_box.addItem(self.translator.translate("AyabPlugin", "Simulation"))
 
     def __populate(self, combo_box, port_list):
         for item in port_list:
@@ -133,7 +135,7 @@ class AyabPlugin(object):
             self.__parent.signalConfigured.emit()
 
     def __get_configuration_from_ui(self, ui):
-        """Creates a configuration dict from the ui elements.
+        """Creates a configuration dict from the UI elements.
 
     Returns:
       dict: A dict with configuration.
@@ -216,7 +218,7 @@ class AyabPlugin(object):
                 return False
 
         if conf.get("start_line") > self.__image.imgHeight():
-            self.__emit_popup("Start Line is larger than the image.")
+            self.__emit_popup("Start row is larger than the image.")
             return False
 
         if conf.get("portname") == '':
@@ -226,13 +228,13 @@ class AyabPlugin(object):
         if conf.get("knitting_mode") == KnittingMode.SINGLEBED.value \
                 and conf.get("num_colors") >= 3:
             self.__emit_popup(
-                "Singlebed knitting currently supports only 2 colors",
+                "Singlebed knitting currently supports only 2 colors.",
                 "warning")
             return False
 
         if conf.get("knitting_mode") == KnittingMode.CIRCULAR_RIBBER.value \
                 and conf.get("num_colors") >= 3:
-            self.__emit_popup("Circular knitting supports only 2 colors",
+            self.__emit_popup("Circular knitting supports only 2 colors.",
                                "warning")
             return False
 
@@ -269,27 +271,26 @@ class AyabPlugin(object):
 
         if result is AYABControlKnitResult.WAIT_FOR_INIT:
             self.__emit_notification(
-                "Please init machine. (Set the carriage to mode KC-I "
+                "Please start machine. (Set the carriage to mode KC-I " +
                 "or KC-II and move the carriage over the left turn mark).")
 
         if result is AYABControlKnitResult.ERROR_WRONG_API:
             self.__emit_popup(
-                "Wrong Arduino Firmware Version. " +
-                "Please check if you have flashed " +
+                "Wrong Arduino firmware version. " +
+                "Please check that you have flashed " +
                 "the latest version. (" + str(self.__ayab_control.API_VERSION) + ")")
 
         if result is AYABControlKnitResult.PLEASE_KNIT:
-            self.__emit_notification("Please Knit")
+            self.__emit_notification("Please knit")
             self.__emit_playsound("start")
 
         if result is AYABControlKnitResult.DEVICE_NOT_READY:
             self.__emit_notification()
-            self.__emit_blocking_popup(
-                "Device not ready, configure and try again.")
+            self.__emit_blocking_popup("Device not ready, try again.")
 
         if result is AYABControlKnitResult.FINISHED:
             self.__emit_notification(
-                "Image transmission finished. Please knit until you "
+                "Image transmission finished. Please knit until you " +
                 "hear the double beep sound.")
 
     def __knit_progress_handler(self, progress, row_multiplier):
@@ -341,18 +342,24 @@ class AyabPlugin(object):
         Sends the signalDisplayBlockingPopUp QtSignal
         to main GUI thread, blocking it.
         """
-        self.__parent.signalDisplayBlockingPopUp.emit(message, message_type)
+        # print(message)
+        self.__parent.signalDisplayBlockingPopUp.emit(
+            self.translator.translate("AyabPlugin", message), message_type)
 
     def __emit_popup(self, message="", message_type="info"):
         """
         Sends the signalDisplayPopUp QtSignal
         to main GUI thread, not blocking it.
         """
-        self.__parent.signalDisplayPopUp.emit(message, message_type)
+        # print(message)
+        self.__parent.signalDisplayPopUp.emit(
+            self.translator.translate("AyabPlugin", message), message_type)
 
     def __emit_notification(self, message=""):
         """Sends the signalUpdateNotification signal"""
-        self.__parent.signalUpdateNotification.emit(message)
+        # print(message)
+        self.__parent.signalUpdateNotification.emit(
+            self.translator.translate("AyabPlugin", message))
 
     def __emit_knit_progress(self, progress, row_multiplier):
         """Sends the updateKnitProgress QtSignal."""
