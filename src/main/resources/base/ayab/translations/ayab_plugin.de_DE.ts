@@ -11,17 +11,17 @@
     <message>
         <location filename="../../../../python/ayab/plugins/ayab_plugin/ayab_plugin.py" line="121"/>
         <source>You need to set an image.</source>
-        <translation>Sie müssen ein Muster hochladen.</translation>
+        <translation>Bitte Muster wählen.</translation>
     </message>
     <message>
         <location filename="../../../../python/ayab/plugins/ayab_plugin/ayab_plugin.py" line="217"/>
         <source>Invalid needle start and end.</source>
-        <translation>Ungültige Startnadel und Endnadel.</translation>
+        <translation>Ungültige Startnadel oder Endnadel.</translation>
     </message>
     <message>
         <location filename="../../../../python/ayab/plugins/ayab_plugin/ayab_plugin.py" line="221"/>
         <source>Start row is larger than the image.</source>
-        <translation>Die Startzeile ist größer als das Muster.</translation>
+        <translation>Die Startzeile ist höher als das Muster.</translation>
     </message>
     <message>
         <location filename="../../../../python/ayab/plugins/ayab_plugin/ayab_plugin.py" line="225"/>
@@ -31,7 +31,7 @@
     <message>
         <location filename="../../../../python/ayab/plugins/ayab_plugin/ayab_plugin.py" line="231"/>
         <source>Singlebed knitting currently supports only 2 colors.</source>
-        <translation>Einbettstricken unterstützt nur 2 Farben.</translation>
+        <translation>Einzelbettstricken unterstützt nur 2 Farben.</translation>
     </message>
     <message>
         <location filename="../../../../python/ayab/plugins/ayab_plugin/ayab_plugin.py" line="237"/>
@@ -41,12 +41,12 @@
     <message>
         <location filename="../../../../python/ayab/plugins/ayab_plugin/ayab_plugin.py" line="272"/>
         <source>Connecting to machine...</source>
-        <translation>Verbindung zur Maschine...</translation>
+        <translation>Verbinde zur Maschine...</translation>
     </message>
     <message>
         <location filename="../../../../python/ayab/plugins/ayab_plugin/ayab_plugin.py" line="275"/>
         <source>Please start machine. (Set the carriage to mode KC-I or KC-II and move the carriage over the left turn mark).</source>
-        <translation>Bitte starten Sie die Maschine. (Stellen Sie den Schlitten auf KC-I oder KC-II und bewegen Sie den Schlitten über die linke Abbiegemarke.)</translation>
+        <translation>Bitte starten Sie die Maschine. (Stellen Sie den Schlitten auf KC-I oder KC-II und bewegen Sie den Schlitten über die linke Umkehrgemarke.)</translation>
     </message>
     <message>
         <location filename="../../../../python/ayab/plugins/ayab_plugin/ayab_plugin.py" line="279"/>

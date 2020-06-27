@@ -6,32 +6,32 @@
     <message>
         <location filename="../../../../python/ayab/ayab_prefs_gui.ui" line="9"/>
         <source>Set Preferences</source>
-        <translation>Voreinstellungen festlegen</translation>
+        <translation>Einstellungen festlegen</translation>
     </message>
     <message>
         <location filename="../../../../python/ayab/ayab_prefs_gui.ui" line="18"/>
         <source>Settings</source>
-        <translation>Voreinstellungen</translation>
+        <translation>Einstellungen</translation>
     </message>
     <message>
         <location filename="../../../../python/ayab/ayab_prefs_gui.ui" line="24"/>
         <source>Default Knitting Mode</source>
-        <translation>Strickmodus</translation>
+        <translation>Vorauswahl Strickmodus</translation>
     </message>
     <message>
         <location filename="../../../../python/ayab/ayab_prefs_gui.ui" line="60"/>
         <source>Default Infinite Repeat</source>
-        <translation>Unendlich wiederholen</translation>
+        <translation>Vorauswahl unendlich wiederholen</translation>
     </message>
     <message>
         <location filename="../../../../python/ayab/ayab_prefs_gui.ui" line="70"/>
         <source>Default Alignment</source>
-        <translation>Ausrichtung</translation>
+        <translation>Vorauswahl Ausrichtung</translation>
     </message>
     <message>
         <location filename="../../../../python/ayab/ayab_prefs_gui.ui" line="96"/>
         <source>Default Mirroring</source>
-        <translation>Spiegelung</translation>
+        <translation>Vorauswahl Spiegelung</translation>
     </message>
     <message>
         <location filename="../../../../python/ayab/ayab_prefs_gui.ui" line="106"/>

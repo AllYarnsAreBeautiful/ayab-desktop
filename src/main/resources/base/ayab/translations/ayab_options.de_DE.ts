@@ -61,7 +61,7 @@
     <message>
         <location filename="../../../../python/ayab/plugins/ayab_plugin/ayab_options.ui" line="420"/>
         <source>Continuous Status Reporting</source>
-        <translation>Kontinuierlich Berichterstattung</translation>
+        <translation>Kontinuierlicher Status</translation>
     </message>
     <message>
         <location filename="../../../../python/ayab/plugins/ayab_plugin/ayab_options.ui" line="429"/>
@@ -82,12 +82,12 @@
     <message>
         <location filename="../../../../python/ayab/plugins/ayab_plugin/ayab_options.ui" line="510"/>
         <source>Hall Left</source>
-        <translation>Hall links</translation>
+        <translation>Hallsensor links</translation>
     </message>
     <message>
         <location filename="../../../../python/ayab/plugins/ayab_plugin/ayab_options.ui" line="558"/>
         <source>Hall Right</source>
-        <translation>Hall rechts</translation>
+        <translation>Hallsensor rechts</translation>
     </message>
     <message>
         <location filename="../../../../python/ayab/plugins/ayab_plugin/ayab_options.ui" line="585"/>

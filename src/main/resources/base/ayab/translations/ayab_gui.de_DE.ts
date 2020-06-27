@@ -52,7 +52,7 @@
     <message>
         <location filename="../../../../python/ayab/ayab_gui.ui" line="338"/>
         <source>Preferences</source>
-        <translation>Voreinstellungen</translation>
+        <translation>Einstellungen</translation>
     </message>
     <message>
         <location filename="../../../../python/ayab/ayab_gui.ui" line="344"/>
@@ -122,7 +122,7 @@
     <message>
         <location filename="../../../../python/ayab/ayab_gui.ui" line="456"/>
         <source>Set Preferences</source>
-        <translation>Voreinstellungen festlegen</translation>
+        <translation>Einstellungen festlegen</translation>
     </message>
 </context>
 </TS>

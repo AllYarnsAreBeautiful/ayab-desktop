@@ -19,7 +19,7 @@
     <message>
         <location filename="../../../../python/ayab/plugins/ayab_plugin/ayab_progress.py" line="101"/>
         <source>Pass</source>
-        <translation>Übergang</translation>
+        <translation>Durchgang</translation>
     </message>
     <message>
         <location filename="../../../../python/ayab/plugins/ayab_plugin/ayab_progress.py" line="107"/>

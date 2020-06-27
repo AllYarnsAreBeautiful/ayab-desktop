@@ -11,7 +11,7 @@
     <message>
         <location filename="../../../../python/ayab/ayab_mirrors.ui" line="26"/>
         <source>Add mirrors</source>
-        <translation>Spiegel hinzufügen</translation>
+        <translation>Spiegelungen hinzufügen</translation>
     </message>
     <message>
         <location filename="../../../../python/ayab/ayab_mirrors.ui" line="38"/>
@@ -31,7 +31,7 @@
     <message>
         <location filename="../../../../python/ayab/ayab_mirrors.ui" line="59"/>
         <source>Bottom</source>
-        <translation>Unter</translation>
+        <translation>Unten</translation>
     </message>
     <message>
         <location filename="../../../../python/ayab/ayab_mirrors.ui" line="69"/>
