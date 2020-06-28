@@ -23,12 +23,14 @@ from fbs_runtime.application_context.PyQt5 import ApplicationContext
 import sys
 from os import path, mkdir
 import logging
+import locale
+
 from bitarray import bitarray
 import numpy as np
 
 from PyQt5 import QtWidgets, QtGui, QtCore
-from PyQt5.QtWidgets import QMainWindow
-from PyQt5.QtCore import Qt, QState, QObject, QThread, pyqtSignal
+from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox
+from PyQt5.QtCore import Qt, QThread, QLocale, QCoreApplication, QSettings, pyqtSignal
 
 from PIL import Image
 
@@ -70,12 +72,12 @@ logging.getLogger().addHandler(console)
 
 # Fix PyQt5 for HiDPI screens
 if hasattr(Qt, 'AA_EnableHighDpiScaling'):
-    QtWidgets.QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
+    QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
 if hasattr(Qt, 'AA_UseHighDpiPixmaps'):
-    QtWidgets.QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
+    QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
 # Remove Help Button
 if hasattr(Qt, 'AA_DisableWindowContextHelpButton'):
-    QtWidgets.QApplication.setAttribute(Qt.AA_DisableWindowContextHelpButton, True)
+    QApplication.setAttribute(Qt.AA_DisableWindowContextHelpButton, True)
 
     
 class GuiMain(QMainWindow):
@@ -100,13 +102,14 @@ class GuiMain(QMainWindow):
 
     def __init__(self, app_context):
         super(GuiMain, self).__init__(None)
-
         self.app_context = app_context
 
         self.image_file_route = None
-    
-        self.prefs = Preferences()
 
+        # get preferences
+        self.prefs = Preferences(app_context)
+
+        # create UI
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self.__setupMenuBar()
@@ -118,7 +121,8 @@ class GuiMain(QMainWindow):
 
         # set initial knitting configuration options
         knitting_mode_box = self.plugin.ui.knitting_mode_box
-        knitting_mode_box.setCurrentIndex(knitting_mode_box.findText(self.prefs.settings.value("default_knitting_mode")))
+        knitting_mode_box.setCurrentIndex(
+            knitting_mode_box.findText(self.prefs.settings.value("default_knitting_mode")))
         if str2bool(self.prefs.settings.value("default_infinite_repeat")):
             self.plugin.ui.infRepeat_checkbox.setCheckState(QtCore.Qt.Checked)
         else:
@@ -129,20 +133,24 @@ class GuiMain(QMainWindow):
             self.plugin.ui.autoMirror_checkbox.setCheckState(QtCore.Qt.Unchecked)
         self.scene.imageAlignment = self.prefs.settings.value("default_alignment")
         alignment_combo_box = self.plugin.ui.alignment_combo_box
-        alignment_combo_box.setCurrentIndex(alignment_combo_box.findText(self.scene.imageAlignment))
-        
-        self.showMaximized()
-        self.__setup_behavior()
+        alignment_combo_box.setCurrentIndex( alignment_combo_box.findText(self.scene.imageAlignment))
 
         # clear progress and status bar
         self.ui.label_notifications.setText("")
         self.resetProgressBar()
+
+        # show UI
+        self.showMaximized()
+
+        # connect signals to slots
+        self.__setup_behavior()
 
         # initialize FSM
         self.fs = FSM(self)
         self.fs.transitions()
         self.fs.properties()
         self.fs.machine.start()
+        return
 
     def resetProgressBar(self):
         self.ui.label_current_row.setText("")
@@ -189,10 +197,10 @@ class GuiMain(QMainWindow):
     def displayBlockingPopUp(self, message="", message_type="info"):
         logging.debug("MessageBox {}: '{}'".format(message_type, message))
         box_function = {
-            "error": QtWidgets.QMessageBox.critical,
-            "info": QtWidgets.QMessageBox.information,
-            "question": QtWidgets.QMessageBox.question,
-            "warning": QtWidgets.QMessageBox.warning
+            "error": QMessageBox.critical,
+            "info": QMessageBox.information,
+            "question": QMessageBox.question,
+            "warning": QMessageBox.warning
         }
         message_box_function = box_function.get(message_type)
 
@@ -200,9 +208,9 @@ class GuiMain(QMainWindow):
             self,
             "AYAB",
             message,
-            QtWidgets.QMessageBox.Ok,
-            QtWidgets.QMessageBox.Ok)
-        if ret == QtWidgets.QMessageBox.Ok:
+            QMessageBox.Ok,
+            QMessageBox.Ok)
+        if ret == QMessageBox.Ok:
             return True
 
     def updateKnitProgress(self, progress, row_multiplier):
@@ -381,7 +389,7 @@ class GenericThread(QThread):
     '''A generic thread wrapper for functions on threads.'''
 
     def __init__(self, function, *args, **kwargs):
-        QtCore.QThread.__init__(self)
+        QThread.__init__(self)
         self.function = function
         self.args = args
         self.kwargs = kwargs
@@ -402,16 +410,26 @@ class GenericThread(QThread):
 
 
 def run(app_context):
+    # set constants for QSettings
+    QCoreApplication.setOrganizationName("AYAB")
+    QCoreApplication.setOrganizationDomain("ayab-knitting.com")
+    QCoreApplication.setApplicationName("ayab")
+
+    # load translators
     translator = QtCore.QTranslator()
-    ## Load translators
-    translator.load(QtCore.QLocale.system(), "ayab_gui", ".",
-                    app_context.get_resource("ayab/translations"), ".qm")
-    translator.load(QtCore.QLocale.system(), "ayab_prefs_gui", ".",
-                    app_context.get_resource("ayab/translations"), ".qm")
-    translator.load(QtCore.QLocale.system(), "ayab_mirrors", ".",
-                    app_context.get_resource("ayab/translations"), ".qm")
-    app = QtWidgets.QApplication(sys.argv)
+    lang_dir = app_context.get_resource("ayab/translations")
+    try:
+        # if a language has been set
+        language = QSettings().value("language")
+    except:
+        # otherwise use default locale
+        translator.load(QLocale.system(), "ayab_trans", "", lang_dir)
+    else:
+        translator.load("ayab_trans." + language, lang_dir)
+    app = QApplication(sys.argv)
     app.installTranslator(translator)
+
+    # execute app
     window = GuiMain(app_context)
     window.show()
     sys.exit(app.exec_())

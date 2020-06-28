@@ -75,17 +75,17 @@
        <widget class="QComboBox" name="default_alignment_box">
         <item>
          <property name="text">
-          <string notr="true">center</string>
+          <string>center</string>
          </property>
         </item>
         <item>
          <property name="text">
-          <string notr="true">left</string>
+          <string>left</string>
          </property>
         </item>
         <item>
          <property name="text">
-          <string notr="true">right</string>
+          <string>right</string>
          </property>
         </item>
        </widget>
@@ -109,6 +109,17 @@
       </item>
       <item row="4" column="1">
        <widget class="QCheckBox" name="quiet_mode_checkbox"/>
+      </item>
+      <item row="5" column="0">
+       <widget class="QLabel" name="language_label">
+        <property name="text">
+         <string>Language</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="1">
+       <widget class="QComboBox" name="language_box">
+       </widget>
       </item>
      </layout>
     </widget>

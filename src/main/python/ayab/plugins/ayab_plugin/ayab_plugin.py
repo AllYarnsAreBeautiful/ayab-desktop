@@ -26,6 +26,8 @@ from time import sleep
 import serial.tools.list_ports
 from PIL import ImageOps
 from PyQt5 import QtGui, QtWidgets, QtCore
+from PyQt5.QtCore import QSettings, QTranslator, QCoreApplication
+from PyQt5.QtWidgets import QCheckBox, QSpinBox, QComboBox
 from . import ayab_image
 from .ayab_options import Ui_DockWidget
 from .ayab_control import AYABControl, AYABControlKnitResult, KnittingMode
@@ -55,19 +57,15 @@ class AyabPlugin(object):
         self.__setup_behavior()
 
         # Disable "continuous reporting" checkbox and Status tab for now
-        parent.findChild(QtWidgets.QCheckBox,
-                         "checkBox_ContinuousReporting").setVisible(False)
+        parent.findChild(QCheckBox, "checkBox_ContinuousReporting").setVisible(False)
         parent.findChild(QtWidgets.QTabWidget, "tabWidget").removeTab(1)
 
     def __set_translator(self):
         app = QtCore.QCoreApplication.instance()
-        self.translator = QtCore.QTranslator()
-        self.translator.load(QtCore.QLocale.system(), "ayab_options", ".",
-                             self.__parent.app_context.get_resource("ayab/translations"), ".qm")
-        self.translator.load(QtCore.QLocale.system(), "ayab_progress", ".",
-                             self.__parent.app_context.get_resource("ayab/translations"), ".qm")
-        self.translator.load(QtCore.QLocale.system(), "ayab_plugin", ".",
-                             self.__parent.app_context.get_resource("ayab/translations"), ".qm")
+        self.translator = QTranslator()
+        language = self.__parent.prefs.settings.value("language")
+        lang_dir = self.__parent.app_context.get_resource("ayab/translations")
+        self.translator.load("ayab_trans." + language, lang_dir)
         app.installTranslator(self.translator)
 
     def __setup_behavior(self):
@@ -89,7 +87,7 @@ class AyabPlugin(object):
         combo_box.clear()
         self.__populate(combo_box, port_list)
         # Add Simulation item to indicate operation without machine
-        combo_box.addItem(self.translator.translate("AyabPlugin", "Simulation"))
+        combo_box.addItem(QCoreApplication.translate("AyabPlugin", "Simulation"))
 
     def __populate(self, combo_box, port_list):
         for item in port_list:
@@ -143,61 +141,49 @@ class AyabPlugin(object):
     """
         self.conf = {}
         continuousReporting = ui.findChild(
-            QtWidgets.QCheckBox, "checkBox_ContinuousReporting").isChecked()
+            QCheckBox, "checkBox_ContinuousReporting").isChecked()
         if continuousReporting == 1:
             self.conf["continuousReporting"] = True
         else:
             self.conf["continuousReporting"] = False
 
-        color_line_text = ui.findChild(QtWidgets.QSpinBox,
-                                       "color_edit").value()
+        color_line_text = ui.findChild(QSpinBox, "color_edit").value()
         self.conf["num_colors"] = int(color_line_text)
 
         # Internally, we start counting from zero
         # (for easier handling of arrays)
-        start_line_text = ui.findChild(QtWidgets.QSpinBox,
-                                       "start_row_edit").value()
+        start_line_text = ui.findChild(QSpinBox, "start_row_edit").value()
         self.conf["start_line"] = int(start_line_text) - 1
 
-        start_needle_color = ui.findChild(QtWidgets.QComboBox,
-                                          "start_needle_color").currentText()
-        start_needle_text = ui.findChild(QtWidgets.QSpinBox,
-                                         "start_needle_edit").value()
+        start_needle_color = ui.findChild(QComboBox, "start_needle_color").currentText()
+        start_needle_text = ui.findChild(QSpinBox, "start_needle_edit").value()
 
         self.conf["start_needle"] = self.__read_needle_settings(
             start_needle_color, start_needle_text)
 
-        stop_needle_color = ui.findChild(QtWidgets.QComboBox,
-                                         "stop_needle_color").currentText()
-        stop_needle_text = ui.findChild(QtWidgets.QSpinBox,
-                                        "stop_needle_edit").value()
+        stop_needle_color = ui.findChild(QComboBox, "stop_needle_color").currentText()
+        stop_needle_text = ui.findChild(QSpinBox, "stop_needle_edit").value()
 
         self.conf["stop_needle"] = self.__read_needle_settings(
             stop_needle_color, stop_needle_text)
 
-        alignment_text = ui.findChild(QtWidgets.QComboBox,
-                                      "alignment_combo_box").currentText()
+        alignment_text = ui.findChild(QComboBox, "alignment_combo_box").currentText()
         self.conf["alignment"] = alignment_text
 
         self.conf["inf_repeat"] = \
-            int(ui.findChild(QtWidgets.QCheckBox,
-                             "infRepeat_checkbox").isChecked())
+            int(ui.findChild(QCheckBox, "infRepeat_checkbox").isChecked())
 
         self.conf["auto_mirror"] = \
-            int(ui.findChild(QtWidgets.QCheckBox,
-                             "autoMirror_checkbox").isChecked())
+            int(ui.findChild(QtWidgets.QCheckBox, "autoMirror_checkbox").isChecked())
 
-        knitting_mode_index = ui.findChild(QtWidgets.QComboBox,
-                                           "knitting_mode_box").currentIndex()
+        knitting_mode_index = ui.findChild(QComboBox, "knitting_mode_box").currentIndex()
         self.conf["knitting_mode"] = knitting_mode_index
 
-        serial_port_text = ui.findChild(QtWidgets.QComboBox,
-                                        "serial_port_dropdown").currentText()
+        serial_port_text = ui.findChild(QComboBox, "serial_port_dropdown").currentText()
         self.conf["portname"] = str(serial_port_text)
 
         # getting file location from textbox
-        filename_text = ui.findChild(QtWidgets.QLineEdit,
-                                     "filename_lineedit").text()
+        filename_text = ui.findChild(QtWidgets.QLineEdit, "filename_lineedit").text()
         self.conf["filename"] = str(filename_text)
 
         self.__logger.debug(self.conf)
@@ -328,7 +314,7 @@ class AyabPlugin(object):
         dock = self.dock
         cleaner = QtCore.QObjectCleanupHandler()
         cleaner.add(dock.widget())
-        self.__qw = QtGui.QWidget()
+        self.__qw = QtWidgets.QWidget()
         dock.setWidget(self.__qw)
         self.__unset_translator()
 
@@ -344,7 +330,7 @@ class AyabPlugin(object):
         """
         # print(message)
         self.__parent.signalDisplayBlockingPopUp.emit(
-            self.translator.translate("AyabPlugin", message), message_type)
+            QCoreApplication.translate("AyabPlugin", message), message_type)
 
     def __emit_popup(self, message="", message_type="info"):
         """
@@ -353,13 +339,13 @@ class AyabPlugin(object):
         """
         # print(message)
         self.__parent.signalDisplayPopUp.emit(
-            self.translator.translate("AyabPlugin", message), message_type)
+            QCoreApplication.translate("AyabPlugin", message), message_type)
 
     def __emit_notification(self, message=""):
         """Sends the signalUpdateNotification signal"""
         # print(message)
         self.__parent.signalUpdateNotification.emit(
-            self.translator.translate("AyabPlugin", message))
+            QCoreApplication.translate("AyabPlugin", message))
 
     def __emit_knit_progress(self, progress, row_multiplier):
         """Sends the updateKnitProgress QtSignal."""

@@ -166,27 +166,27 @@
            </property>
            <item>
             <property name="text">
-             <string notr="true">Singlebed</string>
+             <string>Singlebed</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string notr="true">Ribber: Classic</string>
+             <string>Ribber: Classic</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string notr="true">Ribber: Middle-Colors-Twice</string>
+             <string>Ribber: Middle-Colors-Twice</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string notr="true">Ribber: Heart of Pluto</string>
+             <string>Ribber: Heart of Pluto</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string notr="true">Ribber: Circular</string>
+             <string>Ribber: Circular</string>
             </property>
            </item>
           </widget>
@@ -281,12 +281,12 @@
             </property>
             <item>
              <property name="text">
-              <string notr="true">orange</string>
+              <string>orange</string>
              </property>
             </item>
             <item>
              <property name="text">
-              <string notr="true">green</string>
+              <string>green</string>
              </property>
             </item>
            </widget>

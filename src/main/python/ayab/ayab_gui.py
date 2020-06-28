@@ -248,7 +248,7 @@ class Ui_MainWindow(object):
         self.assistant_dock.setWindowTitle(_translate("MainWindow", "Assistant"))
         self.load_file_button.setText(_translate("MainWindow", "1. Load Image File"))
         self.knitting_options_dock.setWindowTitle(_translate("MainWindow", "Knitting Options"))
-        self.knit_button.setText(_translate("MainWindow", "2. Knit!"))
+        self.knit_button.setText(_translate("MainWindow", "2. Knit"))
         self.cancel_button.setText(_translate("MainWindow", "Cancel Knitting"))
         self.menuFile.setTitle(_translate("MainWindow", "File"))
         self.menuHelp.setTitle(_translate("MainWindow", "Help"))
