@@ -14,11 +14,11 @@ The other main dependencies can be found in requirements.txt
 
 *For Debian/Ubuntu*
 
-    sudo apt-get install python3-pip python3-dev python3-virtualenv python3-gi
+    sudo apt-get install python3-pip python3-dev python3-virtualenv python3-gi libasound2-dev
 
 *For openSUSE*
 
-    sudo zypper install python3-pip python3-virtualenv python3-gi
+    sudo zypper install python3-pip python3-virtualenv python3-gi libasound
 
 *All Distributions*
 
@@ -27,16 +27,24 @@ To be able to communicate with your Arduino, it might be necessary to add the ri
     sudo usermod -a -G tty [userName]
     sudo usermod -a -G dialout [userName]
 
-To install the development version you can checkout the git repository
+To install the development version you can checkout the git repository.
 
     git clone https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
-Create a virtual enviroment in the cloned repository
+Create a virtual enviroment in the cloned repository:
 
     cd ayab-desktop
     virtualenv --python=/usr/bin/python3.7 --system-site-packages venv/
     source venv/bin/activate
     pip3 install -r requirements.txt
+
+To use the language preference option you will need to generate the
+translation files:
+
+    cd src/main/resources/base/ayab/translation
+    ./ayab_trans.pl
+    lrelease *.ts
+    cd ../../../../../..
 
 Now start ayab with
 

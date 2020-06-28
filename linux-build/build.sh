@@ -7,6 +7,12 @@ PACKAGE_VERSION="`cat src/main/resources/base/ayab/package_version`"
 
 python3 -m pip install -r requirements.txt
 
+# generate translation files
+cd src/main/resources/base/ayab/translation
+./ayab_trans.pl
+lrelease *.ts
+cd ../../../../../..
+
 echo "# build the app"
 python3 -m fbs freeze
 

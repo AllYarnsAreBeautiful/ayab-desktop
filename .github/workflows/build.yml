@@ -37,6 +37,10 @@ jobs:
         pip install -r windows-build\windows_build_requirements.txt
     - name: Build app
       run: |
+        cd src/main/resources/base/ayab/translations
+        ./ayab_trans.pl
+        lrelease *.ts
+        cd ../../../../../..
         python -m fbs freeze --debug
     - name: Create installer
       run: |
