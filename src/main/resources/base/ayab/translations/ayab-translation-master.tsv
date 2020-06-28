@@ -1,92 +1,96 @@
-Dest	Src	Line	Context	en_US	en_GB	de_DE	is_IS	it_IT	ru_RU	fr_FR	uk_UA	sv_SE
-2	56	92	AyabPlugin	Simulation	Simulation	Simulation	Hermir	Simulazione	Моделирование	Simulation	Моделювання	
-3	72	121	AyabPlugin	You need to set an image.	You need to set an image.	Bitte Muster wählen.	Þú verður að hlaða mynd.	Devi impostare un'immagine.	Вам нужно установить изображение.	Choisissez une image pour continuer.	Виберіть зображення.	
-4	73	217	AyabPlugin	Invalid needle start and end.	Invalid needle start and end.	Ungültige Startnadel oder Endnadel.	Röng start nál og enda nál.	Ago iniziale e finale invalidi.	Недопустимое начало или конец иглы.	Erreur sur la première et dernière aiguille du tricot.	Неправильна стартова або кінцева голка.	
-5	74	221	AyabPlugin	Start row is larger than the image.	Start row is larger than the image.	Die Startzeile ist höher als das Muster.	Byrjunaröð er stærri en mynd.	Il giro d'inizio è più grande dell'immagine.	Начальный ряд больше изображения.	Le premier rang est plus grand que l'image.	Початковий ряд більший за зображення.	
-6	75	225	AyabPlugin	Please choose a valid port.	Please choose a valid port.	Bitte wählen Sie einen gültigen Port.	Veljið rétt port.	Scegli una porta seriale valida.	Пожалуйста, выберите действующий порт.	Veuillez choisir un port valide.	Виберіть дійсний порт.	
-7	76	231	AyabPlugin	Single bed knitting currently supports only 2 colors.	Single bed knitting currently supports only 2 colours.	Einzelbettstricken unterstützt nur 2 Farben.	Stilling styður bara tvo liti.	La lavorazione in frontura singola supporta solo 2 colori.	Однофонтурное вязание поддерживает только двухцветное вязание.	Le tricot en simple fonture est limité à deux couleurs.	Однофонтурне в'язання підтримує лише 2 кольори.	
-8	77	237	AyabPlugin	Circular knitting supports only 2 colors.	Circular knitting supports only 2 colours.	Rundstricken unterstützt nur 2 Farben.	Hringprjón styður bara tvo liti.	La lavorazione circolare supporta solo 2 colori.	Круговое вязание поддерживает только двухцветное вязание.	Le mode tricot circulaire est limité à deux couleurs.	В'язання по колу підтримує лише 2 кольори.	
-9	78	272	AyabPlugin	Connecting to machine...	Connecting to machine...	Verbinde zur Maschine...	Tengist vél...	Connessione in corso…	Подключение к машине.	Connection en cours...	Підключення до машини...	
-10	79	275	AyabPlugin	Please start machine. (Set the carriage to mode KC-I or KC-II and move the carriage over the left turn mark).	Please start machine. (Set the carriage to mode KC-I or KC-II and move the carriage over the left turn mark).	Bitte starten Sie die Maschine. (Stellen Sie den Schlitten auf KC-I oder KC-II und bewegen Sie den Schlitten über die linke Umkehrmarke.)	Kveikið á vélinni. (Stillið vagninn á KC-I eða KC-II og færið vagninn til vinstra yfir skynjarann).	Avvia la macchina. (Imposta il carrello su KC-I o KC-II e sposta il carrello oltre il segno sinistro d'inizio.)	Пожалуйста, включите машину. (установите каретку в положение КС-1 или КС-2 и переведите каретку влево за датчик).	Veuillez démarrer la machine. (Mettre le chariot sur le mode KC-I ou KCII et le placer sur le côté gauche).	Будь ласка, запустіть машину. (Налаштуйте каретку на KC-I або KC-II і перемістіть каретку ліворуч за датчик.)	
-11	80	279	AyabPlugin	Wrong Arduino firmware version. Please check that you have flashed the latest version.	Wrong Arduino firmware version. Please check that you have flashed the latest version.	Falsche Arduino-Firmware-Version.	Röng Arduino vélbúnaðarútgáfa. Vinsamlegast kannið hvort þú hafir nýjustu útgáfuna.	Versione del firmware di Arduino errata. Controlla di aver eseguito correttamente il flash all'ultima versione.	Неправильная прошивка версии андурино. Пожалуйста, проверьте что Вы установили последюю версию.	Mauvaise version du firmware Arduino. Vérifiez que vous avez la dernière version.	Неправильна версія прошивки Arduino. Перевірте, чи встановлено останню версію.	
-12	81	284	AyabPlugin	Please knit.	Please knit.	Bitte fangen Sie an zu stricken.	Vinsamlegast prjónið.	Inizia il lavoro.	Вяжите пожалуйста.	Commencez le tricot.	В'яжіть будь-ласка.	
-13	82	289	AyabPlugin	Device not ready, try again.	Device not ready, try again.	Gerät nicht bereit, bitte versuchen Sie es erneut.	Tækið ekki tilbúið, reyndu aftur.	Il dispositivo non è pronto, riprova.	Устройство не отвечает, повторите попытку.	La machine n'est pas prête, essayez encore.	Пристрій не готовий. Повторіть спробу.	
-14	83	293	AyabPlugin	Image transmission finished. Please knit until you hear the double beep sound.	Image transmission finished. Please knit until you hear the double beep sound.	Musterübertragung beendet. Bitte stricken Sie, bis Sie den doppelten Piepton hören.	Myndhleðslu lokið. Prjónið þangað til þú heyrir tvöfalt píphljóð.	Trasferimento dell'immagine finito. Lavora finché senti il doppio bip.	Передача изображения завершена. Вяжите после того как услышите двойной звуковой сигнал.	Image transmise. Tricotez jusqu'à ce que vous entendiez un double bip.	Передачу зображення завершено. Будь ласка, в'яжіть, поки не почуєте подвійний звуковий сигнал.	
-15	84	308	AyabPlugin	Knitting canceled.	Knitting cancelled.	Stricken abgebrochen.	Hætt við prjón.	Lavorazione eliminata.	Вязание завершено.	Annulation du tricot.	В’язання скасовано.	
-16	40	72	DockWidget	Port Selection	Port Selection	Port wählen	Velja port	Selezione porta seriale	Выбрать порт	Sélection du port	Вибір порту	
-17	28	81	DockWidget	Refresh	Refresh	Aktualisieren	Endurnýja / Refresh	Ricarica	Обновить	Réactualiser	Оновити	
-18	59	125	DockWidget	Settings	Settings	Einstellungen	Stillingar	Impostazioni	Настройки	Paramètres	Налаштування	
-19	66	155	DockWidget	Knitting Mode	Knitting Mode	Strickmodus	Prjóna stilling	Modalità di lavorazione	Режим вязание	Mode tricot	Режим в'язання	
-20	67	169	DockWidget	Singlebed	Singlebed	Einzelbett	Eitt borð / singelbed	Frontura singola	Однофонтурное вязание	Fonture simple	Однофонтурне	
-21	68	174	DockWidget	Ribber	Ribber	Doppelbett	Ribber	Seconda frontura	двухфонтурное вязание	2ème fonture	Двофонтурне	
-22	69	174	DockWidget	Classic	Classic	Klassisch	Klassískt 	Classico	Классика	Classique	Класика	
-23	70	184	DockWidget	Middle-colors-twice	Middle-colours-twice	Middle-Colors-Twice	Miðlitur-tvisvar 		Средний-цвет-дважды		Подвоєння середнього кольору	
-24	71	189	DockWidget	Circular	Circular	Rundstricken	Hringurprjón	Circolare	Круговое вязание	Circulaire	По колу	
-25	29	197	DockWidget	Colors	Colours	Farben	Litir	Colori	Цвета	Couleurs	Кольори	
-26	39	220	DockWidget	Start Row	Start Row	Startzeile	Byrja umferð	Inizio giro	Начальный ряд	Commencer le rang	Початковий ряд	
-27	41	255	DockWidget	Infinite Repeat	Infinite Repeat	Unendlich wiederholen	Endurtekning	Ripetizione infinita	Повторять	Répétition a l'infini	Нескінченне повторення	
-28	42	271	DockWidget	Start Needle	Start Needle	Startnadel	Byrjunar nál	Ago iniziale	Стартовая игла 	Première aiguille	Початкова голка	
-29	31	284	DockWidget	green	green	grün	Grænn	verde	зелёный (зеленый)	vert	зелений	
-30	32	289	DockWidget	orange	orange	orange	Appelsínugulur	arancione	оранжевый	orange	помаранчевий	
-31	43	326	DockWidget	Stop Needle	Stop Needle	Stopnadel	Enda nál	Ago finale	Конечная игла 	Dernière aiguille	Остання голка	
-32	44	375	DockWidget	Alignment	Alignment	Ausrichtung	Jafna	Allineamento	Выравнивание	Alignement	Вирівнювання	
-33	45	413	DockWidget	Mirror Image	Mirror Image	Muster spiegeln	Spegilmynd	Ribalta l'immagine	Зеркальное отражение	Image miroir	Дзеркальне зображення	
-34	46	420	DockWidget	Continuous Status Reporting	Continuous Status Reporting	Kontinuierlicher Status	Stöðug skýrsla	Report continuativo	Непрерывный отчет о статусе	Rapport de situation en continu	Постійне звітування про стан	
-35	47	429	DockWidget	Status	Status	Status	Staða	Stato	Статус	Statut	Стан	
-36	48	465	DockWidget	Hall Sensors	Hall Sensors	Hall-Effekt-Sensoren	Skynjari	Apparato sensori	Датчик Холла	Capteurs à effet Hall	Датчики Холла	
-37	49	510	DockWidget	Hall Left	Hall Left	Hallsensor links	Vinstri skynjari	Apparato sensore sinistro	Датчик Холла слева	Hall Gauche	Лівий датчик Холла	
-38	50	558	DockWidget	Hall Right	Hall Right	Hallsensor rechts	Hægri skynjari	Apparato sensore destro	Датчик Холла справа	Hall Droite	Правий датчик Холла	
-39	51	585	DockWidget	Carriage	Carriage	Schlitten	Vagn	Carrello	Каретка	Chariot	Каретка	
-40	52	598	DockWidget	No carriage detected	No carriage detected	Kein Schlitten erkannt	Finn ekki vagn	Carrello non selezionato	Каретка не обнаружена	Chariot non détecté 	Каретку не виявлено	
-41	54	627	DockWidget	direction	direction	Richtung	Stefna	direzione	направление	direction	напрямок	
-42	55	650	DockWidget	Progress	Progress	Fortschritt	Staða	Progressione	Прогресс	Progrès	Прогрес	
-43	55	666	DockWidget	progress	progress	Fortschritt	staða	progressione	прогресс	progrès	прогрес	
-44	2	14	MainWindow	All Yarns Are Beautiful	All Yarns Are Beautiful	All Yarns Are Beautiful	Allt Garn Er Fallegt	All Yarns Are Beautiful	Вся пряжа прекрасна	Tous Les Fils Sont Beaux	Уся пряжа прекрасна	Alla garn är vackra
-45	37	126	MainWindow	Assistant	Assistant	Assistent	Aðstoð	Assistente	Помощник	Assistant	Помічник	
-46	33	219	MainWindow	1. Load Image File	1. Load Image File	1. Muster öffnen	1. Hlaðið myndskrá	1. Carica l'immagine	1. Загрузить изображение	1. Charger une image	1. Завантажити зображення	
-47	34	250	MainWindow	Knitting Options	Knitting Options	Strickeinstellungen	Prjóna valkostir	Opzioni Lavorazione	Варианты вязания	Options de tricot	Варіанти в'язання	
-48	35	283	MainWindow	2. Knit	2. Knit	2. Stricken	2. Prjónið	2. Lavora	2. Вязание	2. Tricoter	2. В'язання	
-49	36	293	MainWindow	Cancel Knitting	Cancel Knitting	Stricken abbrechen	Hætta við að prjóna	Annulla la lavorazione	Отменить вязание	Annuler le tricot en cours	Скасувати в’язання	
-50	3	320	MainWindow	File	File	Datei	Skrá	File	Файл	Fichier	Файл	Fil
-51	4	326	MainWindow	Help	Help	Hilfe	Hjálp	Aiuto	Помощь	Aide	Допомога	Hjälp
-52	5	332	MainWindow	Tools	Tools	Werkzeuge	Verkfæri	Strumenti	Инструменты	Outils	Інструменти	Verktyg
-53	57	338	MainWindow	Preferences	Preferences	Einstellungen	Forstillingar	Preferenze	Персональные настройки	Préférences	Налаштування	
-54	6	344	MainWindow	Image Actions	Image Actions	Musterbearbeitung	Mynd	Azioni immagine	Действия с изображением	Image	Дії з зображенням	Bild
-55	7	364	MainWindow	Load AYAB Firmware	Load AYAB Firmware	AYAB Firmware aufspielen	Hlaða AYAB vélbúnaði	Carica il firmware AYAB	Загрузить прошивку AYAB	Chargement du firmware AYAB	Завантажити прошивку AYAB	Ladda AYAB firmware
-56	8	369	MainWindow	Quit	Quit	Beenden	Hætta	Chiudi	Выход	Quitter	Вихід	Avsluta
-57	9	377	MainWindow	Open Knitting Project	Open Knitting Project	Projekt öffnen	Opna skrá	Apri il progetto	Начать новый проект	Ouvrir un projet	Відкрити в'язальний проєкт	Öppna projekt
-58	10	382	MainWindow	Help - About	Help - About	Hilfe - Über	Hjálp - Um	Aiuto - informazioni	Помощь	Aide - À propos	Допомога - про	Hjälp - Om
-59	4	387	MainWindow	Help	Help	Hilfe	Hjálp	Aiuto	Помощь	Aide	Допомога	Hjälp
-60	11	392	MainWindow	Invert	Invert	Invertieren	Á hvolfi	Inverti	Инвертировать 	Inverser	Інвертувати	
-61	12	400	MainWindow	Stretch	Stretch	Strecken	Teygja	Allunga	Растянуть	Etirer	Розтягнути	
-62	13	408	MainWindow	Repeat	Repeat	Wiederholen	Endurtaka	Ripeti	Повторить	Répéter	Повторити	
-63	14	416	MainWindow	Reflect	Reflect	Spiegeln	Endurspegla	Rifletti	Отразить	Refléter	Відобразити	
-64	15	424	MainWindow	Horizontal Flip	Horizontal Flip	Horizontal spiegeln	Snúa lárétt	Inverti orizzontale	Отражение по горизонтали	Retourner horizontal	Відобразити по горизонталі	
-65	16	432	MainWindow	Vertical Flip	Vertical Flip	Vertikal spiegeln	Snúa lóðrétt	Inverti verticale	Отражение по вертикали	Retourner vertical	Відобразити по вертикалі	
-66	17	440	MainWindow	Rotate Left	Rotate Left	Links drehen	Snúa til vinstri	Ruota a sinistra	Поворот влево	Rotation à gauche	Обертати ліворуч	
-67	18	448	MainWindow	Rotate Right	Rotate Right	Rechts drehen	Snúa til hægri	Ruota a destra	Поворот вправо	Rotation à droite	Обертати праворуч	
-68	58	456	MainWindow	Set Preferences	Set Preferences	Einstellungen festlegen	Setjið forstillingar	Imposta preferenze	Установить персональные настройки	Indiquez vos préférences	Встановити налаштування	
-69	19	9	MirrorDialog	Reflect image	Reflect image	Muster spiegeln	Endurspegla mynd	Rifletti l'immagine	Отразить изображение	Refléter l'image	Відобразити зображення	
-70	20	26	MirrorDialog	Add mirrors	Add mirrors	Spiegelungen hinzufügen	Spegla	Specchia	Добавить зеркальное отражение	Miroirs	Додати дзеркальне відображення	
-71	22	38	MirrorDialog	Left	Left	Links	Vinstri	Sinistra	Лево	Gauche	Ліворуч	
-72	23	45	MirrorDialog	Right	Right	Rechts	Hægri	Destra	Право	Droite	Праворуч	
-73	24	52	MirrorDialog	Top	Top	Oben	Efst	Sopra	Верх	Haut	Верх	
-74	25	59	MirrorDialog	Bottom	Bottom	Unten	Neðst	Sotto	Низ	Bas	Низ	
-75	26	69	MirrorDialog	OK	OK	OK	Í lagi	Conferma	ОК 	Confirmer	ОК	
-76	58	9	PrefsDialog	Set Preferences	Set Preferences	Einstellungen festlegen	Setjið forstillingar	Imposta preferenze	Установить персональные настройки	Indiquez vos préférences	Встановити налаштування	
-77	59	18	PrefsDialog	Settings	Settings	Einstellungen	Stillingar	Impostazioni	Настройки	Paramètres	Налаштування	
-78	60	24	PrefsDialog	Default Knitting Mode	Default Knitting Mode	Vorauswahl Strickmodus	Sjálfgefin prjónahamur	Modalità di lavorazione automatica	Режим вязания по умолчанию	Mode tricot par défaut	Режим в'язання за замовчуванням	
-79	61	60	PrefsDialog	Default Infinite Repeat	Default Infinite Repeat	Vorauswahl Unendlich wiederholen	Sjálfgefin endurtekning	Ripetizione automatica	Повторение по умолчанию	Répétition a l'infini par défaut	Нескінченне повторення за замовчуванням	
-80	62	70	PrefsDialog	Default Alignment	Default Alignment	Vorauswahl Ausrichtung	Sjálfgefin jafna	Allineamento automatico	Выравнивание по умолчанию	Alignement par défaut	Вирівнювання за замовчуванням	
-81	21	78	PrefsDialog	Center	Centre	Zentriert	Miðja	Centra	Центр	Centre	Центр	
-82	22	83	PrefsDialog	Left	Left	Links	Vinstri	Sinistra	Лево	Gauche	Ліворуч	
-83	23	88	PrefsDialog	Right	Right	Rechts	Hægri	Destra	Право	Droite	Праворуч	
-84	63	96	PrefsDialog	Default Mirroring	Default Mirroring	Vorauswahl Spiegelung	Sjálfgefin speglun	Ribaltamento automatico	Зеркальное отображение по умолчанию	Image miroir par défaut	Дзеркальне відображення за замовчуванням	
-85	64	106	PrefsDialog	Quiet Mode	Quiet Mode	Lautlos	Hljóðlaus stilling	Modalità silenziosa	Без звука	Mode silencieux	Режим без звуку	
-86	65	116	PrefsDialog	Language	Language	Sprache	Tungumál	Lingua	Язык	Langue	Мова	
-87	26	130	PrefsDialog	OK	OK	OK	Í lagi	Conferma	ОК 	Confirmer	ОК	
-88	27	137	PrefsDialog	Reset	Reset	Zurücksetzen	Endurstilla / Reset	Resetta	Сброс	Réinitialiser	Скинути за замовчуванням	
-89	55	63	Progress	Progress	Progress	Fortschritt	Staða	Progressione	Прогресс	Progrès	Прогрес	
-90	38	96	KnitProgress	Row	Row	Zeile	Umferð	Giro	Ряд	Rang	Ряд	
-91	53	101	KnitProgress	Pass	Pass	Durchgang	Pass	Passa	Пройти	Passage	Пропуск	
-92	30	107	KnitProgress	Color	Colour	Farbe	Litur	Colore	Цвет	Couleur	Колір	
+Dest	Src	Context	en_US	en_GB	de_DE	is_IS	it_IT	ru_RU	uk_UA	fr_FR	es_Es
+2	56	AyabPlugin	Simulation	Simulation	Simulation	Hermir	Simulazione	Моделирование	Моделювання	Simulation	Simulación
+3	72	AyabPlugin	You need to set an image.	You need to set an image.	Bitte Muster wählen.	Þú verður að hlaða mynd.	Devi impostare un'immagine.	Вам нужно установить изображение.	Виберіть зображення.	Choisissez une image pour continuer.	Necesitar configurar una imagen.
+4	73	AyabPlugin	Invalid needle start and end.	Invalid needle start and end.	Ungültige Startnadel oder Endnadel.	Röng start nál og enda nál.	Ago iniziale e finale invalidi.	Недопустимое начало или конец иглы.	Неправильна стартова або кінцева голка.	Erreur sur la première et dernière aiguille du tricot.	Inicio y fin de la aguja no válidos.
+5	74	AyabPlugin	Start row is larger than the image.	Start row is larger than the image.	Die Startzeile ist höher als das Muster.	Byrjunaröð er stærri en mynd.	Il giro d'inizio è più grande dell'immagine.	Начальный ряд больше изображения.	Початковий ряд більший за зображення.	Le premier rang est plus grand que l'image.	La fila de inicio es más grande que la imagen.
+6	75	AyabPlugin	Please choose a valid port.	Please choose a valid port.	Bitte wählen Sie einen gültigen Port.	Veljið rétt port.	Scegli una porta seriale valida.	Пожалуйста, выберите действующий порт.	Виберіть дійсний порт.	Veuillez choisir un port valide.	Elija un puerto válido.
+7	76	AyabPlugin	Single bed knitting currently supports only 2 colors.	Single bed knitting currently supports only 2 colours.	Einzelbettstricken unterstützt nur 2 Farben.	Stilling styður bara tvo liti.	La lavorazione in frontura singola supporta solo 2 colori.	Однофонтурное вязание поддерживает только двухцветное вязание.	Однофонтурне в'язання підтримує лише 2 кольори.	Le tricot en simple fonture est limité à deux couleurs.	El tejido de una frontura actualmente solo soporta 2 colores.
+8	77	AyabPlugin	Circular knitting supports only 2 colors.	Circular knitting supports only 2 colours.	Rundstricken unterstützt nur 2 Farben.	Hringprjón styður bara tvo liti.	La lavorazione circolare supporta solo 2 colori.	Круговое вязание поддерживает только двухцветное вязание.	В'язання по колу підтримує лише 2 кольори.	Le mode tricot circulaire est limité à deux couleurs.	Tejido circular soporta solo 2 colores.
+9	78	AyabPlugin	Connecting to machine...	Connecting to machine...	Verbinde zur Maschine...	Tengist vél...	Connessione in corso…	Подключение к машине.	Підключення до машини...	Connection en cours...	Conexión a la máquina.
+10	79	AyabPlugin	Please start machine. (Set the carriage to mode KC-I or KC-II and move the carriage over the left turn mark).	Please start machine. (Set the carriage to mode KC-I or KC-II and move the carriage over the left turn mark).	Bitte starten Sie die Maschine. (Stellen Sie den Schlitten auf KC-I oder KC-II und bewegen Sie den Schlitten über die linke Umkehrmarke.)	Kveikið á vélinni. (Stillið vagninn á KC-I eða KC-II og færið vagninn til vinstra yfir skynjarann).	Avvia la macchina. (Imposta il carrello su KC-I o KC-II e sposta il carrello oltre il segno sinistro d'inizio.)	Пожалуйста, включите машину. (установите каретку в положение КС-1 или КС-2 и переведите каретку влево за датчик).	Будь ласка, запустіть машину. (Налаштуйте каретку на KC-I або KC-II і перемістіть каретку ліворуч за датчик.)	Veuillez démarrer la machine. (Mettre le chariot sur le mode KC-I ou KCII et le placer sur le côté gauche).	Por favor, inicie la máquina. (Ajuste el carro al modo KC-I o KC-II y mueva el carro sobre la marca de giro a la izquierda).
+11	80	AyabPlugin	Wrong Arduino firmware version. Please check that you have flashed the latest version.	Wrong Arduino firmware version. Please check that you have flashed the latest version.	Falsche Arduino-Firmware-Version.	Röng Arduino vélbúnaðarútgáfa. Vinsamlegast kannið hvort þú hafir nýjustu útgáfuna.	Versione del firmware di Arduino errata. Controlla di aver eseguito correttamente il flash all'ultima versione.	Неправильная прошивка версии андурино. Пожалуйста, проверьте что Вы установили последюю версию.	Неправильна версія прошивки Arduino. Перевірте, чи встановлено останню версію.	Mauvaise version du firmware Arduino. Vérifiez que vous avez la dernière version.	Versión incorrecta del firmware de Arduino. Por favor, compruebe que ha flasheado la última versión.
+12	81	AyabPlugin	Please knit.	Please knit.	Bitte fangen Sie an zu stricken.	Vinsamlegast prjónið.	Inizia il lavoro.	Вяжите пожалуйста.	В'яжіть будь-ласка.	Commencez le tricot.	Comience a tejer.
+13	82	AyabPlugin	Device not ready, try again.	Device not ready, try again.	Gerät nicht bereit, bitte versuchen Sie es erneut.	Tækið ekki tilbúið, reyndu aftur.	Il dispositivo non è pronto, riprova.	Устройство не отвечает, повторите попытку.	Пристрій не готовий. Повторіть спробу.	La machine n'est pas prête, essayez encore.	Dispositivo no listo, inténtelo de nuevo.
+14	83	AyabPlugin	Image transmission finished. Please knit until you hear the double beep sound.	Image transmission finished. Please knit until you hear the double beep sound.	Musterübertragung beendet. Bitte stricken Sie, bis Sie den doppelten Piepton hören.	Myndhleðslu lokið. Prjónið þangað til þú heyrir tvöfalt píphljóð.	Trasferimento dell'immagine finito. Lavora finché senti il doppio bip.	Передача изображения завершена. Вяжите после того как услышите двойной звуковой сигнал.	Передачу зображення завершено. Будь ласка, в'яжіть, поки не почуєте подвійний звуковий сигнал.	Image transmise. Tricotez jusqu'à ce que vous entendiez un double bip.	Transmisión de imagen terminada. Por favor, tejer hasta que escuche el sonido de doble pitido.
+15	84	AyabPlugin	Knitting canceled.	Knitting cancelled.	Stricken abgebrochen.	Hætt við prjón.	Lavorazione eliminata.	Вязание завершено.	В’язання скасовано.	Annulation du tricot.	Tejido de punto cancelado.
+16	40	DockWidget	Port Selection	Port Selection	Port wählen	Velja port	Selezione porta seriale	Выбрать порт	Вибір порту	Sélection du port	Seleccionar puerto
+17	28	DockWidget	Refresh	Refresh	Aktualisieren	Endurnýja	Ricarica	Обновить	Оновити	Réactualiser	Actualizar
+18	59	DockWidget	Settings	Settings	Einstellungen	Stillingar	Impostazioni	Настройки	Налаштування	Paramètres	Ajustes
+19	66	DockWidget	Knitting Mode	Knitting Mode	Strickmodus	Prjóna stilling	Modalità di lavorazione	Режим вязание	Режим в'язання	Mode tricot	Método de tejido
+20	29	DockWidget	Colors	Colours	Farben	Litir	Colori	Цвета	Кольори	Couleurs	Colores
+21	39	DockWidget	Start Row	Start Row	Startzeile	Byrja umferð	Inizio giro	Начальный ряд	Початковий ряд	Commencer le rang	Fila de inicio
+22	41	DockWidget	Infinite Repeat	Infinite Repeat	Unendlich wiederholen	Endurtekning	Ripetizione infinita	Повторять	Нескінченне повторення	Répétition a l'infini	Repetición infinita
+23	42	DockWidget	Start Needle	Start Needle	Startnadel	Byrjunar nál	Ago iniziale	Стартовая игла 	Початкова голка	Première aiguille	Aguja de inicio
+24	43	DockWidget	Stop Needle	Stop Needle	Stopnadel	Enda nál	Ago finale	Конечная игла 	Остання голка	Dernière aiguille	Aguja de parada
+25	44	DockWidget	Alignment	Alignment	Ausrichtung	Jafna	Allineamento	Выравнивание	Вирівнювання	Alignement	Alineamiento
+26	45	DockWidget	Mirror Image	Mirror Image	Muster spiegeln	Spegilmynd	Ribalta l'immagine	Зеркальное отражение	Дзеркальне зображення	Image miroir	Imagen espejo
+27	46	DockWidget	Continuous Status Reporting	Continuous Status Reporting	Kontinuierlicher Status	Stöðug skýrsla	Report continuativo	Непрерывный отчет о статусе	Постійне звітування про стан	Rapport de situation en continu	Informe de estado continuo
+28	47	DockWidget	Status	Status	Status	Staða	Stato	Статус	Стан	Statut	Estado
+29	48	DockWidget	Hall Sensors	Hall Sensors	Hall-Effekt-Sensoren	Skynjari	Apparato sensori	Датчик Холла	Датчики Холла	Capteurs à effet Hall	Sensores de effecto Hall
+30	49	DockWidget	Hall Left	Hall Left	Hallsensor links	Vinstri skynjari	Apparato sensore sinistro	Датчик Холла слева	Лівий датчик Холла	Hall Gauche	Hall izquierda
+31	50	DockWidget	Hall Right	Hall Right	Hallsensor rechts	Hægri skynjari	Apparato sensore destro	Датчик Холла справа	Правий датчик Холла	Hall Droite	Hall derecha
+32	51	DockWidget	Carriage	Carriage	Schlitten	Vagn	Carrello	Каретка	Каретка	Chariot	Carro
+33	52	DockWidget	No carriage detected	No carriage detected	Kein Schlitten erkannt	Finn ekki vagn	Carrello non selezionato	Каретка не обнаружена	Каретку не виявлено	Chariot non détecté 	Carro no detectado
+34	54	DockWidget	direction	direction	Richtung	Stefna	direzione	направление	напрямок	direction	dirección
+35	55	DockWidget	Progress	Progress	Fortschritt	Staða	Progressione	Прогресс	Прогрес	Progrès	Progreso
+36	55	DockWidget	progress	progress	Fortschritt	staða	progressione	прогресс	прогрес	progrès	progreso
+37	21	DockWidget	Center	Centre	Zentriert	Miðja	Centra	Центр	Центр	Centre	Centrar
+38	22	DockWidget	Left	Left	Links	Vinstri	Sinistra	Лево	Ліворуч	Gauche	Izquierda
+39	23	DockWidget	Right	Right	Rechts	Hægri	Destra	Право	Праворуч	Droite	Derecha
+40	2	MainWindow	All Yarns Are Beautiful	All Yarns Are Beautiful	All Yarns Are Beautiful	Allt Garn Er Fallegt	All Yarns Are Beautiful	Вся пряжа прекрасна	Уся пряжа прекрасна	Tous Les Fils Sont Beaux	Todos Los Hilos Son Hermosos
+41	37	MainWindow	Assistant	Assistant	Assistent	Aðstoð	Assistente	Помощник	Помічник	Assistant	Asistente
+42	33	MainWindow	1. Load Image File	1. Load Image File	1. Muster öffnen	1. Hlaðið myndskrá	1. Carica l'immagine	1. Загрузить изображение	1. Завантажити зображення	1. Charger une image	1. Cargar archivo de imagen
+43	34	MainWindow	Knitting Options	Knitting Options	Strickeinstellungen	Prjóna valkostir	Opzioni Lavorazione	Варианты вязания	Варіанти в'язання	Options de tricot	Opciones de tejido
+44	35	MainWindow	2. Knit	2. Knit	2. Stricken	2. Prjónið	2. Lavora	2. Вязание	2. В'язання	2. Tricoter	2. Tejer
+45	36	MainWindow	Cancel Knitting	Cancel Knitting	Stricken abbrechen	Hætta við að prjóna	Annulla la lavorazione	Отменить вязание	Скасувати в’язання	Annuler le tricot en cours	Cancelar tejido
+46	3	MainWindow	File	File	Datei	Skrá	File	Файл	Файл	Fichier	Archivo
+47	4	MainWindow	Help	Help	Hilfe	Hjálp	Aiuto	Помощь	Допомога	Aide	Ayuda
+48	5	MainWindow	Tools	Tools	Werkzeuge	Verkfæri	Strumenti	Инструменты	Інструменти	Outils	Utiles
+49	57	MainWindow	Preferences	Preferences	Einstellungen	Forstillingar	Preferenze	Персональные настройки	Налаштування	Préférences	Preferencias
+50	6	MainWindow	Image Actions	Image Actions	Musterbearbeitung	Mynd	Azioni immagine	Действия с изображением	Дії з зображенням	Image	Imagen
+51	7	MainWindow	Load AYAB Firmware	Load AYAB Firmware	AYAB Firmware aufspielen	Hlaða AYAB vélbúnaði	Carica il firmware AYAB	Загрузить прошивку AYAB	Завантажити прошивку AYAB	Chargement du firmware AYAB	Cargar el firmware AYAB
+52	8	MainWindow	Quit	Quit	Beenden	Hætta	Chiudi	Выход	Вихід	Quitter	Salir
+53	9	MainWindow	Open Knitting Project	Open Knitting Project	Projekt öffnen	Opna skrá	Apri il progetto	Начать новый проект	Відкрити в'язальний проєкт	Ouvrir un projet	Abrir proyecto de tejido
+54	10	MainWindow	Help – About	Help – About	Hilfe – Über	Hjálp – Um	Aiuto – Informazioni	Помощь	Допомога – Про	Aide – À propos	Ayuda – Sobre
+55	4	MainWindow	Help	Help	Hilfe	Hjálp	Aiuto	Помощь	Допомога	Aide	Ayuda
+56	11	MainWindow	Invert	Invert	Invertieren	Á hvolfi	Inverti	Инвертировать 	Інвертувати	Inverser	Invertir
+57	12	MainWindow	Stretch	Stretch	Strecken	Teygja	Allunga	Растянуть	Розтягнути	Etirer	Tramo
+58	13	MainWindow	Repeat	Repeat	Wiederholen	Endurtaka	Ripeti	Повторить	Повторити	Répéter	Repetir
+59	14	MainWindow	Reflect	Reflect	Spiegeln	Endurspegla	Rifletti	Отразить	Відобразити	Refléter	Reflejar
+60	15	MainWindow	Horizontal Flip	Horizontal Flip	Horizontal spiegeln	Snúa lárétt	Inverti orizzontale	Отражение по горизонтали	Відобразити по горизонталі	Retourner horizontal	Volteo horizontal
+61	16	MainWindow	Vertical Flip	Vertical Flip	Vertikal spiegeln	Snúa lóðrétt	Inverti verticale	Отражение по вертикали	Відобразити по вертикалі	Retourner vertical	Volteo vertical
+62	17	MainWindow	Rotate Left	Rotate Left	Links drehen	Snúa til vinstri	Ruota a sinistra	Поворот влево	Обертати ліворуч	Rotation à gauche	Girar a la izquierda
+63	18	MainWindow	Rotate Right	Rotate Right	Rechts drehen	Snúa til hægri	Ruota a destra	Поворот вправо	Обертати праворуч	Rotation à droite	Girar a la derecha
+64	58	MainWindow	Set Preferences	Set Preferences	Einstellungen festlegen	Setjið forstillingar	Imposta preferenze	Установить персональные настройки	Встановити налаштування	Indiquez vos préférences	Cofigurar preferencias
+65	19	MirrorDialog	Reflect image	Reflect image	Muster spiegeln	Endurspegla mynd	Rifletti l'immagine	Отразить изображение	Відобразити зображення	Refléter l'image	Reflejar imagen
+66	20	MirrorDialog	Add mirrors	Add mirrors	Spiegelungen hinzufügen	Spegla	Specchia	Добавить зеркальное отражение	Додати дзеркальне відображення	Miroirs	Agregar espejos
+67	22	MirrorDialog	Left	Left	Links	Vinstri	Sinistra	Лево	Ліворуч	Gauche	Izquierda
+68	23	MirrorDialog	Right	Right	Rechts	Hægri	Destra	Право	Праворуч	Droite	Derecha
+69	24	MirrorDialog	Top	Top	Oben	Efst	Sopra	Верх	Верх	Haut	Arriba
+70	25	MirrorDialog	Bottom	Bottom	Unten	Neðst	Sotto	Низ	Низ	Bas	Abajo
+71	26	MirrorDialog	OK	OK	OK	Í lagi	Conferma	ОК 	ОК	Confirmer	OK
+72	58	PrefsDialog	Set Preferences	Set Preferences	Einstellungen festlegen	Setjið forstillingar	Imposta preferenze	Установить персональные настройки	Встановити налаштування	Indiquez vos préférences	Cofigurar preferencias
+73	59	PrefsDialog	Settings	Settings	Einstellungen	Stillingar	Impostazioni	Настройки	Налаштування	Paramètres	Ajustes
+74	60	PrefsDialog	Default Knitting Mode	Default Knitting Mode	Vorauswahl Strickmodus	Sjálfgefin prjónahamur	Modalità di lavorazione automatica	Режим вязания по умолчанию	Режим в'язання за замовчуванням	Mode tricot par défaut	Método de tejer por defecto
+75	61	PrefsDialog	Default Infinite Repeat	Default Infinite Repeat	Vorauswahl Unendlich wiederholen	Sjálfgefin endurtekning	Ripetizione automatica	Повторение по умолчанию	Нескінченне повторення за замовчуванням	Répétition a l'infini par défaut	Repetición por defecto infinita
+76	62	PrefsDialog	Default Alignment	Default Alignment	Vorauswahl Ausrichtung	Sjálfgefin jafna	Allineamento automatico	Выравнивание по умолчанию	Вирівнювання за замовчуванням	Alignement par défaut	Alineación por defecto
+77	63	PrefsDialog	Default Mirroring	Default Mirroring	Vorauswahl Spiegelung	Sjálfgefin speglun	Ribaltamento automatico	Зеркальное отображение по умолчанию	Дзеркальне відображення за замовчуванням	Image miroir par défaut	Reflejo por defecto
+78	64	PrefsDialog	Quiet Mode	Quiet Mode	Lautlos	Hljóðlaus stilling	Modalità silenziosa	Без звука	Режим без звуку	Mode silencieux	Modo silencioso
+79	65	PrefsDialog	Language	Language	Sprache	Tungumál	Lingua	Язык	Мова	Langue	Lenguaje
+80	26	PrefsDialog	OK	OK	OK	Í lagi	Conferma	ОК 	ОК	Confirmer	OK
+81	27	PrefsDialog	Reset	Reset	Zurücksetzen	Endurstilla	Resetta	Сброс	Скинути за замовчуванням	Réinitialiser	Reiniciar
+82	55	Progress	Progress	Progress	Fortschritt	Staða	Progressione	Прогресс	Прогрес	Progrès	Progreso
+83	38	KnitProgress	Row	Row	Zeile	Umferð	Giro	Ряд	Ряд	Rang	Fila
+84	53	KnitProgress	Pass	Pass	Durchgang	Pass	Passa	Пройти	Пропуск	Passage	Paso
+85	30	KnitProgress	Color	Colour	Farbe	Litur	Colore	Цвет	Колір	Couleur	Color
+86	31	NeedleColor	green	green	grün	grænn	verde	зелёный (зеленый)	зелений	vert	verde
+87	32	NeedleColor	orange	orange	orange	appelsínugulur	arancione	оранжевый	помаранчевий	orange	naranja
+88	67	KnittingMode	Singlebed	Singlebed	Einzelbett	Eitt borð	Frontura singola	Однофонтурное вязание	Однофонтурне	Fonture simple	Frontura simple
+89	68	KnittingMode	Ribber: Classic	Ribber: Classic	Doppelbett: Klassisch	Ribber: Klassískt	2a Frontura: Classico	двухфонтурное: Классика	Двофонтурне: Класика	2ème Fonture: Classique	Doble frontura: Clásico
+90	69	KnittingMode	Ribber: Middle-Colors-Twice	Ribber: Middle-Colours-Twice	Doppelbett: Middle-Colors-Twice	Ribber: Miðlitur-Tvisvar	2a Frontura: Middle-Colors-Twice	двухфонтурное: Средний-цвет-дважды	Двофонтурне: Подвоєння середнього кольору	2ème Fonture: Middle-Colors-Twice	Doble frontura: Colores medios dos veces
+91	70	KnittingMode	Ribber: Heart of Pluto	Ribber: Heart of Pluto	Doppelbett: Heart of Pluto	Ribber: Heart of Pluto	2a Frontura: Heart of Pluto	двухфонтурное: сердце Плутона	Двофонтурне: серце Плутона	2ème Fonture: Heart of Pluto	Doble frontura: Heart of Pluto
+92	71	KnittingMode	Ribber: Circular	Ribber: Circular	Doppelbett: Rundstricken	Ribber: Hringurprjón	2a Frontura: Circolare	двухфонтурное: Круговое	Двофонтурне: По колу	2ème Fonture: Circulaire	Doble frontura: Circular
+93	21	Alignment	Center	Centre	Zentriert	Miðja	Centra	Центр	Центр	Centre	Centrar
+94	22	Alignment	Left	Left	Links	Vinstri	Sinistra	Лево	Ліворуч	Gauche	Izquierda
+95	23	Alignment	Right	Right	Rechts	Hægri	Destra	Право	Праворуч	Droite	Derecha
+96	85	Scene	Image dimensions	Image dimensions	Mustergröße	Myndastærð	Dimensione dell'immagine	Размер изображения	Розмір зображення	Dimensions de l'image	Dimensiones de la imagen

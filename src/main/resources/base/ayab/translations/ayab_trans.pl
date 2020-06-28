@@ -13,33 +13,38 @@
 # @author Tom Price
 # @date   June 2020
 
-$master = "ayab-translation-master.tsv";
+use strict;
+use warnings;
+use List::Util qw(first);
+
+my $master = "ayab-translation-master.tsv";
 open(FILE, "<", $master);
-chomp($line = <FILE>);
-@headers = split(/\t/, $line);
-$columns = scalar @headers;
+chomp(my $line = <FILE>);
+my @headers = split(/\t/, $line);
 close(FILE);
 
-$filename = "ayab_trans_context.txt";
-system("cut -f4 $master > $filename");
+my $index = (first { $headers[$_] eq "Context" } 0 .. $#headers) + 1;
+my $filename = "ayab_trans_context.txt";
+system("cut -f$index $master > $filename");
 open(FILE, "<", $filename);
-chomp(@context = <FILE>);
+chomp(my @context = <FILE>);
 close(FILE);
 system("rm $filename");
 
+$index += 1;
 $filename = "ayab_trans_base.txt";
-system("cut -f5 $master > $filename");
+system("cut -f$index $master > $filename");
 open(FILE, "<", $filename);
-chomp(@base = <FILE>);
+chomp(my @base = <FILE>);
 close(FILE);
 system("rm $filename");
 
-foreach my $column (5 .. $columns){
-        $lang = $headers[$column-1]; 
-        $filename = "ayab_trans_$lang.txt";
+foreach my $column ($index .. $#headers){
+        my $lang = $headers[$column-1];
+        my $filename = "ayab_trans_$lang.txt";
 	system("cut -f$column $master > $filename");
 	open(FILE, "<", $filename);
-	chomp(@file = <FILE>);
+	chomp(my @file = <FILE>);
 	close(FILE);
 	system("rm $filename");
         $filename = "ayab_trans.$lang.ts";
@@ -49,16 +54,16 @@ foreach my $column (5 .. $columns){
 <!DOCTYPE TS>
 HEADER
 	print FILE '<TS version="2.1" language="' . $lang . '">' . "\n";
-        $last_context = "";
-        foreach my $index (1 .. scalar @context - 1) {
-		$context = $context[$index];
+        my $last_context = "";
+        foreach my $index (1 .. $#context) {
+		my $context = $context[$index];
 		print FILE "</context>\n" if ($last_context ne "" && $last_context ne $context);
 		print FILE "<context>\n    <name>$context</name>\n" if ($last_context ne $context);
 		$last_context = $context;
 		print FILE "    <message>\n";
-		$src = $base[$index];
+		my $src = $base[$index];
 		print FILE "        <source>$src</source>\n";
-		$trans = $file[$index];
+		my $trans = $file[$index];
 		print FILE "        <translation>$trans</translation>\n" if ($trans ne "");
 		print FILE '        <translation type="unfinished"></translation>' . "\n" if ($trans eq "");
 		print FILE "    </message>\n";

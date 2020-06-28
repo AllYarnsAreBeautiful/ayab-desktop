@@ -83,6 +83,6 @@ class TestAyabCommunicationMockup(unittest.TestCase):
 
         self.comm_dummy.update()  # cnfStart
 
-        for i in range(0, 256):
+        for i in range(0, 31):  # 256):  # too slow to test every single byte
             bytes_read = self.comm_dummy.update()
             assert bytes_read == (bytearray([0x82, i]), 'reqLine', i)

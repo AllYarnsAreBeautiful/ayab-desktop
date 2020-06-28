@@ -27,31 +27,6 @@
       </item>
       <item row="0" column="1">
        <widget class="QComboBox" name="default_knitting_mode_box">
-        <item>
-         <property name="text">
-          <string notr="true">Singlebed</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string notr="true">Ribber: Classic</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string notr="true">Ribber: Middle-Colors-Twice</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string notr="true">Ribber: Heart of Pluto</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string notr="true">Ribber: Circular</string>
-         </property>
-        </item>
        </widget>
       </item>
       <item row="1" column="0">
@@ -73,21 +48,6 @@
       </item>
       <item row="2" column="1">
        <widget class="QComboBox" name="default_alignment_box">
-        <item>
-         <property name="text">
-          <string>center</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>left</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>right</string>
-         </property>
-        </item>
        </widget>
       </item>
       <item row="3" column="0">

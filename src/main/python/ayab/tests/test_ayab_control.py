@@ -205,17 +205,18 @@ class TestAYABControl(unittest.TestCase):
         ayab_control.setNumColors(2)
         ayab_control.setStartLine(0)
         
-        # 40 pixel image set to the center
+        # 40 pixel image set to the left
         ayab_control.setKnittingMode(KnittingMode.CIRCULAR_RIBBER.value)
         im = ayabImage(Image.new('P', (40, 1)), 2)
-        im.setImagePosition('left')
+        im.setImagePosition("LEFT")
         ayab_control.setImage(im)
+        assert im.imgStartNeedle() == 0
         bits0 = bitarray()
         bits0.frombytes(b'\xff\xff\xff\xff\xff\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00')
         assert ayab_control._select_needles(0, 0, False) == bits0
         
         # 40 pixel image set to the center
-        im.setImagePosition('center')
+        im.setImagePosition("CENTER")
         ayab_control.setImage(im)
         bits1 = bitarray()
         bits1.frombytes(b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xff\xff\xff\xff\xff\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00')

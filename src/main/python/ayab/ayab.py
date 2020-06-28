@@ -29,7 +29,7 @@ from bitarray import bitarray
 import numpy as np
 
 from PyQt5 import QtWidgets, QtGui, QtCore
-from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox
+from PyQt5.QtWidgets import QMainWindow, QGraphicsView, QApplication, QMessageBox, QFrame, QFileDialog
 from PyQt5.QtCore import Qt, QThread, QLocale, QCoreApplication, QSettings, pyqtSignal
 
 from PIL import Image
@@ -93,7 +93,7 @@ class GuiMain(QMainWindow):
     signalDisplayBlockingPopUp = pyqtSignal('QString', 'QString')
     signalPlaysound = pyqtSignal('QString')
     signalUpdateNeedles = pyqtSignal(int, int)
-    signalUpdateAlignment = pyqtSignal('QString')
+    signalUpdateAlignment = pyqtSignal(int)
     signalImageLoaded = pyqtSignal()
     signalImageTransformed = pyqtSignal()
     signalConfigured = pyqtSignal()
@@ -121,19 +121,17 @@ class GuiMain(QMainWindow):
 
         # set initial knitting configuration options
         knitting_mode_box = self.plugin.ui.knitting_mode_box
-        knitting_mode_box.setCurrentIndex(
-            knitting_mode_box.findText(self.prefs.settings.value("default_knitting_mode")))
+        knitting_mode_box.setCurrentIndex(self.prefs.settings.value("default_knitting_mode"))
         if str2bool(self.prefs.settings.value("default_infinite_repeat")):
-            self.plugin.ui.infRepeat_checkbox.setCheckState(QtCore.Qt.Checked)
+            self.plugin.ui.infRepeat_checkbox.setCheckState(Qt.Checked)
         else:
-            self.plugin.ui.infRepeat_checkbox.setCheckState(QtCore.Qt.Unchecked)
+            self.plugin.ui.infRepeat_checkbox.setCheckState(Qt.Unchecked)
         if str2bool(self.prefs.settings.value("automatic_mirroring")):
-            self.plugin.ui.autoMirror_checkbox.setCheckState(QtCore.Qt.Checked)
+            self.plugin.ui.autoMirror_checkbox.setCheckState(Qt.Checked)
         else:
-            self.plugin.ui.autoMirror_checkbox.setCheckState(QtCore.Qt.Unchecked)
-        self.scene.imageAlignment = self.prefs.settings.value("default_alignment")
+            self.plugin.ui.autoMirror_checkbox.setCheckState(Qt.Unchecked)
         alignment_combo_box = self.plugin.ui.alignment_combo_box
-        alignment_combo_box.setCurrentIndex( alignment_combo_box.findText(self.scene.imageAlignment))
+        alignment_combo_box.setCurrentIndex(self.scene.imageAlignment.value)
 
         # clear progress and status bar
         self.ui.label_notifications.setText("")
@@ -227,12 +225,12 @@ class GuiMain(QMainWindow):
         self.ui.filename_lineedit.returnPressed.connect(self.file_select_dialog)
         self.ui.cancel_button.clicked.connect(self.plugin.cancel)
         self.ui.actionLoad_AYAB_Firmware.triggered.connect(self.generate_firmware_ui)
-        self.ui.image_pattern_view.setDragMode(QtWidgets.QGraphicsView.ScrollHandDrag)
+        self.ui.image_pattern_view.setDragMode(QGraphicsView.ScrollHandDrag)
 
         # Menu actions
         self.ui.actionSetPreferences.triggered.connect(self.set_preferences)
         self.ui.actionAbout.triggered.connect(self.open_about_ui)
-        self.ui.actionQuit.triggered.connect(QtCore.QCoreApplication.instance().quit)
+        self.ui.actionQuit.triggered.connect(QCoreApplication.instance().quit)
         self.ui.actionInvert.triggered.connect(self.scene.invert_image)
         self.ui.actionStretch.triggered.connect(self.scene.stretch_image)
         self.ui.actionRepeat.triggered.connect(self.scene.repeat_image)
@@ -312,7 +310,7 @@ class GuiMain(QMainWindow):
             filePath = self.app_context.get_resource("patterns")
         else:
             filePath = filenameValue
-        file_selected_route, _ = QtWidgets.QFileDialog.getOpenFileName(
+        file_selected_route, _ = QFileDialog.getOpenFileName(
             self, "Open file", filePath, 'Images (*.png *.PNG *.jpg *.JPG *.jpeg *.JPEG *.bmp *.BMP *.gif *.GIF *.tiff *.TIFF *.tif *.TIF *.Pat *.pat *.PAT *.Stp *.stp *.STP)')
         if file_selected_route:
             self.__update_file_selected_text_field(file_selected_route)
@@ -350,7 +348,7 @@ class GuiMain(QMainWindow):
         with open(filename_version) as version_file:
             __version__ = version_file.read().strip()
         
-        self.__AboutForm = QtWidgets.QFrame()
+        self.__AboutForm = QFrame()
         self.__about_ui = Ui_AboutForm()
         self.__about_ui.setupUi(self.__AboutForm)
         self.__about_ui.label_3.setText("Version " + __version__)

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'src/main/python/ayab/ayab_prefs_gui.ui'
+# Form implementation generated from reading ui file 'ayab_prefs_gui.ui'
 #
 # Created by: PyQt5 UI code generator 5.14.2
 #
@@ -26,16 +26,6 @@ class Ui_PrefsDialog(object):
         self.prefs_form.addWidget(self.default_knitting_mode_label, 0, 0, 1, 1)
         self.default_knitting_mode_box = QtWidgets.QComboBox(self.prefs_group)
         self.default_knitting_mode_box.setObjectName("default_knitting_mode_box")
-        self.default_knitting_mode_box.addItem("")
-        self.default_knitting_mode_box.setItemText(0, "Singlebed")
-        self.default_knitting_mode_box.addItem("")
-        self.default_knitting_mode_box.setItemText(1, "Ribber: Classic")
-        self.default_knitting_mode_box.addItem("")
-        self.default_knitting_mode_box.setItemText(2, "Ribber: Middle-Colors-Twice")
-        self.default_knitting_mode_box.addItem("")
-        self.default_knitting_mode_box.setItemText(3, "Ribber: Heart of Pluto")
-        self.default_knitting_mode_box.addItem("")
-        self.default_knitting_mode_box.setItemText(4, "Ribber: Circular")
         self.prefs_form.addWidget(self.default_knitting_mode_box, 0, 1, 1, 1)
         self.default_infinite_repeat_label = QtWidgets.QLabel(self.prefs_group)
         self.default_infinite_repeat_label.setObjectName("default_infinite_repeat_label")
@@ -48,9 +38,6 @@ class Ui_PrefsDialog(object):
         self.prefs_form.addWidget(self.default_alignment_label, 2, 0, 1, 1)
         self.default_alignment_box = QtWidgets.QComboBox(self.prefs_group)
         self.default_alignment_box.setObjectName("default_alignment_box")
-        self.default_alignment_box.addItem("")
-        self.default_alignment_box.addItem("")
-        self.default_alignment_box.addItem("")
         self.prefs_form.addWidget(self.default_alignment_box, 2, 1, 1, 1)
         self.automatic_mirroring_label = QtWidgets.QLabel(self.prefs_group)
         self.automatic_mirroring_label.setObjectName("automatic_mirroring_label")
@@ -88,9 +75,6 @@ class Ui_PrefsDialog(object):
         self.default_knitting_mode_label.setText(_translate("PrefsDialog", "Default Knitting Mode"))
         self.default_infinite_repeat_label.setText(_translate("PrefsDialog", "Default Infinite Repeat"))
         self.default_alignment_label.setText(_translate("PrefsDialog", "Default Alignment"))
-        self.default_alignment_box.setItemText(0, _translate("PrefsDialog", "center"))
-        self.default_alignment_box.setItemText(1, _translate("PrefsDialog", "left"))
-        self.default_alignment_box.setItemText(2, _translate("PrefsDialog", "right"))
         self.automatic_mirroring_label.setText(_translate("PrefsDialog", "Default Mirroring"))
         self.quiet_mode_label.setText(_translate("PrefsDialog", "Quiet Mode"))
         self.language_label.setText(_translate("PrefsDialog", "Language"))

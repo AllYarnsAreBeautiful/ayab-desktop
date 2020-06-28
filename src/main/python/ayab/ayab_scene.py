@@ -23,12 +23,15 @@ import logging
 from math import ceil
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtGui import QImage, QPixmap, QBrush, QColor
+from PyQt5.QtCore import QCoreApplication, pyqtSignal
+from PyQt5.QtWidgets import QGraphicsScene, QGraphicsRectItem, QInputDialog, QDialog
 
 from PIL import Image
 from DAKimport import DAKimport
 
 from .ayab_transforms import Transformable, Mirrors
+from .plugins.ayab_plugin.ayab_optionClasses import Alignment
 
 MACHINE_WIDTH = 200
 
@@ -46,7 +49,7 @@ class Scene (object):
     def __init__(self, parent):
         self.__parent = parent  # weakref.ref(parent)
         self.image = None
-        self.imageAlignment = parent.prefs.settings.value("default_alignment")
+        self.imageAlignment = Alignment(parent.prefs.settings.value("default_alignment"))
         self.start_needle = 80
         self.stop_needle = 119
         self.var_progress = 0
@@ -57,25 +60,26 @@ class Scene (object):
         width, height = self.image.size
 
         data = self.image.convert("RGBA").tobytes("raw", "RGBA")
-        qim = QtGui.QImage(data,
-                           self.image.size[0],
-                           self.image.size[1],
-                           QtGui.QImage.Format_ARGB32)
-        pixmap = QtGui.QPixmap.fromImage(qim)
+        qim = QImage(data,
+                     self.image.size[0],
+                     self.image.size[1],
+                     QImage.Format_ARGB32)
+        pixmap = QPixmap.fromImage(qim)
 
         # Set dimensions on GUI
         text = "{} x {}".format(width, height)
-        self.__parent.ui.label_notifications.setText("Image Dimensions: " + text)
+        self.__parent.ui.label_notifications.setText(
+            QCoreApplication.translate("Scene", "Image dimensions") + ": " + text)
 
-        qscene = QtWidgets.QGraphicsScene()
+        qscene = QGraphicsScene()
 
         # add pattern and move accordingly to alignment
         pattern = qscene.addPixmap(pixmap)
-        if self.imageAlignment == 'left':
+        if self.imageAlignment.name == 'LEFT':
             pos = self.start_needle - MACHINE_WIDTH / 2
-        elif self.imageAlignment == 'center':
+        elif self.imageAlignment.name == 'CENTER':
             pos = (self.start_needle + self.stop_needle - pixmap.width() - MACHINE_WIDTH) / 2
-        elif self.imageAlignment == 'right':
+        elif self.imageAlignment.name == 'RIGHT':
             pos = self.stop_needle - pixmap.width() - MACHINE_WIDTH / 2
         else:
             logging.warning("invalid alignment")
@@ -83,40 +87,40 @@ class Scene (object):
         pattern.setPos(pos, 0)
 
         # Draw "machine"
-        rect_orange = QtWidgets.QGraphicsRectItem(
+        rect_orange = QGraphicsRectItem(
             -(MACHINE_WIDTH / 2.0),
             -self.BAR_HEIGHT,
             (MACHINE_WIDTH / 2.0),
             self.BAR_HEIGHT)
-        rect_orange.setBrush(QtGui.QBrush(QtGui.QColor("orange")))
-        rect_green = QtWidgets.QGraphicsRectItem(
+        rect_orange.setBrush(QBrush(QColor("orange")))
+        rect_green = QGraphicsRectItem(
             0.0,
             -self.BAR_HEIGHT,
             (MACHINE_WIDTH / 2.0),
             self.BAR_HEIGHT)
-        rect_green.setBrush(QtGui.QBrush(QtGui.QColor("green")))
+        rect_green.setBrush(QBrush(QColor("green")))
 
         qscene.addItem(rect_orange)
         qscene.addItem(rect_green)
 
         # Draw limiting lines (start/stop needle)
         qscene.addItem(
-            QtWidgets.QGraphicsRectItem(self.start_needle - 1 - MACHINE_WIDTH / 2,
-                                        -self.BAR_HEIGHT,
-                                        self.LIMIT_BAR_WIDTH,
-                                        pixmap.height() + 2 * self.BAR_HEIGHT))
+            QGraphicsRectItem(self.start_needle - 1 - MACHINE_WIDTH / 2,
+                              -self.BAR_HEIGHT,
+                              self.LIMIT_BAR_WIDTH,
+                              pixmap.height() + 2 * self.BAR_HEIGHT))
         qscene.addItem(
-            QtWidgets.QGraphicsRectItem(self.stop_needle - MACHINE_WIDTH / 2,
-                                        -self.BAR_HEIGHT,
-                                        self.LIMIT_BAR_WIDTH,
-                                        pixmap.height() + 2 * self.BAR_HEIGHT))
+            QGraphicsRectItem(self.stop_needle - MACHINE_WIDTH / 2,
+                              -self.BAR_HEIGHT,
+                              self.LIMIT_BAR_WIDTH,
+                              pixmap.height() + 2 * self.BAR_HEIGHT))
 
         # Draw knitting progress
         qscene.addItem(
-            QtWidgets.QGraphicsRectItem(- MACHINE_WIDTH / 2,
-                                        pixmap.height() - self.var_progress,
-                                        MACHINE_WIDTH,
-                                        self.LIMIT_BAR_WIDTH))
+            QGraphicsRectItem(- MACHINE_WIDTH / 2,
+                              pixmap.height() - self.var_progress,
+                              MACHINE_WIDTH,
+                              self.LIMIT_BAR_WIDTH))
 
         qv = self.__parent.ui.image_pattern_view
         qv.resetTransform()
@@ -147,7 +151,7 @@ class Scene (object):
 
     def updateAlignment(self, alignment):
         '''Updates the alignment of the image between start/stop needle'''
-        self.imageAlignment = alignment
+        self.imageAlignment = Alignment(alignment)
         self.refresh()
 
     def zoom(self, event):
@@ -166,14 +170,14 @@ class Scene (object):
 
     def repeat_image(self):
         '''Public repeat current Image function.'''
-        v = QtWidgets.QInputDialog.getInt(
+        v = QInputDialog.getInt(
             self,
             "Repeat",
             "Vertical",
             value=1,
             min=1
         )
-        h = QtWidgets.QInputDialog.getInt(
+        h = QInputDialog.getInt(
             self,
             "Repeat",
             "Horizontal",
@@ -185,14 +189,14 @@ class Scene (object):
 
     def stretch_image(self):
         '''Public stretch current Image function.'''
-        v = QtWidgets.QInputDialog.getInt(
+        v = QInputDialog.getInt(
             self,
             "Stretch",
             "Vertical",
             value=1,
             min=1
         )
-        h = QtWidgets.QInputDialog.getInt(
+        h = QInputDialog.getInt(
             self,
             "Stretch",
             "Horizontal",
@@ -205,7 +209,7 @@ class Scene (object):
     def reflect_image(self):
         '''Public reflect current Image function.'''
         m = Mirrors()
-        if (m.result == QtWidgets.QDialog.Accepted):
+        if (m.result == QDialog.Accepted):
             self.apply_image_transform("reflect", m.mirrors)
 
     def hflip_image(self):
