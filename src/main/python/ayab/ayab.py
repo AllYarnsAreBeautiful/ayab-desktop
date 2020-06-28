@@ -419,13 +419,17 @@ def run(app_context):
     translator = QtCore.QTranslator()
     lang_dir = app_context.get_resource("ayab/translations")
     try:
-        # if a language has been set
         language = QSettings().value("language")
     except:
-        # otherwise use default locale
-        translator.load(QLocale.system(), "ayab_trans", "", lang_dir)
-    else:
+        language = None
+    try:
         translator.load("ayab_trans." + language, lang_dir)
+    except (TypeError, FileNotFoundError):
+        logging.warning("Unable to load translation file for preferred language, using default locale")
+        translator.load(QLocale.system(), "ayab_trans", "", lang_dir)
+    except:
+        logging.error("Unable to load translation file")
+        raise
     app = QApplication(sys.argv)
     app.installTranslator(translator)
 

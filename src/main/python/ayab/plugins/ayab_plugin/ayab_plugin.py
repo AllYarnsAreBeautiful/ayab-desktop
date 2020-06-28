@@ -65,7 +65,14 @@ class AyabPlugin(object):
         self.translator = QTranslator()
         language = self.__parent.prefs.settings.value("language")
         lang_dir = self.__parent.app_context.get_resource("ayab/translations")
-        self.translator.load("ayab_trans." + language, lang_dir)
+        try:
+            self.translator.load("ayab_trans." + language, lang_dir)
+        except (TypeError, FileNotFoundError):
+            self.__logger("Unable load translation file for preferred language, using default locale")
+            translator.load(QLocale.system(), "ayab_trans", "", lang_dir)
+        except:
+            self.__logger("Unable to load translation file")
+            raise
         app.installTranslator(self.translator)
 
     def __setup_behavior(self):
