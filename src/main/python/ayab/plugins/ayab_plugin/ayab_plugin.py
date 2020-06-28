@@ -26,7 +26,7 @@ from time import sleep
 import serial.tools.list_ports
 from PIL import ImageOps
 from PyQt5 import QtGui, QtWidgets, QtCore
-from PyQt5.QtCore import QSettings, QTranslator, QCoreApplication
+from PyQt5.QtCore import QSettings, QTranslator, QCoreApplication, QLocale
 from PyQt5.QtWidgets import QCheckBox, QSpinBox, QComboBox
 from . import ayab_image
 from .ayab_options import Ui_DockWidget
@@ -61,7 +61,7 @@ class AyabPlugin(object):
         parent.findChild(QtWidgets.QTabWidget, "tabWidget").removeTab(1)
 
     def __set_translator(self):
-        app = QtCore.QCoreApplication.instance()
+        app = QCoreApplication.instance()
         self.translator = QTranslator()
         language = self.__parent.prefs.settings.value("language")
         lang_dir = self.__parent.app_context.get_resource("ayab/translations")
@@ -69,7 +69,11 @@ class AyabPlugin(object):
             self.translator.load("ayab_trans." + language, lang_dir)
         except (TypeError, FileNotFoundError):
             self.__logger("Unable load translation file for preferred language, using default locale")
-            translator.load(QLocale.system(), "ayab_trans", "", lang_dir)
+            try:
+                self.translator.load(QLocale.system(), "ayab_trans", "", lang_dir)
+            except:
+                self.__logger("Unable to load translation file for default locale, using American English")
+                self.translator.load("ayab_trans.en_US", lang_dir)
         except:
             self.__logger("Unable to load translation file")
             raise
@@ -326,7 +330,7 @@ class AyabPlugin(object):
         self.__unset_translator()
 
     def __unset_translator(self):
-        app = QtCore.QCoreApplication.instance()
+        app = QCoreApplication.instance()
         app.removeTranslator(self.translator)
 
     def __emit_blocking_popup(self, message="", message_type="info"):

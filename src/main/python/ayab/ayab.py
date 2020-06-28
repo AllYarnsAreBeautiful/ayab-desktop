@@ -426,7 +426,11 @@ def run(app_context):
         translator.load("ayab_trans." + language, lang_dir)
     except (TypeError, FileNotFoundError):
         logging.warning("Unable to load translation file for preferred language, using default locale")
-        translator.load(QLocale.system(), "ayab_trans", "", lang_dir)
+        try:
+            translator.load(QLocale.system(), "ayab_trans", "", lang_dir)
+        except:
+            logging.warning("Unable to load translation file for default locale, using American English")
+            translator.load("ayab_trans.en_US", lang_dir)
     except:
         logging.error("Unable to load translation file")
         raise
