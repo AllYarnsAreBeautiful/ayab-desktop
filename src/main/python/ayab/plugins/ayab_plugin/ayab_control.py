@@ -23,11 +23,14 @@ import logging
 from enum import Enum
 import numpy as np
 from bitarray import bitarray
+from PyQt5 import QtCore
+from PyQt5.QtCore import QCoreApplication
 from PIL import Image
 from . import ayab_image
 from .ayab_progress import Progress
 from .ayab_communication import AyabCommunication
 from .ayab_communication_mockup import AyabCommunicationMockup
+from .ayab_optionClasses import KnittingMode
 
 
 MACHINE_WIDTH = 200
@@ -55,51 +58,6 @@ class AYABControlKnitResult(Enum):
     FINISHED = 8
 
 
-class KnittingMode(Enum):
-    SINGLEBED = 0
-    CLASSIC_RIBBER = 1  # Classic Ribber
-    # CLASSIC_RIBBER_2 = 2            # Classic Ribber 2
-    MIDDLECOLORSTWICE_RIBBER = 2  # Middle-Colors-Twice Ribber
-    HEARTOFPLUTO_RIBBER = 3  # Heart-of-Pluto Ribber
-    CIRCULAR_RIBBER = 4  # Circular Ribber
-
-    def row_multiplier(self, ncolors):
-        if self.name == "SINGLEBED":
-            return 1
-        elif (self.name == "CLASSIC_RIBBER" and ncolors > 2) \
-            or self.name == "CIRCULAR_RIBBER":
-            # every second line is blank
-            return 2 * ncolors
-        elif self.name == "MIDDLECOLORSTWICE_RIBBER" \
-            or self.name == "HEARTOFPLUTO_RIBBER":
-            # only middle lines doubled
-            return 2 * ncolors - 2
-        else:
-            # one line per color
-            return ncolors
-
-    def good_ncolors(self, ncolors):
-        if self.name == "SINGLEBED" or self.name == "CIRCULAR_RIBBER":
-            return ncolors == 2
-        else:
-            # no maximum
-            return ncolors >= 2
-
-    def knit_func(self, ncolors):
-        method = "_" + self.name.lower()
-        if self.name == "CLASSIC_RIBBER":
-            method += ["_2col", "_multicol"][ncolors > 2]
-        return method
-
-    # FIXME this function is supposed to select needles
-    # to knit the background color along side the image pattern
-    def flanking_needles(self, color, ncolors):
-        # return (color == 0 and self.name == "CLASSIC_RIBBER") \
-        #     or (color == ncolors - 1
-        #         and (self.name == "MIDDLECOLORSTWICE_RIBBER"
-        #             or self.name == "HEARTOFPLUTO_RIBBER"))
-        return color == 0 and self.name != "CIRCULAR_RIBBER"
-
 def even(x):
     return x % 2 == 0
 
@@ -115,7 +73,6 @@ class AYABControl(object):
 
     def __init__(self):
         self.__logger = logging.getLogger(type(self).__name__)
-        self.__ayabCom = AyabCommunication()
         self.__progress = Progress()
         self.__current_state = KnittingState.SETUP
 
@@ -470,7 +427,7 @@ class AYABControl(object):
             if not self._get_knit_func():
                 result = AYABControlKnitResult.ERROR_INVALID_SETTINGS
             else:
-                if pOptions["portname"] == "Simulation":
+                if pOptions["portname"] == QCoreApplication.translate("AyabPlugin", "Simulation"):
                     self.__ayabCom = AyabCommunicationMockup()
                 else:
                     self.__ayabCom = AyabCommunication()

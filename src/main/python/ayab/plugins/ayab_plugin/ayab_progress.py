@@ -52,13 +52,16 @@ class Progress:
         hall_r = int((msg[4] << 8) + msg[5])
 
         if msg[6] == 1:
-            carriage_type = "K Carriage"
+            carriage_type = "K "
         elif msg[6] == 2:
-            carriage_type = "L Carriage"
+            carriage_type = "L "
         elif msg[6] == 3:
-            carriage_type = "G Carriage"
+            carriage_type = "G "
         else:
             carriage_type = ""
+        if carriage_type != "":
+            _translate = QtCore.QCoreApplication.translate
+            carriage_type += _translate("Progress", "Carriage")
 
         carriage_position = int(msg[7])
 
@@ -87,21 +90,22 @@ class KnitProgress:
     def update(self, progress, row_multiplier):
         if progress.current_row < 0:
             return
+        _translate = QtCore.QCoreApplication.translate
         row, swipe = divmod(progress.lineNumber, row_multiplier)
         direction = progress.lineNumber % 2
         # row
-        w0 = self.__label("Row")
+        w0 = self.__label(_translate("KnitProgress", "Row"))
         self.grid.addWidget(w0, progress.lineNumber, 0)
         w1 = self.__label(str(progress.current_row))
         self.grid.addWidget(w1, progress.lineNumber, 1, 1, 1, Qt.AlignRight)
         # pass
-        w2 = self.__label("Pass " + str(swipe + 1))
+        w2 = self.__label(_translate("KnitProgress", "Pass") + " " + str(swipe + 1))
         self.grid.addWidget(w2, progress.lineNumber, 2)
         # color
         if progress.colorSymbol == "":
             coltext = ""
         else:
-            coltext = "Color " + progress.colorSymbol
+            coltext = _translate("KnitProgress", "Color") + " " + progress.colorSymbol
         w3 = self.__label(coltext)
         self.grid.addWidget(w3, progress.lineNumber, 3)
         # carriage and direction

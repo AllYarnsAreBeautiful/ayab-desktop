@@ -27,31 +27,6 @@
       </item>
       <item row="0" column="1">
        <widget class="QComboBox" name="default_knitting_mode_box">
-        <item>
-         <property name="text">
-          <string notr="true">Singlebed</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string notr="true">Ribber: Classic</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string notr="true">Ribber: Middle-Colors-Twice</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string notr="true">Ribber: Heart of Pluto</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string notr="true">Ribber: Circular</string>
-         </property>
-        </item>
        </widget>
       </item>
       <item row="1" column="0">
@@ -73,21 +48,6 @@
       </item>
       <item row="2" column="1">
        <widget class="QComboBox" name="default_alignment_box">
-        <item>
-         <property name="text">
-          <string notr="true">center</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string notr="true">left</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string notr="true">right</string>
-         </property>
-        </item>
        </widget>
       </item>
       <item row="3" column="0">
@@ -109,6 +69,17 @@
       </item>
       <item row="4" column="1">
        <widget class="QCheckBox" name="quiet_mode_checkbox"/>
+      </item>
+      <item row="5" column="0">
+       <widget class="QLabel" name="language_label">
+        <property name="text">
+         <string>Language</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="1">
+       <widget class="QComboBox" name="language_box">
+       </widget>
       </item>
      </layout>
     </widget>

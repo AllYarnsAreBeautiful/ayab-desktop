@@ -26,9 +26,12 @@ from time import sleep
 import serial.tools.list_ports
 from PIL import ImageOps
 from PyQt5 import QtGui, QtWidgets, QtCore
+from PyQt5.QtCore import QSettings, QTranslator, QCoreApplication, QLocale
+from PyQt5.QtWidgets import QCheckBox, QSpinBox, QComboBox, QTabWidget, QLineEdit, QWidget
 from . import ayab_image
 from .ayab_options import Ui_DockWidget
-from .ayab_control import AYABControl, AYABControlKnitResult, KnittingMode
+from .ayab_control import AYABControl, AYABControlKnitResult
+from .ayab_optionClasses import KnittingMode, Alignment, NeedleColor
 
 
 MACHINE_WIDTH = 200
@@ -44,27 +47,42 @@ class AyabPlugin(object):
 
     def setupUi(self, parent):
         """Sets up UI elements from ayab_options.Ui_DockWidget in parent."""
-        self.__set_translator()
         self.__parent = parent  # weakref.ref(parent)
+        self.__set_translator()
         self.ui = Ui_DockWidget()
         self.dock = parent.ui.knitting_options_dock
         self.ui.setupUi(self.dock)
         self.ui.tabWidget.setTabEnabled(1, False)
         self.ui.label_progress.setText("")
         self.ui.label_direction.setText("")
+        KnittingMode.addItems(self.ui.knitting_mode_box)
+        Alignment.addItems(self.ui.alignment_combo_box)
+        NeedleColor.addItems(self.ui.start_needle_color)
+        NeedleColor.addItems(self.ui.stop_needle_color)
+        self.ui.stop_needle_color.setCurrentIndex(1)
         self.__setup_behavior()
 
         # Disable "continuous reporting" checkbox and Status tab for now
-        parent.findChild(QtWidgets.QCheckBox,
-                            "checkBox_ContinuousReporting").setVisible(False)
-        parent.findChild(QtWidgets.QTabWidget, "tabWidget").removeTab(1)
+        parent.findChild(QCheckBox, "checkBox_ContinuousReporting").setVisible(False)
+        parent.findChild(QTabWidget, "tabWidget").removeTab(1)
 
     def __set_translator(self):
-        dirname = os.path.dirname(__file__)
-        self.translator = QtCore.QTranslator()
-        self.translator.load(QtCore.QLocale.system(), "ayab_options", ".",
-                             dirname, ".qm")
-        app = QtCore.QCoreApplication.instance()
+        app = QCoreApplication.instance()
+        self.translator = QTranslator()
+        language = self.__parent.prefs.settings.value("language")
+        lang_dir = self.__parent.app_context.get_resource("ayab/translations")
+        try:
+            self.translator.load("ayab_trans." + language, lang_dir)
+        except (TypeError, FileNotFoundError):
+            self.__logger("Unable load translation file for preferred language, using default locale")
+            try:
+                self.translator.load(QLocale.system(), "ayab_trans", "", lang_dir)
+            except:
+                self.__logger("Unable to load translation file for default locale, using American English")
+                self.translator.load("ayab_trans.en_US", lang_dir)
+        except:
+            self.__logger("Unable to load translation file")
+            raise
         app.installTranslator(self.translator)
 
     def __setup_behavior(self):
@@ -80,14 +98,13 @@ class AyabPlugin(object):
 
     def __populate_ports(self, combo_box=None, port_list=None):
         if not combo_box:
-            combo_box = self.__parent.findChild(QtWidgets.QComboBox,
-                                                   "serial_port_dropdown")
+            combo_box = self.__parent.findChild(QComboBox, "serial_port_dropdown")
         if not port_list:
             port_list = self.__get_serial_ports()
         combo_box.clear()
         self.__populate(combo_box, port_list)
         # Add Simulation item to indicate operation without machine
-        combo_box.addItem("Simulation")
+        combo_box.addItem(QCoreApplication.translate("AyabPlugin", "Simulation"))
 
     def __populate(self, combo_box, port_list):
         for item in port_list:
@@ -133,7 +150,7 @@ class AyabPlugin(object):
             self.__parent.signalConfigured.emit()
 
     def __get_configuration_from_ui(self, ui):
-        """Creates a configuration dict from the ui elements.
+        """Creates a configuration dict from the UI elements.
 
     Returns:
       dict: A dict with configuration.
@@ -141,73 +158,52 @@ class AyabPlugin(object):
     """
         self.conf = {}
         continuousReporting = ui.findChild(
-            QtWidgets.QCheckBox, "checkBox_ContinuousReporting").isChecked()
+            QCheckBox, "checkBox_ContinuousReporting").isChecked()
         if continuousReporting == 1:
             self.conf["continuousReporting"] = True
         else:
             self.conf["continuousReporting"] = False
 
-        color_line_text = ui.findChild(QtWidgets.QSpinBox,
-                                       "color_edit").value()
+        color_line_text = ui.findChild(QSpinBox, "color_edit").value()
         self.conf["num_colors"] = int(color_line_text)
 
         # Internally, we start counting from zero
         # (for easier handling of arrays)
-        start_line_text = ui.findChild(QtWidgets.QSpinBox,
-                                       "start_row_edit").value()
+        start_line_text = ui.findChild(QSpinBox, "start_row_edit").value()
         self.conf["start_line"] = int(start_line_text) - 1
 
-        start_needle_color = ui.findChild(QtWidgets.QComboBox,
-                                          "start_needle_color").currentText()
-        start_needle_text = ui.findChild(QtWidgets.QSpinBox,
-                                         "start_needle_edit").value()
+        start_needle_color = ui.findChild(QComboBox, "start_needle_color").currentIndex()
+        start_needle_text = ui.findChild(QSpinBox, "start_needle_edit").value()
+        self.conf["start_needle"] = \
+            NeedleColor(start_needle_color).read_needle_settings(start_needle_text)
 
-        self.conf["start_needle"] = self.__read_needle_settings(
-            start_needle_color, start_needle_text)
+        stop_needle_color = ui.findChild(QComboBox, "stop_needle_color").currentIndex()
+        stop_needle_text = ui.findChild(QSpinBox, "stop_needle_edit").value()
+        self.conf["stop_needle"] = \
+            NeedleColor(stop_needle_color).read_needle_settings(stop_needle_text)
 
-        stop_needle_color = ui.findChild(QtWidgets.QComboBox,
-                                         "stop_needle_color").currentText()
-        stop_needle_text = ui.findChild(QtWidgets.QSpinBox,
-                                        "stop_needle_edit").value()
-
-        self.conf["stop_needle"] = self.__read_needle_settings(
-            stop_needle_color, stop_needle_text)
-
-        alignment_text = ui.findChild(QtWidgets.QComboBox,
-                                      "alignment_combo_box").currentText()
-        self.conf["alignment"] = alignment_text
+        alignment_index = ui.findChild(QComboBox, "alignment_combo_box").currentIndex()
+        self.conf["alignment"] = Alignment(alignment_index).name
 
         self.conf["inf_repeat"] = \
-            int(ui.findChild(QtWidgets.QCheckBox,
-                             "infRepeat_checkbox").isChecked())
+            int(ui.findChild(QCheckBox, "infRepeat_checkbox").isChecked())
 
         self.conf["auto_mirror"] = \
-            int(ui.findChild(QtWidgets.QCheckBox,
-                             "autoMirror_checkbox").isChecked())
+            int(ui.findChild(QCheckBox, "autoMirror_checkbox").isChecked())
 
-        knitting_mode_index = ui.findChild(QtWidgets.QComboBox,
-                                           "knitting_mode_box").currentIndex()
+        knitting_mode_index = ui.findChild(QComboBox, "knitting_mode_box").currentIndex()
         self.conf["knitting_mode"] = knitting_mode_index
 
-        serial_port_text = ui.findChild(QtWidgets.QComboBox,
-                                        "serial_port_dropdown").currentText()
+        serial_port_text = ui.findChild(QComboBox, "serial_port_dropdown").currentText()
         self.conf["portname"] = str(serial_port_text)
 
         # getting file location from textbox
-        filename_text = ui.findChild(QtWidgets.QLineEdit,
-                                     "filename_lineedit").text()
+        filename_text = ui.findChild(QLineEdit, "filename_lineedit").text()
         self.conf["filename"] = str(filename_text)
 
         self.__logger.debug(self.conf)
         # Add more config options.
         return self.conf
-
-    def __read_needle_settings(self, color, needle):
-        '''Reads the Needle Settings UI Elements and normalizes'''
-        if (color == "orange"):
-            return MACHINE_WIDTH // 2 - int(needle)
-        elif (color == "green"):
-            return MACHINE_WIDTH // 2 - 1 + int(needle)
 
     def __validate_configuration(self, conf):
         if conf.get("start_needle") and conf.get("stop_needle"):
@@ -216,7 +212,7 @@ class AyabPlugin(object):
                 return False
 
         if conf.get("start_line") > self.__image.imgHeight():
-            self.__emit_popup("Start Line is larger than the image.")
+            self.__emit_popup("Start row is larger than the image.")
             return False
 
         if conf.get("portname") == '':
@@ -226,14 +222,15 @@ class AyabPlugin(object):
         if conf.get("knitting_mode") == KnittingMode.SINGLEBED.value \
                 and conf.get("num_colors") >= 3:
             self.__emit_popup(
-                "Singlebed knitting currently supports only 2 colors",
+                "Singlebed knitting currently supports only 2 colors.",
                 "warning")
             return False
 
         if conf.get("knitting_mode") == KnittingMode.CIRCULAR_RIBBER.value \
                 and conf.get("num_colors") >= 3:
-            self.__emit_popup("Circular knitting supports only 2 colors",
-                               "warning")
+            self.__emit_popup(
+                "Circular knitting supports only 2 colors.",
+                "warning")
             return False
 
         return True
@@ -269,27 +266,26 @@ class AyabPlugin(object):
 
         if result is AYABControlKnitResult.WAIT_FOR_INIT:
             self.__emit_notification(
-                "Please init machine. (Set the carriage to mode KC-I "
+                "Please start machine. (Set the carriage to mode KC-I " +
                 "or KC-II and move the carriage over the left turn mark).")
 
         if result is AYABControlKnitResult.ERROR_WRONG_API:
             self.__emit_popup(
-                "Wrong Arduino Firmware Version. " +
-                "Please check if you have flashed " +
-                "the latest version. (" + str(self.__ayab_control.API_VERSION) + ")")
+                "Wrong Arduino firmware version. Please check " +
+                "that you have flashed the latest version. (" +
+                str(self.__ayab_control.API_VERSION) + ")")
 
         if result is AYABControlKnitResult.PLEASE_KNIT:
-            self.__emit_notification("Please Knit")
+            self.__emit_notification("Please knit.")
             self.__emit_playsound("start")
 
         if result is AYABControlKnitResult.DEVICE_NOT_READY:
             self.__emit_notification()
-            self.__emit_blocking_popup(
-                "Device not ready, configure and try again.")
+            self.__emit_blocking_popup("Device not ready, try again.")
 
         if result is AYABControlKnitResult.FINISHED:
             self.__emit_notification(
-                "Image transmission finished. Please knit until you "
+                "Image transmission finished. Please knit until you " +
                 "hear the double beep sound.")
 
     def __knit_progress_handler(self, progress, row_multiplier):
@@ -327,32 +323,34 @@ class AyabPlugin(object):
         dock = self.dock
         cleaner = QtCore.QObjectCleanupHandler()
         cleaner.add(dock.widget())
-        self.__qw = QtGui.QWidget()
+        self.__qw = QWidget()
         dock.setWidget(self.__qw)
         self.__unset_translator()
 
     def __unset_translator(self):
-        app = QtCore.QCoreApplication.instance()
+        app = QCoreApplication.instance()
         app.removeTranslator(self.translator)
 
     def __emit_blocking_popup(self, message="", message_type="info"):
-
         """
         Sends the signalDisplayBlockingPopUp QtSignal
         to main GUI thread, blocking it.
         """
-        self.__parent.signalDisplayBlockingPopUp.emit(message, message_type)
+        self.__parent.signalDisplayBlockingPopUp.emit(
+            QCoreApplication.translate("AyabPlugin", message), message_type)
 
     def __emit_popup(self, message="", message_type="info"):
         """
         Sends the signalDisplayPopUp QtSignal
         to main GUI thread, not blocking it.
         """
-        self.__parent.signalDisplayPopUp.emit(message, message_type)
+        self.__parent.signalDisplayPopUp.emit(
+            QCoreApplication.translate("AyabPlugin", message), message_type)
 
     def __emit_notification(self, message=""):
         """Sends the signalUpdateNotification signal"""
-        self.__parent.signalUpdateNotification.emit(message)
+        self.__parent.signalUpdateNotification.emit(
+            QCoreApplication.translate("AyabPlugin", message))
 
     def __emit_knit_progress(self, progress, row_multiplier):
         """Sends the updateKnitProgress QtSignal."""
@@ -364,28 +362,26 @@ class AyabPlugin(object):
 
     def __emit_status(self, hall_l, hall_r, carriage_type, carriage_position):
         """Sends the updateStatus QtSignal"""
-        self.__parent.signalUpdateStatus.emit(hall_l, hall_r, carriage_type,
-                                                 carriage_position)
+        self.__parent.signalUpdateStatus.emit(
+            hall_l, hall_r, carriage_type, carriage_position)
 
     def __emit_needles(self):
         """Sends the signalUpdateNeedles QtSignal."""
 
         start_needle_text = self.ui.start_needle_edit.value()
-        start_needle_color = self.ui.start_needle_color.currentText()
-        start_needle = self.__read_needle_settings(start_needle_color,
-                                               start_needle_text)
+        start_needle_color = self.ui.start_needle_color.currentIndex()
+        start_needle = NeedleColor(start_needle_color).read_needle_settings(start_needle_text)
 
         stop_needle_text = self.ui.stop_needle_edit.value()
-        stop_needle_color = self.ui.stop_needle_color.currentText()
-        stop_needle = self.__read_needle_settings(stop_needle_color,
-                                              stop_needle_text)
+        stop_needle_color = self.ui.stop_needle_color.currentIndex()
+        stop_needle = NeedleColor(stop_needle_color).read_needle_settings(stop_needle_text)
 
         self.__parent.signalUpdateNeedles.emit(start_needle, stop_needle)
 
     def __emit_alignment(self):
         """Sends the signalUpdateAlignment QtSignal"""
-        alignment_text = self.ui.alignment_combo_box.currentText()
-        self.__parent.signalUpdateAlignment.emit(alignment_text)
+        alignment = self.ui.alignment_combo_box.currentIndex()
+        self.__parent.signalUpdateAlignment.emit(alignment)
 
     def __emit_playsound(self, event):
         # blocking connection means that thread waits until sound has finished playing

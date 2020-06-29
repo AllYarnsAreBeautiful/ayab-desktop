@@ -24,3 +24,6 @@ target/
 .DS_Store
 # VSCode
 .vscode
+# automatically generated translation files
+*.ts
+*.qm

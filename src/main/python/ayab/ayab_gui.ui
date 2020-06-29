@@ -65,7 +65,7 @@
              </font>
             </property>
             <property name="text">
-             <string>label_current_color</string>
+             <string></string>
             </property>
            </widget>
           </item>
@@ -81,7 +81,7 @@
            </font>
           </property>
           <property name="text">
-           <string>label_current_row</string>
+           <string></string>
           </property>
          </widget>
         </item>
@@ -90,7 +90,7 @@
       <item>
        <widget class="QLabel" name="label_notifications">
         <property name="text">
-         <string>label_notifications</string>
+         <string></string>
         </property>
         <property name="alignment">
          <set>Qt::AlignCenter</set>
@@ -123,7 +123,7 @@
        </size>
       </property>
       <property name="windowTitle">
-       <string>Asistant</string>
+       <string>Assistant</string>
       </property>
       <property name="layoutDirection">
        <enum>Qt::LeftToRight</enum>
@@ -219,7 +219,7 @@
              <string>1. Load Image File</string>
             </property>
             <property name="shortcut">
-             <string>Ctrl+O</string>
+             <string notr="true">Ctrl+O</string>
             </property>
            </widget>
           </item>
@@ -280,10 +280,10 @@
            <item>
             <widget class="QPushButton" name="knit_button">
              <property name="text">
-              <string>2. Knit!</string>
+              <string>2. Knit</string>
              </property>
              <property name="shortcut">
-              <string>Ctrl+Return</string>
+              <string notr="true">Ctrl+Return</string>
              </property>
             </widget>
            </item>
@@ -293,7 +293,7 @@
               <string>Cancel Knitting</string>
              </property>
              <property name="shortcut">
-              <string>Esc</string>
+              <string notr="true">Esc</string>
              </property>
             </widget>
            </item>
@@ -369,7 +369,7 @@
     <string>Quit</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+Q</string>
+    <string notr="true">Ctrl+Q</string>
    </property>
   </action>
   <action name="actionOpen_Knitting_Project">
@@ -392,7 +392,7 @@
     <string>Invert</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+I</string>
+    <string notr="true">Ctrl+I</string>
    </property>
   </action>
   <action name="actionStretch">
@@ -400,7 +400,7 @@
     <string>Stretch</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+S</string>
+    <string notr="true">Ctrl+S</string>
    </property>
   </action>
   <action name="actionRepeat">
@@ -408,7 +408,7 @@
     <string>Repeat</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+R</string>
+    <string notr="true">Ctrl+R</string>
    </property>
   </action>
   <action name="actionReflect">
@@ -416,15 +416,15 @@
     <string>Reflect</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+M</string>
+    <string notr="true">Ctrl+M</string>
    </property>
   </action>
   <action name="actionHorizontalFlip">
    <property name="text">
-    <string>Horizontal_Flip</string>
+    <string>Horizontal Flip</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+Up</string>
+    <string notr="true">Ctrl+Up</string>
    </property>
   </action>
   <action name="actionVerticalFlip">
@@ -432,7 +432,7 @@
     <string>Vertical Flip</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+Down</string>
+    <string notr="true">Ctrl+Down</string>
    </property>
   </action>
   <action name="actionRotateLeft">
@@ -440,7 +440,7 @@
     <string>Rotate Left</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+Left</string>
+    <string notr="true">Ctrl+Left</string>
    </property>
   </action>
   <action name="actionRotateRight">
@@ -448,7 +448,7 @@
     <string>Rotate Right</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+Right</string>
+    <string notr="true">Ctrl+Right</string>
    </property>
   </action>
   <action name="actionSetPreferences">

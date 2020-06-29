@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'src/main/python/ayab/plugins/ayab_plugin/ayab_options.ui'
+# Form implementation generated from reading ui file 'ayab_options.ui'
 #
 # Created by: PyQt5 UI code generator 5.14.2
 #
@@ -87,16 +87,6 @@ class Ui_DockWidget(object):
         sizePolicy.setHeightForWidth(self.knitting_mode_box.sizePolicy().hasHeightForWidth())
         self.knitting_mode_box.setSizePolicy(sizePolicy)
         self.knitting_mode_box.setObjectName("knitting_mode_box")
-        self.knitting_mode_box.addItem("")
-        self.knitting_mode_box.setItemText(0, "Singlebed")
-        self.knitting_mode_box.addItem("")
-        self.knitting_mode_box.setItemText(1, "Ribber: Classic")
-        self.knitting_mode_box.addItem("")
-        self.knitting_mode_box.setItemText(2, "Ribber: Middle-Colors-Twice")
-        self.knitting_mode_box.addItem("")
-        self.knitting_mode_box.setItemText(3, "Ribber: Heart of Pluto")
-        self.knitting_mode_box.addItem("")
-        self.knitting_mode_box.setItemText(4, "Ribber: Circular")
         self.verticalLayout_3.addWidget(self.knitting_mode_box)
         self.label_6 = QtWidgets.QLabel(self.verticalLayoutWidget)
         self.label_6.setObjectName("label_6")
@@ -141,10 +131,6 @@ class Ui_DockWidget(object):
         self.start_needle_color = QtWidgets.QComboBox(self.gbox_startneedle)
         self.start_needle_color.setGeometry(QtCore.QRect(60, 20, 81, 31))
         self.start_needle_color.setObjectName("start_needle_color")
-        self.start_needle_color.addItem("")
-        self.start_needle_color.setItemText(0, "orange")
-        self.start_needle_color.addItem("")
-        self.start_needle_color.setItemText(1, "green")
         self.start_needle_edit = QtWidgets.QSpinBox(self.gbox_startneedle)
         self.start_needle_edit.setGeometry(QtCore.QRect(10, 20, 51, 31))
         self.start_needle_edit.setPrefix("")
@@ -159,10 +145,6 @@ class Ui_DockWidget(object):
         self.stop_needle_color = QtWidgets.QComboBox(self.gbox_stopneedle)
         self.stop_needle_color.setGeometry(QtCore.QRect(60, 20, 81, 31))
         self.stop_needle_color.setObjectName("stop_needle_color")
-        self.stop_needle_color.addItem("")
-        self.stop_needle_color.setItemText(0, "green")
-        self.stop_needle_color.addItem("")
-        self.stop_needle_color.setItemText(1, "orange")
         self.stop_needle_edit = QtWidgets.QSpinBox(self.gbox_stopneedle)
         self.stop_needle_edit.setGeometry(QtCore.QRect(10, 20, 51, 31))
         self.stop_needle_edit.setPrefix("")
@@ -181,12 +163,6 @@ class Ui_DockWidget(object):
         sizePolicy.setHeightForWidth(self.alignment_combo_box.sizePolicy().hasHeightForWidth())
         self.alignment_combo_box.setSizePolicy(sizePolicy)
         self.alignment_combo_box.setObjectName("alignment_combo_box")
-        self.alignment_combo_box.addItem("")
-        self.alignment_combo_box.setItemText(0, "center")
-        self.alignment_combo_box.addItem("")
-        self.alignment_combo_box.setItemText(1, "left")
-        self.alignment_combo_box.addItem("")
-        self.alignment_combo_box.setItemText(2, "right")
         self.verticalLayout_3.addWidget(self.alignment_combo_box)
         self.autoMirror_checkbox = QtWidgets.QCheckBox(self.verticalLayoutWidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)

@@ -25,16 +25,12 @@ import numpy as np
 MACHINE_WIDTH = 200
 
 
-def array2rgb(a):
-    return (a[0] & 0xFF) * 0x10000 + (a[1] & 0xFF) * 0x100 + (a[2] & 0xFF)
-
-
 class ayabImage(object):
     def __init__(self, image, pNumColors=2):
         self.__numColors = pNumColors
-        self.__imgPosition = 'center'
-        self.__imgStartNeedle = 0
-        self.__imgStopNeedle = 0
+        self.__imgPosition = 'CENTER'
+        self.__imgStartNeedle = -1
+        self.__imgStopNeedle = -1
         self.__knitStartNeedle = 0
         self.__knitStopNeedle = MACHINE_WIDTH - 1
         self.__startLine = 0
@@ -117,7 +113,7 @@ class ayabImage(object):
         # get palette
         rgb = self.__image.getpalette()[slice(0, 3 * num_colors)]
         col_array = np.reshape(rgb, (num_colors, 3))
-        self.palette = list(map(array2rgb, col_array))
+        self.palette = list(map(self.array2rgb, col_array))
 
         # Make internal representations of image
         for row in range(imgHeight):
@@ -134,14 +130,17 @@ class ayabImage(object):
         return
 
     def __calcImgStartStopNeedles(self):
-        if self.__imgPosition == 'center':
+        print(self.__imgPosition)
+        print(self.__knitStartNeedle)
+        print(self.__knitStopNeedle)
+        if self.__imgPosition == 'CENTER':
             needleWidth = self.__knitStopNeedle - self.__knitStartNeedle + 1
             self.__imgStartNeedle = int((self.__knitStartNeedle + needleWidth / 2) - self.__imgWidth / 2)
             self.__imgStopNeedle = self.__imgStartNeedle + self.__imgWidth - 1
-        elif self.__imgPosition == 'left':
+        elif self.__imgPosition == 'LEFT':
             self.__imgStartNeedle = self.__knitStartNeedle
             self.__imgStopNeedle = self.__imgStartNeedle + self.__imgWidth - 1
-        elif self.__imgPosition == 'right':
+        elif self.__imgPosition == 'RIGHT':
             self.__imgStopNeedle = self.__knitStopNeedle
             self.__imgStartNeedle = self.__imgStopNeedle - self.__imgWidth + 1
         elif int(self.__imgPosition) > 0 and int(self.__imgPosition) < MACHINE_WIDTH:
@@ -153,7 +152,7 @@ class ayabImage(object):
 
     def setNumColors(self, pNumColors):
         """
-        sets the number of colors the be used for knitting
+        sets the number of colors used for knitting
         """
         # TODO use preferences or other options to set maximum number of colors
         if pNumColors > 1 and pNumColors < 7:
@@ -218,7 +217,7 @@ class ayabImage(object):
         """
         set the position of the pattern
         """
-        if pImgPosition == 'left' or pImgPosition == 'center' or pImgPosition == 'right' \
+        if pImgPosition == 'LEFT' or pImgPosition == 'CENTER' or pImgPosition == 'RIGHT' \
             or (int(pImgPosition) >= 0 and int(pImgPosition) < MACHINE_WIDTH):
             self.__imgPosition = pImgPosition
             self.__updateImageData()
@@ -232,3 +231,7 @@ class ayabImage(object):
         if pStartLine >= 0 and pStartLine < self.__image.size[1]:
             self.__startLine = pStartLine
         return
+
+    def array2rgb(self, a):
+        return (a[0] & 0xFF) * 0x10000 + (a[1] & 0xFF) * 0x100 + (a[2] & 0xFF)
+

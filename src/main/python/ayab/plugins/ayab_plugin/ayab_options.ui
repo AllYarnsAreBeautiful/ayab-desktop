@@ -164,31 +164,6 @@
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
-           <item>
-            <property name="text">
-             <string notr="true">Singlebed</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string notr="true">Ribber: Classic</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string notr="true">Ribber: Middle-Colors-Twice</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string notr="true">Ribber: Heart of Pluto</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string notr="true">Ribber: Circular</string>
-            </property>
-           </item>
           </widget>
          </item>
          <item>
@@ -279,16 +254,6 @@
               <height>31</height>
              </rect>
             </property>
-            <item>
-             <property name="text">
-              <string notr="true">orange</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string notr="true">green</string>
-             </property>
-            </item>
            </widget>
            <widget class="QSpinBox" name="start_needle_edit">
             <property name="geometry">
@@ -334,16 +299,6 @@
               <height>31</height>
              </rect>
             </property>
-            <item>
-             <property name="text">
-              <string notr="true">green</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string notr="true">orange</string>
-             </property>
-            </item>
            </widget>
            <widget class="QSpinBox" name="stop_needle_edit">
             <property name="geometry">
@@ -384,21 +339,6 @@
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
-           <item>
-            <property name="text">
-             <string notr="true">center</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string notr="true">left</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string notr="true">right</string>
-            </property>
-           </item>
           </widget>
          </item>
          <item>
