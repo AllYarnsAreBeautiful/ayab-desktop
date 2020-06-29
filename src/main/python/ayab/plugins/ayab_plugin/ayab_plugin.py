@@ -34,8 +34,6 @@ from .ayab_control import AYABControl, AYABControlKnitResult
 from .ayab_optionClasses import KnittingMode, Alignment, NeedleColor
 
 
-MACHINE_WIDTH = 200
-
 class AyabPlugin(object):
 
     def __init__(self):

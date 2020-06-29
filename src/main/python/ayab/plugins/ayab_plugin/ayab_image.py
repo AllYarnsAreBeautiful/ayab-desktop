@@ -21,8 +21,7 @@
 from PIL import Image
 from bitarray import bitarray
 import numpy as np
-
-MACHINE_WIDTH = 200
+from .machine import Machine
 
 
 class ayabImage(object):
@@ -32,7 +31,7 @@ class ayabImage(object):
         self.__imgStartNeedle = -1
         self.__imgStopNeedle = -1
         self.__knitStartNeedle = 0
-        self.__knitStopNeedle = MACHINE_WIDTH - 1
+        self.__knitStopNeedle = Machine.MACHINE_WIDTH - 1
         self.__startLine = 0
         self.__image = image
         self.__updateImageData()
@@ -130,9 +129,6 @@ class ayabImage(object):
         return
 
     def __calcImgStartStopNeedles(self):
-        print(self.__imgPosition)
-        print(self.__knitStartNeedle)
-        print(self.__knitStopNeedle)
         if self.__imgPosition == 'CENTER':
             needleWidth = self.__knitStopNeedle - self.__knitStartNeedle + 1
             self.__imgStartNeedle = int((self.__knitStartNeedle + needleWidth / 2) - self.__imgWidth / 2)
@@ -143,7 +139,7 @@ class ayabImage(object):
         elif self.__imgPosition == 'RIGHT':
             self.__imgStopNeedle = self.__knitStopNeedle
             self.__imgStartNeedle = self.__imgStopNeedle - self.__imgWidth + 1
-        elif int(self.__imgPosition) > 0 and int(self.__imgPosition) < MACHINE_WIDTH:
+        elif int(self.__imgPosition) > 0 and int(self.__imgPosition) < Machine.MACHINE_WIDTH:
             self.__imgStartNeedle = int(self.__imgPosition)
             self.__imgStopNeedle = self.__imgStartNeedle + self.__imgWidth - 1
         else:
@@ -207,7 +203,7 @@ class ayabImage(object):
         """
         set the start and stop needle
         """
-        if (pKnitStart < pKnitStop) and pKnitStart >= 0 and pKnitStop < MACHINE_WIDTH:
+        if (pKnitStart < pKnitStop) and pKnitStart >= 0 and pKnitStop < Machine.MACHINE_WIDTH:
             self.__knitStartNeedle = pKnitStart
             self.__knitStopNeedle = pKnitStop
         self.__updateImageData()
@@ -218,7 +214,7 @@ class ayabImage(object):
         set the position of the pattern
         """
         if pImgPosition == 'LEFT' or pImgPosition == 'CENTER' or pImgPosition == 'RIGHT' \
-            or (int(pImgPosition) >= 0 and int(pImgPosition) < MACHINE_WIDTH):
+            or (int(pImgPosition) >= 0 and int(pImgPosition) < Machine.MACHINE_WIDTH):
             self.__imgPosition = pImgPosition
             self.__updateImageData()
         return
