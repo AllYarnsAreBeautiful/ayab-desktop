@@ -31,7 +31,7 @@ from PIL import Image
 from DAKimport import DAKimport
 
 from .ayab_transforms import Transformable, Mirrors
-from .plugins.ayab_plugin.ayab_optionClasses import Alignment
+from .plugins.ayab_plugin.ayab_options import Alignment
 from .plugins.ayab_plugin.machine import Machine
 
 

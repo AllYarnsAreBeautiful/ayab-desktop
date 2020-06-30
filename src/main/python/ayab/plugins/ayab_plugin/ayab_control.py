@@ -30,7 +30,7 @@ from . import ayab_image
 from .ayab_progress import Progress
 from .ayab_communication import AyabCommunication
 from .ayab_communication_mockup import AyabCommunicationMockup
-from .ayab_optionClasses import KnittingMode
+from .ayab_options import KnittingMode
 from .machine import Machine
 
 
@@ -418,19 +418,19 @@ class AYABControl(object):
             self.reset()
             self.__image = pImage
             self.__startLine = pImage.startLine()
-            self.__numColors = pOptions["num_colors"]
-            self.__knitting_mode = pOptions["knitting_mode"]
-            self.__infRepeat = pOptions["inf_repeat"]
+            self.__numColors = pOptions.get_num_colors()
+            self.__knitting_mode = pOptions.get_knitting_mode()
+            self.__infRepeat = pOptions.get_inf_repeat()
 
             if not self._get_knit_func():
                 result = AYABControlKnitResult.ERROR_INVALID_SETTINGS
             else:
-                if pOptions["portname"] == QCoreApplication.translate("AyabPlugin", "Simulation"):
+                if pOptions.get_portname() == QCoreApplication.translate("AyabPlugin", "Simulation"):
                     self.__ayabCom = AyabCommunicationMockup()
                 else:
                     self.__ayabCom = AyabCommunication()
  
-                if not self.__ayabCom.open_serial(pOptions["portname"]):
+                if not self.__ayabCom.open_serial(pOptions.get_portname()):
                     self.__logger.error("Could not open serial port")
                     result = AYABControlKnitResult.ERROR_SERIAL_PORT
  
@@ -454,7 +454,7 @@ class AYABControl(object):
                 if rcvParam == 1:
                     self.__ayabCom.req_start(self.__image.knitStartNeedle(),
                                              self.__image.knitStopNeedle(),
-                                             pOptions["continuousReporting"])
+                                             pOptions.get_continuousReporting())
                     self.__current_state = KnittingState.START
                 else:
                     self.__logger.debug("init failed")
