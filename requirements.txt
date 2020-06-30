@@ -10,3 +10,4 @@ DAKimport==0.0.4
 bitarray==1.2.2
 simpleaudio==1.0.4
 wave==0.0.2
+pre-commit
