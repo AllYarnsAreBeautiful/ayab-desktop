@@ -53,7 +53,6 @@ import serial.tools.list_ports
 
 
 # TODO move to generic configuration
-MACHINE_WIDTH = 200
 
 userdata_path = path.expanduser(path.join("~", "AYAB"))
 if not path.isdir(userdata_path):

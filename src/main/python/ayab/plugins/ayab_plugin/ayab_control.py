@@ -31,9 +31,7 @@ from .ayab_progress import Progress
 from .ayab_communication import AyabCommunication
 from .ayab_communication_mockup import AyabCommunicationMockup
 from .ayab_options import KnittingMode
-
-
-MACHINE_WIDTH = 200
+from .machine import Machine
 
 
 class KnittingState(Enum):
@@ -204,14 +202,14 @@ class AYABControl(object):
             self.__progress.bits = bits[self.__firstneedle:self.__lastneedle]
 
     def _select_needles(self, color, indexToSend, sendBlankLine):
-        bits = bitarray([False] * MACHINE_WIDTH, endian="little")
+        bits = bitarray([False] * Machine.MACHINE_WIDTH, endian="little")
         firstneedle = max(0, self.__image.imgStartNeedle())
-        lastneedle = min(self.__image.imgWidth() + self.__image.imgStartNeedle(), MACHINE_WIDTH)
+        lastneedle = min(self.__image.imgWidth() + self.__image.imgStartNeedle(), Machine.MACHINE_WIDTH)
 
         # select needles flanking the image if necessary to knit the background color
         if KnittingMode(self.__knitting_mode).flanking_needles(color, self.__numColors):
             bits[0:firstneedle] = True
-            bits[lastneedle:MACHINE_WIDTH] = True
+            bits[lastneedle:Machine.MACHINE_WIDTH] = True
 
         if not sendBlankLine:
             firstpixel = firstneedle - self.__image.imgStartNeedle()

@@ -34,8 +34,6 @@ from .ayab_options import Options, KnittingMode, Alignment, NeedleColor
 from .ayab_options_gui import Ui_DockWidget
 
 
-MACHINE_WIDTH = 200
-
 class AyabPlugin(object):
 
     def __init__(self):
