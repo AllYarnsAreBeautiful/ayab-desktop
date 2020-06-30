@@ -21,6 +21,7 @@
 from enum import Enum
 from PyQt5 import QtCore
 from PyQt5.QtCore import QCoreApplication
+from .machine import Machine
 
 
 class KnittingMode(Enum):
@@ -95,8 +96,6 @@ class NeedleColor(Enum):
     ORANGE = 0
     GREEN = 1
 
-    MACHINE_WIDTH = 200
-
     def addItems(box):
         box.addItem(QCoreApplication.translate("NeedleColor", "orange"))
         box.addItem(QCoreApplication.translate("NeedleColor", "green"))
@@ -104,6 +103,6 @@ class NeedleColor(Enum):
     def read_needle_settings(self, needle):
         '''Reads the Needle Settings UI Elements and normalizes'''
         if self.name == "ORANGE":
-            return self.MACHINE_WIDTH.value // 2 - int(needle)
+            return Machine.MACHINE_WIDTH // 2 - int(needle)
         elif self.name == "GREEN":
-            return self.MACHINE_WIDTH.value // 2 - 1 + int(needle)
+            return Machine.MACHINE_WIDTH // 2 - 1 + int(needle)
