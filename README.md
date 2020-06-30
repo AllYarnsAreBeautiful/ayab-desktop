@@ -7,6 +7,10 @@ For information on how to install the release version of the software, see
 
 ## Running from Source & Development
 
+This repository uses [pre-commit](https://pre-commit.com/) hooks. After cloning the repo and installing
+the requirements, you should run `pre-commit install` to set up the git hook 
+scripts.
+
 ### Linux
 
 You need Python 3.7 and from your package manager's repository.
