@@ -351,7 +351,21 @@ class GuiMain(QMainWindow):
         self.__AboutForm = QFrame()
         self.__about_ui = Ui_AboutForm()
         self.__about_ui.setupUi(self.__AboutForm)
-        self.__about_ui.label_3.setText("Version " + __version__)
+        self.__about_ui.title_label.setText(
+            QCoreApplication.translate("MainWindow", "All Yarns Are Beautiful") + \
+            " v " + __version__)
+        self.__about_ui.link_label.setText(
+            QCoreApplication.translate("MainWindow", "Website") + \
+            ": <a href='http://ayab-knitting.com'>http://ayab-knitting.com</a>")
+        self.__about_ui.link_label.setTextFormat(Qt.RichText)
+        self.__about_ui.link_label.setTextInteractionFlags(Qt.TextBrowserInteraction)
+        self.__about_ui.link_label.setOpenExternalLinks(True)
+        self.__about_ui.manual_label.setText(
+            QCoreApplication.translate("MainWindow", "Manual") + \
+            ": <a href='http://manual.ayab-knitting.com'>http://manual.ayab-knitting.com</a>")
+        self.__about_ui.manual_label.setTextFormat(Qt.RichText)
+        self.__about_ui.manual_label.setTextInteractionFlags(Qt.TextBrowserInteraction)
+        self.__about_ui.manual_label.setOpenExternalLinks(True)
         self.__AboutForm.show()
 
     def set_preferences(self):

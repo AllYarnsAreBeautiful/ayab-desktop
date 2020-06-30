@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+	to create Python file use
+	`pyuic5 -‑from-imports ayab_about.ui -o ayab_about.py`
+-->
 <ui version="4.0">
  <class>AboutForm</class>
  <widget class="QWidget" name="AboutForm">
@@ -31,7 +35,7 @@
       <string/>
      </property>
      <property name="pixmap">
-      <pixmap resource="resources_rc.qrc">:/ayab_logo.jpg</pixmap>
+      <pixmap resource="resources.qrc">:/ayab_logo.jpg</pixmap>
      </property>
      <property name="scaledContents">
       <bool>true</bool>
@@ -39,25 +43,21 @@
     </widget>
    </item>
    <item>
-    <widget class="QLabel" name="label_2">
+    <widget class="QLabel" name="title_label">
      <property name="text">
       <string>All Yarns Are Beautiful</string>
      </property>
     </widget>
    </item>
    <item>
-    <widget class="QLabel" name="label_4">
+    <widget class="QLabel" name="link_label">
      <property name="text">
       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;http://ayab-knitting.com&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;http://ayab-knitting.com&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
     </widget>
    </item>
    <item>
-    <widget class="QLabel" name="label_3">
-     <property name="text">
-      <string>Version PACKAGE_VERSION</string>
-     </property>
-    </widget>
+    <widget class="QLabel" name="manual_label"/>
    </item>
    <item>
     <spacer name="verticalSpacer">
@@ -75,7 +75,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="resources_rc.qrc"/>
+  <include location="resources.qrc"/>
  </resources>
  <connections/>
 </ui>
