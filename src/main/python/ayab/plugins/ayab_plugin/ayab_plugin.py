@@ -27,11 +27,11 @@ import serial.tools.list_ports
 from PIL import ImageOps
 from PyQt5 import QtGui, QtWidgets, QtCore
 from PyQt5.QtCore import QSettings, QTranslator, QCoreApplication, QLocale
-from PyQt5.QtWidgets import QCheckBox, QSpinBox, QComboBox, QTabWidget, QLineEdit, QWidget
+from PyQt5.QtWidgets import QComboBox, QCheckBox, QTabWidget, QWidget
 from . import ayab_image
-from .ayab_options import Ui_DockWidget
 from .ayab_control import AYABControl, AYABControlKnitResult
-from .ayab_optionClasses import KnittingMode, Alignment, NeedleColor
+from .ayab_options import Options, KnittingMode, Alignment, NeedleColor
+from .ayab_options_gui import Ui_DockWidget
 
 
 MACHINE_WIDTH = 200
@@ -118,130 +118,61 @@ class AyabPlugin(object):
         return list(serial.tools.list_ports.grep("USB"))
 
     def configure(self):
-        conf = self.__get_configuration_from_ui(self.__parent)
+        # get configuration options
+        self.__conf = Options()
+        self.__conf.get_configuration_from_ui(self.__parent)
+        self.__logger.debug(self.__conf)
 
-        # Start to knit with the bottom first
+        # start to knit with the bottom first
         image = self.__parent.scene.image.rotate(180)
 
-        # Mirroring option
-        if conf.get("auto_mirror"):
+        # mirroring option
+        if self.__conf.get_auto_mirror():
             image = ImageOps.mirror(image)
 
         # TODO: detect if previous conf had the same
         # image to avoid re-generating.
 
         try:
-            self.__image = ayab_image.ayabImage(image, self.conf["num_colors"])
+            self.__image = ayab_image.ayabImage(image, self.__conf.get_num_colors())
         except:
-            self.__emit_popup("You need to set an image.", "error")
+            self.__emit_configure_fail("You need to set an image.")
+            return
+        if self.__conf.get_start_row() > self.__image.imgHeight():
+            self.__emit_configure_fail("Start row is larger than the image.")
             return
 
-        valid = self.__validate_configuration(conf)
-        if valid:
-            if conf.get("start_needle") and conf.get("stop_needle"):
-                self.__image.setKnitNeedles(conf.get("start_needle"),
-                                            conf.get("stop_needle"))
-            if conf.get("alignment"):
-                self.__image.setImagePosition(conf.get("alignment"))
+        # validate configuration options
+        valid, msg = self.__conf.validate_configuration()
+        if not valid:
+            self.__emit_configure_fail(msg)
+            return
 
-            self.__image.setStartLine(conf.get("start_line"))
-            self.__emit_progress(conf.get("start_line") + 1,
-                                 self.__image.imgHeight(), 0, "")
-            self.__parent.signalConfigured.emit()
+        # update image
+        if self.__conf.get_start_needle() and self.__conf.get_stop_needle():
+            self.__image.setKnitNeedles(self.__conf.get_start_needle(),
+                                        self.__conf.get_stop_needle())
+        if self.__conf.get_alignment():
+            self.__image.setImagePosition(self.__conf.get_alignment())
+        self.__image.setStartLine(self.__conf.get_start_row())
 
-    def __get_configuration_from_ui(self, ui):
-        """Creates a configuration dict from the UI elements.
+        # update progress bar
+        self.__emit_progress(self.__conf.get_start_row() + 1,
+                             self.__image.imgHeight(), 0, "")
 
-    Returns:
-      dict: A dict with configuration.
+        # switch to status tab
+        if self.__conf.get_continuousReporting() is True:
+            self.ui.tabWidget.setCurrentIndex(1)
 
-    """
-        self.conf = {}
-        continuousReporting = ui.findChild(
-            QCheckBox, "checkBox_ContinuousReporting").isChecked()
-        if continuousReporting == 1:
-            self.conf["continuousReporting"] = True
-        else:
-            self.conf["continuousReporting"] = False
-
-        color_line_text = ui.findChild(QSpinBox, "color_edit").value()
-        self.conf["num_colors"] = int(color_line_text)
-
-        # Internally, we start counting from zero
-        # (for easier handling of arrays)
-        start_line_text = ui.findChild(QSpinBox, "start_row_edit").value()
-        self.conf["start_line"] = int(start_line_text) - 1
-
-        start_needle_color = ui.findChild(QComboBox, "start_needle_color").currentIndex()
-        start_needle_text = ui.findChild(QSpinBox, "start_needle_edit").value()
-        self.conf["start_needle"] = \
-            NeedleColor(start_needle_color).read_needle_settings(start_needle_text)
-
-        stop_needle_color = ui.findChild(QComboBox, "stop_needle_color").currentIndex()
-        stop_needle_text = ui.findChild(QSpinBox, "stop_needle_edit").value()
-        self.conf["stop_needle"] = \
-            NeedleColor(stop_needle_color).read_needle_settings(stop_needle_text)
-
-        alignment_index = ui.findChild(QComboBox, "alignment_combo_box").currentIndex()
-        self.conf["alignment"] = Alignment(alignment_index).name
-
-        self.conf["inf_repeat"] = \
-            int(ui.findChild(QCheckBox, "infRepeat_checkbox").isChecked())
-
-        self.conf["auto_mirror"] = \
-            int(ui.findChild(QCheckBox, "autoMirror_checkbox").isChecked())
-
-        knitting_mode_index = ui.findChild(QComboBox, "knitting_mode_box").currentIndex()
-        self.conf["knitting_mode"] = knitting_mode_index
-
-        serial_port_text = ui.findChild(QComboBox, "serial_port_dropdown").currentText()
-        self.conf["portname"] = str(serial_port_text)
-
-        # getting file location from textbox
-        filename_text = ui.findChild(QLineEdit, "filename_lineedit").text()
-        self.conf["filename"] = str(filename_text)
-
-        self.__logger.debug(self.conf)
-        # Add more config options.
-        return self.conf
-
-    def __validate_configuration(self, conf):
-        if conf.get("start_needle") and conf.get("stop_needle"):
-            if conf.get("start_needle") > conf.get("stop_needle"):
-                self.__emit_popup("Invalid needle start and end.", "warning")
-                return False
-
-        if conf.get("start_line") > self.__image.imgHeight():
-            self.__emit_popup("Start row is larger than the image.")
-            return False
-
-        if conf.get("portname") == '':
-            self.__emit_popup("Please choose a valid port.")
-            return False
-
-        if conf.get("knitting_mode") == KnittingMode.SINGLEBED.value \
-                and conf.get("num_colors") >= 3:
-            self.__emit_popup(
-                "Singlebed knitting currently supports only 2 colors.",
-                "warning")
-            return False
-
-        if conf.get("knitting_mode") == KnittingMode.CIRCULAR_RIBBER.value \
-                and conf.get("num_colors") >= 3:
-            self.__emit_popup(
-                "Circular knitting supports only 2 colors.",
-                "warning")
-            return False
-
-        return True
+        # send signal to start knitting
+        self.__parent.signalConfigured.emit()
 
     def knit(self):
-        if self.conf["continuousReporting"] is True:
-            self.ui.tabWidget.setCurrentIndex(1)
         self.__canceled = False
+
         while True:
             # knit next row
-            result = self.__ayab_control.knit(self.__image, self.conf)
+            result = self.__ayab_control.knit(self.__image, self.__conf)
             self.__knit_feedback_handler(result)
             # do not need to make copy of progress object to emit to UI thread
             # because signalUpdateKnitProgress connection blocks this thread
@@ -251,6 +182,7 @@ class AyabPlugin(object):
             self.__knit_progress_handler(progress, row_mult)
             if self.__canceled or result is AYABControlKnitResult.FINISHED:
                 break
+
         self.__logger.info("Finished knitting.")
         self.__ayab_control.close()
 
@@ -258,6 +190,7 @@ class AyabPlugin(object):
         # before "finish.wav" sound plays
         sleep(1)
 
+        # send signal to finish knitting
         self.__parent.signalDoneKnitting.emit(not self.__canceled)
 
     def __knit_feedback_handler(self, result):
@@ -347,6 +280,10 @@ class AyabPlugin(object):
         self.__parent.signalDisplayPopUp.emit(
             QCoreApplication.translate("AyabPlugin", message), message_type)
 
+    def __emit_configure_fail(self, message=""):
+        self.__emit_popup(message)
+        self.__parent.signalConfigureFail.emit()
+
     def __emit_notification(self, message=""):
         """Sends the signalUpdateNotification signal"""
         self.__parent.signalUpdateNotification.emit(
@@ -370,11 +307,11 @@ class AyabPlugin(object):
 
         start_needle_text = self.ui.start_needle_edit.value()
         start_needle_color = self.ui.start_needle_color.currentIndex()
-        start_needle = NeedleColor(start_needle_color).read_needle_settings(start_needle_text)
+        start_needle = NeedleColor(start_needle_color).read_settings(start_needle_text)
 
         stop_needle_text = self.ui.stop_needle_edit.value()
         stop_needle_color = self.ui.stop_needle_color.currentIndex()
-        stop_needle = NeedleColor(stop_needle_color).read_needle_settings(stop_needle_text)
+        stop_needle = NeedleColor(stop_needle_color).read_settings(stop_needle_text)
 
         self.__parent.signalUpdateNeedles.emit(start_needle, stop_needle)
 
@@ -388,7 +325,6 @@ class AyabPlugin(object):
         self.__parent.signalPlaysound.emit(event)
 
     def __onStartLineChanged(self):
-        """ """
         start_row_edit = self.ui.start_row_edit.value()
         total_rows = self.__parent.scene.image.size[1]
         self.__emit_progress(start_row_edit, total_rows, 0, "")

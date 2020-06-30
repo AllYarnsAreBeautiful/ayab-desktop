@@ -28,7 +28,7 @@ from glob import glob
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtCore import Qt, QSettings, QLocale
 from .ayab_prefs_gui import Ui_PrefsDialog
-from .plugins.ayab_plugin.ayab_optionClasses import KnittingMode, Alignment
+from .plugins.ayab_plugin.ayab_options import KnittingMode, Alignment
 
 
 def str2bool(qvariant):

@@ -1,339 +1,189 @@
 # -*- coding: utf-8 -*-
-
-# Form implementation generated from reading ui file 'ayab_options.ui'
+# This file is part of AYAB.
 #
-# Created by: PyQt5 UI code generator 5.14.2
+#    AYAB is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
 #
-# WARNING! All changes made in this file will be lost!
+#    AYAB is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with AYAB.  If not, see <http://www.gnu.org/licenses/>.
+#
+#    Copyright 2013-2020 Sebastian Oliva, Christian Obersteiner,
+#    Andreas Müller, Christian Gerbrandt
+#    https://github.com/AllYarnsAreBeautiful/ayab-desktop
+
+from enum import Enum
+from PyQt5 import QtCore
+from PyQt5.QtCore import QCoreApplication
+from PyQt5.QtWidgets import QCheckBox, QSpinBox, QComboBox, QTabWidget, QLineEdit
 
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+class Options (object):
+    """Class for configuration options."""
+
+    def __init__(self):
+        # FIXME: Initialize from default settings
+        self.__continuousReporting = False
+        self.__num_colors = 2
+        self.__start_row = 0
+        self.__start_needle = 0 
+        self.__stop_needle = 0  # Machine.MACHINE_WIDTH - 1
+        self.__alignment = "CENTER"
+        self.__inf_repeat = False
+        self.__auto_mirror = False
+        self.__knitting_mode = 0
+        self.__portname = ""
+        self.__filename = ""
+
+    def get_configuration_from_ui(self, ui):
+        """Get configuration options from the UI elements."""
+        self.__continuousReporting = ui.findChild(
+            QCheckBox, "checkBox_ContinuousReporting").isChecked()
+
+        color_line_text = ui.findChild(QSpinBox, "color_edit").value()
+        self.__num_colors = int(color_line_text)
+
+        # Internally, we start counting from zero
+        # (for easier handling of arrays)
+        start_row_text = ui.findChild(QSpinBox, "start_row_edit").value()
+        self.__start_row = int(start_row_text) - 1
+
+        start_needle_color = ui.findChild(QComboBox, "start_needle_color").currentIndex()
+        start_needle_text = ui.findChild(QSpinBox, "start_needle_edit").value()
+        self.__start_needle = NeedleColor(start_needle_color).read_settings(start_needle_text)
+
+        stop_needle_color = ui.findChild(QComboBox, "stop_needle_color").currentIndex()
+        stop_needle_text = ui.findChild(QSpinBox, "stop_needle_edit").value()
+        self.__stop_needle = NeedleColor(stop_needle_color).read_settings(stop_needle_text)
+
+        alignment_index = ui.findChild(QComboBox, "alignment_combo_box").currentIndex()
+        self.__alignment = Alignment(alignment_index).name
+
+        self.__inf_repeat = int(ui.findChild(QCheckBox, "infRepeat_checkbox").isChecked())
+        self.__auto_mirror = int(ui.findChild(QCheckBox, "autoMirror_checkbox").isChecked())
+        self.__knitting_mode = ui.findChild(QComboBox, "knitting_mode_box").currentIndex()
+        self.__portname = str(ui.findChild(QComboBox, "serial_port_dropdown").currentText())
+        self.__filename = str(ui.findChild(QLineEdit, "filename_lineedit").text())
+
+    def validate_configuration(self):
+        if self.__start_needle and self.__stop_needle:
+            if self.__start_needle > self.__stop_needle:
+                return False, "Invalid needle start and end."
+
+        if self.__portname == '':
+            return False, "Please choose a valid port."
+
+        if self.__knitting_mode == KnittingMode.SINGLEBED.value \
+                and self.__num_colors >= 3:
+            return False, "Singlebed knitting currently supports only 2 colors."
+
+        if self.__knitting_mode == KnittingMode.CIRCULAR_RIBBER.value \
+                and self.__num_colors >= 3:
+            return False, "Circular knitting supports only 2 colors."
+
+        return True, None
+
+    # getter methods
+    def get_continuousReporting(self): return self.__continuousReporting
+    def get_num_colors(self): return self.__num_colors
+    def get_start_row(self): return self.__start_row
+    def get_start_needle(self): return self.__start_needle
+    def get_stop_needle(self): return self.__stop_needle
+    def get_alignment(self): return self.__alignment
+    def get_inf_repeat(self): return self.__inf_repeat
+    def get_auto_mirror(self): return self.__auto_mirror
+    def get_knitting_mode(self): return self.__knitting_mode
+    def get_portname(self): return self.__portname
+    def get_filename(self): return self.__filename
 
 
-class Ui_DockWidget(object):
-    def setupUi(self, DockWidget):
-        DockWidget.setObjectName("DockWidget")
-        DockWidget.resize(240, 581)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(DockWidget.sizePolicy().hasHeightForWidth())
-        DockWidget.setSizePolicy(sizePolicy)
-        DockWidget.setMinimumSize(QtCore.QSize(240, 581))
-        DockWidget.setMaximumSize(QtCore.QSize(240, 581))
-        DockWidget.setFeatures(QtWidgets.QDockWidget.NoDockWidgetFeatures)
-        DockWidget.setWindowTitle("")
-        self.ayab_config = QtWidgets.QWidget()
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Expanding)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.ayab_config.sizePolicy().hasHeightForWidth())
-        self.ayab_config.setSizePolicy(sizePolicy)
-        self.ayab_config.setObjectName("ayab_config")
-        self.verticalLayout = QtWidgets.QVBoxLayout(self.ayab_config)
-        self.verticalLayout.setContentsMargins(-1, 0, -1, -1)
-        self.verticalLayout.setSpacing(6)
-        self.verticalLayout.setObjectName("verticalLayout")
-        self.groupBox = QtWidgets.QGroupBox(self.ayab_config)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.groupBox.sizePolicy().hasHeightForWidth())
-        self.groupBox.setSizePolicy(sizePolicy)
-        self.groupBox.setMinimumSize(QtCore.QSize(220, 0))
-        self.groupBox.setMaximumSize(QtCore.QSize(220, 16777215))
-        self.groupBox.setObjectName("groupBox")
-        self.horizontalLayout_3 = QtWidgets.QHBoxLayout(self.groupBox)
-        self.horizontalLayout_3.setObjectName("horizontalLayout_3")
-        self.serial_port_dropdown = QtWidgets.QComboBox(self.groupBox)
-        self.serial_port_dropdown.setObjectName("serial_port_dropdown")
-        self.horizontalLayout_3.addWidget(self.serial_port_dropdown)
-        self.refresh_ports_button = QtWidgets.QPushButton(self.groupBox)
-        self.refresh_ports_button.setObjectName("refresh_ports_button")
-        self.horizontalLayout_3.addWidget(self.refresh_ports_button)
-        self.verticalLayout.addWidget(self.groupBox)
-        self.tabWidget = QtWidgets.QTabWidget(self.ayab_config)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.MinimumExpanding)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.tabWidget.sizePolicy().hasHeightForWidth())
-        self.tabWidget.setSizePolicy(sizePolicy)
-        self.tabWidget.setMinimumSize(QtCore.QSize(180, 430))
-        self.tabWidget.setMaximumSize(QtCore.QSize(1000000, 16777215))
-        self.tabWidget.setDocumentMode(False)
-        self.tabWidget.setTabBarAutoHide(False)
-        self.tabWidget.setObjectName("tabWidget")
-        self.tab_knit = QtWidgets.QWidget()
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.MinimumExpanding)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.tab_knit.sizePolicy().hasHeightForWidth())
-        self.tab_knit.setSizePolicy(sizePolicy)
-        self.tab_knit.setObjectName("tab_knit")
-        self.verticalLayoutWidget = QtWidgets.QWidget(self.tab_knit)
-        self.verticalLayoutWidget.setGeometry(QtCore.QRect(-1, -1, 224, 414))
-        self.verticalLayoutWidget.setObjectName("verticalLayoutWidget")
-        self.verticalLayout_3 = QtWidgets.QVBoxLayout(self.verticalLayoutWidget)
-        self.verticalLayout_3.setContentsMargins(6, 13, 12, 6)
-        self.verticalLayout_3.setSpacing(0)
-        self.verticalLayout_3.setObjectName("verticalLayout_3")
-        self.label_4 = QtWidgets.QLabel(self.verticalLayoutWidget)
-        self.label_4.setObjectName("label_4")
-        self.verticalLayout_3.addWidget(self.label_4)
-        self.knitting_mode_box = QtWidgets.QComboBox(self.verticalLayoutWidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.knitting_mode_box.sizePolicy().hasHeightForWidth())
-        self.knitting_mode_box.setSizePolicy(sizePolicy)
-        self.knitting_mode_box.setObjectName("knitting_mode_box")
-        self.verticalLayout_3.addWidget(self.knitting_mode_box)
-        self.label_6 = QtWidgets.QLabel(self.verticalLayoutWidget)
-        self.label_6.setObjectName("label_6")
-        self.verticalLayout_3.addWidget(self.label_6)
-        self.color_edit = QtWidgets.QSpinBox(self.verticalLayoutWidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.color_edit.sizePolicy().hasHeightForWidth())
-        self.color_edit.setSizePolicy(sizePolicy)
-        self.color_edit.setMinimum(2)
-        self.color_edit.setMaximum(6)
-        self.color_edit.setObjectName("color_edit")
-        self.verticalLayout_3.addWidget(self.color_edit)
-        self.label_5 = QtWidgets.QLabel(self.verticalLayoutWidget)
-        self.label_5.setObjectName("label_5")
-        self.verticalLayout_3.addWidget(self.label_5)
-        self.start_row_edit = QtWidgets.QSpinBox(self.verticalLayoutWidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.start_row_edit.sizePolicy().hasHeightForWidth())
-        self.start_row_edit.setSizePolicy(sizePolicy)
-        self.start_row_edit.setSuffix("")
-        self.start_row_edit.setPrefix("")
-        self.start_row_edit.setMinimum(1)
-        self.start_row_edit.setMaximum(99999)
-        self.start_row_edit.setObjectName("start_row_edit")
-        self.verticalLayout_3.addWidget(self.start_row_edit)
-        self.infRepeat_checkbox = QtWidgets.QCheckBox(self.verticalLayoutWidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.infRepeat_checkbox.sizePolicy().hasHeightForWidth())
-        self.infRepeat_checkbox.setSizePolicy(sizePolicy)
-        self.infRepeat_checkbox.setObjectName("infRepeat_checkbox")
-        self.verticalLayout_3.addWidget(self.infRepeat_checkbox)
-        self.gbox_startneedle = QtWidgets.QGroupBox(self.verticalLayoutWidget)
-        self.gbox_startneedle.setMinimumSize(QtCore.QSize(0, 60))
-        self.gbox_startneedle.setFlat(False)
-        self.gbox_startneedle.setObjectName("gbox_startneedle")
-        self.start_needle_color = QtWidgets.QComboBox(self.gbox_startneedle)
-        self.start_needle_color.setGeometry(QtCore.QRect(60, 20, 81, 31))
-        self.start_needle_color.setObjectName("start_needle_color")
-        self.start_needle_edit = QtWidgets.QSpinBox(self.gbox_startneedle)
-        self.start_needle_edit.setGeometry(QtCore.QRect(10, 20, 51, 31))
-        self.start_needle_edit.setPrefix("")
-        self.start_needle_edit.setMinimum(1)
-        self.start_needle_edit.setMaximum(100)
-        self.start_needle_edit.setProperty("value", 20)
-        self.start_needle_edit.setObjectName("start_needle_edit")
-        self.verticalLayout_3.addWidget(self.gbox_startneedle)
-        self.gbox_stopneedle = QtWidgets.QGroupBox(self.verticalLayoutWidget)
-        self.gbox_stopneedle.setMinimumSize(QtCore.QSize(0, 60))
-        self.gbox_stopneedle.setObjectName("gbox_stopneedle")
-        self.stop_needle_color = QtWidgets.QComboBox(self.gbox_stopneedle)
-        self.stop_needle_color.setGeometry(QtCore.QRect(60, 20, 81, 31))
-        self.stop_needle_color.setObjectName("stop_needle_color")
-        self.stop_needle_edit = QtWidgets.QSpinBox(self.gbox_stopneedle)
-        self.stop_needle_edit.setGeometry(QtCore.QRect(10, 20, 51, 31))
-        self.stop_needle_edit.setPrefix("")
-        self.stop_needle_edit.setMinimum(1)
-        self.stop_needle_edit.setMaximum(100)
-        self.stop_needle_edit.setProperty("value", 20)
-        self.stop_needle_edit.setObjectName("stop_needle_edit")
-        self.verticalLayout_3.addWidget(self.gbox_stopneedle)
-        self.label_3 = QtWidgets.QLabel(self.verticalLayoutWidget)
-        self.label_3.setObjectName("label_3")
-        self.verticalLayout_3.addWidget(self.label_3)
-        self.alignment_combo_box = QtWidgets.QComboBox(self.verticalLayoutWidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.alignment_combo_box.sizePolicy().hasHeightForWidth())
-        self.alignment_combo_box.setSizePolicy(sizePolicy)
-        self.alignment_combo_box.setObjectName("alignment_combo_box")
-        self.verticalLayout_3.addWidget(self.alignment_combo_box)
-        self.autoMirror_checkbox = QtWidgets.QCheckBox(self.verticalLayoutWidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.autoMirror_checkbox.sizePolicy().hasHeightForWidth())
-        self.autoMirror_checkbox.setSizePolicy(sizePolicy)
-        self.autoMirror_checkbox.setObjectName("autoMirror_checkbox")
-        self.verticalLayout_3.addWidget(self.autoMirror_checkbox)
-        self.checkBox_ContinuousReporting = QtWidgets.QCheckBox(self.verticalLayoutWidget)
-        self.checkBox_ContinuousReporting.setObjectName("checkBox_ContinuousReporting")
-        self.verticalLayout_3.addWidget(self.checkBox_ContinuousReporting)
-        self.tabWidget.addTab(self.tab_knit, "")
-        self.tab_status = QtWidgets.QWidget()
-        self.tab_status.setObjectName("tab_status")
-        self.verticalLayoutWidget_2 = QtWidgets.QWidget(self.tab_status)
-        self.verticalLayoutWidget_2.setGeometry(QtCore.QRect(0, -1, 211, 333))
-        self.verticalLayoutWidget_2.setObjectName("verticalLayoutWidget_2")
-        self.verticalLayout_4 = QtWidgets.QVBoxLayout(self.verticalLayoutWidget_2)
-        self.verticalLayout_4.setContentsMargins(6, 16, 12, 6)
-        self.verticalLayout_4.setSpacing(0)
-        self.verticalLayout_4.setObjectName("verticalLayout_4")
-        self.label_8 = QtWidgets.QLabel(self.verticalLayoutWidget_2)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.label_8.sizePolicy().hasHeightForWidth())
-        self.label_8.setSizePolicy(sizePolicy)
-        self.label_8.setObjectName("label_8")
-        self.verticalLayout_4.addWidget(self.label_8, 0, QtCore.Qt.AlignHCenter)
-        self.horizontalLayout = QtWidgets.QHBoxLayout()
-        self.horizontalLayout.setObjectName("horizontalLayout")
-        self.verticalLayout_6 = QtWidgets.QVBoxLayout()
-        self.verticalLayout_6.setObjectName("verticalLayout_6")
-        self.progress_hall_l = QtWidgets.QProgressBar(self.verticalLayoutWidget_2)
-        self.progress_hall_l.setEnabled(False)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.progress_hall_l.sizePolicy().hasHeightForWidth())
-        self.progress_hall_l.setSizePolicy(sizePolicy)
-        self.progress_hall_l.setMaximum(1024)
-        self.progress_hall_l.setProperty("value", 0)
-        self.progress_hall_l.setAlignment(QtCore.Qt.AlignCenter)
-        self.progress_hall_l.setOrientation(QtCore.Qt.Vertical)
-        self.progress_hall_l.setObjectName("progress_hall_l")
-        self.verticalLayout_6.addWidget(self.progress_hall_l, 0, QtCore.Qt.AlignHCenter)
-        self.label_hall_l = QtWidgets.QLabel(self.verticalLayoutWidget_2)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.label_hall_l.sizePolicy().hasHeightForWidth())
-        self.label_hall_l.setSizePolicy(sizePolicy)
-        self.label_hall_l.setAlignment(QtCore.Qt.AlignCenter)
-        self.label_hall_l.setObjectName("label_hall_l")
-        self.verticalLayout_6.addWidget(self.label_hall_l)
-        self.horizontalLayout.addLayout(self.verticalLayout_6)
-        self.verticalLayout_7 = QtWidgets.QVBoxLayout()
-        self.verticalLayout_7.setObjectName("verticalLayout_7")
-        self.progress_hall_r = QtWidgets.QProgressBar(self.verticalLayoutWidget_2)
-        self.progress_hall_r.setEnabled(False)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.progress_hall_r.sizePolicy().hasHeightForWidth())
-        self.progress_hall_r.setSizePolicy(sizePolicy)
-        self.progress_hall_r.setMaximum(1024)
-        self.progress_hall_r.setProperty("value", 0)
-        self.progress_hall_r.setAlignment(QtCore.Qt.AlignCenter)
-        self.progress_hall_r.setOrientation(QtCore.Qt.Vertical)
-        self.progress_hall_r.setObjectName("progress_hall_r")
-        self.verticalLayout_7.addWidget(self.progress_hall_r, 0, QtCore.Qt.AlignHCenter)
-        self.label_hall_r = QtWidgets.QLabel(self.verticalLayoutWidget_2)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.label_hall_r.sizePolicy().hasHeightForWidth())
-        self.label_hall_r.setSizePolicy(sizePolicy)
-        self.label_hall_r.setAlignment(QtCore.Qt.AlignCenter)
-        self.label_hall_r.setObjectName("label_hall_r")
-        self.verticalLayout_7.addWidget(self.label_hall_r)
-        self.horizontalLayout.addLayout(self.verticalLayout_7)
-        self.verticalLayout_4.addLayout(self.horizontalLayout)
-        self.line_2 = QtWidgets.QFrame(self.verticalLayoutWidget_2)
-        self.line_2.setFrameShape(QtWidgets.QFrame.HLine)
-        self.line_2.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.line_2.setObjectName("line_2")
-        self.verticalLayout_4.addWidget(self.line_2)
-        self.label_7 = QtWidgets.QLabel(self.verticalLayoutWidget_2)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.label_7.sizePolicy().hasHeightForWidth())
-        self.label_7.setSizePolicy(sizePolicy)
-        self.label_7.setObjectName("label_7")
-        self.verticalLayout_4.addWidget(self.label_7, 0, QtCore.Qt.AlignHCenter)
-        self.label_carriage = QtWidgets.QLabel(self.verticalLayoutWidget_2)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.label_carriage.sizePolicy().hasHeightForWidth())
-        self.label_carriage.setSizePolicy(sizePolicy)
-        self.label_carriage.setObjectName("label_carriage")
-        self.verticalLayout_4.addWidget(self.label_carriage, 0, QtCore.Qt.AlignHCenter)
-        self.slider_position = QtWidgets.QSlider(self.verticalLayoutWidget_2)
-        self.slider_position.setEnabled(False)
-        self.slider_position.setMaximum(199)
-        self.slider_position.setOrientation(QtCore.Qt.Horizontal)
-        self.slider_position.setTickPosition(QtWidgets.QSlider.TicksBelow)
-        self.slider_position.setObjectName("slider_position")
-        self.verticalLayout_4.addWidget(self.slider_position)
-        self.label_direction = QtWidgets.QLabel(self.verticalLayoutWidget_2)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.label_direction.sizePolicy().hasHeightForWidth())
-        self.label_direction.setSizePolicy(sizePolicy)
-        self.label_direction.setAlignment(QtCore.Qt.AlignCenter)
-        self.label_direction.setObjectName("label_direction")
-        self.verticalLayout_4.addWidget(self.label_direction, 0, QtCore.Qt.AlignHCenter)
-        self.line_3 = QtWidgets.QFrame(self.verticalLayoutWidget_2)
-        self.line_3.setFrameShape(QtWidgets.QFrame.HLine)
-        self.line_3.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.line_3.setObjectName("line_3")
-        self.verticalLayout_4.addWidget(self.line_3)
-        self.label_9 = QtWidgets.QLabel(self.verticalLayoutWidget_2)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.label_9.sizePolicy().hasHeightForWidth())
-        self.label_9.setSizePolicy(sizePolicy)
-        self.label_9.setObjectName("label_9")
-        self.verticalLayout_4.addWidget(self.label_9, 0, QtCore.Qt.AlignHCenter)
-        self.label_progress = QtWidgets.QLabel(self.verticalLayoutWidget_2)
-        font = QtGui.QFont()
-        font.setFamily("Sans")
-        font.setPointSize(22)
-        self.label_progress.setFont(font)
-        self.label_progress.setMouseTracking(False)
-        self.label_progress.setObjectName("label_progress")
-        self.verticalLayout_4.addWidget(self.label_progress, 0, QtCore.Qt.AlignHCenter)
-        self.tabWidget.addTab(self.tab_status, "")
-        self.verticalLayout.addWidget(self.tabWidget)
-        DockWidget.setWidget(self.ayab_config)
+class KnittingMode(Enum):
+    SINGLEBED = 0
+    CLASSIC_RIBBER = 1
+    MIDDLECOLORSTWICE_RIBBER = 2
+    HEARTOFPLUTO_RIBBER = 3
+    CIRCULAR_RIBBER = 4
 
-        self.retranslateUi(DockWidget)
-        self.tabWidget.setCurrentIndex(0)
-        QtCore.QMetaObject.connectSlotsByName(DockWidget)
+    def row_multiplier(self, ncolors):
+        if self.name == "SINGLEBED":
+            return 1
+        elif (self.name == "CLASSIC_RIBBER" and ncolors > 2) \
+            or self.name == "CIRCULAR_RIBBER":
+            # every second line is blank
+            return 2 * ncolors
+        elif self.name == "MIDDLECOLORSTWICE_RIBBER" \
+            or self.name == "HEARTOFPLUTO_RIBBER":
+            # only middle lines doubled
+            return 2 * ncolors - 2
+        else:
+            # one line per color
+            return ncolors
 
-    def retranslateUi(self, DockWidget):
-        _translate = QtCore.QCoreApplication.translate
-        self.groupBox.setTitle(_translate("DockWidget", "Port Selection"))
-        self.refresh_ports_button.setText(_translate("DockWidget", "Refresh"))
-        self.label_4.setText(_translate("DockWidget", "Knitting Mode"))
-        self.label_6.setText(_translate("DockWidget", "Colors"))
-        self.label_5.setText(_translate("DockWidget", "Start Row"))
-        self.infRepeat_checkbox.setText(_translate("DockWidget", "Infinite Repeat"))
-        self.gbox_startneedle.setTitle(_translate("DockWidget", "Start Needle"))
-        self.gbox_stopneedle.setTitle(_translate("DockWidget", "Stop Needle"))
-        self.label_3.setText(_translate("DockWidget", "Alignment"))
-        self.autoMirror_checkbox.setText(_translate("DockWidget", "Mirror Image"))
-        self.checkBox_ContinuousReporting.setText(_translate("DockWidget", "Continuous Status Reporting"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_knit), _translate("DockWidget", "Settings"))
-        self.label_8.setText(_translate("DockWidget", "Hall Sensors"))
-        self.progress_hall_l.setFormat(_translate("DockWidget", "%p%"))
-        self.label_hall_l.setText(_translate("DockWidget", "Hall Left"))
-        self.progress_hall_r.setFormat(_translate("DockWidget", "%p%"))
-        self.label_hall_r.setText(_translate("DockWidget", "Hall Right"))
-        self.label_7.setText(_translate("DockWidget", "Carriage"))
-        self.label_carriage.setText(_translate("DockWidget", "No carriage detected"))
-        self.label_direction.setText(_translate("DockWidget", "direction"))
-        self.label_9.setText(_translate("DockWidget", "Progress"))
-        self.label_progress.setText(_translate("DockWidget", "progress"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_status), _translate("DockWidget", "Status"))
+    def good_ncolors(self, ncolors):
+        if self.name == "SINGLEBED" or self.name == "CIRCULAR_RIBBER":
+            return ncolors == 2
+        else:
+            # no maximum
+            return ncolors >= 2
+
+    def knit_func(self, ncolors):
+        method = "_" + self.name.lower()
+        if self.name == "CLASSIC_RIBBER":
+            method += ["_2col", "_multicol"][ncolors > 2]
+        return method
+
+    # FIXME this function is supposed to select needles
+    # to knit the background color along side the image pattern
+    def flanking_needles(self, color, ncolors):
+        # return (color == 0 and self.name == "CLASSIC_RIBBER") \
+        #     or (color == ncolors - 1
+        #         and (self.name == "MIDDLECOLORSTWICE_RIBBER"
+        #             or self.name == "HEARTOFPLUTO_RIBBER"))
+        return color == 0 and self.name != "CIRCULAR_RIBBER"
+
+    def addItems(box):
+        box.addItem(QCoreApplication.translate("KnittingMode",
+            "Singlebed"))
+        box.addItem(QCoreApplication.translate("KnittingMode",
+            "Ribber: Classic"))
+        box.addItem(QCoreApplication.translate("KnittingMode",
+            "Ribber: Middle-Colors-Twice"))
+        box.addItem(QCoreApplication.translate("KnittingMode",
+            "Ribber: Heart of Pluto"))
+        box.addItem(QCoreApplication.translate("KnittingMode",
+            "Ribber: Circular"))
+
+
+class Alignment(Enum):
+    CENTER = 0
+    LEFT = 1
+    RIGHT = 2
+
+    def addItems(box):
+        box.addItem(QCoreApplication.translate("Alignment", "Center"))
+        box.addItem(QCoreApplication.translate("Alignment", "Left"))
+        box.addItem(QCoreApplication.translate("Alignment", "Right"))
+
+
+class NeedleColor(Enum):
+    ORANGE = 0
+    GREEN = 1
+
+    MACHINE_WIDTH = 200
+
+    def addItems(box):
+        box.addItem(QCoreApplication.translate("NeedleColor", "orange"))
+        box.addItem(QCoreApplication.translate("NeedleColor", "green"))
+
+    def read_settings(self, needle):
+        '''Reads the Needle Settings UI Elements and normalizes'''
+        if self.name == "ORANGE":
+            return self.MACHINE_WIDTH.value // 2 - int(needle)
+        elif self.name == "GREEN":
+            return self.MACHINE_WIDTH.value // 2 - 1 + int(needle)

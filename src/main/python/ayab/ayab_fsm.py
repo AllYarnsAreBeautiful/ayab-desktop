@@ -67,6 +67,7 @@ class FSM (object):
         self.NOT_CONFIGURED.addTransition(self.__parent.ui.knit_button.clicked, self.CONFIGURING)
         self.CONFIGURING.addTransition(self.__parent.signalImageLoaded, self.NOT_CONFIGURED)
         self.CONFIGURING.addTransition(self.__parent.signalImageTransformed, self.NOT_CONFIGURED)
+        self.CONFIGURING.addTransition(self.__parent.signalConfigureFail, self.NOT_CONFIGURED)
         self.CONFIGURING.addTransition(self.__parent.signalConfigured, self.KNITTING)
         self.KNITTING.addTransition(self.__parent.gt.finished, self.NOT_CONFIGURED)
  
