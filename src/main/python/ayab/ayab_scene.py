@@ -32,8 +32,7 @@ from DAKimport import DAKimport
 
 from .ayab_transforms import Transformable, Mirrors
 from .plugins.ayab_plugin.ayab_optionClasses import Alignment
-
-MACHINE_WIDTH = 200
+from .plugins.ayab_plugin.machine import Machine
 
 
 class Scene (object):
@@ -76,11 +75,11 @@ class Scene (object):
         # add pattern and move accordingly to alignment
         pattern = qscene.addPixmap(pixmap)
         if self.imageAlignment.name == 'LEFT':
-            pos = self.start_needle - MACHINE_WIDTH / 2
+            pos = self.start_needle - Machine.MACHINE_WIDTH / 2
         elif self.imageAlignment.name == 'CENTER':
-            pos = (self.start_needle + self.stop_needle - pixmap.width() - MACHINE_WIDTH) / 2
+            pos = (self.start_needle + self.stop_needle - pixmap.width() - Machine.MACHINE_WIDTH) / 2
         elif self.imageAlignment.name == 'RIGHT':
-            pos = self.stop_needle - pixmap.width() - MACHINE_WIDTH / 2
+            pos = self.stop_needle - pixmap.width() - Machine.MACHINE_WIDTH / 2
         else:
             logging.warning("invalid alignment")
             return
@@ -88,15 +87,15 @@ class Scene (object):
 
         # Draw "machine"
         rect_orange = QGraphicsRectItem(
-            -(MACHINE_WIDTH / 2.0),
+            -(Machine.MACHINE_WIDTH / 2.0),
             -self.BAR_HEIGHT,
-            (MACHINE_WIDTH / 2.0),
+            (Machine.MACHINE_WIDTH / 2.0),
             self.BAR_HEIGHT)
         rect_orange.setBrush(QBrush(QColor("orange")))
         rect_green = QGraphicsRectItem(
             0.0,
             -self.BAR_HEIGHT,
-            (MACHINE_WIDTH / 2.0),
+            (Machine.MACHINE_WIDTH / 2.0),
             self.BAR_HEIGHT)
         rect_green.setBrush(QBrush(QColor("green")))
 
@@ -105,21 +104,21 @@ class Scene (object):
 
         # Draw limiting lines (start/stop needle)
         qscene.addItem(
-            QGraphicsRectItem(self.start_needle - 1 - MACHINE_WIDTH / 2,
+            QGraphicsRectItem(self.start_needle - 1 - Machine.MACHINE_WIDTH / 2,
                               -self.BAR_HEIGHT,
                               self.LIMIT_BAR_WIDTH,
                               pixmap.height() + 2 * self.BAR_HEIGHT))
         qscene.addItem(
-            QGraphicsRectItem(self.stop_needle - MACHINE_WIDTH / 2,
+            QGraphicsRectItem(self.stop_needle - Machine.MACHINE_WIDTH / 2,
                               -self.BAR_HEIGHT,
                               self.LIMIT_BAR_WIDTH,
                               pixmap.height() + 2 * self.BAR_HEIGHT))
 
         # Draw knitting progress
         qscene.addItem(
-            QGraphicsRectItem(- MACHINE_WIDTH / 2,
+            QGraphicsRectItem(- Machine.MACHINE_WIDTH / 2,
                               pixmap.height() - self.var_progress,
-                              MACHINE_WIDTH,
+                              Machine.MACHINE_WIDTH,
                               self.LIMIT_BAR_WIDTH))
 
         qv = self.__parent.ui.image_pattern_view
@@ -183,7 +182,7 @@ class Scene (object):
             "Horizontal",
             value=1,
             min=1,
-            max=ceil(MACHINE_WIDTH / self.image.size[0])
+            max=ceil(Machine.MACHINE_WIDTH / self.image.size[0])
         )
         self.apply_image_transform("repeat", v[0], h[0])
 
@@ -202,7 +201,7 @@ class Scene (object):
             "Horizontal",
             value=1,
             min=1,
-            max=ceil(MACHINE_WIDTH / self.image.size[0])
+            max=ceil(Machine.MACHINE_WIDTH / self.image.size[0])
         )
         self.apply_image_transform("stretch", v[0], h[0])
 
