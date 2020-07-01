@@ -23,16 +23,9 @@ from fbs_runtime.application_context.PyQt5 import ApplicationContext
 import sys
 from os import path, mkdir
 import logging
-import locale
 
-from bitarray import bitarray
-import numpy as np
-
-from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtWidgets import QMainWindow, QGraphicsView, QApplication, QMessageBox, QFrame, QFileDialog
-from PyQt5.QtCore import Qt, QThread, QLocale, QCoreApplication, QSettings, pyqtSignal
-
-from PIL import Image
+from PyQt5.QtCore import Qt, QTranslator, QThread, QLocale, QCoreApplication, QSettings, pyqtSignal
 
 import simpleaudio as sa
 import wave
@@ -44,12 +37,12 @@ from .ayab_scene import Scene
 from .ayab_preferences import Preferences, str2bool
 from .plugins.ayab_plugin import AyabPlugin
 from .plugins.ayab_plugin.firmware_flash import FirmwareFlash
-from .plugins.ayab_plugin.ayab_progress import KnitProgress
-from .plugins.ayab_plugin.ayab_control import KnittingMode, Progress
+from .plugins.ayab_plugin.ayab_progress import Progress, KnitProgress
+from .plugins.ayab_plugin.ayab_options import Alignment
 
 # Temporal serial imports.
-import serial
-import serial.tools.list_ports
+# import serial
+# import serial.tools.list_ports
 
 
 # TODO move to generic configuration
@@ -84,21 +77,21 @@ class GuiMain(QMainWindow):
 
     GuiMain inherits from QMainWindow and instantiates a window with the form components form ayab_gui.UiForm.
     """
-    signalUpdateProgressBar = pyqtSignal(int, int, int, 'QString')
-    signalUpdateKnitProgress = pyqtSignal(Progress, int)
-    signalUpdateStatus = pyqtSignal(int, int, 'QString', int)
-    signalUpdateNotification = pyqtSignal('QString')
-    signalDisplayPopUp = pyqtSignal('QString', 'QString')
-    signalDisplayBlockingPopUp = pyqtSignal('QString', 'QString')
-    signalPlaysound = pyqtSignal('QString')
-    signalUpdateNeedles = pyqtSignal(int, int)
-    signalUpdateAlignment = pyqtSignal(int)
-    signalImageLoaded = pyqtSignal()
-    signalImageTransformed = pyqtSignal()
-    signalConfigureFail = pyqtSignal()
-    signalConfigured = pyqtSignal()
-    # signalDoneKnitProgress = pyqtSignal()
-    signalDoneKnitting = pyqtSignal(bool)
+    signal_update_progress_bar = pyqtSignal(int, int, int, 'QString')
+    signal_update_knit_progress = pyqtSignal(Progress, int)
+    signal_update_status = pyqtSignal(int, int, 'QString', int)
+    signal_update_notification = pyqtSignal('QString')
+    signal_display_popup = pyqtSignal('QString', 'QString')
+    signal_display_blocking_popup = pyqtSignal('QString', 'QString')
+    signal_playsound = pyqtSignal('QString')
+    signal_update_needles = pyqtSignal(int, int)
+    signal_update_alignment = pyqtSignal(Alignment)
+    signal_image_loaded = pyqtSignal()
+    signal_image_transformed = pyqtSignal()
+    signal_configure_fail = pyqtSignal()
+    signal_configured = pyqtSignal()
+    # signal_doneKnitProgress = pyqtSignal()
+    signal_done_knitting = pyqtSignal(bool)
 
     def __init__(self, app_context):
         super(GuiMain, self).__init__(None)
@@ -112,30 +105,30 @@ class GuiMain(QMainWindow):
         # create UI
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-        self.__setupMenuBar()
+        self.__setup_menubar()
         self.scene = Scene(self)
         self.kp = KnitProgress(self.ui)
         self.plugin = AyabPlugin()
         self.plugin.setupUi(self)
         self.gt = GenericThread(self.plugin.knit)
 
-        # set initial knitting configuration options
-        knitting_mode_box = self.plugin.ui.knitting_mode_box
-        knitting_mode_box.setCurrentIndex(self.prefs.settings.value("default_knitting_mode"))
-        if str2bool(self.prefs.settings.value("default_infinite_repeat")):
+        # set default knitting configuration options
+        defaults = self.prefs.settings
+        self.plugin.ui.knitting_mode_box.setCurrentIndex(
+            defaults.value("default_knitting_mode"))
+        if str2bool(defaults.value("default_infinite_repeat")):
             self.plugin.ui.infRepeat_checkbox.setCheckState(Qt.Checked)
         else:
             self.plugin.ui.infRepeat_checkbox.setCheckState(Qt.Unchecked)
-        if str2bool(self.prefs.settings.value("automatic_mirroring")):
+        if str2bool(defaults.value("automatic_mirroring")):
             self.plugin.ui.autoMirror_checkbox.setCheckState(Qt.Checked)
         else:
             self.plugin.ui.autoMirror_checkbox.setCheckState(Qt.Unchecked)
-        alignment_combo_box = self.plugin.ui.alignment_combo_box
-        alignment_combo_box.setCurrentIndex(self.scene.imageAlignment.value)
+        self.plugin.ui.alignment_combo_box.setCurrentIndex(self.scene.alignment.value)
 
         # clear progress and status bar
-        self.ui.label_notifications.setText("")
-        self.resetProgressBar()
+        self.reset_notification()
+        self.reset_progress_bar()
 
         # show UI
         self.showMaximized()
@@ -150,23 +143,23 @@ class GuiMain(QMainWindow):
         self.fs.machine.start()
         return
 
-    def resetProgressBar(self):
+    def reset_progress_bar(self):
         self.ui.label_current_row.setText("")
         self.ui.label_current_color.setText("")
 
-    def updateProgressBar(self, row, total=0, repeats=0, colorSymbol=""):
+    def update_progress_bar(self, row, total=0, repeats=0, color_symbol=""):
         '''Updates the color and row in progress bar'''
         if row < 0:
             return
 
-        if colorSymbol == "":
+        if color_symbol == "":
             text = ""
         else:
-            text = "Color " + colorSymbol
+            text = "Color " + color_symbol
         self.ui.label_current_color.setText(text)
 
         # Store to local variable
-        self.scene.var_progress = row
+        self.scene.row_progress = row
         self.scene.refresh()
 
         # Update label
@@ -179,7 +172,7 @@ class GuiMain(QMainWindow):
         self.ui.label_current_row.setText(text)
         self.plugin.ui.label_progress.setText("{0}/{1}".format(row, total))
 
-    def updateStatus(self, hall_l, hall_r, carriage_type, carriage_position):
+    def update_status_tab(self, hall_l, hall_r, carriage_type, carriage_position):
         self.plugin.ui.progress_hall_l.setValue(hall_l)
         self.plugin.ui.label_hall_l.setText(str(hall_l))
         self.plugin.ui.progress_hall_r.setValue(hall_r)
@@ -187,12 +180,16 @@ class GuiMain(QMainWindow):
         self.plugin.ui.slider_position.setValue(carriage_position)
         self.plugin.ui.label_carriage.setText(carriage_type)
         
-    def updateNotification(self, text):
+    def reset_notification(self):
+        '''Updates the Notification field'''
+        self.ui.label_notifications.setText("")
+        
+    def update_notification(self, text):
         '''Updates the Notification field'''
         logging.info("Notification: " + text)
         self.ui.label_notifications.setText(text)
 
-    def displayBlockingPopUp(self, message="", message_type="info"):
+    def display_blocking_popup(self, message="", message_type="info"):
         logging.debug("MessageBox {}: '{}'".format(message_type, message))
         box_function = {
             "error": QMessageBox.critical,
@@ -211,100 +208,94 @@ class GuiMain(QMainWindow):
         if ret == QMessageBox.Ok:
             return True
 
-    def updateKnitProgress(self, progress, row_multiplier):
+    def update_knit_progress(self, progress, row_multiplier):
         self.kp.update(progress, row_multiplier)
         # if progress.current_row > 0 and progress.current_row == progress.total_rows:
-        #     self.signalDoneKnitProgress.emit()
+        #     self.signal_done_knit_progress.emit()
 
     def wheelEvent(self, event):
-        self.scene.zoom(event)
+        self.scene.zoom = event
 
     def __setup_behavior(self):
         # UI actions
-        self.ui.load_file_button.clicked.connect(self.file_select_dialog)
-        self.ui.filename_lineedit.returnPressed.connect(self.file_select_dialog)
+        self.ui.load_file_button.clicked.connect(self.open_file_select_dialog)
+        self.ui.filename_lineedit.returnPressed.connect(self.open_file_select_dialog)
         self.ui.cancel_button.clicked.connect(self.plugin.cancel)
-        self.ui.actionLoad_AYAB_Firmware.triggered.connect(self.generate_firmware_ui)
+        self.ui.action_load_AYAB_firmware.triggered.connect(self.generate_firmware_ui)
         self.ui.image_pattern_view.setDragMode(QGraphicsView.ScrollHandDrag)
 
         # Menu actions
-        self.ui.actionSetPreferences.triggered.connect(self.set_preferences)
-        self.ui.actionAbout.triggered.connect(self.open_about_ui)
-        self.ui.actionQuit.triggered.connect(QCoreApplication.instance().quit)
-        self.ui.actionInvert.triggered.connect(self.scene.invert_image)
-        self.ui.actionStretch.triggered.connect(self.scene.stretch_image)
-        self.ui.actionRepeat.triggered.connect(self.scene.repeat_image)
-        self.ui.actionReflect.triggered.connect(self.scene.reflect_image)
-        self.ui.actionHorizontalFlip.triggered.connect(self.scene.hflip_image)
-        self.ui.actionVerticalFlip.triggered.connect(self.scene.vflip_image)
-        self.ui.actionRotateLeft.triggered.connect(self.scene.rotate_left)
-        self.ui.actionRotateRight.triggered.connect(self.scene.rotate_right)
+        self.ui.action_set_preferences.triggered.connect(self.open_preferences_dialog)
+        self.ui.action_about.triggered.connect(self.open_about_ui)
+        self.ui.action_quit.triggered.connect(QCoreApplication.instance().quit)
+        self.ui.action_invert.triggered.connect(self.scene.invert_image)
+        self.ui.action_stretch.triggered.connect(self.scene.stretch_image)
+        self.ui.action_repeat.triggered.connect(self.scene.repeat_image)
+        self.ui.action_reflect.triggered.connect(self.scene.reflect_image)
+        self.ui.action_horizontal_flip.triggered.connect(self.scene.hflip_image)
+        self.ui.action_vertical_flip.triggered.connect(self.scene.vflip_image)
+        self.ui.action_rotate_left.triggered.connect(self.scene.rotate_left)
+        self.ui.action_rotate_right.triggered.connect(self.scene.rotate_right)
 
         # Signal actions
-        self.signalUpdateProgressBar.connect(self.updateProgressBar)
-        self.signalUpdateStatus.connect(self.updateStatus)
-        self.signalUpdateNotification.connect(self.updateNotification)
-        self.signalPlaysound.connect(self.playsound,
+        self.signal_update_progress_bar.connect(self.update_progress_bar)
+        self.signal_update_status.connect(self.update_status_tab)
+        self.signal_update_notification.connect(self.update_notification)
+        self.signal_playsound.connect(self.playsound,
                                      type=Qt.BlockingQueuedConnection)
-        self.signalDisplayBlockingPopUp.connect(self.displayBlockingPopUp)
-        self.signalDisplayPopUp.connect(self.displayBlockingPopUp)
-        self.signalUpdateKnitProgress.connect(self.updateKnitProgress,
+        self.signal_display_blocking_popup.connect(self.display_blocking_popup)
+        self.signal_display_popup.connect(self.display_blocking_popup)
+        self.signal_update_knit_progress.connect(self.update_knit_progress,
                                               type=Qt.BlockingQueuedConnection)
-        self.signalUpdateNeedles.connect(self.scene.updateNeedles)
-        self.signalUpdateAlignment.connect(self.scene.updateAlignment)
-        self.signalDoneKnitting.connect(self.__reset_ui_after_knitting)
+        self.signal_update_needles.connect(self.scene.update_needles)
+        self.signal_update_alignment.connect(self.scene.update_alignment)
+        self.signal_done_knitting.connect(self.reset_ui_after_knitting)
 
     def start_knitting_process(self):
         # reset knit progress window
         self.kp.reset()
         # disable UI elements at start of knitting
-        self.__depopulateMenuBar()
+        self.__depopulate_menubar()
         self.ui.filename_lineedit.setEnabled(False)        
         self.ui.load_file_button.setEnabled(False)
         # start thread for knit plugin
         self.gt.start()
 
-    def __reset_ui_after_knitting(self, audio: bool):
+    def reset_ui_after_knitting(self, audio: bool):
         # (Re-)enable UI elements after knitting finishes
-        self.__repopulateMenuBar()
+        self.__repopulate_menubar()
         self.ui.filename_lineedit.setEnabled(True)        
         self.ui.load_file_button.setEnabled(True)
         if audio:
             self.__audio("finish")
 
-    def __setupMenuBar(self):
-        self.__actionImageActions = self.ui.menuImageActions.menuAction()
-        self.__actionTools = self.ui.menuTools.menuAction()
-        self.__actionPreferences = self.ui.menuPreferences.menuAction()
-        self.__actionHelp = self.ui.menuHelp.menuAction()
-        self.ui.menubar.addAction(self.__actionTools)
-        self.ui.menubar.addAction(self.__actionPreferences)
-        self.ui.menubar.addAction(self.__actionHelp)
+    def __setup_menubar(self):
+        self.ui.menubar.addAction(self.ui.menu_tools.menuAction())
+        self.ui.menubar.addAction(self.ui.menu_preferences.menuAction())
+        self.ui.menubar.addAction(self.ui.menu_help.menuAction())
 
-    def __depopulateMenuBar(self):
+    def __depopulate_menubar(self):
         try:
-            self.ui.menubar.removeAction(self.__actionImageActions)
-        except:
+            self.ui.menubar.removeAction(self.ui.menu_image_actions.menuAction())
+        except Exception:
             pass
-        self.ui.menubar.removeAction(self.__actionTools)
+        self.ui.menubar.removeAction(self.ui.menu_tools.menuAction())
 
-    def __repopulateMenuBar(self):
-        self.ui.menubar.removeAction(self.__actionPreferences)
-        self.ui.menubar.removeAction(self.__actionHelp)
-        self.ui.menubar.addAction(self.__actionImageActions)
-        self.ui.menubar.addAction(self.__actionTools)
-        self.ui.menubar.addAction(self.__actionPreferences)
-        self.ui.menubar.addAction(self.__actionHelp)
+    def __repopulate_menubar(self):
+        self.ui.menubar.removeAction(self.ui.menu_preferences.menuAction())
+        self.ui.menubar.removeAction(self.ui.menu_help.menuAction())
+        self.ui.menubar.addAction(self.ui.menu_image_actions.menuAction())
+        self.__setup_menubar()
 
-    def addImageActions(self):
+    def add_image_actions(self):
         # This workaround is necessary because 
         # self.__actionImageActions.setEnabled(True)
         # does not seems to work (at least, not on Ubuntu 16.04)
         # Tom Price June 2020
-        self.__depopulateMenuBar()
-        self.__repopulateMenuBar()
+        self.__depopulate_menubar()
+        self.__repopulate_menubar()
 
-    def file_select_dialog(self):
+    def open_file_select_dialog(self):
         filenameValue = self.ui.filename_lineedit.text()
         if filenameValue == '':
             filePath = self.app_context.get_resource("patterns")
@@ -326,17 +317,17 @@ class GuiMain(QMainWindow):
         # TODO Check maximum width of image
         try:
             self.scene.load_image_file(image_str)
-        except OSError:
+        except (OSError, FileNotFoundError):
             logging.error("unable to load " + str(image_str))
         except Exception as e:
             logging.error(e)
         else:
             self.scene.refresh()
-            self.signalImageLoaded.emit()
+            self.signal_image_loaded.emit()
             self.statusBar().showMessage(image_str)
             # Tell loaded plugin elements about changed parameters
             width, height = self.scene.image.size
-            self.plugin.setImageDimensions(width, height)
+            self.plugin.set_image_dimensions(width, height)
 
     def generate_firmware_ui(self):
         self.__flash_ui = FirmwareFlash(self)
@@ -348,34 +339,34 @@ class GuiMain(QMainWindow):
         with open(filename_version) as version_file:
             __version__ = version_file.read().strip()
         
-        self.__AboutForm = QFrame()
+        self.__about_form = QFrame()
         self.__about_ui = Ui_AboutForm()
-        self.__about_ui.setupUi(self.__AboutForm)
+        self.__about_ui.setupUi(self.__about_form)
         self.__about_ui.title_label.setText(
-            QCoreApplication.translate("MainWindow", "All Yarns Are Beautiful") + \
+            QCoreApplication.translate("MainWindow", "All Yarns Are Beautiful") +
             " v " + __version__)
         self.__about_ui.link_label.setText(
-            QCoreApplication.translate("MainWindow", "Website") + \
+            QCoreApplication.translate("MainWindow", "Website") +
             ": <a href='http://ayab-knitting.com'>http://ayab-knitting.com</a>")
         self.__about_ui.link_label.setTextFormat(Qt.RichText)
         self.__about_ui.link_label.setTextInteractionFlags(Qt.TextBrowserInteraction)
         self.__about_ui.link_label.setOpenExternalLinks(True)
         self.__about_ui.manual_label.setText(
-            QCoreApplication.translate("MainWindow", "Manual") + \
+            QCoreApplication.translate("MainWindow", "Manual") +
             ": <a href='http://manual.ayab-knitting.com'>http://manual.ayab-knitting.com</a>")
         self.__about_ui.manual_label.setTextFormat(Qt.RichText)
         self.__about_ui.manual_label.setTextInteractionFlags(Qt.TextBrowserInteraction)
         self.__about_ui.manual_label.setOpenExternalLinks(True)
-        self.__AboutForm.show()
+        self.__about_form.show()
 
-    def set_preferences(self):
-        return self.prefs.setPrefsDialog()
+    def open_preferences_dialog(self):
+        return self.prefs.set_prefs_dialog()
 
-    def getSerialPorts(self):
-        """
-        Returns a list of all USB Serial Ports
-        """
-        return list(serial.tools.list_ports.grep("USB"))
+    # def get_serial_ports(self):
+    #     """
+    #     Returns a list of all USB Serial Ports
+    #     """
+    #     return list(serial.tools.list_ports.grep("USB"))
 
     def playsound(self, sound):
         """Blocking -- call from external thread only"""
@@ -389,8 +380,10 @@ class GuiMain(QMainWindow):
         filename = sound + ".wav"
         try:
             wave_read = wave.open(path.join(dirname, filename), 'rb')
-        except:
+        except FileNotFoundError:
             logging.warning("File " + filename + " not found.")
+        except OSError:
+            logging.warning("Error loading " + filename + ".")
         else:
             wave_obj = sa.WaveObject.from_wave_read(wave_read)
             play_obj = wave_obj.play()
@@ -428,11 +421,11 @@ def run(app_context):
     QCoreApplication.setApplicationName("ayab")
 
     # load translators
-    translator = QtCore.QTranslator()
+    translator = QTranslator()
     lang_dir = app_context.get_resource("ayab/translations")
     try:
         language = QSettings().value("language")
-    except:
+    except Exception:
         language = None
     try:
         translator.load("ayab_trans." + language, lang_dir)
@@ -440,10 +433,10 @@ def run(app_context):
         logging.warning("Unable to load translation file for preferred language, using default locale")
         try:
             translator.load(QLocale.system(), "ayab_trans", "", lang_dir)
-        except:
+        except Exception:
             logging.warning("Unable to load translation file for default locale, using American English")
             translator.load("ayab_trans.en_US", lang_dir)
-    except:
+    except Exception:
         logging.error("Unable to load translation file")
         raise
     app = QApplication(sys.argv)

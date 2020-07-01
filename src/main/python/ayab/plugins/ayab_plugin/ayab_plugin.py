@@ -19,25 +19,23 @@
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
 import logging
-import os
-import weakref
+# "import weakref
 # from copy import copy
 from time import sleep
 import serial.tools.list_ports
 from PIL import ImageOps
-from PyQt5 import QtGui, QtWidgets, QtCore
-from PyQt5.QtCore import QSettings, QTranslator, QCoreApplication, QLocale
-from PyQt5.QtWidgets import QComboBox, QCheckBox, QTabWidget, QWidget
-from . import ayab_image
-from .ayab_control import AYABControl, AYABControlKnitResult
+from PyQt5.QtCore import QTranslator, QCoreApplication, QLocale, QObjectCleanupHandler
+from PyQt5.QtWidgets import QComboBox, QWidget
+from .ayab_image import AyabImage
+from .ayab_control import AyabControl, AyabControlKnitResult
 from .ayab_options import Options, KnittingMode, Alignment, NeedleColor
 from .ayab_options_gui import Ui_DockWidget
 
 
-class AyabPlugin(object):
+class AyabPlugin (object):
 
     def __init__(self):
-        self.__ayab_control = AYABControl()
+        self.__ayab_control = AyabControl()
         self.__logger = logging.getLogger(type(self).__name__)
 
     def __del__(self):
@@ -61,8 +59,8 @@ class AyabPlugin(object):
         self.__setup_behavior()
 
         # Disable "continuous reporting" checkbox and Status tab for now
-        parent.findChild(QCheckBox, "checkBox_ContinuousReporting").setVisible(False)
-        parent.findChild(QTabWidget, "tabWidget").removeTab(1)
+        self.ui.checkBox_ContinuousReporting.setVisible(False)
+        self.ui.tabWidget.removeTab(1)
 
     def __set_translator(self):
         app = QCoreApplication.instance()
@@ -72,13 +70,15 @@ class AyabPlugin(object):
         try:
             self.translator.load("ayab_trans." + language, lang_dir)
         except (TypeError, FileNotFoundError):
-            self.__logger("Unable load translation file for preferred language, using default locale")
+            self.__logger("Unable load translation file for preferred language, " +
+                          "using default locale")
             try:
                 self.translator.load(QLocale.system(), "ayab_trans", "", lang_dir)
-            except:
-                self.__logger("Unable to load translation file for default locale, using American English")
+            except Exception:
+                self.__logger("Unable to load translation file for default locale, " + \
+                              "using American English")
                 self.translator.load("ayab_trans.en_US", lang_dir)
-        except:
+        except Exception:
             self.__logger("Unable to load translation file")
             raise
         app.installTranslator(self.translator)
@@ -87,12 +87,12 @@ class AyabPlugin(object):
         """Connects methods to UI elements."""
         self.__populate_ports()
         self.ui.refresh_ports_button.clicked.connect(self.__populate_ports)
-        self.ui.start_needle_edit.valueChanged.connect(self.__emit_needles)
-        self.ui.stop_needle_edit.valueChanged.connect(self.__emit_needles)
-        self.ui.start_needle_color.currentIndexChanged.connect(self.__emit_needles)
-        self.ui.stop_needle_color.currentIndexChanged.connect(self.__emit_needles)
-        self.ui.alignment_combo_box.currentIndexChanged.connect(self.__emit_alignment)
-        self.ui.start_row_edit.valueChanged.connect(self.__onStartLineChanged)
+        self.ui.start_needle_edit.valueChanged.connect(self.__emit_update_needles)
+        self.ui.stop_needle_edit.valueChanged.connect(self.__emit_update_needles)
+        self.ui.start_needle_color.currentIndexChanged.connect(self.__emit_update_needles)
+        self.ui.stop_needle_color.currentIndexChanged.connect(self.__emit_update_needles)
+        self.ui.alignment_combo_box.currentIndexChanged.connect(self.__emit_update_alignment)
+        self.ui.start_row_edit.valueChanged.connect(self.update_start_row)
 
     def __populate_ports(self, combo_box=None, port_list=None):
         if not combo_box:
@@ -118,25 +118,21 @@ class AyabPlugin(object):
     def configure(self):
         # get configuration options
         self.__conf = Options()
-        self.__conf.get_configuration_from_ui(self.__parent)
-        self.__logger.debug(self.__conf)
+        self.__conf.read(self.ui)
+        self.__logger.debug(self.__conf.as_dict())
 
         # start to knit with the bottom first
         image = self.__parent.scene.image.rotate(180)
 
         # mirroring option
-        if self.__conf.get_auto_mirror():
+        if self.__conf.auto_mirror:
             image = ImageOps.mirror(image)
 
         # TODO: detect if previous conf had the same
         # image to avoid re-generating.
 
-        try:
-            self.__image = ayab_image.ayabImage(image, self.__conf.get_num_colors())
-        except:
-            self.__emit_configure_fail("You need to set an image.")
-            return
-        if self.__conf.get_start_row() > self.__image.imgHeight():
+        self.__image = AyabImage(image, self.__conf.num_colors)
+        if self.__conf.start_row > self.__image.img_height:
             self.__emit_configure_fail("Start row is larger than the image.")
             return
 
@@ -147,23 +143,21 @@ class AyabPlugin(object):
             return
 
         # update image
-        if self.__conf.get_start_needle() and self.__conf.get_stop_needle():
-            self.__image.setKnitNeedles(self.__conf.get_start_needle(),
-                                        self.__conf.get_stop_needle())
-        if self.__conf.get_alignment():
-            self.__image.setImagePosition(self.__conf.get_alignment())
-        self.__image.setStartLine(self.__conf.get_start_row())
+        if self.__conf.start_needle and self.__conf.stop_needle:
+            self.__image.set_knit_needles(self.__conf.start_needle,
+                                          self.__conf.stop_needle)
+        self.__image.alignment = self.__conf.alignment
 
         # update progress bar
-        self.__emit_progress(self.__conf.get_start_row() + 1,
-                             self.__image.imgHeight(), 0, "")
+        self.__emit_progress(self.__conf.start_row + 1,
+                             self.__image.img_height, 0, "")
 
         # switch to status tab
-        if self.__conf.get_continuousReporting() is True:
+        if self.__conf.continuous_reporting is True:
             self.ui.tabWidget.setCurrentIndex(1)
 
         # send signal to start knitting
-        self.__parent.signalConfigured.emit()
+        self.__parent.signal_configured.emit()
 
     def knit(self):
         self.__canceled = False
@@ -173,12 +167,12 @@ class AyabPlugin(object):
             result = self.__ayab_control.knit(self.__image, self.__conf)
             self.__knit_feedback_handler(result)
             # do not need to make copy of progress object to emit to UI thread
-            # because signalUpdateKnitProgress connection blocks this thread
-            # progress = copy(self.__ayab_control.get_progress())
-            progress = self.__ayab_control.get_progress()
+            # because signal_update_knit_progress connection blocks this thread
+            # progress = copy(self.__ayab_control.progress)
+            progress = self.__ayab_control.progress
             row_mult = self.__ayab_control.get_row_multiplier()
             self.__knit_progress_handler(progress, row_mult)
-            if self.__canceled or result is AYABControlKnitResult.FINISHED:
+            if self.__canceled or result is AyabControlKnitResult.FINISHED:
                 break
 
         self.__logger.info("Finished knitting.")
@@ -189,32 +183,32 @@ class AyabPlugin(object):
         sleep(1)
 
         # send signal to finish knitting
-        self.__parent.signalDoneKnitting.emit(not self.__canceled)
+        self.__parent.signal_done_knitting.emit(not self.__canceled)
 
     def __knit_feedback_handler(self, result):
-        if result is AYABControlKnitResult.CONNECTING_TO_MACHINE:
+        if result is AyabControlKnitResult.CONNECTING_TO_MACHINE:
             self.__emit_notification("Connecting to machine...")
 
-        if result is AYABControlKnitResult.WAIT_FOR_INIT:
+        if result is AyabControlKnitResult.WAIT_FOR_INIT:
             self.__emit_notification(
                 "Please start machine. (Set the carriage to mode KC-I " +
                 "or KC-II and move the carriage over the left turn mark).")
 
-        if result is AYABControlKnitResult.ERROR_WRONG_API:
+        if result is AyabControlKnitResult.ERROR_WRONG_API:
             self.__emit_popup(
                 "Wrong Arduino firmware version. Please check " +
                 "that you have flashed the latest version. (" +
                 str(self.__ayab_control.API_VERSION) + ")")
 
-        if result is AYABControlKnitResult.PLEASE_KNIT:
+        if result is AyabControlKnitResult.PLEASE_KNIT:
             self.__emit_notification("Please knit.")
             self.__emit_playsound("start")
 
-        if result is AYABControlKnitResult.DEVICE_NOT_READY:
+        if result is AyabControlKnitResult.DEVICE_NOT_READY:
             self.__emit_notification()
             self.__emit_blocking_popup("Device not ready, try again.")
 
-        if result is AYABControlKnitResult.FINISHED:
+        if result is AyabControlKnitResult.FINISHED:
             self.__emit_notification(
                 "Image transmission finished. Please knit until you " +
                 "hear the double beep sound.")
@@ -223,7 +217,7 @@ class AyabPlugin(object):
         self.__emit_progress(progress.current_row,
                              progress.total_rows,
                              progress.repeats,
-                             progress.colorSymbol)
+                             progress.color_symbol)
         self.__emit_status(progress.hall_l,
                            progress.hall_r,
                            progress.carriage_type,
@@ -240,7 +234,7 @@ class AyabPlugin(object):
     #     self.__logger.error("Error while knitting.")
     #     self.__ayab_control.close()
 
-    def setImageDimensions(self, width, height):
+    def set_image_dimensions(self, width, height):
         """Called by Main UI on loading of an image to set Start/Stop needle
         to image width. Updates the maximum value of the Start Line UI element"""
         left_side = width // 2
@@ -252,7 +246,7 @@ class AyabPlugin(object):
         """Cleans up UI elements inside knitting option dock."""
         # dock = parent.knitting_options_dock
         dock = self.dock
-        cleaner = QtCore.QObjectCleanupHandler()
+        cleaner = QObjectCleanupHandler()
         cleaner.add(dock.widget())
         self.__qw = QWidget()
         dock.setWidget(self.__qw)
@@ -264,65 +258,58 @@ class AyabPlugin(object):
 
     def __emit_blocking_popup(self, message="", message_type="info"):
         """
-        Sends the signalDisplayBlockingPopUp QtSignal
+        Sends the signal_display_blocking_popup QtSignal
         to main GUI thread, blocking it.
         """
-        self.__parent.signalDisplayBlockingPopUp.emit(
+        self.__parent.signal_display_blocking_popup.emit(
             QCoreApplication.translate("AyabPlugin", message), message_type)
 
     def __emit_popup(self, message="", message_type="info"):
         """
-        Sends the signalDisplayPopUp QtSignal
+        Sends the signal_display_popup QtSignal
         to main GUI thread, not blocking it.
         """
-        self.__parent.signalDisplayPopUp.emit(
+        self.__parent.signal_display_popup.emit(
             QCoreApplication.translate("AyabPlugin", message), message_type)
 
     def __emit_configure_fail(self, message=""):
         self.__emit_popup(message)
-        self.__parent.signalConfigureFail.emit()
+        self.__parent.signal_configure_fail.emit()
 
     def __emit_notification(self, message=""):
-        """Sends the signalUpdateNotification signal"""
-        self.__parent.signalUpdateNotification.emit(
+        """Sends the signal_update_notification signal"""
+        self.__parent.signal_update_notification.emit(
             QCoreApplication.translate("AyabPlugin", message))
 
     def __emit_knit_progress(self, progress, row_multiplier):
-        """Sends the updateKnitProgress QtSignal."""
-        self.__parent.signalUpdateKnitProgress.emit(progress, row_multiplier)
+        """Sends the update_knit_progress QtSignal."""
+        self.__parent.signal_update_knit_progress.emit(progress, row_multiplier)
 
-    def __emit_progress(self, row, total=0, repeats=0, colorSymbol=""):
-        """Sends the updateProgressBar QtSignal."""
-        self.__parent.signalUpdateProgressBar.emit(row, total, repeats, colorSymbol)
+    def __emit_progress(self, row, total=0, repeats=0, color_symbol=""):
+        """Sends the update_progress_bar QtSignal."""
+        self.__parent.signal_update_progress_bar.emit(row, total, repeats, color_symbol)
 
     def __emit_status(self, hall_l, hall_r, carriage_type, carriage_position):
-        """Sends the updateStatus QtSignal"""
-        self.__parent.signalUpdateStatus.emit(
+        """Sends the update_status QtSignal"""
+        self.__parent.signal_update_status.emit(
             hall_l, hall_r, carriage_type, carriage_position)
 
-    def __emit_needles(self):
-        """Sends the signalUpdateNeedles QtSignal."""
+    def __emit_update_needles(self):
+        """Sends the signal_update_needles QtSignal."""
+        start_needle = NeedleColor.read_start_needle(self.ui)
+        stop_needle = NeedleColor.read_stop_needle(self.ui)
+        self.__parent.signal_update_needles.emit(start_needle, stop_needle)
 
-        start_needle_text = self.ui.start_needle_edit.value()
-        start_needle_color = self.ui.start_needle_color.currentIndex()
-        start_needle = NeedleColor(start_needle_color).read_settings(start_needle_text)
-
-        stop_needle_text = self.ui.stop_needle_edit.value()
-        stop_needle_color = self.ui.stop_needle_color.currentIndex()
-        stop_needle = NeedleColor(stop_needle_color).read_settings(stop_needle_text)
-
-        self.__parent.signalUpdateNeedles.emit(start_needle, stop_needle)
-
-    def __emit_alignment(self):
-        """Sends the signalUpdateAlignment QtSignal"""
-        alignment = self.ui.alignment_combo_box.currentIndex()
-        self.__parent.signalUpdateAlignment.emit(alignment)
+    def __emit_update_alignment(self):
+        """Sends the signal_update_alignment QtSignal"""
+        alignment = Alignment(self.ui.alignment_combo_box.currentIndex())
+        self.__parent.signal_update_alignment.emit(alignment)
 
     def __emit_playsound(self, event):
         # blocking connection means that thread waits until sound has finished playing
-        self.__parent.signalPlaysound.emit(event)
+        self.__parent.signal_playsound.emit(event)
 
-    def __onStartLineChanged(self):
+    def update_start_row(self):
         start_row_edit = self.ui.start_row_edit.value()
         total_rows = self.__parent.scene.image.size[1]
         self.__emit_progress(start_row_edit, total_rows, 0, "")

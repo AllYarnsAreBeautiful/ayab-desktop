@@ -19,5 +19,6 @@
 
 """Machine-specific constant"""
 
+
 class Machine (object):
-    MACHINE_WIDTH = 200
+    WIDTH = 200

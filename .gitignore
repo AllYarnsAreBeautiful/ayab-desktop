@@ -27,3 +27,5 @@ target/
 # automatically generated translation files
 *.ts
 *.qm
+# vim
+*.swp

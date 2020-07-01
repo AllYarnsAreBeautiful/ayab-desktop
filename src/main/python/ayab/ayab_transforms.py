@@ -18,8 +18,7 @@
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
 import logging
-from PyQt5 import QtWidgets, QtCore
-from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QDialog
 from PIL import Image, ImageOps
 from .ayab_mirrors import Ui_MirrorDialog
 
@@ -61,8 +60,8 @@ class Transformable(Image.Image):
         """
         old_h = self.size[1]
         old_w = self.size[0]
-        new_h = old_h * args[0] # pVertical
-        new_w = old_w * args[1] # pHorizontal
+        new_h = old_h * args[0]  # pVertical
+        new_w = old_w * args[1]  # pHorizontal
         new_im = Image.new('RGB', (new_w, new_h))
         for h in range(0, new_h, old_h):
             for w in range(0, new_w, old_w):
@@ -106,8 +105,8 @@ class Transformable(Image.Image):
         """
         old_h = self.size[1]
         old_w = self.size[0]
-        new_h = old_h * args[0] # pVertical
-        new_w = old_w * args[1] # pHorizontal
+        new_h = old_h * args[0]  # pVertical
+        new_w = old_w * args[1]  # pHorizontal
         return self.resize((new_w, new_h), Image.BOX)
 
 
@@ -122,7 +121,7 @@ class Mirrors:
         self.mirrors[box] = not self.mirrors[box]
 
 
-class MirrorDialog(QtWidgets.QDialog):
+class MirrorDialog (QDialog):
     '''GUI to set preferences'''
 
     def __init__(self, parent):
