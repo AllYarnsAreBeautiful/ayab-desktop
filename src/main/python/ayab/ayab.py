@@ -16,8 +16,8 @@
 #
 #    Copyright 2014 Sebastian Oliva, Christian Obersteiner, Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
-
 """Provides an Interface for users to operate AYAB using a GUI."""
+
 from fbs_runtime.application_context.PyQt5 import ApplicationContext
 
 import sys
@@ -44,7 +44,6 @@ from .plugins.ayab_plugin.ayab_options import Alignment
 # import serial
 # import serial.tools.list_ports
 
-
 # TODO move to generic configuration
 
 userdata_path = path.expanduser(path.join("~", "AYAB"))
@@ -52,10 +51,11 @@ if not path.isdir(userdata_path):
     mkdir(userdata_path)
 
 logfile = path.join(userdata_path, "ayab_log.txt")
-logging.basicConfig(filename=logfile,
-                    level=logging.DEBUG,
-                    format='%(asctime)s %(name)-8s %(levelname)-8s %(message)s',
-                    datefmt='%y-%m-%d %H:%M:%S')
+logging.basicConfig(
+    filename=logfile,
+    level=logging.DEBUG,
+    format='%(asctime)s %(name)-8s %(levelname)-8s %(message)s',
+    datefmt='%y-%m-%d %H:%M:%S')
 console = logging.StreamHandler()
 console.setLevel(logging.DEBUG)
 console.setFormatter(
@@ -71,7 +71,7 @@ if hasattr(Qt, 'AA_UseHighDpiPixmaps'):
 if hasattr(Qt, 'AA_DisableWindowContextHelpButton'):
     QApplication.setAttribute(Qt.AA_DisableWindowContextHelpButton, True)
 
-    
+
 class GuiMain(QMainWindow):
     """GuiMain is the main object that handles the instance of AYAB's GUI from ayab_gui.UiForm .
 
@@ -124,7 +124,8 @@ class GuiMain(QMainWindow):
             self.plugin.ui.autoMirror_checkbox.setCheckState(Qt.Checked)
         else:
             self.plugin.ui.autoMirror_checkbox.setCheckState(Qt.Unchecked)
-        self.plugin.ui.alignment_combo_box.setCurrentIndex(self.scene.alignment.value)
+        self.plugin.ui.alignment_combo_box.setCurrentIndex(
+            self.scene.alignment.value)
 
         # clear progress and status bar
         self.reset_notification()
@@ -172,18 +173,19 @@ class GuiMain(QMainWindow):
         self.ui.label_current_row.setText(text)
         self.plugin.ui.label_progress.setText("{0}/{1}".format(row, total))
 
-    def update_status_tab(self, hall_l, hall_r, carriage_type, carriage_position):
+    def update_status_tab(self, hall_l, hall_r, carriage_type,
+                          carriage_position):
         self.plugin.ui.progress_hall_l.setValue(hall_l)
         self.plugin.ui.label_hall_l.setText(str(hall_l))
         self.plugin.ui.progress_hall_r.setValue(hall_r)
         self.plugin.ui.label_hall_r.setText(str(hall_r))
         self.plugin.ui.slider_position.setValue(carriage_position)
         self.plugin.ui.label_carriage.setText(carriage_type)
-        
+
     def reset_notification(self):
         '''Updates the Notification field'''
         self.ui.label_notifications.setText("")
-        
+
     def update_notification(self, text):
         '''Updates the Notification field'''
         logging.info("Notification: " + text)
@@ -199,12 +201,8 @@ class GuiMain(QMainWindow):
         }
         message_box_function = box_function.get(message_type)
 
-        ret = message_box_function(
-            self,
-            "AYAB",
-            message,
-            QMessageBox.Ok,
-            QMessageBox.Ok)
+        ret = message_box_function(self, "AYAB", message, QMessageBox.Ok,
+                                   QMessageBox.Ok)
         if ret == QMessageBox.Ok:
             return True
 
@@ -219,20 +217,24 @@ class GuiMain(QMainWindow):
     def __setup_behavior(self):
         # UI actions
         self.ui.load_file_button.clicked.connect(self.open_file_select_dialog)
-        self.ui.filename_lineedit.returnPressed.connect(self.open_file_select_dialog)
+        self.ui.filename_lineedit.returnPressed.connect(
+            self.open_file_select_dialog)
         self.ui.cancel_button.clicked.connect(self.plugin.cancel)
-        self.ui.action_load_AYAB_firmware.triggered.connect(self.generate_firmware_ui)
+        self.ui.action_load_AYAB_firmware.triggered.connect(
+            self.generate_firmware_ui)
         self.ui.image_pattern_view.setDragMode(QGraphicsView.ScrollHandDrag)
 
         # Menu actions
-        self.ui.action_set_preferences.triggered.connect(self.open_preferences_dialog)
+        self.ui.action_set_preferences.triggered.connect(
+            self.open_preferences_dialog)
         self.ui.action_about.triggered.connect(self.open_about_ui)
         self.ui.action_quit.triggered.connect(QCoreApplication.instance().quit)
         self.ui.action_invert.triggered.connect(self.scene.invert_image)
         self.ui.action_stretch.triggered.connect(self.scene.stretch_image)
         self.ui.action_repeat.triggered.connect(self.scene.repeat_image)
         self.ui.action_reflect.triggered.connect(self.scene.reflect_image)
-        self.ui.action_horizontal_flip.triggered.connect(self.scene.hflip_image)
+        self.ui.action_horizontal_flip.triggered.connect(
+            self.scene.hflip_image)
         self.ui.action_vertical_flip.triggered.connect(self.scene.vflip_image)
         self.ui.action_rotate_left.triggered.connect(self.scene.rotate_left)
         self.ui.action_rotate_right.triggered.connect(self.scene.rotate_right)
@@ -242,11 +244,11 @@ class GuiMain(QMainWindow):
         self.signal_update_status.connect(self.update_status_tab)
         self.signal_update_notification.connect(self.update_notification)
         self.signal_playsound.connect(self.playsound,
-                                     type=Qt.BlockingQueuedConnection)
+                                      type=Qt.BlockingQueuedConnection)
         self.signal_display_blocking_popup.connect(self.display_blocking_popup)
         self.signal_display_popup.connect(self.display_blocking_popup)
-        self.signal_update_knit_progress.connect(self.update_knit_progress,
-                                              type=Qt.BlockingQueuedConnection)
+        self.signal_update_knit_progress.connect(
+            self.update_knit_progress, type=Qt.BlockingQueuedConnection)
         self.signal_update_needles.connect(self.scene.update_needles)
         self.signal_update_alignment.connect(self.scene.update_alignment)
         self.signal_done_knitting.connect(self.reset_ui_after_knitting)
@@ -256,7 +258,7 @@ class GuiMain(QMainWindow):
         self.kp.reset()
         # disable UI elements at start of knitting
         self.__depopulate_menubar()
-        self.ui.filename_lineedit.setEnabled(False)        
+        self.ui.filename_lineedit.setEnabled(False)
         self.ui.load_file_button.setEnabled(False)
         # start thread for knit plugin
         self.gt.start()
@@ -264,7 +266,7 @@ class GuiMain(QMainWindow):
     def reset_ui_after_knitting(self, audio: bool):
         # (Re-)enable UI elements after knitting finishes
         self.__repopulate_menubar()
-        self.ui.filename_lineedit.setEnabled(True)        
+        self.ui.filename_lineedit.setEnabled(True)
         self.ui.load_file_button.setEnabled(True)
         if audio:
             self.__audio("finish")
@@ -276,7 +278,8 @@ class GuiMain(QMainWindow):
 
     def __depopulate_menubar(self):
         try:
-            self.ui.menubar.removeAction(self.ui.menu_image_actions.menuAction())
+            self.ui.menubar.removeAction(
+                self.ui.menu_image_actions.menuAction())
         except Exception:
             pass
         self.ui.menubar.removeAction(self.ui.menu_tools.menuAction())
@@ -288,7 +291,7 @@ class GuiMain(QMainWindow):
         self.__setup_menubar()
 
     def add_image_actions(self):
-        # This workaround is necessary because 
+        # This workaround is necessary because
         # self.__actionImageActions.setEnabled(True)
         # does not seems to work (at least, not on Ubuntu 16.04)
         # Tom Price June 2020
@@ -302,7 +305,9 @@ class GuiMain(QMainWindow):
         else:
             filePath = filenameValue
         file_selected_route, _ = QFileDialog.getOpenFileName(
-            self, "Open file", filePath, 'Images (*.png *.PNG *.jpg *.JPG *.jpeg *.JPEG *.bmp *.BMP *.gif *.GIF *.tiff *.TIFF *.tif *.TIF *.Pat *.pat *.PAT *.Stp *.stp *.STP)')
+            self, "Open file", filePath,
+            'Images (*.png *.PNG *.jpg *.JPG *.jpeg *.JPEG *.bmp *.BMP *.gif *.GIF *.tiff *.TIFF *.tif *.TIF *.Pat *.pat *.PAT *.Stp *.stp *.STP)'
+        )
         if file_selected_route:
             self.__update_file_selected_text_field(file_selected_route)
             self.__load_image_from_string(str(file_selected_route))
@@ -335,27 +340,32 @@ class GuiMain(QMainWindow):
 
     def open_about_ui(self):
         __version__ = "package_version"
-        filename_version = self.app_context.get_resource("ayab/package_version")
+        filename_version = self.app_context.get_resource(
+            "ayab/package_version")
         with open(filename_version) as version_file:
             __version__ = version_file.read().strip()
-        
+
         self.__about_form = QFrame()
         self.__about_ui = Ui_AboutForm()
         self.__about_ui.setupUi(self.__about_form)
         self.__about_ui.title_label.setText(
-            QCoreApplication.translate("MainWindow", "All Yarns Are Beautiful") +
-            " v " + __version__)
+            QCoreApplication.translate("MainWindow", "All Yarns Are Beautiful")
+            + " v " + __version__)
         self.__about_ui.link_label.setText(
             QCoreApplication.translate("MainWindow", "Website") +
-            ": <a href='http://ayab-knitting.com'>http://ayab-knitting.com</a>")
+            ": <a href='http://ayab-knitting.com'>http://ayab-knitting.com</a>"
+        )
         self.__about_ui.link_label.setTextFormat(Qt.RichText)
-        self.__about_ui.link_label.setTextInteractionFlags(Qt.TextBrowserInteraction)
+        self.__about_ui.link_label.setTextInteractionFlags(
+            Qt.TextBrowserInteraction)
         self.__about_ui.link_label.setOpenExternalLinks(True)
         self.__about_ui.manual_label.setText(
             QCoreApplication.translate("MainWindow", "Manual") +
-            ": <a href='http://manual.ayab-knitting.com'>http://manual.ayab-knitting.com</a>")
+            ": <a href='http://manual.ayab-knitting.com'>http://manual.ayab-knitting.com</a>"
+        )
         self.__about_ui.manual_label.setTextFormat(Qt.RichText)
-        self.__about_ui.manual_label.setTextInteractionFlags(Qt.TextBrowserInteraction)
+        self.__about_ui.manual_label.setTextInteractionFlags(
+            Qt.TextBrowserInteraction)
         self.__about_ui.manual_label.setOpenExternalLinks(True)
         self.__about_form.show()
 
@@ -375,7 +385,7 @@ class GuiMain(QMainWindow):
     def __audio(self, sound):
         """Play audio and wait until finished"""
         if str2bool(self.prefs.settings.value("quiet_mode")):
-            return 
+            return
         dirname = self.app_context.get_resource("assets")
         filename = sound + ".wav"
         try:
@@ -392,7 +402,6 @@ class GuiMain(QMainWindow):
 
 class GenericThread(QThread):
     '''A generic thread wrapper for functions on threads.'''
-
     def __init__(self, function, *args, **kwargs):
         QThread.__init__(self)
         self.function = function
@@ -430,11 +439,15 @@ def run(app_context):
     try:
         translator.load("ayab_trans." + language, lang_dir)
     except (TypeError, FileNotFoundError):
-        logging.warning("Unable to load translation file for preferred language, using default locale")
+        logging.warning(
+            "Unable to load translation file for preferred language, using default locale"
+        )
         try:
             translator.load(QLocale.system(), "ayab_trans", "", lang_dir)
         except Exception:
-            logging.warning("Unable to load translation file for default locale, using American English")
+            logging.warning(
+                "Unable to load translation file for default locale, using American English"
+            )
             translator.load("ayab_trans.en_US", lang_dir)
     except Exception:
         logging.error("Unable to load translation file")
