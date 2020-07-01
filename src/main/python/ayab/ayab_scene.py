@@ -34,7 +34,7 @@ from .plugins.ayab_plugin.ayab_options import Alignment
 from .plugins.ayab_plugin.machine import Machine
 
 
-class Scene (object):
+class Scene(object):
     """Graphics scene object for UI.
 
     @author Tom Price
@@ -59,16 +59,15 @@ class Scene (object):
         width, height = self.__image.size
 
         data = self.__image.convert("RGBA").tobytes("raw", "RGBA")
-        qim = QImage(data,
-                     self.__image.size[0],
-                     self.__image.size[1],
+        qim = QImage(data, self.__image.size[0], self.__image.size[1],
                      QImage.Format_ARGB32)
         pixmap = QPixmap.fromImage(qim)
 
         # Set dimensions on GUI
         text = "{} x {}".format(width, height)
         self.__parent.ui.label_notifications.setText(
-            QCoreApplication.translate("Scene", "Image dimensions") + ": " + text)
+            QCoreApplication.translate("Scene", "Image dimensions") + ": " +
+            text)
 
         qscene = QGraphicsScene()
 
@@ -77,7 +76,8 @@ class Scene (object):
         if self.__alignment.name == 'LEFT':
             pos = self.__start_needle - Machine.WIDTH / 2
         elif self.__alignment.name == 'CENTER':
-            pos = (self.__start_needle + self.__stop_needle - pixmap.width() - Machine.WIDTH) / 2
+            pos = (self.__start_needle + self.__stop_needle - pixmap.width() -
+                   Machine.WIDTH) / 2
         elif self.__alignment.name == 'RIGHT':
             pos = self.__stop_needle - pixmap.width() - Machine.WIDTH / 2
         else:
@@ -86,17 +86,11 @@ class Scene (object):
         pattern.setPos(pos, 0)
 
         # Draw "machine"
-        rect_orange = QGraphicsRectItem(
-            -Machine.WIDTH / 2.0,
-            -self.BAR_HEIGHT,
-            Machine.WIDTH / 2.0,
-            self.BAR_HEIGHT)
+        rect_orange = QGraphicsRectItem(-Machine.WIDTH / 2.0, -self.BAR_HEIGHT,
+                                        Machine.WIDTH / 2.0, self.BAR_HEIGHT)
         rect_orange.setBrush(QBrush(QColor("orange")))
-        rect_green = QGraphicsRectItem(
-            0.0,
-            -self.BAR_HEIGHT,
-            Machine.WIDTH / 2.0,
-            self.BAR_HEIGHT)
+        rect_green = QGraphicsRectItem(0.0, -self.BAR_HEIGHT,
+                                       Machine.WIDTH / 2.0, self.BAR_HEIGHT)
         rect_green.setBrush(QBrush(QColor("green")))
 
         qscene.addItem(rect_orange)
@@ -105,21 +99,18 @@ class Scene (object):
         # Draw limiting lines (start/stop needle)
         qscene.addItem(
             QGraphicsRectItem(self.__start_needle - 1 - Machine.WIDTH / 2,
-                              -self.BAR_HEIGHT,
-                              self.LIMIT_BAR_WIDTH,
+                              -self.BAR_HEIGHT, self.LIMIT_BAR_WIDTH,
                               pixmap.height() + 2 * self.BAR_HEIGHT))
         qscene.addItem(
             QGraphicsRectItem(self.__stop_needle - Machine.WIDTH / 2,
-                              -self.BAR_HEIGHT,
-                              self.LIMIT_BAR_WIDTH,
+                              -self.BAR_HEIGHT, self.LIMIT_BAR_WIDTH,
                               pixmap.height() + 2 * self.BAR_HEIGHT))
 
         # Draw knitting progress
         qscene.addItem(
-            QGraphicsRectItem(- Machine.WIDTH / 2,
+            QGraphicsRectItem(-Machine.WIDTH / 2,
                               pixmap.height() - self.row_progress,
-                              Machine.WIDTH,
-                              self.LIMIT_BAR_WIDTH))
+                              Machine.WIDTH, self.LIMIT_BAR_WIDTH))
 
         qv = self.__parent.ui.image_pattern_view
         qv.resetTransform()
@@ -152,10 +143,6 @@ class Scene (object):
     def image(self):
         return self.__image
 
-    # @image.setter
-    # def image(self, image: Image):
-    #     self.__image = image
-
     @property
     def alignment(self):
         return self.__alignment
@@ -186,40 +173,32 @@ class Scene (object):
 
     def repeat_image(self):
         '''Public repeat current Image function.'''
-        v = QInputDialog.getInt(
-            self.__parent,
-            "Repeat",
-            "Vertical",
-            value=1,
-            min=1
-        )
-        h = QInputDialog.getInt(
-            self.__parent,
-            "Repeat",
-            "Horizontal",
-            value=1,
-            min=1,
-            max=ceil(Machine.WIDTH / self.__image.size[0])
-        )
+        v = QInputDialog.getInt(self.__parent,
+                                "Repeat",
+                                "Vertical",
+                                value=1,
+                                min=1)
+        h = QInputDialog.getInt(self.__parent,
+                                "Repeat",
+                                "Horizontal",
+                                value=1,
+                                min=1,
+                                max=ceil(Machine.WIDTH / self.__image.size[0]))
         self.apply_image_transform("repeat", v[0], h[0])
 
     def stretch_image(self):
         '''Public stretch current Image function.'''
-        v = QInputDialog.getInt(
-            self.__parent,
-            "Stretch",
-            "Vertical",
-            value=1,
-            min=1
-        )
-        h = QInputDialog.getInt(
-            self.__parent,
-            "Stretch",
-            "Horizontal",
-            value=1,
-            min=1,
-            max=ceil(Machine.WIDTH / self.__image.size[0])
-        )
+        v = QInputDialog.getInt(self.__parent,
+                                "Stretch",
+                                "Vertical",
+                                value=1,
+                                min=1)
+        h = QInputDialog.getInt(self.__parent,
+                                "Stretch",
+                                "Horizontal",
+                                value=1,
+                                min=1,
+                                max=ceil(Machine.WIDTH / self.__image.size[0]))
         self.apply_image_transform("stretch", v[0], h[0])
 
     def reflect_image(self):

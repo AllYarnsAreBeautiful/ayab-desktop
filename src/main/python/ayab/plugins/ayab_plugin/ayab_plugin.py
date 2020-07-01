@@ -32,8 +32,7 @@ from .ayab_options import Options, KnittingMode, Alignment, NeedleColor
 from .ayab_options_gui import Ui_DockWidget
 
 
-class AyabPlugin (object):
-
+class AyabPlugin(object):
     def __init__(self):
         self.__ayab_control = AyabControl()
         self.__logger = logging.getLogger(type(self).__name__)
@@ -70,13 +69,16 @@ class AyabPlugin (object):
         try:
             self.translator.load("ayab_trans." + language, lang_dir)
         except (TypeError, FileNotFoundError):
-            self.__logger("Unable load translation file for preferred language, " +
-                          "using default locale")
+            self.__logger(
+                "Unable load translation file for preferred language, " +
+                "using default locale")
             try:
-                self.translator.load(QLocale.system(), "ayab_trans", "", lang_dir)
+                self.translator.load(QLocale.system(), "ayab_trans", "",
+                                     lang_dir)
             except Exception:
-                self.__logger("Unable to load translation file for default locale, " + \
-                              "using American English")
+                self.__logger(
+                    "Unable to load translation file for default locale, " +
+                    "using American English")
                 self.translator.load("ayab_trans.en_US", lang_dir)
         except Exception:
             self.__logger("Unable to load translation file")
@@ -87,22 +89,29 @@ class AyabPlugin (object):
         """Connects methods to UI elements."""
         self.__populate_ports()
         self.ui.refresh_ports_button.clicked.connect(self.__populate_ports)
-        self.ui.start_needle_edit.valueChanged.connect(self.__emit_update_needles)
-        self.ui.stop_needle_edit.valueChanged.connect(self.__emit_update_needles)
-        self.ui.start_needle_color.currentIndexChanged.connect(self.__emit_update_needles)
-        self.ui.stop_needle_color.currentIndexChanged.connect(self.__emit_update_needles)
-        self.ui.alignment_combo_box.currentIndexChanged.connect(self.__emit_update_alignment)
+        self.ui.start_needle_edit.valueChanged.connect(
+            self.__emit_update_needles)
+        self.ui.stop_needle_edit.valueChanged.connect(
+            self.__emit_update_needles)
+        self.ui.start_needle_color.currentIndexChanged.connect(
+            self.__emit_update_needles)
+        self.ui.stop_needle_color.currentIndexChanged.connect(
+            self.__emit_update_needles)
+        self.ui.alignment_combo_box.currentIndexChanged.connect(
+            self.__emit_update_alignment)
         self.ui.start_row_edit.valueChanged.connect(self.update_start_row)
 
     def __populate_ports(self, combo_box=None, port_list=None):
         if not combo_box:
-            combo_box = self.__parent.findChild(QComboBox, "serial_port_dropdown")
+            combo_box = self.__parent.findChild(QComboBox,
+                                                "serial_port_dropdown")
         if not port_list:
             port_list = self.__get_serial_ports()
         combo_box.clear()
         self.__populate(combo_box, port_list)
         # Add Simulation item to indicate operation without machine
-        combo_box.addItem(QCoreApplication.translate("AyabPlugin", "Simulation"))
+        combo_box.addItem(
+            QCoreApplication.translate("AyabPlugin", "Simulation"))
 
     def __populate(self, combo_box, port_list):
         for item in port_list:
@@ -195,10 +204,9 @@ class AyabPlugin (object):
                 "or KC-II and move the carriage over the left turn mark).")
 
         if result is AyabControlKnitResult.ERROR_WRONG_API:
-            self.__emit_popup(
-                "Wrong Arduino firmware version. Please check " +
-                "that you have flashed the latest version. (" +
-                str(self.__ayab_control.API_VERSION) + ")")
+            self.__emit_popup("Wrong Arduino firmware version. Please check " +
+                              "that you have flashed the latest version. (" +
+                              str(self.__ayab_control.API_VERSION) + ")")
 
         if result is AyabControlKnitResult.PLEASE_KNIT:
             self.__emit_notification("Please knit.")
@@ -214,14 +222,10 @@ class AyabPlugin (object):
                 "hear the double beep sound.")
 
     def __knit_progress_handler(self, progress, row_multiplier):
-        self.__emit_progress(progress.current_row,
-                             progress.total_rows,
-                             progress.repeats,
-                             progress.color_symbol)
-        self.__emit_status(progress.hall_l,
-                           progress.hall_r,
-                           progress.carriage_type,
-                           progress.carriage_position)
+        self.__emit_progress(progress.current_row, progress.total_rows,
+                             progress.repeats, progress.color_symbol)
+        self.__emit_status(progress.hall_l, progress.hall_r,
+                           progress.carriage_type, progress.carriage_position)
         self.__emit_knit_progress(progress, row_multiplier)
 
     def cancel(self):
@@ -283,16 +287,18 @@ class AyabPlugin (object):
 
     def __emit_knit_progress(self, progress, row_multiplier):
         """Sends the update_knit_progress QtSignal."""
-        self.__parent.signal_update_knit_progress.emit(progress, row_multiplier)
+        self.__parent.signal_update_knit_progress.emit(progress,
+                                                       row_multiplier)
 
     def __emit_progress(self, row, total=0, repeats=0, color_symbol=""):
         """Sends the update_progress_bar QtSignal."""
-        self.__parent.signal_update_progress_bar.emit(row, total, repeats, color_symbol)
+        self.__parent.signal_update_progress_bar.emit(row, total, repeats,
+                                                      color_symbol)
 
     def __emit_status(self, hall_l, hall_r, carriage_type, carriage_position):
         """Sends the update_status QtSignal"""
-        self.__parent.signal_update_status.emit(
-            hall_l, hall_r, carriage_type, carriage_position)
+        self.__parent.signal_update_status.emit(hall_l, hall_r, carriage_type,
+                                                carriage_position)
 
     def __emit_update_needles(self):
         """Sends the signal_update_needles QtSignal."""
@@ -313,4 +319,3 @@ class AyabPlugin (object):
         start_row_edit = self.ui.start_row_edit.value()
         total_rows = self.__parent.scene.image.size[1]
         self.__emit_progress(start_row_edit, total_rows, 0, "")
-

@@ -23,8 +23,8 @@ import numpy as np
 from .ayab_options import Alignment
 from .machine import Machine
 
-class AyabImage (object):
 
+class AyabImage(object):
     def __init__(self, image, num_colors=2):
         self.__image = image
         self.__num_colors = num_colors
@@ -91,13 +91,16 @@ class AyabImage (object):
                         # amount of bits per color per line
                         self.__image_colors[row][color] += 1
                         # colors separated per line
-                        self.__image_expanded[(num_colors * row)+color][col] = True
+                        self.__image_expanded[(num_colors * row) +
+                                              color][col] = True
         return
 
     def __calc_img_start_stop_needles(self):
         if self.__alignment == Alignment.CENTER:
             needle_width = self.__knit_stop_needle - self.__knit_start_needle + 1
-            self.__img_start_needle = int((self.__knit_start_needle + needle_width / 2) - self.img_width / 2)
+            self.__img_start_needle = int((self.__knit_start_needle +
+                                           needle_width / 2) -
+                                          self.img_width / 2)
             self.__img_stop_needle = self.__img_start_needle + self.__img_width - 1
         elif self.__alignment == Alignment.LEFT:
             self.__img_start_needle = self.__knit_start_needle
@@ -116,7 +119,8 @@ class AyabImage (object):
         """
         set the start and stop needle
         """
-        if (knit_start < knit_stop) and knit_start >= 0 and knit_stop < Machine.WIDTH:
+        if (knit_start <
+                knit_stop) and knit_start >= 0 and knit_stop < Machine.WIDTH:
             self.__knit_start_needle = knit_start
             self.__knit_stop_needle = knit_stop
         self.__update_image_data()
@@ -201,7 +205,7 @@ class AyabImage (object):
     #     hsize = int((float(self.__image.size[1]) * float(wpercent)))
     #     self.__image = self.__image.resize((new_width, hsize), Image.ANTIALIAS)
     #     self.__update_image_data()
- 
+
     # def repeat_image(self, horizontal=1, vertical=1):
     #     """
     #     Repeat image.
@@ -218,4 +222,3 @@ class AyabImage (object):
     #             new_im.paste(self.__image, (w, h))
     #     self.__image = new_im
     #     self.__update_image_data()
-

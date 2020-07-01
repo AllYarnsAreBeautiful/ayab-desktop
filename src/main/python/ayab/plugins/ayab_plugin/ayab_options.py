@@ -23,9 +23,8 @@ from PyQt5.QtCore import QCoreApplication
 from .machine import Machine
 
 
-class Options (object):
+class Options(object):
     """Class for configuration options."""
-
     def __init__(self):
         # FIXME: Initialize from default settings
         self.portname = ""
@@ -33,24 +32,23 @@ class Options (object):
         self.num_colors = 2
         self.start_row = 0
         self.inf_repeat = False
-        self.start_needle = 0 
+        self.start_needle = 0
         self.stop_needle = Machine.WIDTH - 1
         self.alignment = Alignment(0)
         self.auto_mirror = False
         self.continuous_reporting = False
 
     def as_dict(self):
-        return dict([
-            ("portname", self.portname),
-            ("knitting_mode", self.knitting_mode),
-            ("num_colors", self.num_colors),
-            ("start_row", self.start_row),
-            ("inf_repeat", self.inf_repeat),
-            ("start_needle", self.start_needle),
-            ("stop_needle", self.stop_needle),
-            ("alignment", self.alignment),
-            ("auto_mirror", self.auto_mirror),
-            ("continuous_reporting", self.continuous_reporting)])
+        return dict([("portname", self.portname),
+                     ("knitting_mode", self.knitting_mode),
+                     ("num_colors", self.num_colors),
+                     ("start_row", self.start_row),
+                     ("inf_repeat", self.inf_repeat),
+                     ("start_needle", self.start_needle),
+                     ("stop_needle", self.stop_needle),
+                     ("alignment", self.alignment),
+                     ("auto_mirror", self.auto_mirror),
+                     ("continuous_reporting", self.continuous_reporting)])
 
     def read(self, ui):
         """Get configuration options from the UI elements."""
@@ -96,12 +94,12 @@ class KnittingMode(Enum):
             return 1
         if (self.name == "CLASSIC_RIBBER" and ncolors > 2) \
             or self.name == "CIRCULAR_RIBBER":
-                # every second line is blank
-                return 2 * ncolors
+            # every second line is blank
+            return 2 * ncolors
         if self.name == "MIDDLECOLORSTWICE_RIBBER" \
             or self.name == "HEARTOFPLUTO_RIBBER":
-                # only middle lines doubled
-                return 2 * ncolors - 2
+            # only middle lines doubled
+            return 2 * ncolors - 2
         else:
             # one line per color
             return ncolors
@@ -129,16 +127,17 @@ class KnittingMode(Enum):
         return color == 0 and self.name != "CIRCULAR_RIBBER"
 
     def addItems(box):
-        box.addItem(QCoreApplication.translate("KnittingMode",
-            "Singlebed"))
-        box.addItem(QCoreApplication.translate("KnittingMode",
-            "Ribber: Classic"))
-        box.addItem(QCoreApplication.translate("KnittingMode",
-            "Ribber: Middle-Colors-Twice"))
-        box.addItem(QCoreApplication.translate("KnittingMode",
-            "Ribber: Heart of Pluto"))
-        box.addItem(QCoreApplication.translate("KnittingMode",
-            "Ribber: Circular"))
+        box.addItem(QCoreApplication.translate("KnittingMode", "Singlebed"))
+        box.addItem(
+            QCoreApplication.translate("KnittingMode", "Ribber: Classic"))
+        box.addItem(
+            QCoreApplication.translate("KnittingMode",
+                                       "Ribber: Middle-Colors-Twice"))
+        box.addItem(
+            QCoreApplication.translate("KnittingMode",
+                                       "Ribber: Heart of Pluto"))
+        box.addItem(
+            QCoreApplication.translate("KnittingMode", "Ribber: Circular"))
 
 
 class Alignment(Enum):

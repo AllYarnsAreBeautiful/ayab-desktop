@@ -19,6 +19,7 @@
 """
 Mockup Class of AYABCommunication for Test/Simulation purposes
 """
+
 from PyQt5 import QtWidgets
 from .ayab_communication import AyabCommunication
 
@@ -28,7 +29,7 @@ from time import sleep
 
 class AyabCommunicationMockup(AyabCommunication):
     """Class Handling the serial communication protocol."""
-    def __init__(self, delay = True, step = False) -> None:
+    def __init__(self, delay=True, step=False) -> None:
         logging.basicConfig(level=logging.DEBUG)
         self.__logger = logging.getLogger(type(self).__name__)
         self.__delay = delay
@@ -63,7 +64,7 @@ class AyabCommunicationMockup(AyabCommunication):
             self.__line_count %= 256
             self.__rxMsgList.append(reqLine)
             if self.__delay:
-                sleep(1) # wait for knitting progress dialog to update
+                sleep(1)  # wait for knitting progress dialog to update
 
             # step through output line by line
             if self.__step:
@@ -71,7 +72,8 @@ class AyabCommunicationMockup(AyabCommunication):
                 msg = QtWidgets.QMessageBox()
                 msg.setIcon(QtWidgets.QMessageBox.Information)
                 msg.setText("Line number = " + str(self.__line_count))
-                msg.setStandardButtons(QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel)
+                msg.setStandardButtons(QtWidgets.QMessageBox.Ok
+                                       | QtWidgets.QMessageBox.Cancel)
                 ret = None
                 ret = msg.exec_()
                 while ret == None:

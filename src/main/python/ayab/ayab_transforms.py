@@ -29,7 +29,6 @@ class Transformable(Image.Image):
     @author Tom Price
     @date   June 2020
     """
-
     def rotate(self, args):
         # TODO crop width if it exceeds the maximum after transform
         if not args:
@@ -112,7 +111,6 @@ class Transformable(Image.Image):
 
 class Mirrors:
     '''Image relection options and GUI methods'''
-
     def __init__(self):
         self.mirrors = [False, False, False, False]
         self.result = MirrorDialog(self).exec_()
@@ -121,9 +119,8 @@ class Mirrors:
         self.mirrors[box] = not self.mirrors[box]
 
 
-class MirrorDialog (QDialog):
-    '''GUI to set preferences'''
-
+class MirrorDialog(QDialog):
+    '''GUI to choose reflection options'''
     def __init__(self, parent):
         super(MirrorDialog, self).__init__(None)
         self.__ui = Ui_MirrorDialog()

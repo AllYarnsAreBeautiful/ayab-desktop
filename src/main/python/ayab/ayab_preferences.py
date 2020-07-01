@@ -39,7 +39,11 @@ def str2bool(qvariant):
 
 
 class Preferences:
-            
+    """Default settings class.
+
+    @author Tom Price
+    @date   June 2020
+    """
     def __init__(self, app_context):
         self.__app_context = app_context
         self.settings = QSettings()
@@ -47,14 +51,18 @@ class Preferences:
         if self.settings.allKeys() == []:
             self.reset()
         else:
-            self.settings.setValue("automatic_mirroring",
-                                   str2bool(self.settings.value("automatic_mirroring")))
-            self.settings.setValue("default_knitting_mode",
-                                   int(self.settings.value("default_knitting_mode")))
-            self.settings.setValue("default_infinite_repeat",
-                                   str2bool(self.settings.value("default_infinite_repeat")))
-            self.settings.setValue("default_alignment",
-                                   int(self.settings.value("default_alignment")))
+            self.settings.setValue(
+                "automatic_mirroring",
+                str2bool(self.settings.value("automatic_mirroring")))
+            self.settings.setValue(
+                "default_knitting_mode",
+                int(self.settings.value("default_knitting_mode")))
+            self.settings.setValue(
+                "default_infinite_repeat",
+                str2bool(self.settings.value("default_infinite_repeat")))
+            self.settings.setValue(
+                "default_alignment",
+                int(self.settings.value("default_alignment")))
             self.settings.setValue("quiet_mode",
                                    str2bool(self.settings.value("quiet_mode")))
 
@@ -91,12 +99,15 @@ class Preferences:
 
     def __locale(self, string):
         i = string.rindex("_")
-        return string[i-2:i+3]
+        return string[i - 2:i + 3]
 
 
-class PrefsDialog (QDialog):
-    '''GUI to set preferences'''
+class PrefsDialog(QDialog):
+    """GUI to set preferences.
 
+    @author Tom Price
+    @date   June 2020
+    """
     def __init__(self, parent):
         super(PrefsDialog, self).__init__(None)
         self.__reset = parent.reset
@@ -113,12 +124,18 @@ class PrefsDialog (QDialog):
             self.__ui.language_box.addItem(parent.language(loc), loc)
 
         # connect dialog box buttons
-        self.__ui.default_knitting_mode_box.currentIndexChanged.connect(self.__update_default_knitting_mode_setting)
-        self.__ui.default_infinite_repeat_checkbox.toggled.connect(self.__toggle_default_infinite_repeat_setting)
-        self.__ui.default_alignment_box.currentIndexChanged.connect(self.__update_default_alignment_setting)
-        self.__ui.automatic_mirroring_checkbox.toggled.connect(self.__toggle_automatic_mirroring_setting)
-        self.__ui.quiet_mode_checkbox.toggled.connect(self.__toggle_quiet_mode_setting)
-        self.__ui.language_box.currentIndexChanged.connect(self.__update_language_setting)
+        self.__ui.default_knitting_mode_box.currentIndexChanged.connect(
+            self.__update_default_knitting_mode_setting)
+        self.__ui.default_infinite_repeat_checkbox.toggled.connect(
+            self.__toggle_default_infinite_repeat_setting)
+        self.__ui.default_alignment_box.currentIndexChanged.connect(
+            self.__update_default_alignment_setting)
+        self.__ui.automatic_mirroring_checkbox.toggled.connect(
+            self.__toggle_automatic_mirroring_setting)
+        self.__ui.quiet_mode_checkbox.toggled.connect(
+            self.__toggle_quiet_mode_setting)
+        self.__ui.language_box.currentIndexChanged.connect(
+            self.__update_language_setting)
         self.__ui.reset.clicked.connect(self.__reset_and_refresh)
         self.__ui.enter.clicked.connect(self.accept)
 
@@ -126,7 +143,8 @@ class PrefsDialog (QDialog):
         self.__refresh()
 
     def __update_default_knitting_mode_setting(self):
-        self.__settings.setValue("default_knitting_mode",
+        self.__settings.setValue(
+            "default_knitting_mode",
             self.__ui.default_knitting_mode_box.currentIndex())
 
     def __toggle_default_infinite_repeat_setting(self):
@@ -136,7 +154,8 @@ class PrefsDialog (QDialog):
             self.__settings.setValue("default_infinite_repeat", False)
 
     def __update_default_alignment_setting(self):
-        self.__settings.setValue("default_alignment",
+        self.__settings.setValue(
+            "default_alignment",
             self.__ui.default_alignment_box.currentIndex())
 
     def __toggle_automatic_mirroring_setting(self):
@@ -153,16 +172,18 @@ class PrefsDialog (QDialog):
 
     def __update_language_setting(self):
         self.__settings.setValue("language",
-            self.__ui.language_box.currentData())
+                                 self.__ui.language_box.currentData())
 
     def __refresh(self):
         '''Update preferences GUI to current values'''
         self.__ui.default_knitting_mode_box.setCurrentIndex(
             int(self.__settings.value("default_knitting_mode")))
         if str2bool(self.__settings.value("default_infinite_repeat")):
-            self.__ui.default_infinite_repeat_checkbox.setCheckState(Qt.Checked)
+            self.__ui.default_infinite_repeat_checkbox.setCheckState(
+                Qt.Checked)
         else:
-            self.__ui.default_infinite_repeat_checkbox.setCheckState(Qt.Unchecked)
+            self.__ui.default_infinite_repeat_checkbox.setCheckState(
+                Qt.Unchecked)
         self.__ui.default_alignment_box.setCurrentIndex(
             int(self.__settings.value("default_alignment")))
         if str2bool(self.__settings.value("automatic_mirroring")):
@@ -174,10 +195,8 @@ class PrefsDialog (QDialog):
         else:
             self.__ui.quiet_mode_checkbox.setCheckState(Qt.Unchecked)
         self.__ui.language_box.setCurrentIndex(
-            self.__ui.language_box.findData(
-                self.__settings.value("language")))
+            self.__ui.language_box.findData(self.__settings.value("language")))
 
     def __reset_and_refresh(self):
         self.__reset()
         self.__refresh()
-

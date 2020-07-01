@@ -16,7 +16,6 @@
 #
 #    Copyright 2013 Christian Obersteiner, Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
-
 """Handles the serial communication protocol.
 
 This module handles serial communication, currently works in a synchronous way.
@@ -43,7 +42,6 @@ class MessageToken(Enum):
 
 class AyabCommunication(object):
     """Class Handling the serial communication protocol."""
-
     def __init__(self, serial=None):
         """Creates an AyabCommunication object,
         with an optional serial-like object."""
@@ -69,11 +67,12 @@ class AyabCommunication(object):
         if not self.__ser:
             self.__portname = pPortname
             try:
-                self.__ser = serial.Serial(self.__portname, 115200,
+                self.__ser = serial.Serial(self.__portname,
+                                           115200,
                                            timeout=0.1)
             except:
-                self.__logger.error("could not open serial port "
-                                    + self.__portname)
+                self.__logger.error("could not open serial port " +
+                                    self.__portname)
                 raise CommunicationException()
             return True
 
@@ -82,7 +81,7 @@ class AyabCommunication(object):
         if self.__ser is not None and self.__ser.is_open is True:
             try:
                 self.__ser.close()
-                del(self.__ser)
+                del (self.__ser)
                 self.__ser = None
                 self.__logger.info("Closing Serial port successful.")
             except:
