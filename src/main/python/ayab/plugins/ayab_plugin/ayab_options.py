@@ -19,9 +19,8 @@
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
 from enum import Enum
-from PyQt5 import QtCore
 from PyQt5.QtCore import QCoreApplication
-from PyQt5.QtWidgets import QCheckBox, QSpinBox, QComboBox, QTabWidget, QLineEdit
+from .machine import Machine
 
 
 class Options (object):
@@ -29,78 +28,60 @@ class Options (object):
 
     def __init__(self):
         # FIXME: Initialize from default settings
-        self.__continuousReporting = False
-        self.__num_colors = 2
-        self.__start_row = 0
-        self.__start_needle = 0 
-        self.__stop_needle = 0  # Machine.MACHINE_WIDTH - 1
-        self.__alignment = "CENTER"
-        self.__inf_repeat = False
-        self.__auto_mirror = False
-        self.__knitting_mode = 0
-        self.__portname = ""
-        self.__filename = ""
+        self.portname = ""
+        self.knitting_mode = KnittingMode(0)
+        self.num_colors = 2
+        self.start_row = 0
+        self.inf_repeat = False
+        self.start_needle = 0 
+        self.stop_needle = Machine.WIDTH - 1
+        self.alignment = Alignment(0)
+        self.auto_mirror = False
+        self.continuous_reporting = False
 
-    def get_configuration_from_ui(self, ui):
+    def as_dict(self):
+        return dict([
+            ("portname", self.portname),
+            ("knitting_mode", self.knitting_mode),
+            ("num_colors", self.num_colors),
+            ("start_row", self.start_row),
+            ("inf_repeat", self.inf_repeat),
+            ("start_needle", self.start_needle),
+            ("stop_needle", self.stop_needle),
+            ("alignment", self.alignment),
+            ("auto_mirror", self.auto_mirror),
+            ("continuous_reporting", self.continuous_reporting)])
+
+    def read(self, ui):
         """Get configuration options from the UI elements."""
-        self.__continuousReporting = ui.findChild(
-            QCheckBox, "checkBox_ContinuousReporting").isChecked()
-
-        color_line_text = ui.findChild(QSpinBox, "color_edit").value()
-        self.__num_colors = int(color_line_text)
-
-        # Internally, we start counting from zero
-        # (for easier handling of arrays)
-        start_row_text = ui.findChild(QSpinBox, "start_row_edit").value()
-        self.__start_row = int(start_row_text) - 1
-
-        start_needle_color = ui.findChild(QComboBox, "start_needle_color").currentIndex()
-        start_needle_text = ui.findChild(QSpinBox, "start_needle_edit").value()
-        self.__start_needle = NeedleColor(start_needle_color).read_settings(start_needle_text)
-
-        stop_needle_color = ui.findChild(QComboBox, "stop_needle_color").currentIndex()
-        stop_needle_text = ui.findChild(QSpinBox, "stop_needle_edit").value()
-        self.__stop_needle = NeedleColor(stop_needle_color).read_settings(stop_needle_text)
-
-        alignment_index = ui.findChild(QComboBox, "alignment_combo_box").currentIndex()
-        self.__alignment = Alignment(alignment_index).name
-
-        self.__inf_repeat = int(ui.findChild(QCheckBox, "infRepeat_checkbox").isChecked())
-        self.__auto_mirror = int(ui.findChild(QCheckBox, "autoMirror_checkbox").isChecked())
-        self.__knitting_mode = ui.findChild(QComboBox, "knitting_mode_box").currentIndex()
-        self.__portname = str(ui.findChild(QComboBox, "serial_port_dropdown").currentText())
-        self.__filename = str(ui.findChild(QLineEdit, "filename_lineedit").text())
+        self.portname = ui.serial_port_dropdown.currentText()
+        self.knitting_mode = KnittingMode(ui.knitting_mode_box.currentIndex())
+        self.num_colors = int(ui.color_edit.value())
+        self.start_row = int(ui.start_row_edit.value()) - 1
+        self.start_needle = NeedleColor.read_start_needle(ui)
+        self.stop_needle = NeedleColor.read_stop_needle(ui)
+        self.alignment = Alignment(ui.alignment_combo_box.currentIndex())
+        self.inf_repeat = ui.infRepeat_checkbox.isChecked()
+        self.auto_mirror = ui.autoMirror_checkbox.isChecked()
+        self.continuous_reporting = ui.checkBox_ContinuousReporting.isChecked()
 
     def validate_configuration(self):
-        if self.__start_needle and self.__stop_needle:
-            if self.__start_needle > self.__stop_needle:
+        if self.start_needle and self.stop_needle:
+            if self.start_needle > self.stop_needle:
                 return False, "Invalid needle start and end."
 
-        if self.__portname == '':
+        if self.portname == '':
             return False, "Please choose a valid port."
 
-        if self.__knitting_mode == KnittingMode.SINGLEBED.value \
-                and self.__num_colors >= 3:
+        if self.knitting_mode == KnittingMode.SINGLEBED \
+                and self.num_colors >= 3:
             return False, "Singlebed knitting currently supports only 2 colors."
 
-        if self.__knitting_mode == KnittingMode.CIRCULAR_RIBBER.value \
-                and self.__num_colors >= 3:
+        if self.knitting_mode == KnittingMode.CIRCULAR_RIBBER \
+                and self.num_colors >= 3:
             return False, "Circular knitting supports only 2 colors."
 
         return True, None
-
-    # getter methods
-    def get_continuousReporting(self): return self.__continuousReporting
-    def get_num_colors(self): return self.__num_colors
-    def get_start_row(self): return self.__start_row
-    def get_start_needle(self): return self.__start_needle
-    def get_stop_needle(self): return self.__stop_needle
-    def get_alignment(self): return self.__alignment
-    def get_inf_repeat(self): return self.__inf_repeat
-    def get_auto_mirror(self): return self.__auto_mirror
-    def get_knitting_mode(self): return self.__knitting_mode
-    def get_portname(self): return self.__portname
-    def get_filename(self): return self.__filename
 
 
 class KnittingMode(Enum):
@@ -113,14 +94,14 @@ class KnittingMode(Enum):
     def row_multiplier(self, ncolors):
         if self.name == "SINGLEBED":
             return 1
-        elif (self.name == "CLASSIC_RIBBER" and ncolors > 2) \
+        if (self.name == "CLASSIC_RIBBER" and ncolors > 2) \
             or self.name == "CIRCULAR_RIBBER":
-            # every second line is blank
-            return 2 * ncolors
-        elif self.name == "MIDDLECOLORSTWICE_RIBBER" \
+                # every second line is blank
+                return 2 * ncolors
+        if self.name == "MIDDLECOLORSTWICE_RIBBER" \
             or self.name == "HEARTOFPLUTO_RIBBER":
-            # only middle lines doubled
-            return 2 * ncolors - 2
+                # only middle lines doubled
+                return 2 * ncolors - 2
         else:
             # one line per color
             return ncolors
@@ -175,15 +156,23 @@ class NeedleColor(Enum):
     ORANGE = 0
     GREEN = 1
 
-    MACHINE_WIDTH = 200
-
     def addItems(box):
         box.addItem(QCoreApplication.translate("NeedleColor", "orange"))
         box.addItem(QCoreApplication.translate("NeedleColor", "green"))
 
-    def read_settings(self, needle):
+    def read(self, needle):
         '''Reads the Needle Settings UI Elements and normalizes'''
         if self.name == "ORANGE":
-            return self.MACHINE_WIDTH.value // 2 - int(needle)
+            return Machine.WIDTH // 2 - int(needle)
         elif self.name == "GREEN":
-            return self.MACHINE_WIDTH.value // 2 - 1 + int(needle)
+            return Machine.WIDTH // 2 - 1 + int(needle)
+
+    def read_start_needle(ui):
+        start_needle_color = NeedleColor(ui.start_needle_color.currentIndex())
+        start_needle_text = ui.start_needle_edit.value()
+        return start_needle_color.read(start_needle_text)
+
+    def read_stop_needle(ui):
+        stop_needle_color = NeedleColor(ui.stop_needle_color.currentIndex())
+        stop_needle_text = ui.stop_needle_edit.value()
+        return stop_needle_color.read(stop_needle_text)

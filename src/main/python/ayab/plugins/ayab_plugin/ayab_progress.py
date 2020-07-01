@@ -18,13 +18,14 @@
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
 from PyQt5 import QtWidgets, QtCore
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QCoreApplication
+from PyQt5.QtWidgets import QGridLayout, QLayout, QLabel
 from bitarray import bitarray
 import numpy as np
 
 
 class Progress:
-    """Knitting progress window.
+    """object holding information on currrent knitting status.
 
     @author Tom Price
     @date   June 2020
@@ -35,10 +36,10 @@ class Progress:
 
     def reset(self):
         self.current_row = -1
-        self.lineNumber = -1
+        self.line_number = -1
         self.total_rows = -1
         self.repeats = -1
-        self.colorSymbol = ""
+        self.color_symbol = ""
         self.hall_l = 0
         self.hall_r = 0
         self.carriage_type = ""
@@ -60,8 +61,7 @@ class Progress:
         else:
             carriage_type = ""
         if carriage_type != "":
-            _translate = QtCore.QCoreApplication.translate
-            carriage_type += _translate("Progress", "Carriage")
+            carriage_type += QCoreApplication.translate("Progress", "Carriage")
 
         carriage_position = int(msg[7])
 
@@ -80,10 +80,10 @@ class KnitProgress:
     def reset(self):
         self.container = QtWidgets.QWidget()
         self.container.setMinimumSize(100,100)
-        self.grid = QtWidgets.QGridLayout(self.container)
+        self.grid = QGridLayout(self.container)
         self.grid.setContentsMargins(1, 1, 1, 1)
         self.grid.setSpacing(0)
-        self.grid.setSizeConstraint(QtWidgets.QLayout.SetMinAndMaxSize)
+        self.grid.setSizeConstraint(QLayout.SetMinAndMaxSize)
         self.area.setWidget(self.container)
         self.row = -1
 
@@ -91,30 +91,30 @@ class KnitProgress:
         if progress.current_row < 0:
             return
         _translate = QtCore.QCoreApplication.translate
-        row, swipe = divmod(progress.lineNumber, row_multiplier)
-        direction = progress.lineNumber % 2
+        row, swipe = divmod(progress.line_number, row_multiplier)
+        direction = progress.line_number % 2
         # row
         w0 = self.__label(_translate("KnitProgress", "Row"))
-        self.grid.addWidget(w0, progress.lineNumber, 0)
+        self.grid.addWidget(w0, progress.line_number, 0)
         w1 = self.__label(str(progress.current_row))
-        self.grid.addWidget(w1, progress.lineNumber, 1, 1, 1, Qt.AlignRight)
+        self.grid.addWidget(w1, progress.line_number, 1, 1, 1, Qt.AlignRight)
         # pass
         w2 = self.__label(_translate("KnitProgress", "Pass") + " " + str(swipe + 1))
-        self.grid.addWidget(w2, progress.lineNumber, 2)
+        self.grid.addWidget(w2, progress.line_number, 2)
         # color
-        if progress.colorSymbol == "":
+        if progress.color_symbol == "":
             coltext = ""
         else:
-            coltext = _translate("KnitProgress", "Color") + " " + progress.colorSymbol
+            coltext = _translate("KnitProgress", "Color") + " " + progress.color_symbol
         w3 = self.__label(coltext)
-        self.grid.addWidget(w3, progress.lineNumber, 3)
+        self.grid.addWidget(w3, progress.line_number, 3)
         # carriage and direction
         try:
             carriage = progress.carriage[0] + progress.carriage[2] + " "
         except:
             carriage = ""
         w4 = self.__label(carriage + ["\u2192 ","\u2190 "][direction])
-        self.grid.addWidget(w4, progress.lineNumber, 4)
+        self.grid.addWidget(w4, progress.line_number, 4)
         # TODO: hints, notes, memos
         w0.show()
         w1.show()
@@ -125,12 +125,12 @@ class KnitProgress:
         # graph line of stitches
         for c in range(len(progress.bits)):
             wc = self.__stitch(progress.color, progress.bits[c], progress.alt_color)
-            self.grid.addWidget(wc, progress.lineNumber, 6 + c)
+            self.grid.addWidget(wc, progress.line_number, 6 + c)
         return
         
     def __label(self, text):
         table = "<table><tbody><tr height='12'><td style='font-weight: normal;'>" + text + "</td></tr></tbody></table>"
-        label = QtWidgets.QLabel()
+        label = QLabel()
         label.setText(table)
         label.setTextFormat(Qt.RichText)
         return label
@@ -144,7 +144,7 @@ class KnitProgress:
         else:
             table = table + "style='border: 1 dotted black;'>"
         table = table + "</td></tr></tbody></table>"
-        label = QtWidgets.QLabel()
+        label = QLabel()
         label.setText(table)
         label.setTextFormat(Qt.RichText)
         return label

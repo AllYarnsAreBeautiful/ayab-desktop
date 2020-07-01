@@ -18,79 +18,45 @@
 #    Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
-from PIL import Image
 from bitarray import bitarray
 import numpy as np
+from .ayab_options import Alignment
 from .machine import Machine
 
+class AyabImage (object):
 
-class ayabImage(object):
-    def __init__(self, image, pNumColors=2):
-        self.__numColors = pNumColors
-        self.__imgPosition = 'CENTER'
-        self.__imgStartNeedle = -1
-        self.__imgStopNeedle = -1
-        self.__knitStartNeedle = 0
-        self.__knitStopNeedle = Machine.MACHINE_WIDTH - 1
-        self.__startLine = 0
+    def __init__(self, image, num_colors=2):
         self.__image = image
-        self.__updateImageData()
+        self.__num_colors = num_colors
+        self.__alignment = Alignment.CENTER
+        self.__img_start_needle = -1
+        self.__img_stop_needle = -1
+        self.__knit_start_needle = 0
+        self.__knit_stop_needle = Machine.WIDTH - 1
+        self.__update_image_data()
         return
 
-    def imageIntern(self):
-        return self.__imageIntern
-
-    def imageExpanded(self):
-        return self.__imageExpanded
-
-    def imgWidth(self):
-        return self.__imgWidth
-
-    def imgHeight(self):
-        return self.__imgHeight
-
-    def knitStartNeedle(self):
-        return self.__knitStartNeedle
-
-    def knitStopNeedle(self):
-        return self.__knitStopNeedle
-
-    def imgStartNeedle(self):
-        return self.__imgStartNeedle
-
-    def imgStopNeedle(self):
-        return self.__imgStopNeedle
-
-    def imgPosition(self):
-        return self.__imgPosition
-
-    def startLine(self):
-        return self.__startLine
-
-    def numColors(self):
-        return self.__numColors
-
-    def __updateImageData(self):
-        self.__imgWidth = self.__image.size[0]
-        self.__imgHeight = self.__image.size[1]
-        self.__convertImgToIntern()
-        self.__calcImgStartStopNeedles()
+    def __update_image_data(self):
+        self.__img_width = self.__image.size[0]
+        self.__img_height = self.__image.size[1]
+        self.__convert()
+        self.__calc_img_start_stop_needles()
         return
 
-    def __convertImgToIntern(self):
-        num_colors = self.__numColors
-        imgWidth = self.__imgWidth
-        imgHeight = self.__imgHeight
+    def __convert(self):
+        num_colors = self.__num_colors
+        img_width = self.__img_width
+        img_height = self.__img_height
 
-        self.__imageIntern = \
-            [[0 for i in range(imgWidth)] for j in range(imgHeight)]
-        self.__imageColors = \
-            [[0 for i in range(num_colors)] for j in range(imgHeight)]  # unused?
-        self.__imageExpanded = \
-            [bitarray([False] * imgWidth) for j in range(num_colors * imgHeight)]
+        self.__image_intern = \
+            [[0 for i in range(img_width)] for j in range(img_height)]
+        self.__image_colors = \
+            [[0 for i in range(num_colors)] for j in range(img_height)]  # unused?
+        self.__image_expanded = \
+            [bitarray([False] * img_width) for j in range(num_colors * img_height)]
 
         # Limit number of colors in image
-        # self.__image = self.__image.quantize(num_colors, dither=None)
+        # self.image = self.image.quantize(num_colors, dither=None)
         self.__image = self.__image.quantize(num_colors)
 
         # Order colors most-frequent first
@@ -105,7 +71,7 @@ class ayabImage(object):
         if actual_num_colors < num_colors:
             # TODO: issue warning if number of colors is less than expected
             # TODO: reduce number of colors
-            # self.__numColors = num_colors = actual_num_colors
+            # self.num_colors = num_colors = actual_num_colors
             # TODO: reduce number of colors in configuration box
             pass
 
@@ -115,119 +81,141 @@ class ayabImage(object):
         self.palette = list(map(self.array2rgb, col_array))
 
         # Make internal representations of image
-        for row in range(imgHeight):
-            for col in range(imgWidth):
+        for row in range(img_height):
+            for col in range(img_width):
                 pxl = self.__image.getpixel((col, row))
                 for color in range(num_colors):
                     if pxl == color:
                         # color map
-                        self.__imageIntern[row][col] = color
+                        self.__image_intern[row][col] = color
                         # amount of bits per color per line
-                        self.__imageColors[row][color] += 1
+                        self.__image_colors[row][color] += 1
                         # colors separated per line
-                        self.__imageExpanded[(num_colors * row)+color][col] = True
+                        self.__image_expanded[(num_colors * row)+color][col] = True
         return
 
-    def __calcImgStartStopNeedles(self):
-        if self.__imgPosition == 'CENTER':
-            needleWidth = self.__knitStopNeedle - self.__knitStartNeedle + 1
-            self.__imgStartNeedle = int((self.__knitStartNeedle + needleWidth / 2) - self.__imgWidth / 2)
-            self.__imgStopNeedle = self.__imgStartNeedle + self.__imgWidth - 1
-        elif self.__imgPosition == 'LEFT':
-            self.__imgStartNeedle = self.__knitStartNeedle
-            self.__imgStopNeedle = self.__imgStartNeedle + self.__imgWidth - 1
-        elif self.__imgPosition == 'RIGHT':
-            self.__imgStopNeedle = self.__knitStopNeedle
-            self.__imgStartNeedle = self.__imgStopNeedle - self.__imgWidth + 1
-        elif int(self.__imgPosition) > 0 and int(self.__imgPosition) < Machine.MACHINE_WIDTH:
-            self.__imgStartNeedle = int(self.__imgPosition)
-            self.__imgStopNeedle = self.__imgStartNeedle + self.__imgWidth - 1
+    def __calc_img_start_stop_needles(self):
+        if self.__alignment == Alignment.CENTER:
+            needle_width = self.__knit_stop_needle - self.__knit_start_needle + 1
+            self.__img_start_needle = int((self.__knit_start_needle + needle_width / 2) - self.img_width / 2)
+            self.__img_stop_needle = self.__img_start_needle + self.__img_width - 1
+        elif self.__alignment == Alignment.LEFT:
+            self.__img_start_needle = self.__knit_start_needle
+            self.__img_stop_needle = self.__img_start_needle + self.__img_width - 1
+        elif self.__alignment == Alignment.RIGHT:
+            self.__img_stop_needle = self.__knit_stop_needle
+            self.__img_start_needle = self.__img_stop_needle - self.__img_width + 1
+        # elif int(self.__alignment) > 0 and int(self.__alignment) < Machine.WIDTH:
+        #     self.__img_start_needle = int(self.__alignment)
+        #     self.__img_stop_needle = self.__img_start_needle + self.__img_width - 1
         else:
             return False
         return True
 
-    def setNumColors(self, pNumColors):
+    def set_knit_needles(self, knit_start, knit_stop):
+        """
+        set the start and stop needle
+        """
+        if (knit_start < knit_stop) and knit_start >= 0 and knit_stop < Machine.WIDTH:
+            self.__knit_start_needle = knit_start
+            self.__knit_stop_needle = knit_stop
+        self.__update_image_data()
+
+    @property
+    def num_colors(self):
+        return self.__num_colors
+
+    @num_colors.setter
+    def num_colors(self, num_colors):
         """
         sets the number of colors used for knitting
         """
         # TODO use preferences or other options to set maximum number of colors
-        if pNumColors > 1 and pNumColors < 7:
-            self.__numColors = pNumColors
-            self.__updateImageData()
-        return
+        if num_colors > 1 and num_colors < 7:
+            self.__num_colors = num_colors
+            self.__update_image_data()
 
-    def invertImage(self):
-        """
-        invert the pixels of the image
-        """
-        self.__image = self.__image.invert()
-        return
+    @property
+    def alignment(self):
+        return self.__alignment
 
-    def rotateImage(self):
-        """
-        rotate the image 90 degrees clockwise
-        """
-        self.__image = self.__image.rotate(-90)
-        self.__updateImageData()
-        return
-
-    def resizeImage(self, pNewWidth):
-        """
-        resize the image to a given width, keeping the aspect ratio
-        """
-        wpercent = (pNewWidth / float(self.__image.size[0]))
-        hsize = int((float(self.__image.size[1]) * float(wpercent)))
-        self.__image = self.__image.resize((pNewWidth, hsize), Image.ANTIALIAS)
-        self.__updateImageData()
-        return
-
-    def repeatImage(self, pHorizontal=1, pVertical=1):
-        """
-        Repeat image.
-        Repeat pHorizontal times horizontally, pVertical times vertically
-        Sturla Lange 2017-12-30
-        """
-        old_h = self.__image.size[1]
-        old_w = self.__image.size[0]
-        new_h = old_h * pVertical
-        new_w = old_w * pHorizontal
-        new_im = Image.new('P', (new_w, new_h))
-        for h in range(0, new_h, old_h):
-            for w in range(0, new_w, old_w):
-                new_im.paste(self.__image, (w, h))
-        self.__image = new_im
-        self.__updateImageData()
-        return
-
-    def setKnitNeedles(self, pKnitStart, pKnitStop):
-        """
-        set the start and stop needle
-        """
-        if (pKnitStart < pKnitStop) and pKnitStart >= 0 and pKnitStop < Machine.MACHINE_WIDTH:
-            self.__knitStartNeedle = pKnitStart
-            self.__knitStopNeedle = pKnitStop
-        self.__updateImageData()
-        return
-
-    def setImagePosition(self, pImgPosition):
+    @alignment.setter
+    def alignment(self, alignment):
         """
         set the position of the pattern
         """
-        if pImgPosition == 'LEFT' or pImgPosition == 'CENTER' or pImgPosition == 'RIGHT' \
-            or (int(pImgPosition) >= 0 and int(pImgPosition) < Machine.MACHINE_WIDTH):
-            self.__imgPosition = pImgPosition
-            self.__updateImageData()
-        return
+        self.__alignment = alignment
+        self.__update_image_data()
 
-    def setStartLine(self, pStartLine):
-        """
-        set the line where to start knitting
-        """
-        # Check if StartLine is in valid range (picture height)
-        if pStartLine >= 0 and pStartLine < self.__image.size[1]:
-            self.__startLine = pStartLine
-        return
+    @property
+    def img_start_needle(self):
+        return self.__img_start_needle
+
+    @property
+    def img_stop_needle(self):
+        return self.__img_stop_needle
+
+    @property
+    def knit_start_needle(self):
+        return self.__knit_start_needle
+
+    @property
+    def knit_stop_needle(self):
+        return self.__knit_stop_needle
+
+    @property
+    def img_height(self):
+        return self.__img_height
+
+    @property
+    def img_width(self):
+        return self.__img_width
+
+    @property
+    def image_expanded(self):
+        return self.__image_expanded
 
     def array2rgb(self, a):
         return (a[0] & 0xFF) * 0x10000 + (a[1] & 0xFF) * 0x100 + (a[2] & 0xFF)
+
+    # def invert_image(self):
+    #     """
+    #     invert the pixels of the image
+    #     """
+    #     self.__image = self.__image.invert()
+    #     return
+
+    # def rotate_image(self):
+    #     """
+    #     rotate the image 90 degrees clockwise
+    #     """
+    #     self.__image = self.__image.rotate(-90)
+    #     self.__update_image_data()
+    #     return
+
+    # def resize_image(self, new_width):
+    #     """
+    #     resize the image to a given width, keeping the aspect ratio
+    #     """
+    #     wpercent = (new_width / float(self.__image.size[0]))
+    #     hsize = int((float(self.__image.size[1]) * float(wpercent)))
+    #     self.__image = self.__image.resize((new_width, hsize), Image.ANTIALIAS)
+    #     self.__update_image_data()
+ 
+    # def repeat_image(self, horizontal=1, vertical=1):
+    #     """
+    #     Repeat image.
+    #     Repeat pHorizontal times horizontally, pVertical times vertically
+    #     Sturla Lange 2017-12-30
+    #     """
+    #     old_h = self.__image.size[1]
+    #     old_w = self.__image.size[0]
+    #     new_h = old_h * vertical
+    #     new_w = old_w * horizontal
+    #     new_im = Image.new('P', (new_w, new_h))
+    #     for h in range(0, new_h, old_h):
+    #         for w in range(0, new_w, old_w):
+    #             new_im.paste(self.__image, (w, h))
+    #     self.__image = new_im
+    #     self.__update_image_data()
 

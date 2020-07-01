@@ -25,8 +25,8 @@ The method of configuration may differ depending on the OS.
 
 from os import path
 from glob import glob
-from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtCore import Qt, QSettings, QLocale
+from PyQt5.QtWidgets import QDialog
 from .ayab_prefs_gui import Ui_PrefsDialog
 from .plugins.ayab_plugin.ayab_options import KnittingMode, Alignment
 
@@ -72,7 +72,7 @@ class Preferences:
         else:
             self.settings.setValue("language", "en_US")
 
-    def setPrefsDialog(self):
+    def set_prefs_dialog(self):
         return PrefsDialog(self).exec_()
 
     def default_locale(self):
@@ -94,7 +94,7 @@ class Preferences:
         return string[i-2:i+3]
 
 
-class PrefsDialog (QtWidgets.QDialog):
+class PrefsDialog (QDialog):
     '''GUI to set preferences'''
 
     def __init__(self, parent):
