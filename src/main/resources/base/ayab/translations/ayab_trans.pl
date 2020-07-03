@@ -5,9 +5,6 @@
 # usage: run this executable from the directory it is in
 # it requires a tab-delimited datafile `ayab-translation-master.tsv`
 # in Unix format
-#
-# after the `.ts` files have been generated
-# then run `lrelease *.ts` to create binary `.qm` files
 # 
 #
 # @author Tom Price
@@ -73,3 +70,6 @@ HEADER
 	close(FILE);
 }
 
+# now that the `.ts` files have been generated
+# run `lrelease *.ts` to create binary `.qm` files
+system("lrelease *ts")
