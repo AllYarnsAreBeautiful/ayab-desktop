@@ -94,7 +94,7 @@ class AyabControl(object):
         return self.knitting_mode.row_multiplier(self.num_colors)
 
     def get_knit_func(self):
-        '''Select function that decides which line of data to send according to the machine type and number of colors'''
+        '''Select function that decides which line of data to send according to the knitting mode and number of colors'''
         if not self.knitting_mode.good_ncolors(self.num_colors):
             self.__logger.error(
                 "Wrong number of colours for the knitting mode")
@@ -405,72 +405,83 @@ class AyabControl(object):
 
     def knit(self, image, options):
         '''Finite State Machine governing serial communication'''
-        result = AyabControlKnitResult.NONE
-
-        if self.__current_state != KnittingState.SETUP:
-            rcvMsg, rcvParam = self.check_serial()
-
-        if self.__current_state == KnittingState.SETUP:
-            self.reset()
-            self.image = image
-            self.start_row = options.start_row
-            self.num_colors = options.num_colors
-            self.knitting_mode = options.knitting_mode
-            self.inf_repeat = options.inf_repeat
-
-            if not self.get_knit_func():
-                result = AyabControlKnitResult.ERROR_INVALID_SETTINGS
-            else:
-                if options.portname == QCoreApplication.translate(
-                        "AyabPlugin", "Simulation"):
-                    self.__com = AyabCommunicationMockup()
-                else:
-                    self.__com = AyabCommunication()
-
-                if not self.__com.open_serial(options.portname):
-                    self.__logger.error("Could not open serial port")
-                    result = AyabControlKnitResult.ERROR_SERIAL_PORT
-
-                self.__current_state = KnittingState.INIT
-
-        elif self.__current_state == KnittingState.INIT:
-            if rcvMsg == 'cnfInfo':
-                if rcvParam == self.API_VERSION:
-                    self.__current_state = KnittingState.WAIT_FOR_INIT
-                    result = AyabControlKnitResult.WAIT_FOR_INIT
-                else:
-                    self.__logger.error("wrong API version: " + str(rcvParam) +
-                                        ", " + "expected: " +
-                                        str(self.API_VERSION))
-                    result = AyabControlKnitResult.ERROR_WRONG_API
-            else:
-                self.__com.req_info()
-                result = AyabControlKnitResult.CONNECTING_TO_MACHINE
-
-        elif self.__current_state == KnittingState.WAIT_FOR_INIT:
-            if rcvMsg == "indState":
-                if rcvParam == 1:
-                    self.__com.req_start(self.image.knit_start_needle,
-                                         self.image.knit_stop_needle,
-                                         options.continuous_reporting)
-                    self.__current_state = KnittingState.START
-                else:
-                    self.__logger.debug("init failed")
-
-        elif self.__current_state == KnittingState.START:
-            if rcvMsg == 'cnfStart':
-                if rcvParam == 1:
-                    self.__current_state = KnittingState.OPERATE
-                    result = AyabControlKnitResult.PLEASE_KNIT
-                else:
-                    self.__logger.error("device not ready")
-                    result = AyabControlKnitResult.DEVICE_NOT_READY
-
-        elif self.__current_state == KnittingState.OPERATE:
-            if rcvMsg == 'reqLine':
-                imageFinished = self.__cnfLine(rcvParam)
-                if imageFinished:
-                    self.__current_state = KnittingState.SETUP
-                    result = AyabControlKnitResult.FINISHED
-
+        method = "_knit_" + self.__current_state.name.lower()
+        if not hasattr(self, method):
+            # NONE, FINISHED
+            return AyabControlKnitResult.NONE
+        dispatch = getattr(self, method)
+        result = dispatch(image, options)
         return result
+
+    def _knit_setup(self, image, options):
+        self.reset()
+        self.image = image
+        self.start_row = options.start_row
+        self.num_colors = options.num_colors
+        self.knitting_mode = options.knitting_mode
+        self.inf_repeat = options.inf_repeat
+        if not self.get_knit_func():
+            return AyabControlKnitResult.ERROR_INVALID_SETTINGS
+
+        if options.portname == QCoreApplication.translate(
+                "AyabPlugin", "Simulation"):
+            self.__com = AyabCommunicationMockup()
+        else:
+            self.__com = AyabCommunication()
+        if not self.__com.open_serial(options.portname):
+            self.__logger.error("Could not open serial port")
+            return AyabControlKnitResult.ERROR_SERIAL_PORT
+
+        # setup complete
+        self.__current_state = KnittingState.INIT
+        return AyabControlKnitResult.NONE
+
+    def _knit_init(self, image, options):
+        rcvMsg, rcvParam = self.check_serial()
+        if rcvMsg == 'cnfInfo':
+            if rcvParam == self.API_VERSION:
+                self.__current_state = KnittingState.WAIT_FOR_INIT
+                return AyabControlKnitResult.WAIT_FOR_INIT
+            else:
+                self.__logger.error("wrong API version: " + str(rcvParam) +
+                                    ", " + "expected: " +
+                                    str(self.API_VERSION))
+                return AyabControlKnitResult.ERROR_WRONG_API
+
+        self.__com.req_info()
+        return AyabControlKnitResult.CONNECTING_TO_MACHINE
+
+    def _knit_wait_for_init(self, image, options):
+        rcvMsg, rcvParam = self.check_serial()
+        if rcvMsg == "indState":
+            if rcvParam == 1:
+                self.__com.req_start(self.image.knit_start_needle,
+                                     self.image.knit_stop_needle,
+                                     options.continuous_reporting)
+                self.__current_state = KnittingState.START
+            else:
+                self.__logger.debug("init failed")
+        # fallthrough
+        return AyabControlKnitResult.NONE
+
+    def _knit_start(self, image, options):
+        rcvMsg, rcvParam = self.check_serial()
+        if rcvMsg == 'cnfStart':
+            if rcvParam == 1:
+                self.__current_state = KnittingState.OPERATE
+                return AyabControlKnitResult.PLEASE_KNIT
+            else:
+                self.__logger.error("device not ready")
+                return AyabControlKnitResult.DEVICE_NOT_READY
+        # fallthrough
+        return AyabControlKnitResult.NONE
+
+    def _knit_operate(self, image, options):
+        rcvMsg, rcvParam = self.check_serial()
+        if rcvMsg == 'reqLine':
+            imageFinished = self.__cnfLine(rcvParam)
+            if imageFinished:
+                self.__current_state = KnittingState.SETUP
+                return AyabControlKnitResult.FINISHED
+        # fallthrough
+        return AyabControlKnitResult.NONE
