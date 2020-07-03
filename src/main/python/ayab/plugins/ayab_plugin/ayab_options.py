@@ -167,11 +167,11 @@ class NeedleColor(Enum):
             return Machine.WIDTH // 2 - 1 + int(needle)
 
     def read_start_needle(ui):
-        start_needle_color = NeedleColor(ui.start_needle_color.currentIndex())
+        start_needle_col = NeedleColor(ui.start_needle_color.currentIndex())
         start_needle_text = ui.start_needle_edit.value()
-        return start_needle_color.read(start_needle_text)
+        return start_needle_col.read(start_needle_text)
 
     def read_stop_needle(ui):
-        stop_needle_color = NeedleColor(ui.stop_needle_color.currentIndex())
+        stop_needle_col = NeedleColor(ui.stop_needle_color.currentIndex())
         stop_needle_text = ui.stop_needle_edit.value()
-        return stop_needle_color.read(stop_needle_text)
+        return stop_needle_col.read(stop_needle_text)

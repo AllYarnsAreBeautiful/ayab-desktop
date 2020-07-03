@@ -18,11 +18,9 @@
 #    Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
-# import weakref
 import logging
 
-from PyQt5 import QtCore
-from PyQt5.QtCore import QState, QObject
+from PyQt5.QtCore import QStateMachine, QState, QObject
 
 
 class FSM(object):
@@ -33,14 +31,11 @@ class FSM(object):
     @author Tom Price
     @date   June 2020
     """
-    def __init__(self, parent):
-        """Define Hierarchical states for Finite State Machine"""
-
-        # garbage-collector-safe reference to parent
-        self.__parent = parent  # weakref.ref(parent)
+    def __init__(self):
+        """Define Finite State Machine"""
 
         # Finite State Machine
-        self.machine = QtCore.QStateMachine()
+        self.machine = QStateMachine()
 
         # Image states
         self.NO_IMAGE = QState(self.machine)
@@ -51,24 +46,23 @@ class FSM(object):
         # Set machine states
         self.machine.setInitialState(self.NO_IMAGE)
 
-    def transitions(self):
+    def set_transitions(self, parent):
         """Define transitions between states for Finite State Machine"""
 
         # Events that trigger state changes
-        self.NO_IMAGE.addTransition(self.__parent.signal_image_loaded,
+        self.NO_IMAGE.addTransition(parent.mailbox.image_loaded_flagger,
                                     self.NOT_CONFIGURED)
-        self.NOT_CONFIGURED.addTransition(self.__parent.ui.knit_button.clicked,
+        self.NOT_CONFIGURED.addTransition(parent.ui.knit_button.clicked,
                                           self.CONFIGURING)
-        self.CONFIGURING.addTransition(self.__parent.signal_image_loaded,
+        self.CONFIGURING.addTransition(parent.mailbox.image_loaded_flagger,
                                        self.NOT_CONFIGURED)
-        self.CONFIGURING.addTransition(self.__parent.signal_image_transformed,
-                                       self.NOT_CONFIGURED)
-        self.CONFIGURING.addTransition(self.__parent.signal_configure_fail,
-                                       self.NOT_CONFIGURED)
-        self.CONFIGURING.addTransition(self.__parent.signal_configured,
+        self.CONFIGURING.addTransition(
+            parent.mailbox.image_transformed_flagger, self.NOT_CONFIGURED)
+        self.CONFIGURING.addTransition(
+            parent.mailbox.configuration_fail_flagger, self.NOT_CONFIGURED)
+        self.CONFIGURING.addTransition(parent.mailbox.configured_flagger,
                                        self.KNITTING)
-        self.KNITTING.addTransition(self.__parent.gt.finished,
-                                    self.NOT_CONFIGURED)
+        self.KNITTING.addTransition(parent.gt.finished, self.NOT_CONFIGURED)
 
         # Actions triggered by state changes
         self.NO_IMAGE.entered.connect(
@@ -80,34 +74,28 @@ class FSM(object):
         self.KNITTING.entered.connect(
             lambda: logging.debug("Entered state KNITTING"))
 
-        self.NOT_CONFIGURED.entered.connect(self.__parent.add_image_actions)
-        self.NOT_CONFIGURED.entered.connect(self.__parent.reset_progress_bar)
-        self.CONFIGURING.entered.connect(self.__parent.plugin.configure)
-        self.KNITTING.entered.connect(self.__parent.start_knitting_process)
+        self.NOT_CONFIGURED.entered.connect(parent.add_image_actions)
+        self.NOT_CONFIGURED.entered.connect(parent.progress_bar.reset)
+        self.CONFIGURING.entered.connect(
+            lambda: parent.plugin.configure(parent.scene.image))
+        self.KNITTING.entered.connect(parent.start_knitting_process)
 
-    def properties(self):
+    def set_properties(self, ui):
         """Define properties for GUI elements linked to states in Finite State Machine"""
 
         # Options dock
-        self.NO_IMAGE.assignProperty(self.__parent.ui.widget_optionsdock,
-                                     "enabled", "False")
-        self.NOT_CONFIGURED.assignProperty(self.__parent.ui.widget_optionsdock,
-                                           "enabled", "True")
-        self.KNITTING.assignProperty(self.__parent.ui.widget_optionsdock,
-                                     "enabled", "False")
+        self.NO_IMAGE.assignProperty(ui.widget_optionsdock, "enabled", "False")
+        self.NOT_CONFIGURED.assignProperty(ui.widget_optionsdock, "enabled",
+                                           "True")
+        self.KNITTING.assignProperty(ui.widget_optionsdock, "enabled", "False")
 
         # Knit button
-        self.NO_IMAGE.assignProperty(self.__parent.ui.knit_button, "enabled",
-                                     "False")
-        self.NOT_CONFIGURED.assignProperty(self.__parent.ui.knit_button,
-                                           "enabled", "True")
-        self.KNITTING.assignProperty(self.__parent.ui.knit_button, "enabled",
-                                     "False")
+        self.NO_IMAGE.assignProperty(ui.knit_button, "enabled", "False")
+        self.NOT_CONFIGURED.assignProperty(ui.knit_button, "enabled", "True")
+        self.KNITTING.assignProperty(ui.knit_button, "enabled", "False")
 
         # Cancel button
-        self.NO_IMAGE.assignProperty(self.__parent.ui.cancel_button, "enabled",
-                                     "False")
-        self.NOT_CONFIGURED.assignProperty(self.__parent.ui.cancel_button,
-                                           "enabled", "False")
-        self.KNITTING.assignProperty(self.__parent.ui.cancel_button, "enabled",
-                                     "True")
+        self.NO_IMAGE.assignProperty(ui.cancel_button, "enabled", "False")
+        self.NOT_CONFIGURED.assignProperty(ui.cancel_button, "enabled",
+                                           "False")
+        self.KNITTING.assignProperty(ui.cancel_button, "enabled", "True")

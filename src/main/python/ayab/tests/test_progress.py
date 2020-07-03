@@ -20,14 +20,15 @@
 
 import pytest
 import unittest
-from ayab.plugins.ayab_plugin.ayab_progress import Progress
+from ayab.plugins.ayab_plugin.ayab_progress import Status
+
 
 class TestProgress(unittest.TestCase):
     def setUp(self):
         pass
 
     def test_get_carriage_info(self):
-        p = Progress()
+        p = Status()
         msg = [0, 1, 2, 3, 4, 5, 1, 7.9]
         p.get_carriage_info(msg)
         assert p.hall_l == 0x203
