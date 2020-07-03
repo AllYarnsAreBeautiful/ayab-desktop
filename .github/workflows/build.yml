@@ -39,7 +39,6 @@ jobs:
       run: |
         cd src/main/resources/base/ayab/translations
         ./ayab_trans.pl
-        lrelease *.ts
     - name: Build app
       run: |
         python -m fbs freeze --debug
