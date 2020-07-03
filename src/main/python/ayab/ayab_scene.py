@@ -18,18 +18,17 @@
 #    Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
-# import weakref
 import logging
 from math import ceil
 
 from PyQt5.QtGui import QImage, QPixmap, QBrush, QColor
-from PyQt5.QtCore import QCoreApplication
-from PyQt5.QtWidgets import QGraphicsScene, QGraphicsRectItem, QInputDialog, QDialog
+from PyQt5.QtWidgets import QGraphicsScene, QGraphicsRectItem, QGraphicsView, QInputDialog, QDialog
 
 from PIL import Image
 from DAKimport import DAKimport
 
 from .ayab_transforms import Transformable, Mirrors
+from .plugins.ayab_plugin.ayab_plugin import SignalEmitter
 from .plugins.ayab_plugin.ayab_options import Alignment
 from .plugins.ayab_plugin.machine import Machine
 
@@ -45,33 +44,30 @@ class Scene(object):
     LIMIT_BAR_WIDTH = 0.5
 
     def __init__(self, parent):
-        self.__parent = parent  # weakref.ref(parent)
+        self.__parent = parent
         self.__image = None
+        self.__mailman = SignalEmitter(parent.mailbox)
         default = parent.prefs.settings.value("default_alignment")
         self.__alignment = Alignment(default)
         self.__start_needle = 80
         self.__stop_needle = 119
+        self.__row_progress = 0
+
+        # zoom behavior
+        self.__qv = parent.ui.image_pattern_view
+        self.__qv.setDragMode(QGraphicsView.ScrollHandDrag)
         self.__zoom = 3
-        self.row_progress = 0
 
     def refresh(self):
         '''Updates the graphics scene'''
-        width, height = self.__image.size
-
-        data = self.__image.convert("RGBA").tobytes("raw", "RGBA")
-        qim = QImage(data, self.__image.size[0], self.__image.size[1],
-                     QImage.Format_ARGB32)
-        pixmap = QPixmap.fromImage(qim)
-
-        # Set dimensions on GUI
-        text = "{} x {}".format(width, height)
-        self.__parent.ui.label_notifications.setText(
-            QCoreApplication.translate("Scene", "Image dimensions") + ": " +
-            text)
-
         qscene = QGraphicsScene()
 
-        # add pattern and move accordingly to alignment
+        width, height = self.__image.size
+        data = self.__image.convert("RGBA").tobytes("raw", "RGBA")
+        qim = QImage(data, width, height, QImage.Format_ARGB32)
+        pixmap = QPixmap.fromImage(qim)
+
+        # Add pattern and move accordingly to alignment
         pattern = qscene.addPixmap(pixmap)
         if self.__alignment.name == 'LEFT':
             pos = self.__start_needle - Machine.WIDTH / 2
@@ -109,13 +105,12 @@ class Scene(object):
         # Draw knitting progress
         qscene.addItem(
             QGraphicsRectItem(-Machine.WIDTH / 2,
-                              pixmap.height() - self.row_progress,
+                              pixmap.height() - self.__row_progress,
                               Machine.WIDTH, self.LIMIT_BAR_WIDTH))
 
-        qv = self.__parent.ui.image_pattern_view
-        qv.resetTransform()
-        qv.scale(self.zoom, self.zoom)
-        qv.setScene(qscene)
+        self.__qv.resetTransform()
+        self.__qv.scale(self.zoom, self.zoom)
+        self.__qv.setScene(qscene)
 
     def load_image_file(self, image_str):
         # check for DAK files
@@ -132,23 +127,38 @@ class Scene(object):
         else:
             self.__image = Image.open(image_str)
         self.__image = self.__image.convert("RGBA")
-
-    def update_needles(self, start_needle, stop_needle):
-        '''Updates the position of the start/stop needle visualisation'''
-        self.__start_needle = start_needle
-        self.__stop_needle = stop_needle
-        self.refresh()
+        self.__mailman.emit_image_dimensions()
 
     @property
     def image(self):
         return self.__image
+
+    @image.setter
+    def image(self, image):
+        self.__image = image
+        self.refresh()
+
+    @property
+    def row_progress(self):
+        return self.__row_progress
+
+    @row_progress.setter
+    def row_progress(self, row_progress):
+        self.__row_progress = row_progress
+        self.refresh()
+
+    def update_needles(self, start_needle, stop_needle):
+        '''Update the position of the start/stop needle visualization'''
+        self.__start_needle = start_needle
+        self.__stop_needle = stop_needle
+        self.refresh()
 
     @property
     def alignment(self):
         return self.__alignment
 
     def update_alignment(self, alignment):
-        '''Updates the alignment of the image between start/stop needle'''
+        '''Update the alignment of the image between start/stop needle'''
         self.__alignment = Alignment(alignment)
         self.refresh()
 
@@ -158,7 +168,7 @@ class Scene(object):
 
     @zoom.setter
     def zoom(self, event):
-        '''Using mouse wheel events to zoom the pattern view'''
+        '''Use mouse wheel events to zoom the pattern view'''
         if self.__image is not None:
             # angleDelta.y is 120 or -120 when scrolling
             zoom = event.angleDelta().y() / 120
@@ -168,11 +178,11 @@ class Scene(object):
             self.refresh()
 
     def invert_image(self):
-        '''Public invert current Image function.'''
+        '''invert current image.'''
         self.apply_image_transform("invert")
 
     def repeat_image(self):
-        '''Public repeat current Image function.'''
+        '''repeat current image.'''
         v = QInputDialog.getInt(self.__parent,
                                 "Repeat",
                                 "Vertical",
@@ -237,15 +247,9 @@ class Scene(object):
         if not image:
             return
 
-        # Transition to NOT_CONFIGURED state
-        self.__parent.signal_image_transformed.emit()
-
         # Update the view
-        self.__image = image
+        self.image = image
+        self.__mailman.emit_image_dimensions()
 
-        # Update maximum values
-        width, height = self.__image.size
-        self.__parent.plugin.set_image_dimensions(width, height)
-
-        # Draw canvas
-        self.refresh()
+        # Transition to NOT_CONFIGURED state
+        self.__mailman.emit_image_transformed()

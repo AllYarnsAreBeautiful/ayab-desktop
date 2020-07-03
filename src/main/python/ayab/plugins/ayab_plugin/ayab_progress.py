@@ -24,8 +24,8 @@ from bitarray import bitarray
 import numpy as np
 
 
-class Progress:
-    """object holding information on currrent knitting status.
+class Status:
+    """Data object for the status tab and knit progress window.
 
     @author Tom Price
     @date   June 2020
@@ -70,7 +70,20 @@ class Progress:
         self.carriage_position = carriage_position
 
 
-class KnitProgress:
+class Progress(object):
+    """Data object for the progress bar."""
+    def __init__(self):
+        self.reset()
+
+    def reset(self):
+        self.row = -1
+        self.total = -1
+        self.repeats = -1
+        self.color = ""
+
+
+class KnitProgress(object):
+    """Methods for knit progress window."""
     def __init__(self, parent):
         self.area = parent.area
         self.area.setContentsMargins(1, 1, 1, 1)
@@ -85,36 +98,36 @@ class KnitProgress:
         self.area.setWidget(self.container)
         self.row = -1
 
-    def update(self, progress, row_multiplier):
-        if progress.current_row < 0:
+    def update(self, status, row_multiplier):
+        if status.current_row < 0:
             return
         _translate = QtCore.QCoreApplication.translate
-        row, swipe = divmod(progress.line_number, row_multiplier)
-        direction = progress.line_number % 2
+        row, swipe = divmod(status.line_number, row_multiplier)
+        direction = status.line_number % 2
         # row
         w0 = self.__label(_translate("KnitProgress", "Row"))
-        self.grid.addWidget(w0, progress.line_number, 0)
-        w1 = self.__label(str(progress.current_row))
-        self.grid.addWidget(w1, progress.line_number, 1, 1, 1, Qt.AlignRight)
+        self.grid.addWidget(w0, status.line_number, 0)
+        w1 = self.__label(str(status.current_row))
+        self.grid.addWidget(w1, status.line_number, 1, 1, 1, Qt.AlignRight)
         # pass
         w2 = self.__label(
             _translate("KnitProgress", "Pass") + " " + str(swipe + 1))
-        self.grid.addWidget(w2, progress.line_number, 2)
+        self.grid.addWidget(w2, status.line_number, 2)
         # color
-        if progress.color_symbol == "":
+        if status.color_symbol == "":
             coltext = ""
         else:
             coltext = _translate("KnitProgress",
-                                 "Color") + " " + progress.color_symbol
+                                 "Color") + " " + status.color_symbol
         w3 = self.__label(coltext)
-        self.grid.addWidget(w3, progress.line_number, 3)
+        self.grid.addWidget(w3, status.line_number, 3)
         # carriage and direction
         try:
-            carriage = progress.carriage[0] + progress.carriage[2] + " "
+            carriage = status.carriage[0] + status.carriage[2] + " "
         except Exception:
             carriage = ""
         w4 = self.__label(carriage + ["\u2192 ", "\u2190 "][direction])
-        self.grid.addWidget(w4, progress.line_number, 4)
+        self.grid.addWidget(w4, status.line_number, 4)
         # TODO: hints, notes, memos
         w0.show()
         w1.show()
@@ -123,10 +136,9 @@ class KnitProgress:
         w4.show()
         self.area.ensureWidgetVisible(w0)
         # graph line of stitches
-        for c in range(len(progress.bits)):
-            wc = self.__stitch(progress.color, progress.bits[c],
-                               progress.alt_color)
-            self.grid.addWidget(wc, progress.line_number, 6 + c)
+        for c in range(len(status.bits)):
+            wc = self.__stitch(status.color, status.bits[c], status.alt_color)
+            self.grid.addWidget(wc, status.line_number, 6 + c)
         return
 
     def __label(self, text):

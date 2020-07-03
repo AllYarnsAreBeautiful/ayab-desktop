@@ -23,7 +23,7 @@ from enum import Enum
 from bitarray import bitarray
 from PyQt5.QtCore import QCoreApplication
 from . import ayab_image
-from .ayab_progress import Progress
+from .ayab_progress import Status
 from .ayab_communication import AyabCommunication
 from .ayab_communication_mockup import AyabCommunicationMockup
 from .ayab_options import KnittingMode, Alignment
@@ -68,7 +68,7 @@ class AyabControl(object):
 
     def __init__(self):
         self.__logger = logging.getLogger(type(self).__name__)
-        self.__progress = Progress()
+        self.__status = Status()
         self.__current_state = KnittingState.SETUP
 
     def reset(self):
@@ -77,14 +77,17 @@ class AyabControl(object):
         self.__line_block = 0
         self.__img_row = 0
         self.__inf_repeat_repeats = 0
-        self.__progress.reset()
+        self.__status.reset()
 
     @property
-    def progress(self):
-        return self.__progress
+    def status(self):
+        return self.__status
 
     def close(self):
-        self.__com.close_serial()
+        try:
+            self.__com.close_serial()
+        except Exception:
+            pass
         self.reset()
 
     def get_row_multiplier(self):
@@ -113,7 +116,7 @@ class AyabControl(object):
         if token == "cnfInfo":
             self.__log_cnfInfo(msg)
         elif token == "indState":
-            self.__progress.get_carriage_info(msg)
+            self.__status.get_carriage_info(msg)
         return token, param
 
     def __log_cnfInfo(self, msg):
@@ -157,8 +160,8 @@ class AyabControl(object):
                 msg += " color: " + str(self.COLOR_SYMBOLS[color])
             self.__logger.debug(msg)
 
-            # get line progress to send to GUI
-            self.__get_progress(line_number, color, bits)
+            # get status to send to GUI
+            self.__get_status(line_number, color, bits)
 
         else:
             self.__logger.error("Requested line number out of range")
@@ -172,24 +175,24 @@ class AyabControl(object):
         else:
             return True  # image finished
 
-    def __get_progress(self, line_number, color, bits):
-        self.__progress.current_row = self.__img_row + 1
-        self.__progress.total_rows = self.image.img_height
-        self.__progress.line_number = line_number
+    def __get_status(self, line_number, color, bits):
+        self.__status.current_row = self.__img_row + 1
+        self.__status.total_rows = self.image.img_height
+        self.__status.line_number = line_number
         if self.inf_repeat:
-            self.__progress.repeats = self.__inf_repeat_repeats
+            self.__status.repeats = self.__inf_repeat_repeats
         if self.knitting_mode == KnittingMode.SINGLEBED:
-            self.__progress.alt_color = self.image.palette[1]
-            self.__progress.color_symbol = "A/B"
+            self.__status.alt_color = self.image.palette[1]
+            self.__status.color_symbol = "A/B"
         else:
-            self.__progress.alt_color = None
-            self.__progress.color_symbol = self.COLOR_SYMBOLS[color]
-        self.__progress.color = self.image.palette[color]
+            self.__status.alt_color = None
+            self.__status.color_symbol = self.COLOR_SYMBOLS[color]
+        self.__status.color = self.image.palette[color]
         if self.FLANKING_NEEDLES:
-            self.__progress.bits = bits[self.image.knit_start_needle:self.
-                                        image.knit_stop_needle + 1]
+            self.__status.bits = bits[self.image.knit_start_needle:self.image.
+                                      knit_stop_needle + 1]
         else:
-            self.__progress.bits = bits[self.__first_needle:self.__last_needle]
+            self.__status.bits = bits[self.__first_needle:self.__last_needle]
 
     def select_needles(self, color, row_index, blank_line):
         bits = bitarray([False] * Machine.WIDTH, endian="little")
