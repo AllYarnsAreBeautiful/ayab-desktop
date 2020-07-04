@@ -23,7 +23,7 @@ from enum import Enum
 from bitarray import bitarray
 from PyQt5.QtCore import QCoreApplication
 from . import ayab_image
-from .ayab_progress import Status
+from .ayab_status import Status
 from .ayab_communication import AyabCommunication
 from .ayab_communication_mockup import AyabCommunicationMockup
 from .ayab_options import KnittingMode, Alignment

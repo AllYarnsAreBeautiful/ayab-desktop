@@ -19,7 +19,7 @@
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
 from PyQt5.QtCore import QObject, pyqtSignal, Qt
-from .plugins.ayab_plugin.ayab_progress import Status
+from .plugins.ayab_plugin.ayab_status import Status
 from .plugins.ayab_plugin.ayab_options import Alignment
 
 
@@ -56,7 +56,7 @@ class SignalReceiver(QObject):
 
     def connect_slots(self, parent):
         self.start_row_updater.connect(parent.update_start_row)
-        self.progress_bar_updater.connect(parent.progress_bar.update)
+        self.progress_bar_updater.connect(parent.pb.update)
         self.knit_progress_updater.connect(parent.update_knit_progress,
                                            type=Qt.BlockingQueuedConnection)
         self.status_updater.connect(parent.update_status_tab)

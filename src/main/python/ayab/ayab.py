@@ -24,21 +24,22 @@ import sys
 from os import path, mkdir
 import logging
 
-from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox, QFrame, QFileDialog
+from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox, QFileDialog, QInputDialog, QDialog
 from PyQt5.QtCore import Qt, QTranslator, QThread, QLocale, QCoreApplication, QSettings
 
 import simpleaudio as sa
 import wave
 
 from .ayab_gui import Ui_MainWindow
-from .ayab_about import Ui_AboutForm
 from .ayab_fsm import FSM
 from .ayab_scene import Scene
 from .ayab_mailbox import SignalReceiver
 from .ayab_preferences import Preferences, str2bool
+from .ayab_progress import Progress, ProgressBar
+from .ayab_about import About
 from .plugins.ayab_plugin import AyabPlugin
 from .plugins.ayab_plugin.firmware_flash import FirmwareFlash
-from .plugins.ayab_plugin.ayab_progress import Progress, KnitProgress
+from .plugins.ayab_plugin.ayab_status import KnitProgress
 from .plugins.ayab_plugin.ayab_options import Alignment
 from .plugins.ayab_plugin.machine import Machine
 
@@ -90,10 +91,11 @@ class GuiMain(QMainWindow):
         self.__setup_menubar()
         self.mailbox = SignalReceiver()
         self.scene = Scene(self)
+        self.about = About(app_context)
         self.plugin = AyabPlugin()
         self.plugin.setupUi(self)
         self.progress = Progress()
-        self.progress_bar = ProgressBar(self)
+        self.pb = ProgressBar(self)
         self.kp = KnitProgress(self.ui)
         self.gt = GenericThread(self.plugin.knit)
 
@@ -114,7 +116,7 @@ class GuiMain(QMainWindow):
 
         # clear progress and status bar
         self.reset_notification()
-        self.progress_bar.reset()
+        self.pb.reset()
 
         # show UI
         self.showMaximized()
@@ -132,15 +134,16 @@ class GuiMain(QMainWindow):
 
     def update_start_row(self, start_row):
         self.progress.row = start_row
-        self.progress_bar.refresh()
+        self.pb.refresh()
         self.scene.row_progress = start_row
 
     def set_image_dimensions(self):
         """Set dimensions on GUI"""
         width, height = self.scene.image.size
         self.plugin.set_image_dimensions(width, height)
+        self.progress.row = self.scene.row_progress + 1
         self.progress.total = height
-        self.progress_bar.refresh()
+        self.pb.refresh()
         self.update_notification(
             QCoreApplication.translate("Scene", "Image dimensions") +
             ": {} x {}".format(width, height), False)
@@ -148,7 +151,7 @@ class GuiMain(QMainWindow):
 
     def update_progress(self, row, total, repeats, color_symbol):
         self.progress.update(row, total, repeats, color_symbol)
-        self.progress_bar.refresh()
+        self.pb.refresh()
 
     def update_status_tab(self, hall_l, hall_r, carriage_type,
                           carriage_position):
@@ -184,10 +187,10 @@ class GuiMain(QMainWindow):
         if ret == QMessageBox.Ok:
             return True
 
-    def update_knit_progress(self, progress, row_multiplier):
-        self.kp.update(progress, row_multiplier)
-        # if progress.current_row > 0 and progress.current_row == progress.total_rows:
-        #     self.signal_done_knit_progress.emit()
+    def update_knit_progress(self, status, row_multiplier):
+        self.kp.update(status, row_multiplier)
+        # if status.current_row > 0 and status.current_row == status.total_rows:
+        #     self.mailbox.done_knit_progress.emit()
 
     def wheelEvent(self, event):
         self.scene.zoom = event
@@ -205,7 +208,7 @@ class GuiMain(QMainWindow):
             self.generate_firmware_ui)
         self.ui.action_set_preferences.triggered.connect(
             self.open_preferences_dialog)
-        self.ui.action_about.triggered.connect(self.open_about_ui)
+        self.ui.action_about.triggered.connect(self.about.show)
         self.ui.action_quit.triggered.connect(QCoreApplication.instance().quit)
         self.ui.action_invert.triggered.connect(self.scene.invert_image)
         self.ui.action_stretch.triggered.connect(self.scene.stretch_image)
@@ -294,53 +297,14 @@ class GuiMain(QMainWindow):
             self.scene.refresh()
             self.mailbox.image_loaded_flagger.emit()
             self.statusBar().showMessage(image_str)
-            # Tell loaded plugin elements about changed parameters
-            width, height = self.scene.image.size
-            self.plugin.set_image_dimensions(width, height)
+            self.set_image_dimensions()
 
     def generate_firmware_ui(self):
         self.__flash_ui = FirmwareFlash(self)
         self.__flash_ui.show()
 
-    def open_about_ui(self):
-        __version__ = "package_version"
-        filename_version = self.app_context.get_resource(
-            "ayab/package_version")
-        with open(filename_version) as version_file:
-            __version__ = version_file.read().strip()
-
-        self.__about_form = QFrame()
-        self.__about_ui = Ui_AboutForm()
-        self.__about_ui.setupUi(self.__about_form)
-        self.__about_ui.title_label.setText(
-            QCoreApplication.translate("MainWindow", "All Yarns Are Beautiful")
-            + " v " + __version__)
-        self.__about_ui.link_label.setText(
-            QCoreApplication.translate("MainWindow", "Website") +
-            ": <a href='http://ayab-knitting.com'>http://ayab-knitting.com</a>"
-        )
-        self.__about_ui.link_label.setTextFormat(Qt.RichText)
-        self.__about_ui.link_label.setTextInteractionFlags(
-            Qt.TextBrowserInteraction)
-        self.__about_ui.link_label.setOpenExternalLinks(True)
-        self.__about_ui.manual_label.setText(
-            QCoreApplication.translate("MainWindow", "Manual") +
-            ": <a href='http://manual.ayab-knitting.com'>http://manual.ayab-knitting.com</a>"
-        )
-        self.__about_ui.manual_label.setTextFormat(Qt.RichText)
-        self.__about_ui.manual_label.setTextInteractionFlags(
-            Qt.TextBrowserInteraction)
-        self.__about_ui.manual_label.setOpenExternalLinks(True)
-        self.__about_form.show()
-
     def open_preferences_dialog(self):
         return self.prefs.set_prefs_dialog()
-
-    # def get_serial_ports(self):
-    #     """
-    #     Returns a list of all USB Serial Ports
-    #     """
-    #     return list(serial.tools.list_ports.grep("USB"))
 
     def audio(self, sound):
         """Blocking -- call from external thread only"""
@@ -362,59 +326,6 @@ class GuiMain(QMainWindow):
             wave_obj = sa.WaveObject.from_wave_read(wave_read)
             play_obj = wave_obj.play()
             play_obj.wait_done()
-
-
-class ProgressBar(object):
-    def __init__(self, parent):
-        self.__progress = parent.progress
-        self.__row_label = parent.ui.label_current_row
-        self.__color_label = parent.ui.label_current_color
-        self.__status_label = parent.plugin.ui.label_progress
-        self.reset()
-
-    def reset(self):
-        self.__progress.reset()
-        self.__row_label.setText("")
-        self.__color_label.setText("")
-        self.__status_label.setText("")
-        self.refresh()
-
-    def update(self, row, total=0, repeats=0, color_symbol=""):
-        if row < 0:
-            return
-        self.__progress.row = row
-        self.__progress.total = total
-        self.__progress.repeats = repeats
-        self.__progress.color = color_symbol
-        self.refresh()
-
-    def refresh(self):
-        '''Updates the color and row in progress bar'''
-        if self.__progress.row < 0:
-            return
-
-        if self.__progress.color == "":
-            color_text = ""
-        else:
-            color_text = "Color " + self.__progress.color
-        self.__color_label.setText(color_text)
-
-        # Update scene
-        # self.scene.row_progress = row
-        # self.scene.refresh()
-
-        # Update labels
-        if self.__progress.total == 0:
-            row_text = ""
-        else:
-            row_text = "Row {0}/{1}".format(self.__progress.row,
-                                            self.__progress.total)
-            if self.__progress.repeats >= 0:
-                row_text += " ({0} repeats completed)".format(
-                    self.__progress.repeats)
-        self.__row_label.setText(row_text)
-        self.__status_label.setText("{0}/{1}".format(self.__progress.row,
-                                                     self.__progress.total))
 
 
 class GenericThread(QThread):
