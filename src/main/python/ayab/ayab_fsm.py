@@ -74,7 +74,7 @@ class FSM(object):
         self.KNITTING.entered.connect(
             lambda: logging.debug("Entered state KNITTING"))
 
-        self.NOT_CONFIGURED.entered.connect(parent.add_image_actions)
+        self.NOT_CONFIGURED.entered.connect(parent.menu.add_image_actions)
         self.NOT_CONFIGURED.entered.connect(parent.pb.reset)
         self.CONFIGURING.entered.connect(
             lambda: parent.plugin.configure(parent.scene.image))

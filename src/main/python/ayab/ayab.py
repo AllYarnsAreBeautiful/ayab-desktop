@@ -32,6 +32,7 @@ import wave
 
 from .ayab_gui import Ui_MainWindow
 from .ayab_fsm import FSM
+from .ayab_menu import Menu
 from .ayab_scene import Scene
 from .ayab_mailbox import SignalReceiver
 from .ayab_preferences import Preferences, str2bool
@@ -88,7 +89,8 @@ class GuiMain(QMainWindow):
         # create UI
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-        self.__setup_menubar()
+        self.menu = Menu(self)
+        self.menu.setup()
         self.mailbox = SignalReceiver()
         self.scene = Scene(self)
         self.about = About(app_context)
@@ -203,28 +205,31 @@ class GuiMain(QMainWindow):
         self.ui.cancel_button.clicked.connect(self.plugin.cancel)
 
     def __connect_menu_actions(self):
-        # Menu actions
-        self.ui.action_load_AYAB_firmware.triggered.connect(
+        self.menu.ui.action_load_AYAB_firmware.triggered.connect(
             self.generate_firmware_ui)
-        self.ui.action_set_preferences.triggered.connect(
+        self.menu.ui.action_set_preferences.triggered.connect(
             self.open_preferences_dialog)
-        self.ui.action_about.triggered.connect(self.about.show)
-        self.ui.action_quit.triggered.connect(QCoreApplication.instance().quit)
-        self.ui.action_invert.triggered.connect(self.scene.invert_image)
-        self.ui.action_stretch.triggered.connect(self.scene.stretch_image)
-        self.ui.action_repeat.triggered.connect(self.scene.repeat_image)
-        self.ui.action_reflect.triggered.connect(self.scene.reflect_image)
-        self.ui.action_horizontal_flip.triggered.connect(
+        self.menu.ui.action_about.triggered.connect(self.about.show)
+        self.menu.ui.action_quit.triggered.connect(
+            QCoreApplication.instance().quit)
+        self.menu.ui.action_invert.triggered.connect(self.scene.invert_image)
+        self.menu.ui.action_stretch.triggered.connect(self.scene.stretch_image)
+        self.menu.ui.action_repeat.triggered.connect(self.scene.repeat_image)
+        self.menu.ui.action_reflect.triggered.connect(self.scene.reflect_image)
+        self.menu.ui.action_horizontal_flip.triggered.connect(
             self.scene.hflip_image)
-        self.ui.action_vertical_flip.triggered.connect(self.scene.vflip_image)
-        self.ui.action_rotate_left.triggered.connect(self.scene.rotate_left)
-        self.ui.action_rotate_right.triggered.connect(self.scene.rotate_right)
+        self.menu.ui.action_vertical_flip.triggered.connect(
+            self.scene.vflip_image)
+        self.menu.ui.action_rotate_left.triggered.connect(
+            self.scene.rotate_left)
+        self.menu.ui.action_rotate_right.triggered.connect(
+            self.scene.rotate_right)
 
     def start_knitting_process(self):
         # reset knit progress window
         self.kp.reset()
         # disable UI elements at start of knitting
-        self.__depopulate_menubar()
+        self.menu.depopulate()
         self.ui.filename_lineedit.setEnabled(False)
         self.ui.load_file_button.setEnabled(False)
         # start thread for knit plugin
@@ -232,38 +237,11 @@ class GuiMain(QMainWindow):
 
     def reset_ui_after_knitting(self, audio: bool):
         # (Re-)enable UI elements after knitting finishes
-        self.__repopulate_menubar()
+        self.menu.repopulate()
         self.ui.filename_lineedit.setEnabled(True)
         self.ui.load_file_button.setEnabled(True)
         if audio:
             self.__audio("finish")
-
-    def __setup_menubar(self):
-        self.ui.menubar.addAction(self.ui.menu_tools.menuAction())
-        self.ui.menubar.addAction(self.ui.menu_preferences.menuAction())
-        self.ui.menubar.addAction(self.ui.menu_help.menuAction())
-
-    def __depopulate_menubar(self):
-        try:
-            self.ui.menubar.removeAction(
-                self.ui.menu_image_actions.menuAction())
-        except Exception:
-            pass
-        self.ui.menubar.removeAction(self.ui.menu_tools.menuAction())
-
-    def __repopulate_menubar(self):
-        self.ui.menubar.removeAction(self.ui.menu_preferences.menuAction())
-        self.ui.menubar.removeAction(self.ui.menu_help.menuAction())
-        self.ui.menubar.addAction(self.ui.menu_image_actions.menuAction())
-        self.__setup_menubar()
-
-    def add_image_actions(self):
-        # This workaround is necessary because
-        # self.__actionImageActions.setEnabled(True)
-        # does not seems to work (at least, not on Ubuntu 16.04)
-        # Tom Price June 2020
-        self.__depopulate_menubar()
-        self.__repopulate_menubar()
 
     def open_file_select_dialog(self):
         filenameValue = self.ui.filename_lineedit.text()
