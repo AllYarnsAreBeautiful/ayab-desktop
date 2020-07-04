@@ -37,9 +37,9 @@ from .ayab_mailbox import SignalReceiver
 from .ayab_preferences import Preferences, str2bool
 from .ayab_progress import Progress, ProgressBar
 from .ayab_about import About
+from .ayab_knitprogress import KnitProgress
 from .plugins.ayab_plugin import AyabPlugin
 from .plugins.ayab_plugin.firmware_flash import FirmwareFlash
-from .plugins.ayab_plugin.ayab_status import KnitProgress
 from .plugins.ayab_plugin.ayab_options import Alignment
 from .plugins.ayab_plugin.machine import Machine
 
