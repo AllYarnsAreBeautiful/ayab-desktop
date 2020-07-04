@@ -44,26 +44,26 @@ Dest	Src	Context	en_US	en_GB	de_DE	is_IS	it_IT	ru_RU	uk_UA	fr_FR	es_Es
 42	35	MainWindow	1. Load Image File	1. Load Image File	1. Muster öffnen	1. Hlaðið myndskrá	1. Carica l'immagine	1. Загрузить изображение	1. Завантажити зображення	1. Charger une image	1. Cargar archivo de imagen
 43	36	MainWindow	Knitting Options	Knitting Options	Strickeinstellungen	Prjóna valkostir	Opzioni Lavorazione	Варианты вязания	Варіанти в'язання	Options de tricot	Opciones de tejido
 44	37	MainWindow	2. Knit	2. Knit	2. Stricken	2. Prjónið	2. Lavora	2. Вязание	2. В'язання	2. Tricoter	2. Tejer
-45	38	MainWindow	Cancel Knitting	Cancel Knitting	Stricken abbrechen	Hætta við að prjóna	Annulla la lavorazione	Отменить вязание	Скасувати в’язання	Annuler le tricot en cours	Cancelar tejido
-46	5	MainWindow	File	File	Datei	Skrá	File	Файл	Файл	Fichier	Archivo
-47	6	MainWindow	Help	Help	Hilfe	Hjálp	Aiuto	Помощь	Допомога	Aide	Ayuda
-48	7	MainWindow	Tools	Tools	Werkzeuge	Verkfæri	Strumenti	Инструменты	Інструменти	Outils	Utiles
-49	59	MainWindow	Preferences	Preferences	Einstellungen	Forstillingar	Preferenze	Персональные настройки	Налаштування	Préférences	Preferencias
-50	8	MainWindow	Image Actions	Image Actions	Musterbearbeitung	Mynd	Azioni immagine	Действия с изображением	Дії з зображенням	Image	Imagen
-51	9	MainWindow	Load AYAB Firmware	Load AYAB Firmware	AYAB Firmware aufspielen	Hlaða AYAB vélbúnaði	Carica il firmware AYAB	Загрузить прошивку AYAB	Завантажити прошивку AYAB	Chargement du firmware AYAB	Cargar el firmware AYAB
-52	10	MainWindow	Quit	Quit	Beenden	Hætta	Chiudi	Выход	Вихід	Quitter	Salir
+45	38	MainWindow	Cancel Knitting	Cancel Knitting	Stricken abbrechen	Hætta við að prjóna	Annulla la lavorazione	Отменить вязание	Скасувати в’язання	Annuler	Cancelar tejido
+46	5	MenuBar	File	File	Datei	Skrá	File	Файл	Файл	Fichier	Archivo
+47	6	MenuBar	Help	Help	Hilfe	Hjálp	Aiuto	Помощь	Допомога	Aide	Ayuda
+48	7	MenuBar	Tools	Tools	Werkzeuge	Verkfæri	Strumenti	Инструменты	Інструменти	Outils	Utiles
+49	59	MenuBar	Preferences	Preferences	Einstellungen	Forstillingar	Preferenze	Персональные настройки	Налаштування	Préférences	Preferencias
+50	8	MenuBar	Image Actions	Image Actions	Musterbearbeitung	Mynd	Azioni immagine	Действия с изображением	Дії з зображенням	Image	Imagen
+51	9	MenuBar	Load AYAB Firmware	Load AYAB Firmware	AYAB Firmware aufspielen	Hlaða AYAB vélbúnaði	Carica il firmware AYAB	Загрузить прошивку AYAB	Завантажити прошивку AYAB	Chargement du firmware AYAB	Cargar el firmware AYAB
+52	10	MenuBar	Quit	Quit	Beenden	Hætta	Chiudi	Выход	Вихід	Quitter	Salir
 53	11	MainWindow	Open Knitting Project	Open Knitting Project	Projekt öffnen	Opna skrá	Apri il progetto	Начать новый проект	Відкрити в'язальний проєкт	Ouvrir un projet	Abrir proyecto de tejido
-54	12	MainWindow	Help – About	Help – About	Hilfe – Über	Hjálp – Um	Aiuto – Informazioni	Помощь	Допомога – Про	Aide – À propos	Ayuda – Sobre
-55	6	MainWindow	Help	Help	Hilfe	Hjálp	Aiuto	Помощь	Допомога	Aide	Ayuda
-56	13	MainWindow	Invert	Invert	Invertieren	Á hvolfi	Inverti	Инвертировать 	Інвертувати	Inverser	Invertir
-57	14	MainWindow	Stretch	Stretch	Strecken	Teygja	Allunga	Растянуть	Розтягнути	Etirer	Tramo
-58	15	MainWindow	Repeat	Repeat	Wiederholen	Endurtaka	Ripeti	Повторить	Повторити	Répéter	Repetir
-59	16	MainWindow	Reflect	Reflect	Spiegeln	Endurspegla	Rifletti	Отразить	Відобразити	Refléter	Reflejar
-60	17	MainWindow	Horizontal Flip	Horizontal Flip	Horizontal spiegeln	Snúa lárétt	Inverti orizzontale	Отражение по горизонтали	Відобразити по горизонталі	Retourner horizontal	Volteo horizontal
-61	18	MainWindow	Vertical Flip	Vertical Flip	Vertikal spiegeln	Snúa lóðrétt	Inverti verticale	Отражение по вертикали	Відобразити по вертикалі	Retourner vertical	Volteo vertical
-62	19	MainWindow	Rotate Left	Rotate Left	Links drehen	Snúa til vinstri	Ruota a sinistra	Поворот влево	Обертати ліворуч	Rotation à gauche	Girar a la izquierda
-63	20	MainWindow	Rotate Right	Rotate Right	Rechts drehen	Snúa til hægri	Ruota a destra	Поворот вправо	Обертати праворуч	Rotation à droite	Girar a la derecha
-64	60	MainWindow	Set Preferences	Set Preferences	Einstellungen festlegen	Setjið forstillingar	Imposta preferenze	Установить персональные настройки	Встановити налаштування	Indiquez vos préférences	Cofigurar preferencias
+54	12	MenuBar	Help – About	Help – About	Hilfe – Über	Hjálp – Um	Aiuto – Informazioni	Помощь	Допомога – Про	Aide – À propos	Ayuda – Sobre
+55	6	MenuBar	Help	Help	Hilfe	Hjálp	Aiuto	Помощь	Допомога	Aide	Ayuda
+56	13	MenuBar	Invert	Invert	Invertieren	Á hvolfi	Inverti	Инвертировать 	Інвертувати	Inverser	Invertir
+57	14	MenuBar	Stretch	Stretch	Strecken	Teygja	Allunga	Растянуть	Розтягнути	Etirer	Tramo
+58	15	MenuBar	Repeat	Repeat	Wiederholen	Endurtaka	Ripeti	Повторить	Повторити	Répéter	Repetir
+59	16	MenuBar	Reflect	Reflect	Spiegeln	Endurspegla	Rifletti	Отразить	Відобразити	Refléter	Reflejar
+60	17	MenuBar	Horizontal Flip	Horizontal Flip	Horizontal spiegeln	Snúa lárétt	Inverti orizzontale	Отражение по горизонтали	Відобразити по горизонталі	Retourner horizontal	Volteo horizontal
+61	18	MenuBar	Vertical Flip	Vertical Flip	Vertikal spiegeln	Snúa lóðrétt	Inverti verticale	Отражение по вертикали	Відобразити по вертикалі	Retourner vertical	Volteo vertical
+62	19	MenuBar	Rotate Left	Rotate Left	Links drehen	Snúa til vinstri	Ruota a sinistra	Поворот влево	Обертати ліворуч	Rotation à gauche	Girar a la izquierda
+63	20	MenuBar	Rotate Right	Rotate Right	Rechts drehen	Snúa til hægri	Ruota a destra	Поворот вправо	Обертати праворуч	Rotation à droite	Girar a la derecha
+64	60	MenuBar	Set Preferences	Set Preferences	Einstellungen festlegen	Setjið forstillingar	Imposta preferenze	Установить персональные настройки	Встановити налаштування	Indiquez vos préférences	Cofigurar preferencias
 65	21	MirrorDialog	Reflect image	Reflect image	Muster spiegeln	Endurspegla mynd	Rifletti l'immagine	Отразить изображение	Відобразити зображення	Refléter l'image	Reflejar imagen
 66	22	MirrorDialog	Add mirrors	Add mirrors	Spiegelungen hinzufügen	Spegla	Specchia	Добавить зеркальное отражение	Додати дзеркальне відображення	Miroirs	Agregar espejos
 67	24	MirrorDialog	Left	Left	Links	Vinstri	Sinistra	Лево	Ліворуч	Gauche	Izquierda
