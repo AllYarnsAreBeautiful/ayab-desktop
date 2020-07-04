@@ -77,11 +77,6 @@ class SignalEmitter(object):
         """Sends the image_sizer QtSignal."""
         self.__mailbox.image_sizer.emit()
 
-    def emit_status(self, hall_l, hall_r, carriage_type, carriage_position):
-        """Sends the status_updater QtSignal"""
-        self.__mailbox.status_updater.emit(hall_l, hall_r, carriage_type,
-                                           carriage_position)
-
     def emit_update_needles(self, ui):
         """Sends the needles_updater QtSignal."""
         start_needle = NeedleColor.read_start_needle(ui)

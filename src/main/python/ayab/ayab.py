@@ -155,15 +155,6 @@ class GuiMain(QMainWindow):
         self.progress.update(row, total, repeats, color_symbol)
         self.pb.refresh()
 
-    def update_status_tab(self, hall_l, hall_r, carriage_type,
-                          carriage_position):
-        self.plugin.ui.progress_hall_l.setValue(hall_l)
-        self.plugin.ui.label_hall_l.setText(str(hall_l))
-        self.plugin.ui.progress_hall_r.setValue(hall_r)
-        self.plugin.ui.label_hall_r.setText(str(hall_r))
-        self.plugin.ui.slider_position.setValue(carriage_position)
-        self.plugin.ui.label_carriage.setText(carriage_type)
-
     def reset_notification(self):
         '''Updates the Notification field'''
         self.ui.label_notifications.setText("")

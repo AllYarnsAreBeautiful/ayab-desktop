@@ -207,10 +207,14 @@ class AyabPlugin(object):
     def __knit_progress_handler(self, status, row_multiplier):
         self.mailman.emit_progress(status.current_row, status.total_rows,
                                    status.repeats, status.color_symbol)
-        self.mailman.emit_status(status.hall_l, status.hall_r,
-                                 status.carriage_type,
-                                 status.carriage_position)
         self.mailman.emit_knit_progress(status, row_multiplier)
+        # update status tab
+        self.ui.progress_hall_l.setValue(status.hall_l)
+        self.ui.label_hall_l.setText(str(status.hall_l))
+        self.ui.progress_hall_r.setValue(status.hall_r)
+        self.ui.label_hall_r.setText(str(status.hall_r))
+        self.ui.slider_position.setValue(status.carriage_position)
+        self.ui.label_carriage.setText(status.carriage_type)
 
     def cancel(self):
         self.mailman.emit_notification("Knitting canceled.")
