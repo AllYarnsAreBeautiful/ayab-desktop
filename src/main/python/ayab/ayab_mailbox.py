@@ -34,7 +34,6 @@ class SignalReceiver(QObject):
     start_row_updater = pyqtSignal(int)
     progress_bar_updater = pyqtSignal(int, int, int, 'QString')
     knit_progress_updater = pyqtSignal(Status, int)
-    status_updater = pyqtSignal(int, int, 'QString', int)
     notification_updater = pyqtSignal('QString', bool)
     popup_displayer = pyqtSignal('QString', 'QString')
     blocking_popup_displayer = pyqtSignal('QString', 'QString')
@@ -59,7 +58,6 @@ class SignalReceiver(QObject):
         self.progress_bar_updater.connect(parent.pb.update)
         self.knit_progress_updater.connect(parent.update_knit_progress,
                                            type=Qt.BlockingQueuedConnection)
-        self.status_updater.connect(parent.update_status_tab)
         self.notification_updater.connect(parent.update_notification)
         self.blocking_popup_displayer.connect(parent.display_blocking_popup)
         self.popup_displayer.connect(parent.display_blocking_popup)
