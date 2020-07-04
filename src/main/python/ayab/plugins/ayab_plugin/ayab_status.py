@@ -24,8 +24,8 @@ from bitarray import bitarray
 import numpy as np
 
 
-class Status:
-    """Data object for the status tab and knit progress window.
+class Status(object):
+    """Data object to update the status tab and knit progress window.
 
     @author Tom Price
     @date   June 2020
@@ -68,18 +68,6 @@ class Status:
         self.hall_r = hall_r
         self.carriage_type = carriage_type
         self.carriage_position = carriage_position
-
-
-class Progress(object):
-    """Data object for the progress bar."""
-    def __init__(self):
-        self.reset()
-
-    def reset(self):
-        self.row = -1
-        self.total = -1
-        self.repeats = -1
-        self.color = ""
 
 
 class KnitProgress(object):

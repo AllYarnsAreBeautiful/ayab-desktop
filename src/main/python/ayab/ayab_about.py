@@ -1,50 +1,55 @@
 # -*- coding: utf-8 -*-
-
-# Form implementation generated from reading ui file 'src/main/python/ayab/ayab_about.ui'
+# This file is part of AYAB.
 #
-# Created by: PyQt5 UI code generator 5.14.2
+#    AYAB is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
 #
-# WARNING! All changes made in this file will be lost!
+#    AYAB is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with AYAB.  If not, see <http://www.gnu.org/licenses/>.
+#
+#    Copyright 2014 Sebastian Oliva, Christian Obersteiner, Andreas Müller, Christian Gerbrandt
+#    https://github.com/AllYarnsAreBeautiful/ayab-desktop
+
+from .ayab_about_gui import Ui_AboutForm
+from PyQt5.QtWidgets import QFrame
+from PyQt5.QtCore import Qt, QCoreApplication
 
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+class About(object):
+    def __init__(self, app_context):
+        self.__version = "package_version"
+        filename_version = app_context.get_resource("ayab/package_version")
+        with open(filename_version) as version_file:
+            self.__version = version_file.read().strip()
 
-
-class Ui_AboutForm(object):
-    def setupUi(self, AboutForm):
-        AboutForm.setObjectName("AboutForm")
-        AboutForm.resize(583, 354)
-        AboutForm.setAutoFillBackground(False)
-        AboutForm.setStyleSheet("background-color: rgb(255, 255, 255);")
-        self.verticalLayout = QtWidgets.QVBoxLayout(AboutForm)
-        self.verticalLayout.setObjectName("verticalLayout")
-        self.label = QtWidgets.QLabel(AboutForm)
-        font = QtGui.QFont()
-        font.setPointSize(144)
-        self.label.setFont(font)
-        self.label.setText("")
-        self.label.setPixmap(QtGui.QPixmap(":/ayab_logo.jpg"))
-        self.label.setScaledContents(True)
-        self.label.setObjectName("label")
-        self.verticalLayout.addWidget(self.label)
-        self.title_label = QtWidgets.QLabel(AboutForm)
-        self.title_label.setObjectName("title_label")
-        self.verticalLayout.addWidget(self.title_label)
-        self.link_label = QtWidgets.QLabel(AboutForm)
-        self.link_label.setObjectName("link_label")
-        self.verticalLayout.addWidget(self.link_label)
-        self.manual_label = QtWidgets.QLabel(AboutForm)
-        self.manual_label.setObjectName("manual_label")
-        self.verticalLayout.addWidget(self.manual_label)
-        spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.verticalLayout.addItem(spacerItem)
-
-        self.retranslateUi(AboutForm)
-        QtCore.QMetaObject.connectSlotsByName(AboutForm)
-
-    def retranslateUi(self, AboutForm):
-        _translate = QtCore.QCoreApplication.translate
-        AboutForm.setWindowTitle(_translate("AboutForm", "About AYAB"))
-        self.title_label.setText(_translate("AboutForm", "All Yarns Are Beautiful"))
-        self.link_label.setText(_translate("AboutForm", "<html><head/><body><p><a href=\"http://ayab-knitting.com\"><span style=\" text-decoration: underline; color:#0000ff;\">http://ayab-knitting.com</span></a></p></body></html>"))
-from . import resources_rc
+    def show(self):
+        self.__about = QFrame()
+        __about_ui = Ui_AboutForm()
+        __about_ui.setupUi(self.__about)
+        __about_ui.title_label.setText(
+            QCoreApplication.translate("MainWindow", "All Yarns Are Beautiful")
+            + " v " + self.__version)
+        __about_ui.link_label.setText(
+            QCoreApplication.translate("MainWindow", "Website") +
+            ": <a href='http://ayab-knitting.com'>http://ayab-knitting.com</a>"
+        )
+        __about_ui.link_label.setTextFormat(Qt.RichText)
+        __about_ui.link_label.setTextInteractionFlags(
+            Qt.TextBrowserInteraction)
+        __about_ui.link_label.setOpenExternalLinks(True)
+        __about_ui.manual_label.setText(
+            QCoreApplication.translate("MainWindow", "Manual") +
+            ": <a href='http://manual.ayab-knitting.com'>http://manual.ayab-knitting.com</a>"
+        )
+        __about_ui.manual_label.setTextFormat(Qt.RichText)
+        __about_ui.manual_label.setTextInteractionFlags(
+            Qt.TextBrowserInteraction)
+        __about_ui.manual_label.setOpenExternalLinks(True)
+        self.__about.show()

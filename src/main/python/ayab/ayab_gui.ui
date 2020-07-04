@@ -379,7 +379,7 @@
   </action>
   <action name="action_about">
    <property name="text">
-    <string>Help - About</string>
+    <string>Help – About</string>
    </property>
   </action>
   <action name="action_help">
