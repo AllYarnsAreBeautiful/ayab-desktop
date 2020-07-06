@@ -49,7 +49,7 @@ class KnitFeedbackHandler(object):
             dispatch()
 
     def _connecting_to_machine(self):
-        self.__mailman.emit_notification("Connecting to machine...")
+        self.__mailman.emit_notification("Connecting to machine...", False)
 
     def _wait_for_init(self):
         self.__mailman.emit_notification(
@@ -59,15 +59,15 @@ class KnitFeedbackHandler(object):
     def _error_wrong_api(self):
         self.__mailman.emit_popup(
             "Wrong Arduino firmware version. Please check " +
-            "that you have flashed the latest version. (" +
-            str(self.__control.API_VERSION) + ")")
+            "that you have flashed the latest version.")
+        # + " (" + str(self.__control.API_VERSION) + ")")
 
     def _please_knit(self):
         self.__mailman.emit_notification("Please knit.")
         self.__mailman.emit_audio("start")
 
     def _device_not_ready(self):
-        self.__mailman.emit_notification()
+        self.__mailman.emit_notification("", False)
         self.__mailman.emit_blocking_popup("Device not ready, try again.")
 
     def _finished(self):

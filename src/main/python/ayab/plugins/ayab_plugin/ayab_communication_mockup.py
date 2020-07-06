@@ -21,7 +21,8 @@ Mockup Class of AYABCommunication for Test/Simulation purposes
 """
 
 from PyQt5 import QtWidgets
-from .ayab_communication import AyabCommunication
+from PyQt5.QtWidgets import QMessageBox
+from .ayab_communication import AyabCommunication, MessageToken
 
 import logging
 from time import sleep
@@ -42,7 +43,7 @@ class AyabCommunicationMockup(AyabCommunication):
     def reset(self):
         self.__is_open = False
         self.__is_started = False
-        self.__rxMsgList = list()
+        self.__rx_msg_list = list()
         self.__line_count = 0
 
     def is_open(self) -> bool:
@@ -51,7 +52,7 @@ class AyabCommunicationMockup(AyabCommunication):
     def close_serial(self) -> None:
         self.reset()
 
-    def open_serial(self, pPortname=None) -> bool:
+    def open_serial(self, portname=None) -> bool:
         self.__is_open = True
         # if self.__delay:
         #     sleep(2) # wait for knitting progress dialog
@@ -62,43 +63,43 @@ class AyabCommunicationMockup(AyabCommunication):
             reqLine = bytearray([0x82, self.__line_count])
             self.__line_count += 1
             self.__line_count %= 256
-            self.__rxMsgList.append(reqLine)
+            self.__rx_msg_list.append(reqLine)
             if self.__delay:
                 sleep(1)  # wait for knitting progress dialog to update
 
             # step through output line by line
             if self.__step:
                 # pop up box waits for user input before moving on to next line
-                msg = QtWidgets.QMessageBox()
-                msg.setIcon(QtWidgets.QMessageBox.Information)
+                msg = QMessageBox()
+                msg.setIcon(QMessageBox.Information)
                 msg.setText("Line number = " + str(self.__line_count))
-                msg.setStandardButtons(QtWidgets.QMessageBox.Ok
-                                       | QtWidgets.QMessageBox.Cancel)
+                msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
                 ret = None
                 ret = msg.exec_()
                 while ret == None:
                     pass
 
-        if len(self.__rxMsgList) > 0:
-            return self.parse_update(self.__rxMsgList.pop(0))
+        if len(self.__rx_msg_list) > 0:
+            return self.parse_update(self.__rx_msg_list.pop(0))
 
-        return None, "none", 0
+        return None, MessageToken.none, 0
 
-    def req_start(self, startNeedle, stopNeedle, continuousReporting) -> None:
+    def req_start(self, start_needle, stop_needle,
+                  continuous_reporting) -> None:
         self.__is_started = True
         cnfStart = bytearray([0xC1, 0x1])
-        self.__rxMsgList.append(cnfStart)
+        self.__rx_msg_list.append(cnfStart)
 
     def req_info(self) -> None:
         cnfInfo = bytearray([0xC3, 0x5, 0xFF, 0xFF])
-        self.__rxMsgList.append(cnfInfo)
+        self.__rx_msg_list.append(cnfInfo)
 
         indState = bytearray([0x84, 0x1, 0xFF, 0xFF, 0xFF, 0xFF, 0x1, 0x7F])
-        self.__rxMsgList.append(indState)
+        self.__rx_msg_list.append(indState)
 
     def req_test(self) -> None:
         cnfTest = bytearray([0xC4, 0x1])
-        self.__rxMsgList.append(cnfTest)
+        self.__rx_msg_list.append(cnfTest)
 
-    def cnf_line(self, lineNumber, lineData, flags) -> bool:
+    def cnf_line(self, line_number, line_data, flags) -> bool:
         return True

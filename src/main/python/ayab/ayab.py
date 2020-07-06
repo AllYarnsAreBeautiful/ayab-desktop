@@ -30,17 +30,18 @@ from PyQt5.QtCore import Qt, QTranslator, QThread, QLocale, QCoreApplication, QS
 import simpleaudio as sa
 import wave
 
+from . import notify
 from .ayab_gui import Ui_MainWindow
 from .ayab_fsm import FSM
 from .ayab_menu import Menu
 from .ayab_scene import Scene
 from .ayab_mailbox import SignalReceiver
+from .firmware_flash import FirmwareFlash
 from .ayab_preferences import Preferences, str2bool
 from .ayab_progress import Progress, ProgressBar
 from .ayab_about import About
 from .ayab_knitprogress import KnitProgress
 from .plugins.ayab_plugin import AyabPlugin
-from .plugins.ayab_plugin.firmware_flash import FirmwareFlash
 from .plugins.ayab_plugin.ayab_options import Alignment
 from .plugins.ayab_plugin.machine import Machine
 
@@ -157,28 +158,13 @@ class GuiMain(QMainWindow):
 
     def reset_notification(self):
         '''Updates the Notification field'''
-        self.ui.label_notifications.setText("")
+        self.update_notification("", False)
 
     def update_notification(self, text, log):
         '''Updates the Notification field'''
         if log:
             logging.info("Notification: " + text)
         self.ui.label_notifications.setText(text)
-
-    def display_blocking_popup(self, message="", message_type="info"):
-        logging.debug("MessageBox {}: '{}'".format(message_type, message))
-        box_function = {
-            "error": QMessageBox.critical,
-            "info": QMessageBox.information,
-            "question": QMessageBox.question,
-            "warning": QMessageBox.warning
-        }
-        message_box_function = box_function.get(message_type)
-
-        ret = message_box_function(self, "AYAB", message, QMessageBox.Ok,
-                                   QMessageBox.Ok)
-        if ret == QMessageBox.Ok:
-            return True
 
     def update_knit_progress(self, status, row_multiplier):
         self.kp.update(status, row_multiplier)
@@ -197,7 +183,7 @@ class GuiMain(QMainWindow):
 
     def __connect_menu_actions(self):
         self.menu.ui.action_load_AYAB_firmware.triggered.connect(
-            self.generate_firmware_ui)
+            self.open_firmware_ui)
         self.menu.ui.action_set_preferences.triggered.connect(
             self.open_preferences_dialog)
         self.menu.ui.action_about.triggered.connect(self.about.show)
@@ -259,17 +245,21 @@ class GuiMain(QMainWindow):
         try:
             self.scene.load_image_file(image_str)
         except (OSError, FileNotFoundError):
-            logging.error("unable to load " + str(image_str))
+            notify.display_blocking_popup("Unable to load image file",
+                                          "error")  # TODO translate
+            logging.error("Unable to load " + str(image_str))
         except Exception as e:
-            logging.error(e)
+            notify.display_blocking_popup("Error loading image file",
+                                          "error")  # TODO translate
+            logging.error("Error loading image: " + str(e))
         else:
             self.scene.refresh()
             self.mailbox.image_loaded_flagger.emit()
             self.statusBar().showMessage(image_str)
             self.set_image_dimensions()
 
-    def generate_firmware_ui(self):
-        self.__flash_ui = FirmwareFlash(self)
+    def open_firmware_ui(self):
+        self.__flash_ui = FirmwareFlash(self.app_context)
         self.__flash_ui.show()
 
     def open_preferences_dialog(self):

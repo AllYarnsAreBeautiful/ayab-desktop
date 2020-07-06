@@ -44,7 +44,7 @@ class Scene(object):
     LIMIT_BAR_WIDTH = 0.5
 
     def __init__(self, parent):
-        self.__parent = parent
+        # self.__parent = parent
         self.__image = None
         self.__mailman = SignalEmitter(parent.mailbox)
         default = parent.prefs.settings.value("default_alignment")
@@ -183,32 +183,36 @@ class Scene(object):
 
     def repeat_image(self):
         '''repeat current image.'''
-        v = QInputDialog.getInt(self.__parent,
-                                "Repeat",
-                                "Vertical",
-                                value=1,
-                                min=1)
-        h = QInputDialog.getInt(self.__parent,
-                                "Repeat",
-                                "Horizontal",
-                                value=1,
-                                min=1,
-                                max=ceil(Machine.WIDTH / self.__image.size[0]))
+        v = QInputDialog.getInt(
+            None,  # self.__parent,
+            "Repeat",
+            "Vertical",
+            value=1,
+            min=1)
+        h = QInputDialog.getInt(
+            None,  # self.__parent,
+            "Repeat",
+            "Horizontal",
+            value=1,
+            min=1,
+            max=ceil(Machine.WIDTH / self.__image.size[0]))
         self.apply_image_transform("repeat", v[0], h[0])
 
     def stretch_image(self):
         '''Public stretch current Image function.'''
-        v = QInputDialog.getInt(self.__parent,
-                                "Stretch",
-                                "Vertical",
-                                value=1,
-                                min=1)
-        h = QInputDialog.getInt(self.__parent,
-                                "Stretch",
-                                "Horizontal",
-                                value=1,
-                                min=1,
-                                max=ceil(Machine.WIDTH / self.__image.size[0]))
+        v = QInputDialog.getInt(
+            None,  # self.__parent,
+            "Stretch",
+            "Vertical",
+            value=1,
+            min=1)
+        h = QInputDialog.getInt(
+            None,  # self.__parent,
+            "Stretch",
+            "Horizontal",
+            value=1,
+            min=1,
+            max=ceil(Machine.WIDTH / self.__image.size[0]))
         self.apply_image_transform("stretch", v[0], h[0])
 
     def reflect_image(self):
