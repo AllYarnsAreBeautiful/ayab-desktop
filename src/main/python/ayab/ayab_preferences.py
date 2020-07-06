@@ -28,7 +28,8 @@ from glob import glob
 from PyQt5.QtCore import Qt, QSettings, QLocale
 from PyQt5.QtWidgets import QDialog
 from .ayab_prefs_gui import Ui_PrefsDialog
-from .plugins.ayab_plugin.ayab_options import KnittingMode, Alignment
+from .plugins.ayab_plugin.ayab_options import Alignment
+from .plugins.ayab_plugin.ayab_knit_mode import KnitMode
 
 
 def str2bool(qvariant):
@@ -118,8 +119,8 @@ class PrefsDialog(QDialog):
         self.__ui.setupUi(self)
 
         # add combo box items
-        KnittingMode.addItems(self.__ui.default_knitting_mode_box)
-        Alignment.addItems(self.__ui.default_alignment_box)
+        KnitMode.add_items(self.__ui.default_knitting_mode_box)
+        Alignment.add_items(self.__ui.default_alignment_box)
         for loc in parent.available_locales():
             self.__ui.language_box.addItem(parent.language(loc), loc)
 

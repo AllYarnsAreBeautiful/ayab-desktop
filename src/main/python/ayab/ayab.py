@@ -106,13 +106,13 @@ class GuiMain(QMainWindow):
         self.plugin.ui.knitting_mode_box.setCurrentIndex(
             defaults.value("default_knitting_mode"))
         if str2bool(defaults.value("default_infinite_repeat")):
-            self.plugin.ui.infRepeat_checkbox.setCheckState(Qt.Checked)
+            self.plugin.ui.inf_repeat_checkbox.setCheckState(Qt.Checked)
         else:
-            self.plugin.ui.infRepeat_checkbox.setCheckState(Qt.Unchecked)
+            self.plugin.ui.inf_repeat_checkbox.setCheckState(Qt.Unchecked)
         if str2bool(defaults.value("automatic_mirroring")):
-            self.plugin.ui.autoMirror_checkbox.setCheckState(Qt.Checked)
+            self.plugin.ui.auto_mirror_checkbox.setCheckState(Qt.Checked)
         else:
-            self.plugin.ui.autoMirror_checkbox.setCheckState(Qt.Unchecked)
+            self.plugin.ui.auto_mirror_checkbox.setCheckState(Qt.Unchecked)
         self.plugin.ui.alignment_combo_box.setCurrentIndex(
             self.scene.alignment.value)
 

@@ -26,9 +26,11 @@ from PIL import ImageOps
 from PyQt5.QtCore import QTranslator, QCoreApplication, QLocale, QObjectCleanupHandler
 from PyQt5.QtWidgets import QComboBox, QWidget
 from .ayab_image import AyabImage
-from .ayab_control import AyabControl, AyabControlKnitResult
+from .ayab_control import AyabControl
 from .ayab_mailman import SignalEmitter
-from .ayab_options import Options, KnittingMode, Alignment, NeedleColor
+from .ayab_options import Options, Alignment, NeedleColor
+from .ayab_knit_mode import KnitMode
+from .ayab_knit_output import KnitOutput, KnitFeedbackHandler
 from .ayab_options_gui import Ui_DockWidget
 
 
@@ -52,21 +54,21 @@ class AyabPlugin(object):
         self.ui.setupUi(self.dock)
 
         # Combo boxes
-        KnittingMode.addItems(self.ui.knitting_mode_box)
-        Alignment.addItems(self.ui.alignment_combo_box)
-        NeedleColor.addItems(self.ui.start_needle_color)
-        NeedleColor.addItems(self.ui.stop_needle_color)
+        KnitMode.add_items(self.ui.knitting_mode_box)
+        Alignment.add_items(self.ui.alignment_combo_box)
+        NeedleColor.add_items(self.ui.start_needle_color)
+        NeedleColor.add_items(self.ui.stop_needle_color)
         self.ui.start_needle_color.setCurrentIndex(0)
         self.ui.stop_needle_color.setCurrentIndex(1)
 
         # Status tab
-        self.ui.tabWidget.setTabEnabled(1, False)
+        self.ui.tab_widget.setTabEnabled(1, False)
         self.ui.label_progress.setText("")
         self.ui.label_direction.setText("")
 
         # Disable "continuous reporting" checkbox and Status tab for now
-        self.ui.checkBox_ContinuousReporting.setVisible(False)
-        self.ui.tabWidget.removeTab(1)
+        self.ui.continuous_reporting_checkbox.setVisible(False)
+        self.ui.tab_widget.removeTab(1)
 
         # activate UI elements
         self.__setup_behavior()
@@ -173,7 +175,7 @@ class AyabPlugin(object):
 
         # switch to status tab
         if self.__conf.continuous_reporting is True:
-            self.ui.tabWidget.setCurrentIndex(1)
+            self.ui.tab_widget.setCurrentIndex(1)
 
         # send signal to start knitting
         self.mailman.emit_configured()
@@ -189,9 +191,9 @@ class AyabPlugin(object):
             # because signal_update_knit_progress connection blocks this thread
             # progress = copy(self.__control.progress)
             status = self.__control.status
-            row_mult = self.__control.get_row_multiplier()
+            row_mult = self.__control.row_multiplier()
             self.__knit_progress_handler(status, row_mult)
-            if self.__canceled or result is AyabControlKnitResult.FINISHED:
+            if self.__canceled or result is KnitOutput.FINISHED:
                 break
 
         self.__logger.info("Finished knitting.")
@@ -249,46 +251,3 @@ class AyabPlugin(object):
     #     # TODO add message info from event
     #     self.__logger.error("Error while knitting.")
     #     self.__control.close()
-
-
-class KnitFeedbackHandler(object):
-    """Polymorphic dispatch of notification signals on AyabControlKnitResult.
-
-    @author Tom Price
-    @data   July 2020
-    """
-    def __init__(self, signal_emitter):
-        self.__mailman = signal_emitter
-
-    def handle(self, result):
-        method = "_" + result.name.lower()
-        if hasattr(self, method):
-            dispatch = getattr(self, method)
-            dispatch()
-
-    def _connecting_to_machine(self):
-        self.__mailman.emit_notification("Connecting to machine...")
-
-    def _wait_for_init(self):
-        self.__mailman.emit_notification(
-            "Please start machine. (Set the carriage to mode KC-I " +
-            "or KC-II and move the carriage over the left turn mark).")
-
-    def _error_wrong_api(self):
-        self.__mailman.emit_popup(
-            "Wrong Arduino firmware version. Please check " +
-            "that you have flashed the latest version. (" +
-            str(self.__control.API_VERSION) + ")")
-
-    def _please_knit(self):
-        self.__mailman.emit_notification("Please knit.")
-        self.__mailman.emit_audio("start")
-
-    def _device_not_ready(self):
-        self.__mailman.emit_notification()
-        self.__mailman.emit_blocking_popup("Device not ready, try again.")
-
-    def _finished(self):
-        self.__mailman.emit_notification(
-            "Image transmission finished. Please knit until you " +
-            "hear the double beep sound.")
