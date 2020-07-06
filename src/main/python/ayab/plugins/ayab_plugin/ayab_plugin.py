@@ -21,10 +21,10 @@
 import logging
 # from copy import copy
 from time import sleep
-import serial.tools.list_ports
 from PIL import ImageOps
 from PyQt5.QtCore import QTranslator, QCoreApplication, QLocale, QObjectCleanupHandler
 from PyQt5.QtWidgets import QComboBox, QWidget
+from . import USB_ports
 from .ayab_image import AyabImage
 from .ayab_control import AyabControl
 from .ayab_mailman import SignalEmitter
@@ -116,24 +116,10 @@ class AyabPlugin(object):
     def __populate_ports(self, combo_box=None, port_list=None):
         if not combo_box:
             combo_box = self.ui.serial_port_dropdown
-        if not port_list:
-            port_list = self.__get_serial_ports()
-        combo_box.clear()
-        self.__populate(combo_box, port_list)
+        USB_ports.populate_ports(combo_box, port_list)
         # Add Simulation item to indicate operation without machine
         combo_box.addItem(
             QCoreApplication.translate("AyabPlugin", "Simulation"))
-
-    def __populate(self, combo_box, port_list):
-        for item in port_list:
-            # TODO: should display the info of the device.
-            combo_box.addItem(item[0])
-
-    def __get_serial_ports(self):
-        """
-        Returns a list of all USB Serial Ports
-        """
-        return list(serial.tools.list_ports.grep("USB"))
 
     def configure(self, image):
         # get configuration options

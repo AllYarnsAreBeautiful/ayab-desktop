@@ -37,6 +37,7 @@ class KnitState(Enum):
 
 class KnitStateMachine(object):
     def _knit_setup(ayab_control, image, options):
+        ayab_control.logger.debug("KnitState SETUP")
         ayab_control.status.reset()
         ayab_control.former_request = 0
         ayab_control.line_block = 0
@@ -53,6 +54,7 @@ class KnitStateMachine(object):
         if not ayab_control.func_selector():
             return KnitOutput.ERROR_INVALID_SETTINGS
 
+        ayab_control.logger.debug(options.portname)
         if options.portname == QCoreApplication.translate(
                 "AyabPlugin", "Simulation"):
             ayab_control.com = AyabCommunicationMockup()
@@ -67,6 +69,7 @@ class KnitStateMachine(object):
         return KnitOutput.NONE
 
     def _knit_init(ayab_control, image, options):
+        ayab_control.logger.debug("KnitState INIT")
         rcvMsg, rcvParam = ayab_control.check_serial()
         if rcvMsg == MessageToken.cnfInfo:
             if rcvParam == ayab_control.API_VERSION:
@@ -74,7 +77,7 @@ class KnitStateMachine(object):
                 return KnitOutput.WAIT_FOR_INIT
             else:
                 ayab_control.logger.error("Wrong API version: " +
-                                          str(rcvParam) + ", " + "expected: " +
+                                          str(rcvParam) + ", expected: " +
                                           str(ayab_control.API_VERSION))
                 return KnitOutput.ERROR_WRONG_API
 
@@ -82,6 +85,7 @@ class KnitStateMachine(object):
         return KnitOutput.CONNECTING_TO_MACHINE
 
     def _knit_wait_for_init(ayab_control, image, options):
+        ayab_control.logger.debug("KnitState WAIT_FOR_INIT")
         rcvMsg, rcvParam = ayab_control.check_serial()
         if rcvMsg == MessageToken.indState:
             if rcvParam == 1:
@@ -96,6 +100,7 @@ class KnitStateMachine(object):
         return KnitOutput.NONE
 
     def _knit_start(ayab_control, image, options):
+        ayab_control.logger.debug("KnitState START")
         rcvMsg, rcvParam = ayab_control.check_serial()
         if rcvMsg == MessageToken.cnfStart:
             if rcvParam == 1:
@@ -108,6 +113,7 @@ class KnitStateMachine(object):
         return KnitOutput.NONE
 
     def _knit_operate(ayab_control, image, options):
+        ayab_control.logger.debug("KnitState OPERATE")
         rcvMsg, rcvParam = ayab_control.check_serial()
         if rcvMsg == MessageToken.reqLine:
             image_finished = ayab_control.cnf_line(rcvParam)

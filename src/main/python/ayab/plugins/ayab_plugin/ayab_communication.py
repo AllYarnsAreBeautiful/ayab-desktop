@@ -33,6 +33,8 @@ import pprint
 
 
 class MessageToken(Enum):
+    unknown = -2
+    none = -1
     cnfStart = 0xC1
     cnfInfo = 0xC3
     reqLine = 0x82
@@ -49,7 +51,7 @@ class AyabCommunication(object):
         self.__logger = logging.getLogger(type(self).__name__)
         self.__ser = serial
         self.__driver = sliplib.Driver()
-        self.__rxMsgList = list()
+        self.__rx_msg_list = list()
 
     def __del__(self):
         """Handles on delete behaviour closing serial port object."""
@@ -62,10 +64,10 @@ class AyabCommunication(object):
         else:
             return False
 
-    def open_serial(self, pPortname=None):
+    def open_serial(self, portname=None):
         """Opens serial port communication with a portName."""
         if not self.__ser:
-            self.__portname = pPortname
+            self.__portname = portname
             try:
                 self.__ser = serial.Serial(self.__portname,
                                            115200,
@@ -93,34 +95,34 @@ class AyabCommunication(object):
         if self.__ser:
             data = self.__ser.read(1000)
             if len(data) > 0:
-                self.__rxMsgList.extend(self.__driver.receive(data))
+                self.__rx_msg_list.extend(self.__driver.receive(data))
 
-            if len(self.__rxMsgList) > 0:
-                return self.parse_update(self.__rxMsgList.pop(0))
+            if len(self.__rx_msg_list) > 0:
+                return self.parse_update(self.__rx_msg_list.pop(0))
 
-        return None, 'none', 0
+        return None, MessageToken.none, 0
 
     def parse_update(self, msg):
         if msg is None:
-            return None, "none", 0
+            return None, MessageToken.none, 0
 
         for t in list(MessageToken):
             if msg[0] == t.value:
-                return msg, t.name, msg[1]
+                return msg, t, msg[1]
 
         # fallthrough
         self.__logger.debug("unknown message: ")  # drop crlf
         pp = pprint.PrettyPrinter(indent=4)
         pp.pprint(msg)
-        return msg, "unknown", 0
+        return msg, MessageToken.unknown, 0
 
-    def req_start(self, startNeedle, stopNeedle, continuousReporting):
+    def req_start(self, start_needle, stop_needle, continuous_reporting):
         """Sends a start message to the controller."""
         data = bytearray()
         data.append(0x01)
-        data.append(startNeedle)
-        data.append(stopNeedle)
-        data.append(continuousReporting)
+        data.append(start_needle)
+        data.append(stop_needle)
+        data.append(continuous_reporting)
         data = self.__driver.send(bytes(data))
         self.__ser.write(data)
 
@@ -134,7 +136,7 @@ class AyabCommunication(object):
         data = self.__driver.send(b'\x04')
         self.__ser.write(data)
 
-    def cnf_line(self, lineNumber, lineData, flags):
+    def cnf_line(self, line_number, line_data, flags):
         """Sends a line of data via the serial port.
 
         Sends a line of data to the serial port, all arguments are mandatory.
@@ -142,15 +144,15 @@ class AyabCommunication(object):
         knitting needles accordingly.
 
         Args:
-          lineNumber (int): The line number to be sent.
-          lineData (bytes): The bytearray to be sent to needles.
+          line_number (int): The line number to be sent.
+          line_data (bytes): The bytearray to be sent to needles.
           flags (bytes): The flags sent to the controller.
 
         """
         data = bytearray()
         data.append(0x42)
-        data.append(lineNumber)
-        data.extend(lineData)
+        data.append(line_number)
+        data.extend(line_data)
         data.append(flags)
         hash = 0
         hash = add_crc(hash, data)
