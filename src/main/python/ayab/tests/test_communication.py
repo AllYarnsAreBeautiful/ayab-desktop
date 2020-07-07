@@ -21,12 +21,11 @@
 import pytest
 import serial
 import unittest
-from ayab.plugins.ayab_plugin.ayab_communication import AyabCommunication
+from ayab.plugins.ayab_plugin.ayab_communication import AyabCommunication, MessageToken
 from mock import patch
 
 
 class TestCommunication(unittest.TestCase):
-
     def setUp(self):
         self.dummy_serial = serial.serial_for_url("loop://logging=debug",
                                                   timeout=0.1)
@@ -45,7 +44,8 @@ class TestCommunication(unittest.TestCase):
             self.ayabCom = AyabCommunication()
             openStatus = self.ayabCom.open_serial('dummyPortname')
             assert openStatus
-            mock_method.assert_called_once_with('dummyPortname', 115200,
+            mock_method.assert_called_once_with('dummyPortname',
+                                                115200,
                                                 timeout=0.1)
 
         with patch.object(serial, 'Serial') as mock_method:
@@ -54,22 +54,22 @@ class TestCommunication(unittest.TestCase):
                 self.ayabCom = AyabCommunication()
                 openStatus = self.ayabCom.open_serial('dummyPortname')
             assert "CommunicationException" in str(excinfo.type)
-            mock_method.assert_called_once_with('dummyPortname', 115200,
+            mock_method.assert_called_once_with('dummyPortname',
+                                                115200,
                                                 timeout=0.1)
 
     def test_update(self):
         byte_array = bytearray([0xc0, 0xc1, 0x01, 0xc0])
         self.dummy_serial.write(byte_array)
         result = self.comm_dummy.update()
-        expected_result = (b'\xc1\x01', 'cnfStart', 1)
+        expected_result = (b'\xc1\x01', MessageToken.cnfStart, 1)
         assert result == expected_result
 
     def test_req_start(self):
         start_val, end_val, continuous_reporting = 0, 10, True
         self.comm_dummy.req_start(start_val, end_val, continuous_reporting)
-        byte_array = bytearray([0xc0, 0x01,
-                                start_val, end_val, continuous_reporting,
-                                0xc0])
+        byte_array = bytearray(
+            [0xc0, 0x01, start_val, end_val, continuous_reporting, 0xc0])
         bytes_read = self.dummy_serial.read(len(byte_array))
         self.assertEqual(bytes_read, byte_array)
 
@@ -86,14 +86,14 @@ class TestCommunication(unittest.TestCase):
         assert bytes_read == byte_array
 
     def test_cnf_line(self):
-        lineNumber = 0
-        lineData = b'\0\xde\xad\xbe\xef\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0'
+        line_number = 0
+        line_data = b'\0\xde\xad\xbe\xef\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0'
         flags = 1
         crc8 = 0xE9
-        self.comm_dummy.cnf_line(lineNumber, lineData, flags)
+        self.comm_dummy.cnf_line(line_number, line_data, flags)
         byte_array = bytearray([0xc0, 0x42])
-        byte_array.append(lineNumber)
-        byte_array.extend(lineData)
+        byte_array.append(line_number)
+        byte_array.extend(line_data)
         byte_array.append(flags)
         byte_array.append(crc8)
         byte_array.append(0xc0)

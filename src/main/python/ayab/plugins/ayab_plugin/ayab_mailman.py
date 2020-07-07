@@ -19,7 +19,8 @@
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
 from PyQt5.QtCore import QTranslator, QCoreApplication
-from .ayab_options import Options, KnittingMode, Alignment, NeedleColor
+from .ayab_options import Options, Alignment, NeedleColor
+from .ayab_knit_mode import KnitMode
 
 
 class SignalEmitter(object):
