@@ -21,11 +21,12 @@
 from fbs_runtime.application_context.PyQt5 import ApplicationContext
 
 import sys
-from os import path, mkdir
+from os import path
 import logging
 
-from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox, QFileDialog, QInputDialog, QDialog
-from PyQt5.QtCore import Qt, QTranslator, QThread, QLocale, QCoreApplication, QSettings
+from PyQt5.QtWidgets import \
+    QMainWindow, QApplication, QMessageBox, QFileDialog
+from PyQt5.QtCore import Qt, QThread, QCoreApplication
 
 import simpleaudio as sa
 import wave
@@ -46,31 +47,6 @@ from .plugins.ayab_plugin.ayab_options import Alignment
 from .plugins.ayab_plugin.machine import Machine
 
 # TODO move to generic configuration
-
-userdata_path = path.expanduser(path.join("~", "AYAB"))
-if not path.isdir(userdata_path):
-    mkdir(userdata_path)
-
-logfile = path.join(userdata_path, "ayab_log.txt")
-logging.basicConfig(
-    filename=logfile,
-    level=logging.DEBUG,
-    format='%(asctime)s %(name)-8s %(levelname)-8s %(message)s',
-    datefmt='%y-%m-%d %H:%M:%S')
-console = logging.StreamHandler()
-console.setLevel(logging.DEBUG)
-console.setFormatter(
-    logging.Formatter('%(asctime)s %(name)-8s %(levelname)-8s %(message)s'))
-logging.getLogger().addHandler(console)
-
-# Fix PyQt5 for HiDPI screens
-if hasattr(Qt, 'AA_EnableHighDpiScaling'):
-    QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
-if hasattr(Qt, 'AA_UseHighDpiPixmaps'):
-    QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
-# Remove Help Button
-if hasattr(Qt, 'AA_DisableWindowContextHelpButton'):
-    QApplication.setAttribute(Qt.AA_DisableWindowContextHelpButton, True)
 
 
 class GuiMain(QMainWindow):
@@ -308,41 +284,3 @@ class GenericThread(QThread):
             for key, value in self.kwargs.items():
                 print(key, value)
             raise
-
-
-def run(app_context):
-    # set constants for QSettings
-    QCoreApplication.setOrganizationName("AYAB")
-    QCoreApplication.setOrganizationDomain("ayab-knitting.com")
-    QCoreApplication.setApplicationName("ayab")
-
-    # load translators
-    translator = QTranslator()
-    lang_dir = app_context.get_resource("ayab/translations")
-    try:
-        language = QSettings().value("language")
-    except Exception:
-        language = None
-    try:
-        translator.load("ayab_trans." + language, lang_dir)
-    except (TypeError, FileNotFoundError):
-        logging.warning(
-            "Unable to load translation file for preferred language, using default locale"
-        )
-        try:
-            translator.load(QLocale.system(), "ayab_trans", "", lang_dir)
-        except Exception:
-            logging.warning(
-                "Unable to load translation file for default locale, using American English"
-            )
-            translator.load("ayab_trans.en_US", lang_dir)
-    except Exception:
-        logging.error("Unable to load translation file")
-        raise
-    app = QApplication(sys.argv)
-    app.installTranslator(translator)
-
-    # execute app
-    window = GuiMain(app_context)
-    window.show()
-    sys.exit(app.exec_())
