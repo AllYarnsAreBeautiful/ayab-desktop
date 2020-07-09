@@ -46,7 +46,6 @@ class AyabPlugin(object):
         """Sets up UI elements from ayab_options.Ui_DockWidget in parent."""
         self.mailman = SignalEmitter(parent.mailbox)
         self.__feedback_handler = KnitFeedbackHandler(self.mailman)
-        self.__set_translator(parent)
 
         # Dock widget
         self.ui = Ui_DockWidget()
@@ -72,30 +71,6 @@ class AyabPlugin(object):
 
         # activate UI elements
         self.__setup_behavior()
-
-    def __set_translator(self, parent):
-        app = QCoreApplication.instance()
-        self.translator = QTranslator()
-        language = parent.prefs.settings.value("language")
-        lang_dir = parent.app_context.get_resource("ayab/translations")
-        try:
-            self.translator.load("ayab_trans." + language, lang_dir)
-        except (TypeError, FileNotFoundError):
-            self.__logger(
-                "Unable load translation file for preferred language, " +
-                "using default locale")
-            try:
-                self.translator.load(QLocale.system(), "ayab_trans", "",
-                                     lang_dir)
-            except Exception:
-                self.__logger(
-                    "Unable to load translation file for default locale, " +
-                    "using American English")
-                self.translator.load("ayab_trans.en_US", lang_dir)
-        except Exception:
-            self.__logger("Unable to load translation file")
-            raise
-        app.installTranslator(self.translator)
 
     def __setup_behavior(self):
         """Connects methods to UI elements."""
