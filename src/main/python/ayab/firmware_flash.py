@@ -1,7 +1,24 @@
 # -*- coding: utf-8 -*-
 # This file is part of AYAB.
+#
+#    AYAB is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    AYAB is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with AYAB.  If not, see <http://www.gnu.org/licenses/>.
+#
+#    Copyright 2014 Sebastian Oliva, Christian Obersteiner, Andreas Müller, Christian Gerbrandt
+#    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
 from PyQt5 import QtGui, QtWidgets
+from PyQt5.QtCore import QSettings
 from PyQt5.QtWidgets import QFrame, QListWidgetItem
 
 import serial
@@ -30,11 +47,11 @@ class FirmwareFlash(QFrame):
         "mega2560": "wiring",
     }
 
-    def __init__(self, app_context):
+    def __init__(self, parent):
         # TODO: add creator that does not depend from super to ease testing.
-        super(FirmwareFlash, self).__init__(None)
+        super().__init__()
         self.__logger = logging.getLogger(type(self).__name__)
-        self.__app_context = app_context
+        self.__app_context = parent.app_context
 
         self.ui = Ui_FirmwareFlashFrame()
         self.ui.setupUi(self)
@@ -43,13 +60,20 @@ class FirmwareFlash(QFrame):
         USB_ports.populate_ports(self.ui.port_combo_box)
         self.load_json()
 
-        self.ui.hardware_list.itemClicked[QListWidgetItem].connect(
-            self.hardware_item_activated)
+        # self.ui.hardware_list.itemClicked[QListWidgetItem].connect(
+        #     self.hardware_item_activated)
         self.ui.controller_list.itemClicked[QListWidgetItem].connect(
             self.controller_item_activated)
         self.ui.firmware_list.itemClicked[QListWidgetItem].connect(
             self.firmware_item_activated)
         self.ui.flash_firmware.clicked.connect(self.execute_flash_command)
+
+        # select hardware from settings
+        # self.hardware_item_activated(
+        #     self.ui.hardware_list.item(
+        #         parent.prefs.settings.value("machine")))
+        self.ui.hardware_list.setCurrentItem(self.ui.hardware_list.item(0))
+        self.hardware_item_activated(self.ui.hardware_list.item(0))
 
     def load_json(self):
         self.json_object = self.parse_json("")

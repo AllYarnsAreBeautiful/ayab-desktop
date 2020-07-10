@@ -21,35 +21,37 @@
 import logging
 # from copy import copy
 from time import sleep
-from PIL import ImageOps
-from PyQt5.QtCore import QTranslator, QCoreApplication, QLocale, QObjectCleanupHandler
+from PIL import Image
+from PyQt5.QtCore import Qt, QTranslator, QCoreApplication, QLocale, QObjectCleanupHandler
 from PyQt5.QtWidgets import QComboBox, QWidget
 from . import USB_ports
-from .ayab_image import AyabImage
+from .ayab_pattern import AyabPattern
 from .ayab_control import AyabControl
-from .ayab_mailman import SignalEmitter
+from .ayab_observable import Observable
 from .ayab_options import Options, Alignment, NeedleColor
 from .ayab_knit_mode import KnitMode
 from .ayab_knit_output import KnitOutput, KnitFeedbackHandler
 from .ayab_options_gui import Ui_DockWidget
 
 
-class AyabPlugin(object):
-    def __init__(self):
+class AyabPlugin(Observable):
+    def __init__(self, parent):
+        super().__init__(parent.seer)
         self.__control = AyabControl()
         self.__logger = logging.getLogger(type(self).__name__)
+        self.__feedback = KnitFeedbackHandler(parent)
+        self.ui = Ui_DockWidget()
+        self.dock = parent.ui.knitting_options_dock
+        self.setup_ui()
+        self.config = Options(parent.prefs)
+        self.refresh()
 
     def __del__(self):
         self.__control.close()
 
-    def setupUi(self, parent):
+    def setup_ui(self):
         """Sets up UI elements from ayab_options.Ui_DockWidget in parent."""
-        self.mailman = SignalEmitter(parent.mailbox)
-        self.__feedback_handler = KnitFeedbackHandler(self.mailman)
-
         # Dock widget
-        self.ui = Ui_DockWidget()
-        self.dock = parent.ui.knitting_options_dock
         self.ui.setupUi(self.dock)
 
         # Combo boxes
@@ -70,23 +72,24 @@ class AyabPlugin(object):
         self.ui.tab_widget.removeTab(1)
 
         # activate UI elements
-        self.__setup_behavior()
+        self.__activate_ui()
 
-    def __setup_behavior(self):
-        """Connects methods to UI elements."""
+    def __activate_ui(self):
+        """Connects UI elements to signal slots."""
         self.__populate_ports()
         self.ui.refresh_ports_button.clicked.connect(self.__populate_ports)
-        self.ui.start_needle_edit.valueChanged.connect(
-            lambda: self.mailman.emit_update_needles(self.ui))
-        self.ui.stop_needle_edit.valueChanged.connect(
-            lambda: self.mailman.emit_update_needles(self.ui))
+        self.ui.start_row_edit.valueChanged.connect(
+            lambda: self.emit_start_row_updater(
+                self.config.read_start_row(self.ui)))
+        self.ui.start_needle_edit.valueChanged.connect(self.__update_needles)
+        self.ui.stop_needle_edit.valueChanged.connect(self.__update_needles)
         self.ui.start_needle_color.currentIndexChanged.connect(
-            lambda: self.mailman.emit_update_needles(self.ui))
+            self.__update_needles)
         self.ui.stop_needle_color.currentIndexChanged.connect(
-            lambda: self.mailman.emit_update_needles(self.ui))
+            self.__update_needles)
         self.ui.alignment_combo_box.currentIndexChanged.connect(
-            lambda: self.mailman.emit_update_alignment(self.ui))
-        self.ui.start_row_edit.valueChanged.connect(self.update_start_row)
+            lambda: self.emit_alignment_updater(
+                self.config.read_alignment(self.ui)))
 
     def __populate_ports(self, combo_box=None, port_list=None):
         if not combo_box:
@@ -96,64 +99,91 @@ class AyabPlugin(object):
         combo_box.addItem(
             QCoreApplication.translate("AyabPlugin", "Simulation"))
 
-    def configure(self, image):
+    def __update_needles(self):
+        """Sends the needles_updater signal."""
+        start_needle = NeedleColor.read_start_needle(self.ui)
+        stop_needle = NeedleColor.read_stop_needle(self.ui)
+        self.emit_needles_updater(start_needle, stop_needle)
+
+    def reset(self):
+        """Reset dock to default settings."""
+        self.config.reset()
+        self.refresh()
+
+    def refresh(self):
+        """Refresh dock to default configuration options."""
+        self.ui.knitting_mode_box.setCurrentIndex(self.config.knitting_mode)
+        # self.ui.color_edit
+        # self.ui.start_row_edit
+        if self.config.inf_repeat:
+            self.ui.inf_repeat_checkbox.setCheckState(Qt.Checked)
+        else:
+            self.ui.inf_repeat_checkbox.setCheckState(Qt.Unchecked)
+        # self.ui.start_needle_color
+        # self.ui.start_needle_edit
+        # self.ui.stop_needle_color
+        # self.ui.stop_needle_edit
+        self.ui.alignment_combo_box.setCurrentIndex(self.config.alignment)
+        if self.config.auto_mirror:
+            self.ui.auto_mirror_checkbox.setCheckState(Qt.Checked)
+        else:
+            self.ui.auto_mirror_checkbox.setCheckState(Qt.Unchecked)
+        # self.ui.continuous_reporting_checkbox
+
+    def get_config(self, image):
+        """
+        Read and check configuration options from options dock UI.
+        """
         # get configuration options
-        self.__conf = Options()
-        self.__conf.read(self.ui)
-        self.__logger.debug(self.__conf.as_dict())
+        self.config.read(self.ui)
+        self.__logger.debug(self.config.as_dict())
 
         # start to knit with the bottom first
-        image = image.rotate(180)
+        image = image.transpose(Image.ROTATE_180)
 
         # mirroring option
-        if self.__conf.auto_mirror:
-            image = ImageOps.mirror(image)
+        if self.config.auto_mirror:
+            image = image.transpose(Image.FLIP_LEFT_RIGHT)
 
         # TODO: detect if previous conf had the same
         # image to avoid re-generating.
 
-        self.__image = AyabImage(image, self.__conf.num_colors)
-        if self.__conf.start_row > self.__image.img_height:
-            self.mailman.emit_configure_fail(
-                "Start row is larger than the image.")
-            return
+        self.__pattern = AyabPattern(image, self.config.num_colors)
+        if self.config.start_row > self.__pattern.pat_height:
+            self.emit_popup("Start row is larger than the image.")
+            self.emit_bad_config_flag()
 
         # validate configuration options
-        valid, msg = self.__conf.validate_configuration()
+        valid, msg = self.config.validate()
         if not valid:
-            self.mailman.emit_configure_fail(msg)
-            return
+            self.emit_popup(msg)
+            self.emit_bad_config_flag()
 
-        # update image
-        if self.__conf.start_needle and self.__conf.stop_needle:
-            self.__image.set_knit_needles(self.__conf.start_needle,
-                                          self.__conf.stop_needle)
-        self.__image.alignment = self.__conf.alignment
+        # update pattern
+        if self.config.start_needle and self.config.stop_needle:
+            self.__pattern.set_knit_needles(self.config.start_needle,
+                                            self.config.stop_needle)
+        self.__pattern.alignment = self.config.alignment
 
         # update progress bar
-        self.mailman.emit_progress(self.__conf.start_row + 1,
-                                   self.__image.img_height, 0, "")
+        self.emit_progress_bar_updater(self.config.start_row + 1,
+                                       self.__pattern.pat_height, 0, "")
 
         # switch to status tab
-        if self.__conf.continuous_reporting is True:
+        if self.config.continuous_reporting:
             self.ui.tab_widget.setCurrentIndex(1)
 
         # send signal to start knitting
-        self.mailman.emit_configured()
+        self.emit_knitting_starter()
 
     def knit(self):
         self.__canceled = False
 
         while True:
             # knit next row
-            result = self.__control.knit(self.__image, self.__conf)
-            self.__feedback_handler.handle(result)
-            # do not need to make copy of progress object to emit to UI thread
-            # because signal_update_knit_progress connection blocks this thread
-            # progress = copy(self.__control.progress)
-            status = self.__control.status
-            row_mult = self.__control.row_multiplier()
-            self.__knit_progress_handler(status, row_mult)
+            result = self.__control.knit(self.__pattern, self.config)
+            self.__feedback.handle(result)
+            self.__knit_progress_handler()
             if self.__canceled or result is KnitOutput.FINISHED:
                 break
 
@@ -165,13 +195,23 @@ class AyabPlugin(object):
         sleep(1)
 
         # send signal to finish knitting
-        self.mailman.emit_done_knitting(not self.__canceled)
+        # "finish.wav" sound only plays if knitting was not canceled
+        self.emit_knitting_finisher(not self.__canceled)
 
-    def __knit_progress_handler(self, status, row_multiplier):
-        self.mailman.emit_progress(status.current_row, status.total_rows,
-                                   status.repeats, status.color_symbol)
-        self.mailman.emit_knit_progress(status, row_multiplier)
-        # update status tab
+    def __knit_progress_handler(self):
+        # do not need to make copy of status object to emit to UI thread
+        # because signal knit_progress_updater connection blocks this thread
+        # until it has finished
+        # status = copy(self.__control.status)
+        status = self.__control.status
+        row_multiplier = self.__control.row_multiplier()
+        self.emit_progress_bar_updater(status.current_row, status.total_rows,
+                                       status.repeats, status.color_symbol)
+        self.emit_knit_progress_updater(status, row_multiplier)
+        if self.config.continuous_reporting:
+            self.__update_status_tab(status)
+
+    def __update_status_tab(self, status):
         self.ui.progress_hall_l.setValue(status.hall_l)
         self.ui.label_hall_l.setText(str(status.hall_l))
         self.ui.progress_hall_r.setValue(status.hall_r)
@@ -180,35 +220,13 @@ class AyabPlugin(object):
         self.ui.label_carriage.setText(status.carriage_type)
 
     def cancel(self):
-        self.mailman.emit_notification("Knitting canceled.")
+        self.emit_notification("Knitting canceled.")
         self.__canceled = True
 
     def set_image_dimensions(self, width, height):
         """Called by Main UI on loading of an image to set Start/Stop needle
-        to image width. Updates the maximum value of the Start Line UI element"""
+        to image width. Updates the maximum value of the Start Row UI element"""
         left_side = width // 2
         self.ui.start_needle_edit.setValue(left_side)
         self.ui.stop_needle_edit.setValue(width - left_side)
         self.ui.start_row_edit.setMaximum(height)
-
-    def update_start_row(self):  # updates part of progress bar
-        start_row_edit = int(self.ui.start_row_edit.value())
-        self.mailman.emit_start_row(start_row_edit)
-
-    # def cleanup_ui(self):
-    #     """Cleans up UI elements inside knitting option dock."""
-    #     dock = self.dock
-    #     cleaner = QObjectCleanupHandler()
-    #     cleaner.add(dock.widget())
-    #     self.__qw = QWidget()
-    #     dock.setWidget(self.__qw)
-    #     self.__unset_translator()
-
-    # def __unset_translator(self):
-    #     app = QCoreApplication.instance()
-    #     app.removeTranslator(self.translator)
-
-    # def fail(self):
-    #     # TODO add message info from event
-    #     self.__logger.error("Error while knitting.")
-    #     self.__control.close()

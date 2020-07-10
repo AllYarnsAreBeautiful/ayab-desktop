@@ -23,9 +23,10 @@ from PyQt5.QtCore import Qt, QCoreApplication
 
 
 class About(object):
-    def __init__(self, app_context):
+    def __init__(self, parent):
         self.__version = "package_version"
-        filename_version = app_context.get_resource("ayab/package_version")
+        filename_version = parent.app_context.get_resource(
+            "ayab/package_version")
         with open(filename_version) as version_file:
             self.__version = version_file.read().strip()
 

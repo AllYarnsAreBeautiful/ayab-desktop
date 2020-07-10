@@ -24,8 +24,7 @@ import sys
 from os import path
 import logging
 
-from PyQt5.QtWidgets import \
-    QMainWindow, QApplication, QMessageBox, QFileDialog
+from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox
 from PyQt5.QtCore import Qt, QThread, QCoreApplication
 
 import simpleaudio as sa
@@ -34,12 +33,13 @@ import wave
 from . import notify
 from .ayab_gui import Ui_MainWindow
 from .ayab_fsm import FSM
+from .ayab_observer import Observer
 from .ayab_menu import Menu
 from .ayab_scene import Scene
-from .ayab_mailbox import SignalReceiver
+from .ayab_transforms import Transform
 from .firmware_flash import FirmwareFlash
-from .ayab_preferences import Preferences, str2bool
-from .ayab_progress import Progress, ProgressBar
+from .ayab_preferences import Preferences
+from .ayab_progressbar import ProgressBar
 from .ayab_about import About
 from .ayab_knitprogress import KnitProgress
 from .plugins.ayab_plugin import AyabPlugin
@@ -50,137 +50,78 @@ from .plugins.ayab_plugin.machine import Machine
 
 
 class GuiMain(QMainWindow):
-    """GuiMain is the main object that handles the instance of AYAB's GUI from ayab_gui.UiForm .
+    """
+    GuiMain is the main object that handles the instance of the Ayab GUI.
 
-    GuiMain inherits from QMainWindow and instantiates a window with the form components form ayab_gui.UiForm.
+    GuiMain inherits from QMainWindow and instantiates a window with
+    components from `ayab_gui.ui`
     """
     def __init__(self, app_context):
-        super(GuiMain, self).__init__(None)
+        super().__init__()
         self.app_context = app_context
 
-        self.image_file_route = None
-
         # get preferences
-        self.prefs = Preferences(app_context)
+        self.prefs = Preferences(self)
 
         # create UI
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+
+        # add modular components
         self.menu = Menu(self)
-        self.menu.setup()
-        self.mailbox = SignalReceiver()
+        self.about = About(self)
+        self.seer = Observer()
         self.scene = Scene(self)
-        self.about = About(app_context)
-        self.plugin = AyabPlugin()
-        self.plugin.setupUi(self)
-        self.progress = Progress()
-        self.pb = ProgressBar(self)
-        self.kp = KnitProgress(self.ui)
+        self.knitprog = KnitProgress(self)
+        self.plugin = AyabPlugin(self)
+        self.progbar = ProgressBar(self)
+        self.flash = FirmwareFlash(self)
         self.gt = GenericThread(self.plugin.knit)
 
-        # set default knitting configuration options
-        defaults = self.prefs.settings
-        self.plugin.ui.knitting_mode_box.setCurrentIndex(
-            defaults.value("default_knitting_mode"))
-        if str2bool(defaults.value("default_infinite_repeat")):
-            self.plugin.ui.inf_repeat_checkbox.setCheckState(Qt.Checked)
-        else:
-            self.plugin.ui.inf_repeat_checkbox.setCheckState(Qt.Unchecked)
-        if str2bool(defaults.value("automatic_mirroring")):
-            self.plugin.ui.auto_mirror_checkbox.setCheckState(Qt.Checked)
-        else:
-            self.plugin.ui.auto_mirror_checkbox.setCheckState(Qt.Unchecked)
-        self.plugin.ui.alignment_combo_box.setCurrentIndex(
-            self.scene.alignment.value)
-
-        # clear progress and status bar
-        self.reset_notification()
-        self.pb.reset()
+        # clear progress bar and notification label
+        self.progbar.reset()
+        self.update_notification("", False)
 
         # show UI
         self.showMaximized()
 
-        # connect signals and UI actions to slots
-        self.mailbox.connect_slots(self)
-        self.__connect_ui_actions()
-        self.__connect_menu_actions()
+        # Activate signals and UI elements
+        self.__activate_ui()
+        self.__activate_menu()
+        self.seer.activate_signals(self)
 
         # initialize FSM
-        self.fs = FSM()
-        self.fs.set_transitions(self)
-        self.fs.set_properties(self.ui)
-        self.fs.machine.start()
+        self.fsm = FSM()
+        self.fsm.set_transitions(self)
+        self.fsm.set_properties(self.ui)
+        self.fsm.machine.start()
 
-    def update_start_row(self, start_row):
-        self.progress.row = start_row
-        self.pb.refresh()
-        self.scene.row_progress = start_row
-
-    def set_image_dimensions(self):
-        """Set dimensions on GUI"""
-        width, height = self.scene.image.size
-        self.plugin.set_image_dimensions(width, height)
-        self.progress.row = self.scene.row_progress + 1
-        self.progress.total = height
-        self.pb.refresh()
-        self.update_notification(
-            QCoreApplication.translate("Scene", "Image dimensions") +
-            ": {} x {}".format(width, height), False)
-        self.scene.refresh()
-
-    def update_progress(self, row, total, repeats, color_symbol):
-        self.progress.update(row, total, repeats, color_symbol)
-        self.pb.refresh()
-
-    def reset_notification(self):
-        '''Updates the Notification field'''
-        self.update_notification("", False)
-
-    def update_notification(self, text, log):
-        '''Updates the Notification field'''
-        if log:
-            logging.info("Notification: " + text)
-        self.ui.label_notifications.setText(text)
-
-    def update_knit_progress(self, status, row_multiplier):
-        self.kp.update(status, row_multiplier)
-        # if status.current_row > 0 and status.current_row == status.total_rows:
-        #     self.mailbox.done_knit_progress.emit()
-
-    def wheelEvent(self, event):
-        self.scene.zoom = event
-
-    def __connect_ui_actions(self):
-        # UI actions
-        self.ui.load_file_button.clicked.connect(self.open_file_select_dialog)
+    def __activate_ui(self):
+        self.ui.load_file_button.clicked.connect(
+            self.scene.ayabimage.select_file)
         self.ui.filename_lineedit.returnPressed.connect(
-            self.open_file_select_dialog)
+            self.scene.ayabimage.select_file)
         self.ui.cancel_button.clicked.connect(self.plugin.cancel)
 
-    def __connect_menu_actions(self):
-        self.menu.ui.action_load_AYAB_firmware.triggered.connect(
-            self.open_firmware_ui)
-        self.menu.ui.action_set_preferences.triggered.connect(
-            self.open_preferences_dialog)
-        self.menu.ui.action_about.triggered.connect(self.about.show)
+    def __activate_menu(self):
         self.menu.ui.action_quit.triggered.connect(
             QCoreApplication.instance().quit)
-        self.menu.ui.action_invert.triggered.connect(self.scene.invert_image)
-        self.menu.ui.action_stretch.triggered.connect(self.scene.stretch_image)
-        self.menu.ui.action_repeat.triggered.connect(self.scene.repeat_image)
-        self.menu.ui.action_reflect.triggered.connect(self.scene.reflect_image)
-        self.menu.ui.action_horizontal_flip.triggered.connect(
-            self.scene.hflip_image)
-        self.menu.ui.action_vertical_flip.triggered.connect(
-            self.scene.vflip_image)
-        self.menu.ui.action_rotate_left.triggered.connect(
-            self.scene.rotate_left)
-        self.menu.ui.action_rotate_right.triggered.connect(
-            self.scene.rotate_right)
+        self.menu.ui.action_load_AYAB_firmware.triggered.connect(
+            self.flash.show)
+        self.menu.ui.action_set_preferences.triggered.connect(
+            self.prefs.open_dialog)
+        self.menu.ui.action_about.triggered.connect(self.about.show)
+        # get names of image actions from Transform methods
+        transforms = filter(lambda x: x[0] != "_", Transform.__dict__.keys())
+        for t in transforms:
+            action = getattr(self.menu.ui, "action_" + t)
+            slot = getattr(self.scene.ayabimage, t)
+            action.triggered.connect(slot)
 
-    def start_knitting_process(self):
+    def start_knitting(self):
+        """Start kntting process."""
         # reset knit progress window
-        self.kp.reset()
+        self.knitprog.reset()
         # disable UI elements at start of knitting
         self.menu.depopulate()
         self.ui.filename_lineedit.setEnabled(False)
@@ -188,66 +129,39 @@ class GuiMain(QMainWindow):
         # start thread for knit plugin
         self.gt.start()
 
-    def reset_ui_after_knitting(self, audio: bool):
-        # (Re-)enable UI elements after knitting finishes
+    def finish_knitting(self, audio: bool):
+        """(Re-)enable UI elements after knitting finishes."""
         self.menu.repopulate()
         self.ui.filename_lineedit.setEnabled(True)
         self.ui.load_file_button.setEnabled(True)
         if audio:
-            self.__audio("finish")
+            self.audio("finish")
 
-    def open_file_select_dialog(self):
-        filenameValue = self.ui.filename_lineedit.text()
-        if filenameValue == '':
-            filePath = self.app_context.get_resource("patterns")
-        else:
-            filePath = filenameValue
-        file_selected_route, _ = QFileDialog.getOpenFileName(
-            self, "Open file", filePath,
-            'Images (*.png *.PNG *.jpg *.JPG *.jpeg *.JPEG *.bmp *.BMP *.gif *.GIF *.tiff *.TIFF *.tif *.TIF *.Pat *.pat *.PAT *.Stp *.stp *.STP)'
-        )
-        if file_selected_route:
-            self.__update_file_selected_text_field(file_selected_route)
-            self.__load_image_from_string(str(file_selected_route))
+    def set_image_dimensions(self):
+        """Set dimensions of image"""
+        width, height = self.scene.ayabimage.image.size
+        self.plugin.set_image_dimensions(width, height)
+        self.progbar.row = self.scene.row_progress + 1
+        self.progbar.total = height
+        self.progbar.refresh()
+        self.update_notification(
+            QCoreApplication.translate("Scene", "Image dimensions") +
+            ": {} x {}".format(width, height), False)
+        self.scene.refresh()
 
-    def __update_file_selected_text_field(self, route):
-        '''Sets self.image_file_route and ui.filename_lineedit to route.'''
-        self.ui.filename_lineedit.setText(route)
-        self.image_file_route = route
+    def update_start_row(self, start_row):
+        self.progbar.update(start_row)
+        self.scene.row_progress = start_row
 
-    def __load_image_from_string(self, image_str):
-        '''Loads an image into self.ui.image_pattern_view using a temporary QGraphicsScene'''
-        # TODO Check maximum width of image
-        try:
-            self.scene.load_image_file(image_str)
-        except (OSError, FileNotFoundError):
-            notify.display_blocking_popup("Unable to load image file",
-                                          "error")  # TODO translate
-            logging.error("Unable to load " + str(image_str))
-        except Exception as e:
-            notify.display_blocking_popup("Error loading image file",
-                                          "error")  # TODO translate
-            logging.error("Error loading image: " + str(e))
-        else:
-            self.scene.refresh()
-            self.mailbox.image_loaded_flagger.emit()
-            self.statusBar().showMessage(image_str)
-            self.set_image_dimensions()
-
-    def open_firmware_ui(self):
-        self.__flash_ui = FirmwareFlash(self.app_context)
-        self.__flash_ui.show()
-
-    def open_preferences_dialog(self):
-        return self.prefs.set_prefs_dialog()
+    def update_notification(self, text, log=True):
+        '''Update the notification field'''
+        if log:
+            logging.info("Notification: " + text)
+        self.ui.label_notifications.setText(text)
 
     def audio(self, sound):
-        """Blocking -- call from external thread only"""
-        self.__audio(sound)
-
-    def __audio(self, sound):
         """Play audio and wait until finished"""
-        if str2bool(self.prefs.settings.value("quiet_mode")):
+        if self.prefs.value("quiet_mode"):
             return
         dirname = self.app_context.get_resource("assets")
         filename = sound + ".wav"
@@ -261,6 +175,9 @@ class GuiMain(QMainWindow):
             wave_obj = sa.WaveObject.from_wave_read(wave_read)
             play_obj = wave_obj.play()
             play_obj.wait_done()
+
+    def wheelEvent(self, event):
+        self.scene.zoom = event
 
 
 class GenericThread(QThread):

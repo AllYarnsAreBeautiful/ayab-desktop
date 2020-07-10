@@ -19,21 +19,17 @@
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
 import logging
-from math import ceil
 
+from PyQt5.QtCore import QRect
 from PyQt5.QtGui import QImage, QPixmap, QBrush, QColor
-from PyQt5.QtWidgets import QGraphicsScene, QGraphicsRectItem, QGraphicsView, QInputDialog, QDialog
+from PyQt5.QtWidgets import QGraphicsScene, QGraphicsRectItem, QGraphicsView
 
-from PIL import Image
-from DAKimport import DAKimport
-
-from .ayab_transforms import Transformable, Mirrors
-from .plugins.ayab_plugin.ayab_plugin import SignalEmitter
+from .ayab_image import AyabImage
 from .plugins.ayab_plugin.ayab_options import Alignment
 from .plugins.ayab_plugin.machine import Machine
 
 
-class Scene(object):
+class Scene(QGraphicsView):
     """Graphics scene object for UI.
 
     @author Tom Price
@@ -44,9 +40,9 @@ class Scene(object):
     LIMIT_BAR_WIDTH = 0.5
 
     def __init__(self, parent):
-        # self.__parent = parent
-        self.__image = None
-        self.__mailman = SignalEmitter(parent.mailbox)
+        super().__init__(parent.ui.graphics_splitter)
+        self.setGeometry(QRect(0, 0, 700, 686))
+        self.ayabimage = AyabImage(parent)
         default = parent.prefs.settings.value("default_alignment")
         self.__alignment = Alignment(default)
         self.__start_needle = 80
@@ -54,27 +50,26 @@ class Scene(object):
         self.__row_progress = 0
 
         # zoom behavior
-        self.__qv = parent.ui.image_pattern_view
-        self.__qv.setDragMode(QGraphicsView.ScrollHandDrag)
+        self.setDragMode(QGraphicsView.ScrollHandDrag)
         self.__zoom = 3
 
     def refresh(self):
         '''Updates the graphics scene'''
         qscene = QGraphicsScene()
 
-        width, height = self.__image.size
-        data = self.__image.convert("RGBA").tobytes("raw", "RGBA")
+        width, height = self.ayabimage.image.size
+        data = self.ayabimage.image.convert("RGBA").tobytes("raw", "RGBA")
         qim = QImage(data, width, height, QImage.Format_ARGB32)
         pixmap = QPixmap.fromImage(qim)
 
         # Add pattern and move accordingly to alignment
         pattern = qscene.addPixmap(pixmap)
-        if self.__alignment.name == 'LEFT':
+        if self.__alignment == Alignment.LEFT:
             pos = self.__start_needle - Machine.WIDTH / 2
-        elif self.__alignment.name == 'CENTER':
+        elif self.__alignment == Alignment.CENTER:
             pos = (self.__start_needle + self.__stop_needle - pixmap.width() -
                    Machine.WIDTH) / 2
-        elif self.__alignment.name == 'RIGHT':
+        elif self.__alignment == Alignment.RIGHT:
             pos = self.__stop_needle - pixmap.width() - Machine.WIDTH / 2
         else:
             logging.warning("invalid alignment")
@@ -108,35 +103,9 @@ class Scene(object):
                               pixmap.height() - self.__row_progress,
                               Machine.WIDTH, self.LIMIT_BAR_WIDTH))
 
-        self.__qv.resetTransform()
-        self.__qv.scale(self.zoom, self.zoom)
-        self.__qv.setScene(qscene)
-
-    def load_image_file(self, image_str):
-        # check for DAK files
-        image_str_suffix = image_str[-4:].lower()
-        if (image_str_suffix == ".pat" or image_str_suffix == ".stp"):
-            # convert DAK file
-            dakfile_processor = DAKimport.Importer()
-            if (image_str_suffix == ".pat"):
-                self.__image = dakfile_processor.pat2im(image_str)
-            elif (image_str_suffix == ".stp"):
-                self.__image = dakfile_processor.stp2im(image_str)
-            else:
-                raise RuntimeError("Unrecognized file suffix")
-        else:
-            self.__image = Image.open(image_str)
-        self.__image = self.__image.convert("RGBA")
-        self.__mailman.emit_image_dimensions()
-
-    @property
-    def image(self):
-        return self.__image
-
-    @image.setter
-    def image(self, image):
-        self.__image = image
-        self.refresh()
+        self.resetTransform()
+        self.scale(self.zoom, self.zoom)
+        self.setScene(qscene)
 
     @property
     def row_progress(self):
@@ -169,91 +138,10 @@ class Scene(object):
     @zoom.setter
     def zoom(self, event):
         '''Use mouse wheel events to zoom the pattern view'''
-        if self.__image is not None:
+        if self.ayabimage.image is not None:
             # angleDelta.y is 120 or -120 when scrolling
             zoom = event.angleDelta().y() / 120
             self.__zoom += zoom
             self.__zoom = max(1, self.__zoom)
             self.__zoom = min(5, self.__zoom)
             self.refresh()
-
-    def invert_image(self):
-        '''invert current image.'''
-        self.apply_image_transform("invert")
-
-    def repeat_image(self):
-        '''repeat current image.'''
-        v = QInputDialog.getInt(
-            None,  # self.__parent,
-            "Repeat",
-            "Vertical",
-            value=1,
-            min=1)
-        h = QInputDialog.getInt(
-            None,  # self.__parent,
-            "Repeat",
-            "Horizontal",
-            value=1,
-            min=1,
-            max=ceil(Machine.WIDTH / self.__image.size[0]))
-        self.apply_image_transform("repeat", v[0], h[0])
-
-    def stretch_image(self):
-        '''Public stretch current Image function.'''
-        v = QInputDialog.getInt(
-            None,  # self.__parent,
-            "Stretch",
-            "Vertical",
-            value=1,
-            min=1)
-        h = QInputDialog.getInt(
-            None,  # self.__parent,
-            "Stretch",
-            "Horizontal",
-            value=1,
-            min=1,
-            max=ceil(Machine.WIDTH / self.__image.size[0]))
-        self.apply_image_transform("stretch", v[0], h[0])
-
-    def reflect_image(self):
-        '''Public reflect current Image function.'''
-        m = Mirrors()
-        if (m.result == QDialog.Accepted):
-            self.apply_image_transform("reflect", m.mirrors)
-
-    def hflip_image(self):
-        '''Public horizontal flip current Image function.'''
-        self.apply_image_transform("hflip")
-
-    def vflip_image(self):
-        '''Public vertical flip current Image function.'''
-        self.apply_image_transform("vflip")
-
-    def rotate_left(self):
-        '''Public rotate left current Image function.'''
-        self.apply_image_transform("rotate", 90.0)
-
-    def rotate_right(self):
-        '''Public rotate right current Image function.'''
-        self.apply_image_transform("rotate", -90.0)
-
-    def apply_image_transform(self, method, *args):
-        '''Executes an image transform specified by key and args.
-
-        Calls a transform function, forwarding args and the image,
-        and replaces the QtImage on scene.
-        '''
-        transform = getattr(Transformable, method)
-        try:
-            image = transform(self.__image, args)
-        except:
-            logging.error("Error while executing image transform")
-        if not image:
-            return
-
-        # Update the view
-        self.image = image
-        self.__mailman.emit_image_dimensions()
-
-        # Transition to NOT_CONFIGURED state
-        self.__mailman.emit_image_transformed()

@@ -16,17 +16,23 @@
 #
 #    Copyright 2014 Sebastian Oliva, Christian Obersteiner, Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
-"""Provides an Interface for users to operate AYAB using a GUI."""
 
 from PyQt5.QtWidgets import QMenuBar
 from .ayab_menu_gui import Ui_MenuBar
 
 
 class Menu(QMenuBar):
+    """
+    Menu bar object and associated methods.
+
+    @author Tom Price
+    @date   July 2020
+    """
     def __init__(self, parent):
-        super(QMenuBar, self).__init__(parent)
+        super().__init__(parent)
         self.ui = Ui_MenuBar()
         self.ui.setupUi(self)
+        self.setup()
 
     def setup(self):
         self.addAction(self.ui.menu_tools.menuAction())
@@ -48,7 +54,7 @@ class Menu(QMenuBar):
 
     def add_image_actions(self):
         # This workaround is necessary because
-        # self.__actionImageActions.setEnabled(True)
+        # self.menu_image_actions.menuAction().setEnabled(True)
         # does not seems to work (at least, not on Ubuntu 16.04)
         # Tom Price June 2020
         self.depopulate()

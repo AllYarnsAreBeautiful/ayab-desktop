@@ -23,13 +23,15 @@ User preferences are configured on startup.
 The method of configuration may differ depending on the OS.
 """
 
-from os import path
-from glob import glob
-from PyQt5.QtCore import Qt, QSettings, QLocale
-from PyQt5.QtWidgets import QDialog
+import re
+from PyQt5.QtCore import Qt, QSettings
+from PyQt5.QtWidgets import QDialog, QFormLayout, QLabel, QCheckBox, QComboBox
 from .ayab_prefs_gui import Ui_PrefsDialog
+
 from .plugins.ayab_plugin.ayab_options import Alignment
 from .plugins.ayab_plugin.ayab_knit_mode import KnitMode
+from .plugins.ayab_plugin.machine import Machine
+from .ayab_language import Language
 
 
 def str2bool(qvariant):
@@ -42,65 +44,80 @@ def str2bool(qvariant):
 class Preferences:
     """Default settings class.
 
+    Variable names and classes are defined in the dict `variables`.
+    Classes other than `bool` are expected to have a method `add_items`
+    that populates a combo box. The first item (index 0) is the default.
+    Language defaults to US English if there are no translations
+    available for the user's locale. It is the only setting that is not
+    set back to the default by the "Reset" button.
+
     @author Tom Price
     @date   June 2020
     """
-    def __init__(self, app_context):
-        self.__app_context = app_context
+    variables = {
+        'machine': Machine,
+        'default_knitting_mode': KnitMode,
+        'default_infinite_repeat': bool,
+        'default_alignment': Alignment,
+        'default_mirroring': bool,
+        # 'default_continuous_reporting': bool,
+        'quiet_mode': bool,
+        'language': Language,
+    }
+
+    def __init__(self, parent):
+        self.parent = parent
+        self.languages = Language(self.parent.app_context)
         self.settings = QSettings()
         self.settings.setFallbacksEnabled(False)
-        if self.settings.allKeys() == []:
-            self.reset()
-        else:
-            self.settings.setValue(
-                "automatic_mirroring",
-                str2bool(self.settings.value("automatic_mirroring")))
-            self.settings.setValue(
-                "default_knitting_mode",
-                int(self.settings.value("default_knitting_mode")))
-            self.settings.setValue(
-                "default_infinite_repeat",
-                str2bool(self.settings.value("default_infinite_repeat")))
-            self.settings.setValue(
-                "default_alignment",
-                int(self.settings.value("default_alignment")))
-            self.settings.setValue("quiet_mode",
-                                   str2bool(self.settings.value("quiet_mode")))
+        self.refresh()
+
+    def refresh(self):
+        for var in self.variables.keys():
+            self.settings.setValue(var, self.value(var))
 
     def reset(self):
-        '''Reset preferences to default values'''
-        self.settings.setValue("automatic_mirroring", False)
-        self.settings.setValue("default_knitting_mode", "0")
-        self.settings.setValue("default_infinite_repeat", False)
-        self.settings.setValue("default_alignment", "0")
-        self.settings.setValue("quiet_mode", False)
-        default = self.default_locale()
-        available = self.available_locales()
-        if default in available:
-            self.settings.setValue("language", default)
+        """Reset all the fields except language"""
+        for var in self.variables.keys():
+            if self.variables[var] != Language:
+                self.settings.setValue(var, self.default_value(var))
+
+    def value(self, var):
+        if var in self.settings.allKeys():
+            return self.convert(var)(self.settings.value(var))
         else:
-            self.settings.setValue("language", "en_US")
+            return self.default_value(var)
 
-    def set_prefs_dialog(self):
-        return PrefsDialog(self).exec_()
+    def convert(self, var):
+        try:
+            cls = self.variables[var]
+        except KeyError:
+            return str
+        # else
+        if cls == bool:
+            return str2bool
+        # else
+        if cls == Language:
+            return str
+        # else
+        return int
 
-    def default_locale(self):
-        return QLocale.system().name()
+    def default_value(self, var):
+        try:
+            cls = self.variables[var]
+        except KeyError:
+            return None
+        # else
+        if cls == bool:
+            return False
+        # else
+        if cls == Language:
+            return self.languages.default_language()
+        # else
+        return 0
 
-    def available_locales(self):
-        lang_dir = self.__app_context.get_resource("ayab/translations")
-        lang_files = glob(path.join(lang_dir, "ayab_trans.*.ts"))
-        return sorted(map(self.__locale, lang_files))
-
-    def language(self, loc):
-        lang = loc[0:3]
-        country = loc[3:6]
-        # return QLocale.languageToScript(QLocale(lang).language()) \
-        return QLocale(loc).nativeLanguageName()  # + " (" + country + ")"
-
-    def __locale(self, string):
-        i = string.rindex("_")
-        return string[i - 2:i + 3]
+    def open_dialog(self):
+        return PrefsDialog(self.parent).exec_()
 
 
 class PrefsDialog(QDialog):
@@ -110,94 +127,117 @@ class PrefsDialog(QDialog):
     @date   June 2020
     """
     def __init__(self, parent):
-        super(PrefsDialog, self).__init__(None)
-        self.__reset = parent.reset
-        self.__settings = parent.settings
+        super().__init__(parent)
+        self.__prefs = parent.prefs
 
         # set up preferences dialog
         self.__ui = Ui_PrefsDialog()
         self.__ui.setupUi(self)
+        self.__form = QFormLayout(self.__ui.prefs_group)
 
-        # add combo box items
-        KnitMode.add_items(self.__ui.default_knitting_mode_box)
-        Alignment.add_items(self.__ui.default_alignment_box)
-        for loc in parent.available_locales():
-            self.__ui.language_box.addItem(parent.language(loc), loc)
+        # add form items
+        self.__widget = {}
+        for var in self.__prefs.variables.keys():
+            self.__widget[var] = self.__make_widget(var)
+            self.__form.addRow(self.__make_label(var), self.__widget[var])
 
         # connect dialog box buttons
-        self.__ui.default_knitting_mode_box.currentIndexChanged.connect(
-            self.__update_default_knitting_mode_setting)
-        self.__ui.default_infinite_repeat_checkbox.toggled.connect(
-            self.__toggle_default_infinite_repeat_setting)
-        self.__ui.default_alignment_box.currentIndexChanged.connect(
-            self.__update_default_alignment_setting)
-        self.__ui.automatic_mirroring_checkbox.toggled.connect(
-            self.__toggle_automatic_mirroring_setting)
-        self.__ui.quiet_mode_checkbox.toggled.connect(
-            self.__toggle_quiet_mode_setting)
-        self.__ui.language_box.currentIndexChanged.connect(
-            self.__update_language_setting)
+        for widget in self.__widget.values():
+            widget.connect()
         self.__ui.reset.clicked.connect(self.__reset_and_refresh)
         self.__ui.enter.clicked.connect(self.accept)
 
         # update buttons from settings
-        self.__refresh()
+        self.__refresh_form()
 
-    def __update_default_knitting_mode_setting(self):
-        self.__settings.setValue(
-            "default_knitting_mode",
-            self.__ui.default_knitting_mode_box.currentIndex())
+    def __make_label(self, var):
+        return QLabel(re.sub(r"_", r" ", var).title())
 
-    def __toggle_default_infinite_repeat_setting(self):
-        if self.__ui.default_infinite_repeat_checkbox.isChecked():
-            self.__settings.setValue("default_infinite_repeat", True)
+    def __make_widget(self, var):
+        cls = self.__prefs.variables[var]
+        if cls == bool:
+            return PrefsBoolWidget(self.__prefs, var)
+        elif cls == Language:
+            return PrefsLangWidget(self.__prefs)
         else:
-            self.__settings.setValue("default_infinite_repeat", False)
+            return PrefsComboWidget(self.__prefs, var)
 
-    def __update_default_alignment_setting(self):
-        self.__settings.setValue(
-            "default_alignment",
-            self.__ui.default_alignment_box.currentIndex())
-
-    def __toggle_automatic_mirroring_setting(self):
-        if self.__ui.automatic_mirroring_checkbox.isChecked():
-            self.__settings.setValue("automatic_mirroring", True)
-        else:
-            self.__settings.setValue("automatic_mirroring", False)
-
-    def __toggle_quiet_mode_setting(self):
-        if self.__ui.quiet_mode_checkbox.isChecked():
-            self.__settings.setValue("quiet_mode", True)
-        else:
-            self.__settings.setValue("quiet_mode", False)
-
-    def __update_language_setting(self):
-        self.__settings.setValue("language",
-                                 self.__ui.language_box.currentData())
-
-    def __refresh(self):
-        '''Update preferences GUI to current values'''
-        self.__ui.default_knitting_mode_box.setCurrentIndex(
-            int(self.__settings.value("default_knitting_mode")))
-        if str2bool(self.__settings.value("default_infinite_repeat")):
-            self.__ui.default_infinite_repeat_checkbox.setCheckState(
-                Qt.Checked)
-        else:
-            self.__ui.default_infinite_repeat_checkbox.setCheckState(
-                Qt.Unchecked)
-        self.__ui.default_alignment_box.setCurrentIndex(
-            int(self.__settings.value("default_alignment")))
-        if str2bool(self.__settings.value("automatic_mirroring")):
-            self.__ui.automatic_mirroring_checkbox.setCheckState(Qt.Checked)
-        else:
-            self.__ui.automatic_mirroring_checkbox.setCheckState(Qt.Unchecked)
-        if str2bool(self.__settings.value("quiet_mode")):
-            self.__ui.quiet_mode_checkbox.setCheckState(Qt.Checked)
-        else:
-            self.__ui.quiet_mode_checkbox.setCheckState(Qt.Unchecked)
-        self.__ui.language_box.setCurrentIndex(
-            self.__ui.language_box.findData(self.__settings.value("language")))
+    def __refresh_form(self):
+        '''Update GUI to current settings'''
+        for widget in self.__widget.values():
+            widget.refresh()
 
     def __reset_and_refresh(self):
-        self.__reset()
-        self.__refresh()
+        self.__prefs.reset()
+        self.__refresh_form()
+
+
+class PrefsBoolWidget(QCheckBox):
+    """Checkbox for Boolean preferences setting.
+
+    @author Tom Price
+    @date   July 2020
+    """
+    def __init__(self, prefs, var):
+        super().__init__()
+        self.var = var
+        self.prefs = prefs
+
+    def connect(self):
+        self.toggled.connect(self.update_setting)
+
+    def update_setting(self):
+        if self.isChecked():
+            self.prefs.settings.setValue(self.var, True)
+        else:
+            self.prefs.settings.setValue(self.var, False)
+
+    def refresh(self):
+        if self.prefs.value(self.var):
+            self.setCheckState(Qt.Checked)
+        else:
+            self.setCheckState(Qt.Unchecked)
+
+
+class PrefsComboWidget(QComboBox):
+    """ComboBox for categorical preferences setting.
+
+    @author Tom Price
+    @date   July 2020
+    """
+    def __init__(self, prefs, var):
+        super().__init__()
+        self.var = var
+        self.prefs = prefs
+        cls = self.prefs.variables[self.var]
+        cls.add_items(self)
+
+    def connect(self):
+        self.currentIndexChanged.connect(self.update_setting)
+
+    def update_setting(self):
+        self.prefs.settings.setValue(self.var, self.currentIndex())
+
+    def refresh(self):
+        self.setCurrentIndex(self.prefs.value(self.var))
+
+
+class PrefsLangWidget(QComboBox):
+    """ComboBox for language setting.
+
+    @author Tom Price
+    @date   July 2020
+    """
+    def __init__(self, prefs):
+        super().__init__()
+        self.prefs = prefs
+        self.prefs.languages.add_items(self)
+
+    def connect(self):
+        self.currentIndexChanged.connect(self.update_setting)
+
+    def update_setting(self):
+        self.prefs.settings.setValue("language", self.currentData())
+
+    def refresh(self):
+        self.setCurrentIndex(self.findData(self.prefs.value("language")))

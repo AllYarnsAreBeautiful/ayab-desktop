@@ -87,11 +87,11 @@ Dest	Src	Context	en_US	en_GB	de_DE	is_IS	it_IT	ru_RU	uk_UA	fr_FR	es_Es
 85	32	KnitProgress	Color	Colour	Farbe	Litur	Colore	Цвет	Колір	Couleur	Color
 86	33	NeedleColor	green	green	grün	grænn	verde	зелёный (зеленый)	зелений	vert	verde
 87	34	NeedleColor	orange	orange	orange	appelsínugulur	arancione	оранжевый	помаранчевий	orange	naranja
-88	69	KnittingMode	Singlebed	Singlebed	Einzelbett	Eitt borð	Frontura singola	Однофонтурное вязание	Однофонтурне	Fonture simple	Frontura simple
-89	70	KnittingMode	Ribber: Classic	Ribber: Classic	Doppelbett: Klassisch	Ribber: Klassískt	2a Frontura: Classico	двухфонтурное: Классика	Двофонтурне: Класика	2ème Fonture: Classique	Doble frontura: Clásico
-90	71	KnittingMode	Ribber: Middle-Colors-Twice	Ribber: Middle-Colours-Twice	Doppelbett: Middle-Colors-Twice	Ribber: Miðlitur-Tvisvar	2a Frontura: Middle-Colors-Twice	двухфонтурное: Средний-цвет-дважды	Двофонтурне: Подвоєння середнього кольору	2ème Fonture: Middle-Colors-Twice	Doble frontura: Colores medios dos veces
-91	72	KnittingMode	Ribber: Heart of Pluto	Ribber: Heart of Pluto	Doppelbett: Heart of Pluto	Ribber: Heart of Pluto	2a Frontura: Heart of Pluto	двухфонтурное: сердце Плутона	Двофонтурне: серце Плутона	2ème Fonture: Heart of Pluto	Doble frontura: Heart of Pluto
-92	73	KnittingMode	Ribber: Circular	Ribber: Circular	Doppelbett: Rundstricken	Ribber: Hringurprjón	2a Frontura: Circolare	двухфонтурное: Круговое	Двофонтурне: По колу	2ème Fonture: Circulaire	Doble frontura: Circular
+88	69	KnitMode	Singlebed	Singlebed	Einzelbett	Eitt borð	Frontura singola	Однофонтурное вязание	Однофонтурне	Fonture simple	Frontura simple
+89	70	KnitMode	Ribber: Classic	Ribber: Classic	Doppelbett: Klassisch	Ribber: Klassískt	2a Frontura: Classico	двухфонтурное: Классика	Двофонтурне: Класика	2ème Fonture: Classique	Doble frontura: Clásico
+90	71	KnitMode	Ribber: Middle-Colors-Twice	Ribber: Middle-Colours-Twice	Doppelbett: Middle-Colors-Twice	Ribber: Miðlitur-Tvisvar	2a Frontura: Middle-Colors-Twice	двухфонтурное: Средний-цвет-дважды	Двофонтурне: Подвоєння середнього кольору	2ème Fonture: Middle-Colors-Twice	Doble frontura: Colores medios dos veces
+91	72	KnitMode	Ribber: Heart of Pluto	Ribber: Heart of Pluto	Doppelbett: Heart of Pluto	Ribber: Heart of Pluto	2a Frontura: Heart of Pluto	двухфонтурное: сердце Плутона	Двофонтурне: серце Плутона	2ème Fonture: Heart of Pluto	Doble frontura: Heart of Pluto
+92	73	KnitMode	Ribber: Circular	Ribber: Circular	Doppelbett: Rundstricken	Ribber: Hringurprjón	2a Frontura: Circolare	двухфонтурное: Круговое	Двофонтурне: По колу	2ème Fonture: Circulaire	Doble frontura: Circular
 93	23	Alignment	Center	Centre	Zentriert	Miðja	Centra	Центр	Центр	Centre	Centrar
 94	24	Alignment	Left	Left	Links	Vinstri	Sinistra	Лево	Ліворуч	Gauche	Izquierda
 95	25	Alignment	Right	Right	Rechts	Hægri	Destra	Право	Праворуч	Droite	Derecha

@@ -19,6 +19,7 @@
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
 from enum import Enum
+from .ayab_observable import Observable
 
 
 class KnitOutput(Enum):
@@ -33,14 +34,14 @@ class KnitOutput(Enum):
     FINISHED = 8
 
 
-class KnitFeedbackHandler(object):
+class KnitFeedbackHandler(Observable):
     """Polymorphic dispatch of notification signals on KnitOutput.
 
     @author Tom Price
     @data   July 2020
     """
-    def __init__(self, signal_emitter):
-        self.__mailman = signal_emitter
+    def __init__(self, parent):
+        super().__init__(parent.seer)
 
     def handle(self, result):
         method = "_" + result.name.lower()
@@ -49,28 +50,27 @@ class KnitFeedbackHandler(object):
             dispatch()
 
     def _connecting_to_machine(self):
-        self.__mailman.emit_notification("Connecting to machine...", False)
+        self.emit_notification("Connecting to machine...", False)
 
     def _wait_for_init(self):
-        self.__mailman.emit_notification(
+        self.emit_notification(
             "Please start machine. (Set the carriage to mode KC-I " +
             "or KC-II and move the carriage over the left turn mark).")
 
     def _error_wrong_api(self):
-        self.__mailman.emit_popup(
-            "Wrong Arduino firmware version. Please check " +
-            "that you have flashed the latest version.")
+        self.emit_popup("Wrong Arduino firmware version. Please check " +
+                        "that you have flashed the latest version.")
         # + " (" + str(self.__control.API_VERSION) + ")")
 
     def _please_knit(self):
-        self.__mailman.emit_notification("Please knit.")
-        self.__mailman.emit_audio("start")
+        self.emit_notification("Please knit.")
+        self.emit_audio_player("start")
 
     def _device_not_ready(self):
-        self.__mailman.emit_notification("", False)
-        self.__mailman.emit_blocking_popup("Device not ready, try again.")
+        self.emit_notification("", False)
+        self.emit_blocking_popup("Device not ready, try again.")
 
     def _finished(self):
-        self.__mailman.emit_notification(
+        self.emit_notification(
             "Image transmission finished. Please knit until you " +
             "hear the double beep sound.")

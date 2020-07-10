@@ -17,8 +17,25 @@
 #    Copyright 2013 Christian Obersteiner, Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
-"""Machine-specific constant"""
+# from PyQt5.QtCore import QCoreApplication
 
 
-class Machine (object):
+class Machine(object):
+    """Machine configuration class.
+
+    @author Tom Price
+    @date   July 2020
+    """
     WIDTH = 200
+
+    def add_items(box):
+        """Add items to alignment combo box."""
+        box.addItem(
+            # QCoreApplication.translate("Machine",
+            "KH-900, KH-930, KH-940, KH-965")  # )
+        box.addItem(
+            # QCoreApplication.translate("Machine",
+            "KH-910, KH-950")  # )
+        box.addItem(
+            # QCoreApplication.translate("Machine",
+            "KH-270")  # )

@@ -22,7 +22,6 @@ import logging
 from enum import Enum
 from bitarray import bitarray
 from PyQt5.QtCore import QCoreApplication
-from . import ayab_image
 from .ayab_status import Status
 from .ayab_communication import AyabCommunication, MessageToken
 from .ayab_communication_mockup import AyabCommunicationMockup
@@ -109,7 +108,7 @@ class AyabControl(object):
 
             # screen output
             msg = str(self.line_block) + " " + str(line_number) + " reqLine: " + \
-                str(requested_line) + " img_row: " + str(self.img_row)
+                str(requested_line) + " pat_row: " + str(self.pat_row)
             if blank_line:
                 msg += " BLANK LINE"
             else:
@@ -127,57 +126,60 @@ class AyabControl(object):
         if not last_line:
             return False  # keep knitting
         elif self.inf_repeat:
-            self.inf_repeat_repeats += 1
+            self.pattern_repeats += 1
             return False  # keep knitting
         else:
-            return True  # image finished
+            return True  # pattern finished
 
     def __get_status(self, line_number, color, bits):
-        self.status.current_row = self.img_row + 1
-        self.status.total_rows = self.image.img_height
+        self.status.current_row = self.pat_row + 1
+        self.status.total_rows = self.pattern.pat_height
         self.status.line_number = line_number
         if self.inf_repeat:
-            self.status.repeats = self.inf_repeat_repeats
+            self.status.repeats = self.pattern_repeats
         if self.knit_mode == KnitMode.SINGLEBED:
-            self.status.alt_color = self.image.palette[1]
+            self.status.alt_color = self.pattern.palette[1]
             self.status.color_symbol = "A/B"
         else:
             self.status.alt_color = None
             self.status.color_symbol = self.COLOR_SYMBOLS[color]
-        self.status.color = self.image.palette[color]
+        self.status.color = self.pattern.palette[color]
         if self.FLANKING_NEEDLES:
-            self.status.bits = bits[self.image.knit_start_needle:self.image.
-                                    knit_stop_needle + 1]
+            self.status.bits = bits[self.pattern.knit_start_needle:self.
+                                    pattern.knit_stop_needle + 1]
         else:
             self.status.bits = bits[self.__first_needle:self.__last_needle]
 
     def select_needles(self, color, row_index, blank_line):
         bits = bitarray([False] * Machine.WIDTH, endian="little")
-        first_needle = max(0, self.image.img_start_needle)
-        last_needle = min(self.image.img_width + self.image.img_start_needle,
-                          Machine.WIDTH)
+        first_needle = max(0, self.pattern.pat_start_needle)
+        last_needle = min(
+            self.pattern.pat_width + self.pattern.pat_start_needle,
+            Machine.WIDTH)
 
-        # select needles flanking the image if necessary to knit the background color
+        # select needles flanking the pattern
+        # if necessary to knit the background color
         if self.knit_mode.flanking_needles(color, self.num_colors):
             bits[0:first_needle] = True
             bits[last_needle:Machine.WIDTH] = True
 
         if not blank_line:
-            first_pixel = first_needle - self.image.img_start_needle
-            last_pixel = last_needle - self.image.img_start_needle
+            first_pixel = first_needle - self.pattern.pat_start_needle
+            last_pixel = last_needle - self.pattern.pat_start_needle
             bits[first_needle:last_needle] = (
-                self.image.image_expanded)[row_index][first_pixel:last_pixel]
+                self.pattern.pattern_expanded
+            )[row_index][first_pixel:last_pixel]
 
         self.__first_needle = first_needle
         self.__last_needle = last_needle
         return bits
 
-    def knit(self, image, options):
+    def knit(self, pattern, options):
         '''Finite State Machine governing serial communication'''
         method = "_knit_" + self.state.name.lower()
         if not hasattr(KnitStateMachine, method):
             # NONE, FINISHED
             return KnitOutput.NONE
         dispatch = getattr(KnitStateMachine, method)
-        result = dispatch(self, image, options)
+        result = dispatch(self, pattern, options)
         return result

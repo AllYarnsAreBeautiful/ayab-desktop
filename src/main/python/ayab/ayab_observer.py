@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 # This file is part of AYAB.
 #
 #    AYAB is free software: you can redistribute it and/or modify
@@ -24,8 +23,9 @@ from .plugins.ayab_plugin.ayab_status import Status
 from .plugins.ayab_plugin.ayab_options import Alignment
 
 
-class SignalReceiver(QObject):
-    """Encapsulates signals and slots.
+class Observer(QObject):
+    """
+    Container for signals.
 
     @author Tom Price
     @date   July 2020
@@ -41,23 +41,26 @@ class SignalReceiver(QObject):
     audio_player = pyqtSignal('QString')
     needles_updater = pyqtSignal(int, int)
     alignment_updater = pyqtSignal(Alignment)
-    image_loaded_flagger = pyqtSignal()
-    image_transformed_flagger = pyqtSignal()
-    row_start_updater = pyqtSignal(int)
-    image_sizer = pyqtSignal()
-    configuration_fail_flagger = pyqtSignal()
-    configured_flagger = pyqtSignal()
+    image_resizer = pyqtSignal()
+    got_image_flag = pyqtSignal()
+    new_image_flag = pyqtSignal()
+    bad_config_flag = pyqtSignal()
+    knitting_starter = pyqtSignal()
     knitting_finisher = pyqtSignal(bool)
 
-    # knit_progress_finisher = pyqtSignal()
-
     def __init__(self):
-        super().__init__()  # initialize superobject
+        super().__init__()
 
-    def connect_slots(self, parent):
+    def signals(self):
+        """Iterator over names of signals."""
+        return filter(
+            lambda x: type(getattr(self, x)).__name__ == "pyqtBoundSignal",
+            Observer.__dict__.keys())
+
+    def activate_signals(self, parent):
         self.start_row_updater.connect(parent.update_start_row)
-        self.progress_bar_updater.connect(parent.pb.update)
-        self.knit_progress_updater.connect(parent.update_knit_progress,
+        self.progress_bar_updater.connect(parent.progbar.update)
+        self.knit_progress_updater.connect(parent.knitprog.update,
                                            type=Qt.BlockingQueuedConnection)
         self.notification_updater.connect(parent.update_notification)
         self.blocking_popup_displayer.connect(notify.display_blocking_popup)
@@ -66,5 +69,5 @@ class SignalReceiver(QObject):
                                   type=Qt.BlockingQueuedConnection)
         self.needles_updater.connect(parent.scene.update_needles)
         self.alignment_updater.connect(parent.scene.update_alignment)
-        self.image_sizer.connect(parent.set_image_dimensions)
-        self.knitting_finisher.connect(parent.reset_ui_after_knitting)
+        self.image_resizer.connect(parent.set_image_dimensions)
+        self.knitting_finisher.connect(parent.finish_knitting)

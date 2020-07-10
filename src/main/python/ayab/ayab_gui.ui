@@ -25,26 +25,6 @@
         <property name="orientation">
          <enum>Qt::Vertical</enum>
         </property>
-        <widget class="QGraphicsView" name="image_pattern_view">
-         <property name="geometry">
-          <rect>
-           <x>0</x>
-           <y>0</y>
-           <width>700</width>
-           <height>686</height>
-          </rect>
-         </property>
-        </widget>
-        <widget class="QScrollArea" name="area">
-         <property name="geometry">
-          <rect>
-           <x>0</x>
-           <y>0</y>
-           <width>700</width>
-           <height>220</height>
-          </rect>
-         </property>
-        </widget>
        </widget>
       </item>
       <item>
@@ -226,7 +206,7 @@
          </layout>
         </item>
         <item alignment="Qt::AlignHCenter">
-         <widget class="QWidget" name="widget_optionsdock" native="true">
+         <widget class="QWidget" name="options_dock" native="true">
           <layout class="QVBoxLayout" name="vertical_layout_2">
            <property name="sizeConstraint">
             <enum>QLayout::SetMaximumSize</enum>
