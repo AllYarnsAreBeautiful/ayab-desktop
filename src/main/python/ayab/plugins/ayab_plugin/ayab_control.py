@@ -22,7 +22,6 @@ import logging
 from enum import Enum
 from bitarray import bitarray
 from PyQt5.QtCore import QCoreApplication
-from .ayab_status import Status
 from .ayab_communication import AyabCommunication, MessageToken
 from .ayab_communication_mockup import AyabCommunicationMockup
 from .ayab_options import Alignment
@@ -33,14 +32,18 @@ from .machine import Machine
 
 
 class AyabControl(object):
+    """
+    Class governing information flow with the shield.
+    """
     BLOCK_LENGTH = 256
     COLOR_SYMBOLS = "A", "B", "C", "D"
     API_VERSION = 0x05
     FLANKING_NEEDLES = True
 
-    def __init__(self):
+    def __init__(self, parent):
         self.logger = logging.getLogger(type(self).__name__)
-        self.status = Status()
+        self.status = parent.status
+        # set initial state of finite state machine
         self.state = KnitState.SETUP
 
     def close(self):
@@ -48,13 +51,18 @@ class AyabControl(object):
             self.com.close_serial()
         except Exception:
             pass
+        # we must reset the state to SETUP before closing
+        # so that the machine is in the correct state when knitting resumes
         self.state = KnitState.SETUP
 
-    def row_multiplier(self):
-        return self.knit_mode.row_multiplier(self.num_colors)
-
     def func_selector(self):
-        '''Select function that decides which line of data to send according to the knitting mode and number of colors'''
+        """
+        Method selecting the function that decides which line of data to send
+        according to the knitting mode and number of colors.
+
+        @author Tom Price
+        @date   June 2020
+        """
         if not self.knit_mode.good_ncolors(self.num_colors):
             self.logger.error("Wrong number of colours for the knitting mode")
             return False
@@ -68,12 +76,21 @@ class AyabControl(object):
         self.knit_mode_func = getattr(KnitModeFunc, func_name)
         return True
 
+    def reset_status(self):
+        self.status.reset()
+        if self.knit_mode == KnitMode.SINGLEBED:
+            self.status.alt_color = self.pattern.palette[1]
+            self.status.color_symbol = "A/B"
+        else:
+            self.status.alt_color = None
+        self.status.total_rows = self.pattern.pat_height
+
     def check_serial(self):
         msg, token, param = self.com.update()
         if token == MessageToken.cnfInfo:
             self.__log_cnfInfo(msg)
         elif token == MessageToken.indState:
-            self.status.get_carriage_info(msg)
+            self.status.parse_carriage_info(msg)
         return token, param
 
     def __log_cnfInfo(self, msg):
@@ -84,44 +101,44 @@ class AyabControl(object):
         self.logger.info(log)
 
     def cnf_line(self, line_number):
-        if line_number < self.BLOCK_LENGTH:
-            # TODO some better algorithm for block wrapping
-            if self.former_request == self.BLOCK_LENGTH - 1 and line_number == 0:
-                # wrap to next block of lines
-                self.line_block += 1
-
-            # store requested line number for next request
-            self.former_request = line_number
-            requested_line = line_number
-
-            # adjust line_number with current block
-            line_number += self.BLOCK_LENGTH * self.line_block
-
-            # get data for next line of knitting
-            color, row_index, blank_line, last_line = self.knit_mode_func(
-                self, line_number)
-            bits = self.select_needles(color, row_index, blank_line)
-
-            # send line to machine
-            self.com.cnf_line(requested_line, bits.tobytes(), last_line
-                              and not self.inf_repeat)
-
-            # screen output
-            msg = str(self.line_block) + " " + str(line_number) + " reqLine: " + \
-                str(requested_line) + " pat_row: " + str(self.pat_row)
-            if blank_line:
-                msg += " BLANK LINE"
-            else:
-                msg += " row_index: " + str(row_index)
-                msg += " color: " + str(self.COLOR_SYMBOLS[color])
-            self.logger.debug(msg)
-
-            # get status to send to GUI
-            self.__get_status(line_number, color, bits)
-
-        else:
+        if not (line_number < self.BLOCK_LENGTH):
             self.logger.error("Requested line number out of range")
             return True  # stop knitting
+        # else
+        # TODO some better algorithm for block wrapping
+        if self.former_request == self.BLOCK_LENGTH - 1 and line_number == 0:
+            # wrap to next block of lines
+            self.line_block += 1
+
+        # store requested line number for next request
+        self.former_request = line_number
+        requested_line = line_number
+
+        # adjust line_number with current block
+        line_number += self.BLOCK_LENGTH * self.line_block
+
+        # get data for next line of knitting
+        color, row_index, blank_line, last_line = self.knit_mode_func(
+            self, line_number)
+        bits = self.select_needles(color, row_index, blank_line)
+
+        # send line to machine
+        self.com.cnf_line(requested_line, bits.tobytes(), last_line
+                          and not self.inf_repeat)
+
+        # screen output
+        # TODO tidy up this code
+        msg = str(self.line_block) + " " + str(line_number) + " reqLine: " + \
+            str(requested_line) + " pat_row: " + str(self.pat_row)
+        if blank_line:
+            msg += " BLANK LINE"
+        else:
+            msg += " row_index: " + str(row_index)
+            msg += " color: " + str(self.COLOR_SYMBOLS[color])
+        self.logger.debug(msg)
+
+        # get status to send to GUI
+        self.__update_status(line_number, color, bits)
 
         if not last_line:
             return False  # keep knitting
@@ -131,17 +148,12 @@ class AyabControl(object):
         else:
             return True  # pattern finished
 
-    def __get_status(self, line_number, color, bits):
+    def __update_status(self, line_number, color, bits):
         self.status.current_row = self.pat_row + 1
-        self.status.total_rows = self.pattern.pat_height
         self.status.line_number = line_number
         if self.inf_repeat:
             self.status.repeats = self.pattern_repeats
-        if self.knit_mode == KnitMode.SINGLEBED:
-            self.status.alt_color = self.pattern.palette[1]
-            self.status.color_symbol = "A/B"
-        else:
-            self.status.alt_color = None
+        if self.knit_mode != KnitMode.SINGLEBED:
             self.status.color_symbol = self.COLOR_SYMBOLS[color]
         self.status.color = self.pattern.palette[color]
         if self.FLANKING_NEEDLES:

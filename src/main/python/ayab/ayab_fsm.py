@@ -74,29 +74,38 @@ class FSM(object):
         self.KNITTING.entered.connect(
             lambda: logging.debug("Entered state KNITTING"))
 
-        self.NO_IMAGE.exited.connect(parent.plugin.reset)
+        self.NO_IMAGE.exited.connect(parent.plugin.config.refresh)
         self.CONFIGURING.entered.connect(parent.menu.add_image_actions)
         self.CONFIGURING.entered.connect(parent.progbar.reset)
         self.CHECKING.entered.connect(
-            lambda: parent.plugin.get_config(parent.scene.ayabimage.image))
+            lambda: parent.plugin.knit_config(parent.scene.ayabimage.image))
         self.KNITTING.entered.connect(parent.start_knitting)
 
-    def set_properties(self, ui):
+    def set_properties(self, parent):
         """
         Define properties for GUI elements linked to
         states in Finite State Machine
         """
-        # Options dock
-        self.NO_IMAGE.assignProperty(ui.options_dock, "enabled", "False")
-        self.CONFIGURING.assignProperty(ui.options_dock, "enabled", "True")
-        self.KNITTING.assignProperty(ui.options_dock, "enabled", "False")
+        # Dock widget
+        self.NO_IMAGE.assignProperty(parent.plugin, "enabled", "False")
+        self.CONFIGURING.assignProperty(parent.plugin, "enabled", "True")
+        self.KNITTING.assignProperty(parent.plugin, "enabled", "False")
+
+        # Status tab in options dock should be activated only when knitting
+        # self.NO_IMAGE.assignProperty(ui.status_tab, "enabled", "False")
+        # self.CONFIGURING.assignProperty(ui.status_tab, "enabled", "False")
+        # self.KNITTING.assignProperty(ui.status_tab, "enabled", "True")
 
         # Knit button
-        self.NO_IMAGE.assignProperty(ui.knit_button, "enabled", "False")
-        self.CONFIGURING.assignProperty(ui.knit_button, "enabled", "True")
-        self.KNITTING.assignProperty(ui.knit_button, "enabled", "False")
+        self.NO_IMAGE.assignProperty(parent.ui.knit_button, "enabled", "False")
+        self.CONFIGURING.assignProperty(parent.ui.knit_button, "enabled",
+                                        "True")
+        self.KNITTING.assignProperty(parent.ui.knit_button, "enabled", "False")
 
         # Cancel button
-        self.NO_IMAGE.assignProperty(ui.cancel_button, "enabled", "False")
-        self.CONFIGURING.assignProperty(ui.cancel_button, "enabled", "False")
-        self.KNITTING.assignProperty(ui.cancel_button, "enabled", "True")
+        self.NO_IMAGE.assignProperty(parent.ui.cancel_button, "enabled",
+                                     "False")
+        self.CONFIGURING.assignProperty(parent.ui.cancel_button, "enabled",
+                                        "False")
+        self.KNITTING.assignProperty(parent.ui.cancel_button, "enabled",
+                                     "True")

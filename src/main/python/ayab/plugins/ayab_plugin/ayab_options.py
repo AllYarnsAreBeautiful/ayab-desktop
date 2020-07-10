@@ -19,20 +19,46 @@
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
 from enum import Enum
-from PyQt5.QtCore import QCoreApplication, QSettings
+from PyQt5.QtCore import Qt, QCoreApplication, QSettings
+from PyQt5.QtWidgets import QWidget
+from .ayab_options_gui import Ui_OptionsWidget
 from .ayab_knit_mode import KnitMode
 from .machine import Machine
 
 
-class Options(object):
-    """Class for configuration options."""
+# FIXME translations for UI
+class OptionsTab(QWidget):
+    """
+    Class for the configuration options tab of the dock widget,
+    implemented as a subclass of `QWidget`.
+
+    @author Tom Price
+    @date   June 2020
+    """
     def __init__(self, prefs):
+        super().__init__()
         self.prefs = prefs
-        self.reset()
+        self.ui = Ui_OptionsWidget()
+        self.setup_ui()
+        # self.reset()
+
+    def setup_ui(self):
+        self.ui.setupUi(self)
+
+        # Combo boxes
+        KnitMode.add_items(self.ui.knitting_mode_box)
+        Alignment.add_items(self.ui.alignment_combo_box)
+        NeedleColor.add_items(self.ui.start_needle_color)
+        NeedleColor.add_items(self.ui.stop_needle_color)
+        self.ui.start_needle_color.setCurrentIndex(0)  # orange
+        self.ui.stop_needle_color.setCurrentIndex(1)  # green
+
+        # Remove "continuous reporting" checkbox tab for now
+        self.ui.continuous_reporting_checkbox.setVisible(False)
 
     def reset(self):
-        """Reset configuration options to default prefs."""
-        self.portname = ""
+        """Reset configuration options to default settings."""
+        # self.portname = ""
         self.machine = self.prefs.value("machine")
         self.knitting_mode = self.prefs.value("default_knitting_mode")
         self.num_colors = 2
@@ -43,6 +69,33 @@ class Options(object):
         self.alignment = self.prefs.value("default_alignment")
         self.auto_mirror = self.prefs.value("default_mirroring")
         self.continuous_reporting = False
+
+    def refresh(self):
+        """
+        Refresh tab to default configuration options.
+        This is called when the dock is activated after
+        loading an image, in case the defaults have changed.
+        There is no need to refresh options that do not have
+        default settings.
+        """
+        self.reset()
+        self.ui.knitting_mode_box.setCurrentIndex(self.knitting_mode)
+        # self.ui.color_edit
+        # self.ui.start_row_edit
+        if self.inf_repeat:
+            self.ui.inf_repeat_checkbox.setCheckState(Qt.Checked)
+        else:
+            self.ui.inf_repeat_checkbox.setCheckState(Qt.Unchecked)
+        # self.ui.start_needle_color
+        # self.ui.start_needle_edit
+        # self.ui.stop_needle_color
+        # self.ui.stop_needle_edit
+        self.ui.alignment_combo_box.setCurrentIndex(self.alignment)
+        if self.auto_mirror:
+            self.ui.auto_mirror_checkbox.setCheckState(Qt.Checked)
+        else:
+            self.ui.auto_mirror_checkbox.setCheckState(Qt.Unchecked)
+        # self.ui.continuous_reporting_checkbox
 
     def as_dict(self):
         return dict([("portname", self.portname), ("machine", self.machine),
@@ -56,35 +109,40 @@ class Options(object):
                      ("auto_mirror", self.auto_mirror),
                      ("continuous_reporting", self.continuous_reporting)])
 
-    def read(self, ui):
+    def read(self, portname):
         """Get configuration options from the UI elements."""
-        self.portname = ui.serial_port_dropdown.currentText()
+        self.portname = portname
         self.machine = self.prefs.value("machine")
-        self.knit_mode = KnitMode(ui.knitting_mode_box.currentIndex())
-        self.num_colors = int(ui.color_edit.value())
-        self.start_row = self.read_start_row(ui)
-        self.inf_repeat = ui.inf_repeat_checkbox.isChecked()
-        self.start_needle = NeedleColor.read_start_needle(ui)
-        self.stop_needle = NeedleColor.read_stop_needle(ui)
-        self.alignment = self.read_alignment(ui)
-        self.auto_mirror = ui.auto_mirror_checkbox.isChecked()
-        self.continuous_reporting = ui.continuous_reporting_checkbox.isChecked(
-        )
+        self.knit_mode = KnitMode(self.ui.knitting_mode_box.currentIndex())
+        self.num_colors = int(self.ui.color_edit.value())
+        self.start_row = int(self.ui.start_row_edit.value()) - 1
+        self.inf_repeat = self.ui.inf_repeat_checkbox.isChecked()
+        self.start_needle = NeedleColor.read_start_needle(self.ui)
+        self.stop_needle = NeedleColor.read_stop_needle(self.ui)
+        self.alignment = Alignment(self.ui.alignment_combo_box.currentIndex())
+        self.auto_mirror = self.ui.auto_mirror_checkbox.isChecked()
+        # self.continuous_reporting =
+        #     self.ui.continuous_reporting_checkbox.isChecked()
 
-    def read_start_row(self, ui):
-        return int(ui.start_row_edit.value()) - 1
-
-    def read_alignment(self, ui):
-        return Alignment(ui.alignment_combo_box.currentIndex())
+    def set_image_dimensions(self, width, height):
+        """
+        Called by Main UI on loading or transformation of an image
+        to set start and stop needles to image width.
+        Updates the maximum value of the Start Row UI element.
+        """
+        left_side = width // 2
+        self.ui.start_needle_edit.setValue(left_side)
+        self.ui.stop_needle_edit.setValue(width - left_side)
+        self.ui.start_row_edit.setMaximum(height)
 
     def validate(self):
         """Validate configuration options."""
+        if self.portname == '':
+            return False, "Please choose a valid port."
+        # else
         if self.start_needle and self.stop_needle:
             if self.start_needle > self.stop_needle:
                 return False, "Invalid needle start and end."
-        # else
-        if self.portname == '':
-            return False, "Please choose a valid port."
         # else
         if self.knit_mode == KnitMode.SINGLEBED \
                 and self.num_colors >= 3:
@@ -104,9 +162,10 @@ class Alignment(Enum):
 
     def add_items(box):
         """Add items to alignment combo box."""
-        box.addItem(QCoreApplication.translate("Alignment", "Center"))
-        box.addItem(QCoreApplication.translate("Alignment", "Left"))
-        box.addItem(QCoreApplication.translate("Alignment", "Right"))
+        tr_ = QCoreApplication.translate
+        box.addItem(tr_("Alignment", "Center"))
+        box.addItem(tr_("Alignment", "Left"))
+        box.addItem(tr_("Alignment", "Right"))
 
 
 class NeedleColor(Enum):
@@ -115,8 +174,9 @@ class NeedleColor(Enum):
 
     def add_items(box):
         """Add items to needle color combo box."""
-        box.addItem(QCoreApplication.translate("NeedleColor", "orange"))
-        box.addItem(QCoreApplication.translate("NeedleColor", "green"))
+        tr_ = QCoreApplication.translate
+        box.addItem(tr_("NeedleColor", "orange"))
+        box.addItem(tr_("NeedleColor", "green"))
 
     def read(self, needle):
         if self == NeedleColor.ORANGE:

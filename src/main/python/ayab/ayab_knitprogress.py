@@ -24,7 +24,8 @@ import numpy as np
 
 
 class KnitProgress(QScrollArea):
-    """Methods for knit progress window.
+    """
+    Class for the knit progress window, implemented as a subclass of `QScrollArea`.
 
     @author Tom Price
     @date   June 2020
@@ -47,24 +48,22 @@ class KnitProgress(QScrollArea):
     def update(self, status, row_multiplier):
         if status.current_row < 0:
             return
-        _translate = QCoreApplication.translate
+        tr_ = QCoreApplication.translate
         row, swipe = divmod(status.line_number, row_multiplier)
         direction = status.line_number % 2
         # row
-        w0 = self.__label(_translate("KnitProgress", "Row"))
+        w0 = self.__label(tr_("KnitProgress", "Row"))
         self.grid.addWidget(w0, status.line_number, 0)
         w1 = self.__label(str(status.current_row))
         self.grid.addWidget(w1, status.line_number, 1, 1, 1, Qt.AlignRight)
         # pass
-        w2 = self.__label(
-            _translate("KnitProgress", "Pass") + " " + str(swipe + 1))
+        w2 = self.__label(tr_("KnitProgress", "Pass") + " " + str(swipe + 1))
         self.grid.addWidget(w2, status.line_number, 2)
         # color
         if status.color_symbol == "":
             coltext = ""
         else:
-            coltext = _translate("KnitProgress",
-                                 "Color") + " " + status.color_symbol
+            coltext = tr_("KnitProgress", "Color") + " " + status.color_symbol
         w3 = self.__label(coltext)
         self.grid.addWidget(w3, status.line_number, 3)
         # carriage and direction

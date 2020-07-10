@@ -24,94 +24,102 @@ from .ayab_mirrors import Ui_MirrorDialog
 
 
 class Transform(Image.Image):
-    """Image transforms for AYAB GUI.
+    """
+    Image transforms for AYAB GUI called by `AyabImage.apply_transform()`
 
     @author Tom Price
     @date   June 2020
     """
-    def rotate_left(self, args=None):
+    def rotate_left(image, args=None):
         # TODO crop width if it exceeds the maximum after transform
-        return self.transpose(Image.ROTATE_90)
+        return image.transpose(Image.ROTATE_90)
 
-    def rotate_right(self, args=None):
+    def rotate_right(image, args=None):
         # TODO crop width if it exceeds the maximum after transform
-        return self.transpose(Image.ROTATE_270)
+        return image.transpose(Image.ROTATE_270)
 
-    def invert(self, args=None):
-        if self.mode == 'RGBA':
-            r, g, b, a = self.split()
+    def invert(image, args=None):
+        if image.mode == 'RGBA':
+            r, g, b, a = image.split()
             rgb_image = Image.merge('RGB', (r, g, b))
             return ImageOps.invert(rgb_image)
         else:
-            return ImageOps.invert(self)
+            return ImageOps.invert(image)
 
-    def hflip(self, args=None):
-        return self.transpose(Image.FLIP_LEFT_RIGHT)
+    def hflip(image, args=None):
+        return image.transpose(Image.FLIP_LEFT_RIGHT)
 
-    def vflip(self, args=None):
-        return self.transpose(Image.FLIP_TOP_BOTTOM)
+    def vflip(image, args=None):
+        return image.transpose(Image.FLIP_TOP_BOTTOM)
 
-    def repeat(self, args):
+    def repeat(image, args):
         # TODO crop width if it exceeds the maximum after transform
         """
         Repeat image.
-        Repeat `horizontal` times horizontally, `vertical` times vertically
+        Repeat `args[1]` times horizontally, `args[0]` times vertically
         Sturla Lange 2017-12-30
         """
-        old_h = self.size[1]
-        old_w = self.size[0]
-        new_h = old_h * args[0]  # pVertical
-        new_w = old_w * args[1]  # pHorizontal
+        old_h = image.height
+        old_w = image.width
+        new_h = old_h * args[0]  # Vertical
+        new_w = old_w * args[1]  # Horizontal
         new_im = Image.new('RGB', (new_w, new_h))
         for h in range(0, new_h, old_h):
             for w in range(0, new_w, old_w):
-                new_im.paste(self, (w, h))
+                new_im.paste(image, (w, h))
         return new_im
 
-    def reflect(self, args):
+    def reflect(image, args):
         # TODO crop width if it exceeds the maximum after transform
         """
-        Reflect image.
-        Mirrors Left, Right, Top, Bottom
-        Tom Price 2020-06-01
+        Reflect image: Mirrors Left, Right, Top, Bottom.
+
+        @author Tom Price
+        @date   June 2020
         """
         mirrors = args[0]
-        w = self.size[0]
-        h = self.size[1]
+        w = image.width
+        h = image.height
         w0 = mirrors[0]
         h0 = mirrors[2]
         w1 = 1 + mirrors[0] + mirrors[1]
         h1 = 1 + mirrors[2] + mirrors[3]
         if w1 > 1:
-            im = self
-            self = self.Transform.hflip()
-            self = self.Transform.repeat((1, w1))
+            im = image
+            image = image.Transform.hflip()
+            image = image.Transform.repeat((1, w1))
             for i in range(w0, w1, 2):
-                self.paste(im, (i * w, 0))
+                image.paste(im, (i * w, 0))
         if h1 > 1:
-            im = self
-            self = self.Transform.vflip()
-            self = self.Transform.repeat((h1, 1))
+            im = image
+            image = image.Transform.vflip()
+            image = image.Transform.repeat((h1, 1))
             for i in range(h0, h1, 2):
-                self.paste(im, (0, i * h))
-        return self
+                image.paste(im, (0, i * h))
+        return image
 
-    def stretch(self, args):
+    def stretch(image, args):
         # TODO crop width if it exceeds the maximum after transform
         """
-        Stretch image.
-        Repeat `horizontal` times horizontally, `vertical` times vertically
-        Tom Price 2020-05-30
+        Stretch image `args[1]` times horizontally, `args[0]` times vertically.
+
+        @author Tom Price
+        @date   May 2020
         """
-        old_h = self.size[1]
-        old_w = self.size[0]
+        old_h = image.height
+        old_w = image.width
         new_h = old_h * args[0]  # vertical
         new_w = old_w * args[1]  # horizontal
-        return self.resize((new_w, new_h), Image.BOX)
+        return image.resize((new_w, new_h), Image.BOX)
 
 
 class Mirrors:
-    '''Image relection options and GUI methods'''
+    '''
+    Image relection options and GUI methods.
+
+    @author Tom Price
+    @date   June 2020
+    '''
     def __init__(self):
         self.mirrors = [False, False, False, False]
         self.result = MirrorDialog(self).exec_()
@@ -121,9 +129,14 @@ class Mirrors:
 
 
 class MirrorDialog(QDialog):
-    '''GUI to choose reflection options'''
+    '''
+    GUI to choose reflection options.
+
+    @author Tom Price
+    @date   June 2020
+    '''
     def __init__(self, parent):
-        super(MirrorDialog, self).__init__(None)
+        super().__init__()  # FIXME set the parent widget as GuiMain
         self.__ui = Ui_MirrorDialog()
         self.__ui.setupUi(self)
         self.__ui.check0.toggled.connect(lambda: parent.toggled(0))

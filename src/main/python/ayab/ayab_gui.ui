@@ -206,8 +206,8 @@
          </layout>
         </item>
         <item alignment="Qt::AlignHCenter">
-         <widget class="QWidget" name="options_dock" native="true">
-          <layout class="QVBoxLayout" name="vertical_layout_2">
+         <widget class="QWidget" name="dock_container" native="true">
+          <layout class="QVBoxLayout" name="dock_container_layout">
            <property name="sizeConstraint">
             <enum>QLayout::SetMaximumSize</enum>
            </property>
@@ -216,20 +216,6 @@
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
              </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QDockWidget" name="knitting_options_dock">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="windowTitle">
-              <string>Knitting Options</string>
-             </property>
-             <widget class="QWidget" name="dockWidget_contents_2"/>
             </widget>
            </item>
           </layout>

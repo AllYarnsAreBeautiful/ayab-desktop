@@ -36,9 +36,15 @@ class KnitState(Enum):
 
 
 class KnitStateMachine(object):
+    """
+    Each method is a step in the finite state machine that governs
+    communication with the shield and is called only by `AyabControl.knit()`
+
+    @author Tom Price
+    @date   June 2020
+    """
     def _knit_setup(ayab_control, pattern, options):
         ayab_control.logger.debug("KnitState SETUP")
-        ayab_control.status.reset()
         ayab_control.former_request = 0
         ayab_control.line_block = 0
         ayab_control.pattern_repeats = 0
@@ -51,6 +57,7 @@ class KnitStateMachine(object):
         ayab_control.len_pat_expanded = ayab_control.pat_height * ayab_control.num_colors
         ayab_control.passes_per_row = ayab_control.knit_mode.row_multiplier(
             ayab_control.num_colors)
+        ayab_control.reset_status()
         if not ayab_control.func_selector():
             return KnitOutput.ERROR_INVALID_SETTINGS
         # else

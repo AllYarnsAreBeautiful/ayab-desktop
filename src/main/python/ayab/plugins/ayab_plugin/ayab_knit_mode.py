@@ -76,18 +76,21 @@ class KnitMode(Enum):
         return color == 0 and self.name != "CIRCULAR_RIBBER"
 
     def add_items(box):
-        box.addItem(QCoreApplication.translate("KnitMode", "Singlebed"))
-        box.addItem(QCoreApplication.translate("KnitMode", "Ribber: Classic"))
-        box.addItem(
-            QCoreApplication.translate("KnitMode",
-                                       "Ribber: Middle-Colors-Twice"))
-        box.addItem(
-            QCoreApplication.translate("KnitMode", "Ribber: Heart of Pluto"))
-        box.addItem(QCoreApplication.translate("KnitMode", "Ribber: Circular"))
+        tr_ = QCoreApplication.translate
+        box.addItem(tr_("KnitMode", "Singlebed"))
+        box.addItem(tr_("KnitMode", "Ribber: Classic"))
+        box.addItem(tr_("KnitMode", "Ribber: Middle-Colors-Twice"))
+        box.addItem(tr_("KnitMode", "Ribber: Heart of Pluto"))
+        box.addItem(tr_("KnitMode", "Ribber: Circular"))
 
 
 class KnitModeFunc(object):
-    """Methods available to AyabControl.func_selector()"""
+    """
+    Methods available to `AyabControl.func_selector()`.
+
+    @author Tom Price
+    @datei  June 2020
+    """
 
     # singlebed, 2 color
     def _singlebed(ayab_control, line_number):
