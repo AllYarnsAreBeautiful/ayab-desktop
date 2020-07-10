@@ -7,26 +7,32 @@ For information on how to install the release version of the software, see
 
 ## Running from Source & Development
 
-This repository uses [pre-commit](https://pre-commit.com/) hooks. After cloning the repo and installing
-the requirements, you should run `pre-commit install` to set up the git hook 
-scripts.
+This repository uses [pre-commit](https://pre-commit.com/) hooks.
+After cloning the repo and installing the requirements, you should run
+`pre-commit install` to set up the git hook scripts.
 
 ### Linux
 
 You need Python 3.7 and from your package manager's repository.
-The other main dependencies can be found in requirements.txt
+For flashing the firmware, avrdude has to be available on your system.
+To be able to work on GUI elements and translation files, the Qt Dev tools are
+needed also.
+The Python module dependencies can be found in *requirements.txt*.
 
-*For Debian/Ubuntu*
+#### Debian/Ubuntu
 
-    sudo apt-get install python3-pip python3-dev python3-virtualenv python3-gi libasound2-dev
+    sudo apt-get install python3-pip python3-dev python3-virtualenv python3-gi
+    sudo apt-get install libasound2-dev avrdude qttools5-dev-tools
 
-*For openSUSE*
+#### For openSUSE
 
-    sudo zypper install python3-pip python3-virtualenv python3-gi libasound
+    sudo zypper install python3-pip python3-virtualenv python3-gi
+    sudo zypper install libasound avrdude qttools5-dev-tools
 
-*All Distributions*
+#### All Distributions
 
-To be able to communicate with your Arduino, it might be necessary to add the rights for USB communication by adding your user to some groups.
+To be able to communicate with your Arduino, it might be necessary to add the
+rights for USB communication by adding your user to some groups.
 
     sudo usermod -a -G tty [userName]
     sudo usermod -a -G dialout [userName]
@@ -47,16 +53,11 @@ translation files:
 
     cd src/main/resources/base/ayab/translation
     ./ayab_trans.pl
-    lrelease *.ts
-    cd ../../../../../..
+    cd -
 
 Now start ayab with
 
     python3 -m fbs run
-
-To be able to work on GUI elements and translation files, the Qt Dev tools are needed also:
-
-    sudo apt-get install qttools5-dev-tools
 
 ### Windows
 
