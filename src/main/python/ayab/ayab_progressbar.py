@@ -18,9 +18,12 @@
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
 
-class Progress(object):
-    """Data object for the progress bar."""
-    def __init__(self):
+class ProgressBar(object):
+    """Methods for the progress bar."""
+    def __init__(self, parent):
+        self.__row_label = parent.ui.label_current_row
+        self.__color_label = parent.ui.label_current_color
+        self.__status_label = parent.plugin.ui.label_progress
         self.reset()
 
     def reset(self):
@@ -28,53 +31,37 @@ class Progress(object):
         self.total = -1
         self.repeats = -1
         self.color = ""
-
-
-class ProgressBar(object):
-    """Methods for the progress bar."""
-    def __init__(self, parent):
-        self.__progress = parent.progress
-        self.__row_label = parent.ui.label_current_row
-        self.__color_label = parent.ui.label_current_color
-        self.__status_label = parent.plugin.ui.label_progress
-        self.reset()
-
-    def reset(self):
-        self.__progress.reset()
         self.__row_label.setText("")
         self.__color_label.setText("")
         self.__status_label.setText("")
-        self.refresh()
 
     def update(self, row, total=0, repeats=0, color_symbol=""):
         if row < 0:
-            return
-        self.__progress.row = row
-        self.__progress.total = total
-        self.__progress.repeats = repeats
-        self.__progress.color = color_symbol
+            return False
+        self.row = row
+        self.total = total
+        self.repeats = repeats
+        self.color = color_symbol
         self.refresh()
+        return True
 
     def refresh(self):
         '''Updates the color and row in progress bar'''
-        if self.__progress.row < 0 or self.__progress.total < 0:
+        if self.row < 0 or self.total < 0:
             return
 
-        if self.__progress.color == "":
+        if self.color == "":
             color_text = ""
         else:
-            color_text = "Color " + self.__progress.color
+            color_text = "Color " + self.color
         self.__color_label.setText(color_text)
 
         # Update labels
-        if self.__progress.total == 0:
+        if self.total == 0:
             row_text = ""
         else:
-            row_text = "Row {0}/{1}".format(self.__progress.row,
-                                            self.__progress.total)
-            if self.__progress.repeats >= 0:
-                row_text += " ({0} repeats completed)".format(
-                    self.__progress.repeats)
+            row_text = "Row {0}/{1}".format(self.row, self.total)
+            if self.repeats >= 0:
+                row_text += " ({0} repeats completed)".format(self.repeats)
         self.__row_label.setText(row_text)
-        self.__status_label.setText("{0}/{1}".format(self.__progress.row,
-                                                     self.__progress.total))
+        self.__status_label.setText("{0}/{1}".format(self.row, self.total))

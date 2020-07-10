@@ -67,7 +67,7 @@ class KnitMode(Enum):
         return method
 
     # FIXME this function is supposed to select needles
-    # to knit the background color along side the image pattern
+    # to knit the background color along side the pattern
     def flanking_needles(self, color, ncolors):
         # return (color == 0 and self.name == "CLASSIC_RIBBER") \
         #     or (color == ncolors - 1
@@ -96,10 +96,10 @@ class KnitModeFunc(object):
         # when knitting infinitely, keep the requested
         # line_number in its limits
         if ayab_control.inf_repeat:
-            line_number %= ayab_control.img_height
-        ayab_control.img_row = line_number
+            line_number %= ayab_control.pat_height
+        ayab_control.pat_row = line_number
 
-        # 0   1   2   3   4 .. (img_row)
+        # 0   1   2   3   4 .. (pat_row)
         # |   |   |   |   |
         # 0 1 2 3 4 5 6 7 8 .. (row_index)
 
@@ -107,12 +107,12 @@ class KnitModeFunc(object):
         # because both colors are knitted at once
         color = 0
 
-        row_index = 2 * ayab_control.img_row
+        row_index = 2 * ayab_control.pat_row
 
         blank_line = False
 
-        # Check if the last line of the image was requested
-        last_line = (ayab_control.img_row == ayab_control.img_height - 1)
+        # Check if the last line of the pattern was requested
+        last_line = (ayab_control.pat_row == ayab_control.pat_height - 1)
 
         return color, row_index, blank_line, last_line
 
@@ -126,11 +126,11 @@ class KnitModeFunc(object):
         # when knitting infinitely, keep the requested
         # line_number in its limits
         if ayab_control.inf_repeat:
-            line_number %= ayab_control.len_img_expanded
+            line_number %= ayab_control.len_pat_expanded
 
-        ayab_control.img_row = line_number // 2
+        ayab_control.pat_row = line_number // 2
 
-        # 0 0 1 1 2 2 3 3 4 4 .. (img_row)
+        # 0 0 1 1 2 2 3 3 4 4 .. (pat_row)
         # 0 1 2 3 4 5 6 7 8 9 .. (line_number)
         # | |  X  | |  X  | |
         # 0 1 3 2 4 5 7 6 8 9 .. (row_index)
@@ -139,12 +139,12 @@ class KnitModeFunc(object):
         color = [0, 1, 1, 0][i]  # 0 = A, 1 = B
 
         row_index = (line_number +
-                     [0, 0, 1, -1][i]) % ayab_control.len_img_expanded
+                     [0, 0, 1, -1][i]) % ayab_control.len_pat_expanded
 
         blank_line = False
 
-        last_line = (ayab_control.img_row
-                     == ayab_control.img_height - 1) and (i == 1 or i == 3)
+        last_line = (ayab_control.pat_row
+                     == ayab_control.pat_height - 1) and (i == 1 or i == 3)
 
         return color, row_index, blank_line, last_line
 
@@ -160,14 +160,14 @@ class KnitModeFunc(object):
         # when knitting infinitely, keep the
         # half line_number within its limits
         if ayab_control.inf_repeat:
-            h %= ayab_control.len_img_expanded
+            h %= ayab_control.len_pat_expanded
 
-        ayab_control.img_row, color = divmod(h, ayab_control.num_colors)
+        ayab_control.pat_row, color = divmod(h, ayab_control.num_colors)
 
-        row_index = ayab_control.img_row * ayab_control.num_colors + color
+        row_index = ayab_control.pat_row * ayab_control.num_colors + color
 
         last_line = (row_index
-                     == ayab_control.len_img_expanded - 1) and blank_line
+                     == ayab_control.len_pat_expanded - 1) and blank_line
 
         if not blank_line:
             ayab_control.logger.debug("COLOR " + str(color))
@@ -178,7 +178,7 @@ class KnitModeFunc(object):
     def _middlecolorstwice_ribber(ayab_control, line_number):
 
         # doublebed middle-colors-twice multicolor
-        # 0-00 1-11 2-22 3-33 4-44 5-55 .. (img_row)
+        # 0-00 1-11 2-22 3-33 4-44 5-55 .. (pat_row)
         # 0123 4567 8911 1111 1111 2222 .. (line_number)
         #             01 2345 6789 0123
         #
@@ -189,26 +189,26 @@ class KnitModeFunc(object):
 
         line_number += ayab_control.passes_per_row * ayab_control.start_row
 
-        ayab_control.img_row, r = divmod(line_number,
+        ayab_control.pat_row, r = divmod(line_number,
                                          ayab_control.passes_per_row)
 
         first_col = (r == 0)
         last_col = (r == ayab_control.passes_per_row - 1)
 
         if first_col or last_col:
-            color = (last_col + ayab_control.img_row) % 2
+            color = (last_col + ayab_control.pat_row) % 2
         else:
             color = (r + 3) // 2
 
         if ayab_control.inf_repeat:
-            ayab_control.img_row %= ayab_control.img_height
+            ayab_control.pat_row %= ayab_control.pat_height
 
-        row_index = ayab_control.num_colors * ayab_control.img_row + color
+        row_index = ayab_control.num_colors * ayab_control.pat_row + color
 
         blank_line = not first_col and not last_col and odd(line_number)
 
-        last_line = (ayab_control.img_row
-                     == ayab_control.img_height - 1) and last_col
+        last_line = (ayab_control.pat_row
+                     == ayab_control.pat_height - 1) and last_col
 
         return color, row_index, blank_line, last_line
 
@@ -217,7 +217,7 @@ class KnitModeFunc(object):
     def _heartofpluto_ribber(ayab_control, line_number):
 
         # doublebed <3 of pluto multicolor
-        # 0000 1111 2222 3333 4444 5555 .. (img_row)
+        # 0000 1111 2222 3333 4444 5555 .. (pat_row)
         # 0123 4567 8911 1111 1111 2222 .. (line_number)
         #             01 2345 6789 0123
         #
@@ -228,11 +228,11 @@ class KnitModeFunc(object):
 
         line_number += ayab_control.passes_per_row * ayab_control.start_row
 
-        ayab_control.img_row, r = divmod(line_number,
+        ayab_control.pat_row, r = divmod(line_number,
                                          ayab_control.passes_per_row)
 
         if ayab_control.inf_repeat:
-            ayab_control.img_row %= ayab_control.img_height
+            ayab_control.pat_row %= ayab_control.pat_height
 
         first_col = (r == 0)
         last_col = (r == ayab_control.passes_per_row - 1)
@@ -240,12 +240,12 @@ class KnitModeFunc(object):
         color = ayab_control.num_colors - 1 - (
             (line_number + 1) % (2 * ayab_control.num_colors)) // 2
 
-        row_index = ayab_control.num_colors * ayab_control.img_row + color
+        row_index = ayab_control.num_colors * ayab_control.pat_row + color
 
         blank_line = not first_col and not last_col and even(line_number)
 
-        last_line = (ayab_control.img_row
-                     == ayab_control.img_height - 1) and last_col
+        last_line = (ayab_control.pat_row
+                     == ayab_control.pat_height - 1) and last_col
 
         return color, row_index, blank_line, last_line
 
@@ -254,7 +254,7 @@ class KnitModeFunc(object):
     def _circular_ribber(ayab_control, line_number):
 
         # A B  A B  A B  .. (color)
-        # 0-0- 1-1- 2-2- .. (img_row)
+        # 0-0- 1-1- 2-2- .. (pat_row)
         # 0 1  2 3  4 5  .. (row_index)
         # 0123 4567 8911 .. (line_number)
         #             01
@@ -266,13 +266,13 @@ class KnitModeFunc(object):
         h += ayab_control.num_colors * ayab_control.start_row
 
         if ayab_control.inf_repeat:
-            h %= ayab_control.len_img_expanded
+            h %= ayab_control.len_pat_expanded
 
-        ayab_control.img_row, color = divmod(h, ayab_control.num_colors)
+        ayab_control.pat_row, color = divmod(h, ayab_control.num_colors)
 
         row_index = h
 
         last_line = (row_index
-                     == ayab_control.len_img_expanded - 1) and blank_line
+                     == ayab_control.len_pat_expanded - 1) and blank_line
 
         return color, row_index, blank_line, last_line

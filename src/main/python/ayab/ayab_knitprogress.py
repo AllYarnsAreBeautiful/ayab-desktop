@@ -17,21 +17,22 @@
 #    Copyright 2014 Sebastian Oliva, Christian Obersteiner, Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
-from PyQt5.QtCore import Qt, QCoreApplication
-from PyQt5.QtWidgets import QGridLayout, QLayout, QLabel, QWidget
+from PyQt5.QtCore import Qt, QCoreApplication, QRect
+from PyQt5.QtWidgets import QScrollArea, QGridLayout, QLayout, QLabel, QWidget
 from bitarray import bitarray
 import numpy as np
 
 
-class KnitProgress(object):
+class KnitProgress(QScrollArea):
     """Methods for knit progress window.
 
     @author Tom Price
     @date   June 2020
     """
     def __init__(self, parent):
-        self.area = parent.area
-        self.area.setContentsMargins(1, 1, 1, 1)
+        super().__init__(parent.ui.graphics_splitter)
+        self.setGeometry(QRect(0, 0, 700, 220))
+        self.setContentsMargins(1, 1, 1, 1)
 
     def reset(self):
         self.container = QWidget()
@@ -40,7 +41,7 @@ class KnitProgress(object):
         self.grid.setContentsMargins(1, 1, 1, 1)
         self.grid.setSpacing(0)
         self.grid.setSizeConstraint(QLayout.SetMinAndMaxSize)
-        self.area.setWidget(self.container)
+        self.setWidget(self.container)
         self.row = -1
 
     def update(self, status, row_multiplier):
@@ -79,7 +80,7 @@ class KnitProgress(object):
         w2.show()
         w3.show()
         w4.show()
-        self.area.ensureWidgetVisible(w0)
+        self.ensureWidgetVisible(w0)
         # graph line of stitches
         for c in range(len(status.bits)):
             wc = self.__stitch(status.color, status.bits[c], status.alt_color)

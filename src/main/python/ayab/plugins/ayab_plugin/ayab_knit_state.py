@@ -36,24 +36,24 @@ class KnitState(Enum):
 
 
 class KnitStateMachine(object):
-    def _knit_setup(ayab_control, image, options):
+    def _knit_setup(ayab_control, pattern, options):
         ayab_control.logger.debug("KnitState SETUP")
         ayab_control.status.reset()
         ayab_control.former_request = 0
         ayab_control.line_block = 0
-        ayab_control.inf_repeat_repeats = 0
-        ayab_control.image = image
-        ayab_control.img_height = image.img_height
+        ayab_control.pattern_repeats = 0
+        ayab_control.pattern = pattern
+        ayab_control.pat_height = pattern.pat_height
         ayab_control.num_colors = options.num_colors
         ayab_control.start_row = options.start_row
         ayab_control.knit_mode = options.knit_mode
         ayab_control.inf_repeat = options.inf_repeat
-        ayab_control.len_img_expanded = ayab_control.img_height * ayab_control.num_colors
+        ayab_control.len_pat_expanded = ayab_control.pat_height * ayab_control.num_colors
         ayab_control.passes_per_row = ayab_control.knit_mode.row_multiplier(
             ayab_control.num_colors)
         if not ayab_control.func_selector():
             return KnitOutput.ERROR_INVALID_SETTINGS
-
+        # else
         ayab_control.logger.debug(options.portname)
         if options.portname == QCoreApplication.translate(
                 "AyabPlugin", "Simulation"):
@@ -63,12 +63,12 @@ class KnitStateMachine(object):
         if not ayab_control.com.open_serial(options.portname):
             ayab_control.logger.error("Could not open serial port")
             return KnitOutput.ERROR_SERIAL_PORT
-
+        # else
         # setup complete
         ayab_control.state = KnitState.INIT
         return KnitOutput.NONE
 
-    def _knit_init(ayab_control, image, options):
+    def _knit_init(ayab_control, pattern, options):
         ayab_control.logger.debug("KnitState INIT")
         rcvMsg, rcvParam = ayab_control.check_serial()
         if rcvMsg == MessageToken.cnfInfo:
@@ -80,18 +80,18 @@ class KnitStateMachine(object):
                                           str(rcvParam) + ", expected: " +
                                           str(ayab_control.API_VERSION))
                 return KnitOutput.ERROR_WRONG_API
-
+        # else
         ayab_control.com.req_info()
         return KnitOutput.CONNECTING_TO_MACHINE
 
-    def _knit_wait_for_init(ayab_control, image, options):
+    def _knit_wait_for_init(ayab_control, pattern, options):
         ayab_control.logger.debug("KnitState WAIT_FOR_INIT")
         rcvMsg, rcvParam = ayab_control.check_serial()
         if rcvMsg == MessageToken.indState:
             if rcvParam == 1:
                 ayab_control.com.req_start(
-                    ayab_control.image.knit_start_needle,
-                    ayab_control.image.knit_stop_needle,
+                    ayab_control.pattern.knit_start_needle,
+                    ayab_control.pattern.knit_stop_needle,
                     options.continuous_reporting)
                 ayab_control.state = KnitState.START
             else:
@@ -99,7 +99,7 @@ class KnitStateMachine(object):
         # fallthrough
         return KnitOutput.NONE
 
-    def _knit_start(ayab_control, image, options):
+    def _knit_start(ayab_control, pattern, options):
         ayab_control.logger.debug("KnitState START")
         rcvMsg, rcvParam = ayab_control.check_serial()
         if rcvMsg == MessageToken.cnfStart:
@@ -112,12 +112,12 @@ class KnitStateMachine(object):
         # fallthrough
         return KnitOutput.NONE
 
-    def _knit_operate(ayab_control, image, options):
+    def _knit_operate(ayab_control, pattern, options):
         ayab_control.logger.debug("KnitState OPERATE")
         rcvMsg, rcvParam = ayab_control.check_serial()
         if rcvMsg == MessageToken.reqLine:
-            image_finished = ayab_control.cnf_line(rcvParam)
-            if image_finished:
+            pattern_finished = ayab_control.cnf_line(rcvParam)
+            if pattern_finished:
                 ayab_control.state = KnitState.SETUP
                 return KnitOutput.FINISHED
         # fallthrough

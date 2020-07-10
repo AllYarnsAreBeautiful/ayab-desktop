@@ -23,13 +23,6 @@ class Ui_MainWindow(object):
         self.graphics_splitter = QtWidgets.QSplitter(self.central_widget)
         self.graphics_splitter.setOrientation(QtCore.Qt.Vertical)
         self.graphics_splitter.setObjectName("graphics_splitter")
-        self.image_pattern_view = QtWidgets.QGraphicsView(
-            self.graphics_splitter)
-        self.image_pattern_view.setGeometry(QtCore.QRect(0, 0, 700, 686))
-        self.image_pattern_view.setObjectName("image_pattern_view")
-        self.area = QtWidgets.QScrollArea(self.graphics_splitter)
-        self.area.setGeometry(QtCore.QRect(0, 0, 700, 220))
-        self.area.setObjectName("area")
         self.image_side_panel.addWidget(self.graphics_splitter)
         self.progress_layout = QtWidgets.QHBoxLayout()
         self.progress_layout.setSpacing(2)
@@ -135,19 +128,18 @@ class Ui_MainWindow(object):
         self.widget_imgload.addWidget(self.load_file_button, 0,
                                       QtCore.Qt.AlignHCenter)
         self.vertical_layout_5.addLayout(self.widget_imgload)
-        self.widget_optionsdock = QtWidgets.QWidget(self.dockWidget_contents)
-        self.widget_optionsdock.setObjectName("widget_optionsdock")
-        self.vertical_layout_2 = QtWidgets.QVBoxLayout(self.widget_optionsdock)
+        self.options_dock = QtWidgets.QWidget(self.dockWidget_contents)
+        self.options_dock.setObjectName("options_dock")
+        self.vertical_layout_2 = QtWidgets.QVBoxLayout(self.options_dock)
         self.vertical_layout_2.setSizeConstraint(
             QtWidgets.QLayout.SetMaximumSize)
         self.vertical_layout_2.setObjectName("vertical_layout_2")
-        self.line = QtWidgets.QFrame(self.widget_optionsdock)
+        self.line = QtWidgets.QFrame(self.options_dock)
         self.line.setFrameShape(QtWidgets.QFrame.HLine)
         self.line.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.line.setObjectName("line")
         self.vertical_layout_2.addWidget(self.line)
-        self.knitting_options_dock = QtWidgets.QDockWidget(
-            self.widget_optionsdock)
+        self.knitting_options_dock = QtWidgets.QDockWidget(self.options_dock)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum,
                                            QtWidgets.QSizePolicy.Maximum)
         sizePolicy.setHorizontalStretch(0)
@@ -160,7 +152,7 @@ class Ui_MainWindow(object):
         self.dockWidget_contents_2.setObjectName("dockWidget_contents_2")
         self.knitting_options_dock.setWidget(self.dockWidget_contents_2)
         self.vertical_layout_2.addWidget(self.knitting_options_dock)
-        self.vertical_layout_5.addWidget(self.widget_optionsdock, 0,
+        self.vertical_layout_5.addWidget(self.options_dock, 0,
                                          QtCore.Qt.AlignHCenter)
         self.line_2 = QtWidgets.QFrame(self.dockWidget_contents)
         self.line_2.setFrameShape(QtWidgets.QFrame.HLine)

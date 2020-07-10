@@ -25,7 +25,7 @@ from bitarray import bitarray
 from ayab.plugins.ayab_plugin.ayab_control import AyabControl
 from ayab.plugins.ayab_plugin.ayab_options import Alignment
 from ayab.plugins.ayab_plugin.ayab_knit_mode import KnitMode, KnitModeFunc
-from ayab.plugins.ayab_plugin.ayab_image import AyabImage
+from ayab.plugins.ayab_plugin.ayab_pattern import AyabPattern
 from ayab.plugins.ayab_plugin.machine import Machine
 
 
@@ -35,11 +35,11 @@ class TestAyabControl(unittest.TestCase):
 
     def test__singlebed(self):
         ayab_control = AyabControl()
-        ayab_control.image = AyabImage(Image.new('P', (1, 3)), 2)
+        ayab_control.pattern = AyabPattern(Image.new('P', (1, 3)), 2)
         ayab_control.num_colors = 2
         ayab_control.start_row = 0
         ayab_control.inf_repeat = False
-        ayab_control.img_height = ayab_control.image.img_height
+        ayab_control.pat_height = ayab_control.pattern.pat_height
         ayab_control.func = getattr(KnitModeFunc, "_singlebed")
         assert ayab_control.func(ayab_control, 0) == (0, 0, False, False)
         assert ayab_control.func(ayab_control, 1) == (0, 2, False, False)
@@ -52,12 +52,12 @@ class TestAyabControl(unittest.TestCase):
 
     def test__classic_ribber_2col(self):
         ayab_control = AyabControl()
-        ayab_control.image = AyabImage(Image.new('P', (1, 5)), 2)
+        ayab_control.pattern = AyabPattern(Image.new('P', (1, 5)), 2)
         ayab_control.num_colors = 2
         ayab_control.start_row = 0
         ayab_control.inf_repeat = False
-        ayab_control.img_height = ayab_control.image.img_height
-        ayab_control.len_img_expanded = ayab_control.img_height * ayab_control.num_colors
+        ayab_control.pat_height = ayab_control.pattern.pat_height
+        ayab_control.len_pat_expanded = ayab_control.pat_height * ayab_control.num_colors
         ayab_control.func = getattr(KnitModeFunc, "_classic_ribber_2col")
         assert ayab_control.func(ayab_control, 0) == (0, 0, False, False)
         assert ayab_control.func(ayab_control, 1) == (1, 1, False, False)
@@ -79,12 +79,12 @@ class TestAyabControl(unittest.TestCase):
 
     def test__classic_ribber_multicol(self):
         ayab_control = AyabControl()
-        ayab_control.image = AyabImage(Image.new('P', (1, 3)), 3)
+        ayab_control.pattern = AyabPattern(Image.new('P', (1, 3)), 3)
         ayab_control.num_colors = 3
         ayab_control.start_row = 0
         ayab_control.inf_repeat = False
-        ayab_control.img_height = ayab_control.image.img_height
-        ayab_control.len_img_expanded = ayab_control.img_height * ayab_control.num_colors
+        ayab_control.pat_height = ayab_control.pattern.pat_height
+        ayab_control.len_pat_expanded = ayab_control.pat_height * ayab_control.num_colors
         ayab_control.func = getattr(KnitModeFunc, "_classic_ribber_multicol")
         assert ayab_control.func(ayab_control, 0) == (0, 0, False, False)
         assert ayab_control.func(ayab_control, 1) == (0, 0, True, False)
@@ -111,13 +111,13 @@ class TestAyabControl(unittest.TestCase):
 
     def test__middlecolorstwice_ribber(self):
         ayab_control = AyabControl()
-        ayab_control.image = AyabImage(Image.new('P', (1, 5)), 3)
+        ayab_control.pattern = AyabPattern(Image.new('P', (1, 5)), 3)
         ayab_control.knit_mode = KnitMode.MIDDLECOLORSTWICE_RIBBER
         ayab_control.num_colors = 3
         ayab_control.start_row = 0
         ayab_control.inf_repeat = False
-        ayab_control.img_height = ayab_control.image.img_height
-        ayab_control.len_img_expanded = ayab_control.img_height * ayab_control.num_colors
+        ayab_control.pat_height = ayab_control.pattern.pat_height
+        ayab_control.len_pat_expanded = ayab_control.pat_height * ayab_control.num_colors
         ayab_control.passes_per_row = ayab_control.knit_mode.row_multiplier(
             ayab_control.num_colors)
         ayab_control.func = getattr(KnitModeFunc, "_middlecolorstwice_ribber")
@@ -152,13 +152,13 @@ class TestAyabControl(unittest.TestCase):
 
     def test__heartofpluto_ribber(self):
         ayab_control = AyabControl()
-        ayab_control.image = AyabImage(Image.new('P', (1, 5)), 3)
+        ayab_control.pattern = AyabPattern(Image.new('P', (1, 5)), 3)
         ayab_control.knit_mode = KnitMode.HEARTOFPLUTO_RIBBER
         ayab_control.num_colors = 3
         ayab_control.start_row = 0
         ayab_control.inf_repeat = False
-        ayab_control.img_height = ayab_control.image.img_height
-        ayab_control.len_img_expanded = ayab_control.img_height * ayab_control.num_colors
+        ayab_control.pat_height = ayab_control.pattern.pat_height
+        ayab_control.len_pat_expanded = ayab_control.pat_height * ayab_control.num_colors
         ayab_control.passes_per_row = ayab_control.knit_mode.row_multiplier(
             ayab_control.num_colors)
         ayab_control.func = getattr(KnitModeFunc, "_heartofpluto_ribber")
@@ -193,12 +193,12 @@ class TestAyabControl(unittest.TestCase):
 
     def test__circular_ribber(self):
         ayab_control = AyabControl()
-        ayab_control.image = AyabImage(Image.new('P', (1, 3)), 3)
+        ayab_control.pattern = AyabPattern(Image.new('P', (1, 3)), 3)
         ayab_control.num_colors = 3
         ayab_control.start_row = 0
         ayab_control.inf_repeat = False
-        ayab_control.img_height = ayab_control.image.img_height
-        ayab_control.len_img_expanded = ayab_control.img_height * ayab_control.num_colors
+        ayab_control.pat_height = ayab_control.pattern.pat_height
+        ayab_control.len_pat_expanded = ayab_control.pat_height * ayab_control.num_colors
         ayab_control.func = getattr(KnitModeFunc, "_circular_ribber")
         assert ayab_control.func(ayab_control, 0) == (0, 0, False, False)
         assert ayab_control.func(ayab_control, 1) == (0, 0, True, False)
@@ -230,10 +230,10 @@ class TestAyabControl(unittest.TestCase):
 
         # 40 pixel image set to the left
         ayab_control.knit_mode = KnitMode.CIRCULAR_RIBBER
-        im = AyabImage(Image.new('P', (40, 1)), 2)
-        im.alignment = Alignment.LEFT
-        ayab_control.image = im
-        assert im.img_start_needle == 0
+        pattern = AyabPattern(Image.new('P', (40, 1)), 2)
+        pattern.alignment = Alignment.LEFT
+        ayab_control.pattern = pattern
+        assert pattern.pat_start_needle == 0
         bits0 = bitarray()
         bits0.frombytes(
             b'\xff\xff\xff\xff\xff\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
@@ -241,8 +241,8 @@ class TestAyabControl(unittest.TestCase):
         assert ayab_control.select_needles(0, 0, False) == bits0
 
         # 40 pixel image set to the center
-        im.alignment = Alignment.CENTER
-        ayab_control.image = im
+        pattern.alignment = Alignment.CENTER
+        ayab_control.pattern = pattern
         bits1 = bitarray()
         bits1.frombytes(
             b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xff\xff\xff\xff\xff\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
@@ -259,7 +259,7 @@ class TestAyabControl(unittest.TestCase):
 
         # image is wider than machine width
         # all pixels set
-        ayab_control.image = AyabImage(Image.new('P', (202, 1)), 2)
+        ayab_control.pattern = AyabPattern(Image.new('P', (202, 1)), 2)
         ayab_control.knit_mode = KnitMode.MIDDLECOLORSTWICE_RIBBER
         assert ayab_control.select_needles(0, 0, False) == bitarray(
             [True] * Machine.WIDTH)
