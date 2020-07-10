@@ -26,15 +26,21 @@ from ayab.plugins.ayab_plugin.ayab_control import AyabControl
 from ayab.plugins.ayab_plugin.ayab_options import Alignment
 from ayab.plugins.ayab_plugin.ayab_knit_mode import KnitMode, KnitModeFunc
 from ayab.plugins.ayab_plugin.ayab_pattern import AyabPattern
+from ayab.plugins.ayab_plugin.ayab_status import Status
 from ayab.plugins.ayab_plugin.machine import Machine
+
+
+class Parent(object):
+    def __init__(self):
+        self.status = Status()
 
 
 class TestAyabControl(unittest.TestCase):
     def setUp(self):
-        pass
+        self.parent = Parent()
 
     def test__singlebed(self):
-        ayab_control = AyabControl()
+        ayab_control = AyabControl(self.parent)
         ayab_control.pattern = AyabPattern(Image.new('P', (1, 3)), 2)
         ayab_control.num_colors = 2
         ayab_control.start_row = 0
@@ -51,7 +57,7 @@ class TestAyabControl(unittest.TestCase):
         assert ayab_control.func(ayab_control, 2) == (0, 0, False, False)
 
     def test__classic_ribber_2col(self):
-        ayab_control = AyabControl()
+        ayab_control = AyabControl(self.parent)
         ayab_control.pattern = AyabPattern(Image.new('P', (1, 5)), 2)
         ayab_control.num_colors = 2
         ayab_control.start_row = 0
@@ -78,7 +84,7 @@ class TestAyabControl(unittest.TestCase):
         assert ayab_control.func(ayab_control, 8) == (1, 1, False, False)
 
     def test__classic_ribber_multicol(self):
-        ayab_control = AyabControl()
+        ayab_control = AyabControl(self.parent)
         ayab_control.pattern = AyabPattern(Image.new('P', (1, 3)), 3)
         ayab_control.num_colors = 3
         ayab_control.start_row = 0
@@ -110,7 +116,7 @@ class TestAyabControl(unittest.TestCase):
         assert ayab_control.func(ayab_control, 12) == (0, 0, False, False)
 
     def test__middlecolorstwice_ribber(self):
-        ayab_control = AyabControl()
+        ayab_control = AyabControl(self.parent)
         ayab_control.pattern = AyabPattern(Image.new('P', (1, 5)), 3)
         ayab_control.knit_mode = KnitMode.MIDDLECOLORSTWICE_RIBBER
         ayab_control.num_colors = 3
@@ -151,7 +157,7 @@ class TestAyabControl(unittest.TestCase):
         assert ayab_control.func(ayab_control, 16) == (1, 1, False, False)
 
     def test__heartofpluto_ribber(self):
-        ayab_control = AyabControl()
+        ayab_control = AyabControl(self.parent)
         ayab_control.pattern = AyabPattern(Image.new('P', (1, 5)), 3)
         ayab_control.knit_mode = KnitMode.HEARTOFPLUTO_RIBBER
         ayab_control.num_colors = 3
@@ -192,7 +198,7 @@ class TestAyabControl(unittest.TestCase):
         assert ayab_control.func(ayab_control, 16) == (1, 1, False, False)
 
     def test__circular_ribber(self):
-        ayab_control = AyabControl()
+        ayab_control = AyabControl(self.parent)
         ayab_control.pattern = AyabPattern(Image.new('P', (1, 3)), 3)
         ayab_control.num_colors = 3
         ayab_control.start_row = 0
@@ -224,7 +230,7 @@ class TestAyabControl(unittest.TestCase):
         assert ayab_control.func(ayab_control, 12) == (0, 0, False, False)
 
     def test_select_needles(self):
-        ayab_control = AyabControl()
+        ayab_control = AyabControl(self.parent)
         ayab_control.num_colors = 2
         ayab_control.start_row = 0
 

@@ -24,7 +24,7 @@ The method of configuration may differ depending on the OS.
 """
 
 import re
-from PyQt5.QtCore import Qt, QSettings
+from PyQt5.QtCore import Qt, QSettings, QCoreApplication
 from PyQt5.QtWidgets import QDialog, QFormLayout, QLabel, QCheckBox, QComboBox
 from .ayab_prefs_gui import Ui_PrefsDialog
 
@@ -151,7 +151,8 @@ class PrefsDialog(QDialog):
         self.__refresh_form()
 
     def __make_label(self, var):
-        return QLabel(re.sub(r"_", r" ", var).title())
+        title = re.sub(r"_", r" ", var).title()
+        return QLabel(QCoreApplication.translate("PrefsDialog", title))
 
     def __make_widget(self, var):
         cls = self.__prefs.variables[var]

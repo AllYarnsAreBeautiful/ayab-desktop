@@ -16,7 +16,7 @@
 #
 #    Copyright 2014 Sebastian Oliva, Christian Obersteiner, Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
-"""Provides an Interface for users to operate AYAB using a GUI."""
+"""Provides a graphical interface for users to operate AYAB."""
 
 from fbs_runtime.application_context.PyQt5 import ApplicationContext
 
@@ -51,10 +51,10 @@ from .plugins.ayab_plugin.machine import Machine
 
 class GuiMain(QMainWindow):
     """
-    GuiMain is the main object that handles the instance of the Ayab GUI.
+    GuiMain is the top level class in the AYAB GUI.
 
     GuiMain inherits from QMainWindow and instantiates a window with
-    components from `ayab_gui.ui`
+    components from `ayab_gui.ui`.
     """
     def __init__(self, app_context):
         super().__init__()
@@ -93,7 +93,7 @@ class GuiMain(QMainWindow):
         # initialize FSM
         self.fsm = FSM()
         self.fsm.set_transitions(self)
-        self.fsm.set_properties(self.ui)
+        self.fsm.set_properties(self)
         self.fsm.machine.start()
 
     def __activate_ui(self):
@@ -119,7 +119,7 @@ class GuiMain(QMainWindow):
             action.triggered.connect(slot)
 
     def start_knitting(self):
-        """Start kntting process."""
+        """Start the knitting process."""
         # reset knit progress window
         self.knitprog.reset()
         # disable UI elements at start of knitting
@@ -138,9 +138,9 @@ class GuiMain(QMainWindow):
             self.audio("finish")
 
     def set_image_dimensions(self):
-        """Set dimensions of image"""
+        """Set dimensions of image."""
         width, height = self.scene.ayabimage.image.size
-        self.plugin.set_image_dimensions(width, height)
+        self.plugin.config.set_image_dimensions(width, height)
         self.progbar.row = self.scene.row_progress + 1
         self.progbar.total = height
         self.progbar.refresh()
@@ -154,13 +154,13 @@ class GuiMain(QMainWindow):
         self.scene.row_progress = start_row
 
     def update_notification(self, text, log=True):
-        '''Update the notification field'''
+        """Update the notification field."""
         if log:
             logging.info("Notification: " + text)
         self.ui.label_notifications.setText(text)
 
     def audio(self, sound):
-        """Play audio and wait until finished"""
+        """Play audio and wait until finished."""
         if self.prefs.value("quiet_mode"):
             return
         dirname = self.app_context.get_resource("assets")

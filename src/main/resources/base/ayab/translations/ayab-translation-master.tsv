@@ -17,26 +17,26 @@ Dest	Src	Context	en_US	en_GB	de_DE	is_IS	it_IT	ru_RU	uk_UA	fr_FR	es_Es
 17	30	DockWidget	Refresh	Refresh	Aktualisieren	Endurnýja	Ricarica	Обновить	Оновити	Réactualiser	Actualizar
 18	61	DockWidget	Settings	Settings	Einstellungen	Stillingar	Impostazioni	Настройки	Налаштування	Paramètres	Ajustes
 19	68	DockWidget	Knitting Mode	Knitting Mode	Strickmodus	Prjóna stilling	Modalità di lavorazione	Режим вязание	Режим в'язання	Mode tricot	Método de tejido
-20	31	DockWidget	Colors	Colours	Farben	Litir	Colori	Цвета	Кольори	Couleurs	Colores
-21	41	DockWidget	Start Row	Start Row	Startzeile	Byrja umferð	Inizio giro	Начальный ряд	Початковий ряд	Commencer le rang	Fila de inicio
-22	43	DockWidget	Infinite Repeat	Infinite Repeat	Unendlich wiederholen	Endurtekning	Ripetizione infinita	Повторять	Нескінченне повторення	Répétition a l'infini	Repetición infinita
-23	44	DockWidget	Start Needle	Start Needle	Startnadel	Byrjunar nál	Ago iniziale	Стартовая игла 	Початкова голка	Première aiguille	Aguja de inicio
-24	45	DockWidget	Stop Needle	Stop Needle	Stopnadel	Enda nál	Ago finale	Конечная игла 	Остання голка	Dernière aiguille	Aguja de parada
-25	46	DockWidget	Alignment	Alignment	Ausrichtung	Jafna	Allineamento	Выравнивание	Вирівнювання	Alignement	Alineamiento
-26	47	DockWidget	Mirror Image	Mirror Image	Muster spiegeln	Spegilmynd	Ribalta l'immagine	Зеркальное отражение	Дзеркальне зображення	Image miroir	Imagen espejo
-27	48	DockWidget	Continuous Status Reporting	Continuous Status Reporting	Kontinuierlicher Status	Stöðug skýrsla	Report continuativo	Непрерывный отчет о статусе	Постійне звітування про стан	Rapport de situation en continu	Informe de estado continuo
+20	31	OptionsWidget	Colors	Colours	Farben	Litir	Colori	Цвета	Кольори	Couleurs	Colores
+21	41	OptionsWidget	Start Row	Start Row	Startzeile	Byrja umferð	Inizio giro	Начальный ряд	Початковий ряд	Commencer le rang	Fila de inicio
+22	43	OptionsWidget	Infinite Repeat	Infinite Repeat	Unendlich wiederholen	Endurtekning	Ripetizione infinita	Повторять	Нескінченне повторення	Répétition a l'infini	Repetición infinita
+23	44	OptionsWidget	Start Needle	Start Needle	Startnadel	Byrjunar nál	Ago iniziale	Стартовая игла 	Початкова голка	Première aiguille	Aguja de inicio
+24	45	OptionsWidget	Stop Needle	Stop Needle	Stopnadel	Enda nál	Ago finale	Конечная игла 	Остання голка	Dernière aiguille	Aguja de parada
+25	46	OptionsWidget	Alignment	Alignment	Ausrichtung	Jafna	Allineamento	Выравнивание	Вирівнювання	Alignement	Alineamiento
+26	47	OptionsWidget	Mirror Image	Mirror Image	Muster spiegeln	Spegilmynd	Ribalta l'immagine	Зеркальное отражение	Дзеркальне зображення	Image miroir	Imagen espejo
+27	48	OptionsWidget	Continuous Status Reporting	Continuous Status Reporting	Kontinuierlicher Status	Stöðug skýrsla	Report continuativo	Непрерывный отчет о статусе	Постійне звітування про стан	Rapport de situation en continu	Informe de estado continuo
 28	49	DockWidget	Status	Status	Status	Staða	Stato	Статус	Стан	Statut	Estado
-29	50	DockWidget	Hall Sensors	Hall Sensors	Hall-Effekt-Sensoren	Skynjari	Apparato sensori	Датчик Холла	Датчики Холла	Capteurs à effet Hall	Sensores de effecto Hall
-30	51	DockWidget	Hall Left	Hall Left	Hallsensor links	Vinstri skynjari	Apparato sensore sinistro	Датчик Холла слева	Лівий датчик Холла	Hall Gauche	Hall izquierda
-31	52	DockWidget	Hall Right	Hall Right	Hallsensor rechts	Hægri skynjari	Apparato sensore destro	Датчик Холла справа	Правий датчик Холла	Hall Droite	Hall derecha
-32	53	DockWidget	Carriage	Carriage	Schlitten	Vagn	Carrello	Каретка	Каретка	Chariot	Carro
-33	54	DockWidget	No carriage detected	No carriage detected	Kein Schlitten erkannt	Finn ekki vagn	Carrello non selezionato	Каретка не обнаружена	Каретку не виявлено	Chariot non détecté 	Carro no detectado
-34	56	DockWidget	direction	direction	Richtung	Stefna	direzione	направление	напрямок	direction	dirección
-35	57	DockWidget	Progress	Progress	Fortschritt	Staða	Progressione	Прогресс	Прогрес	Progrès	Progreso
-36	57	DockWidget	progress	progress	Fortschritt	staða	progressione	прогресс	прогрес	progrès	progreso
-37	23	DockWidget	Center	Centre	Zentriert	Miðja	Centra	Центр	Центр	Centre	Centrar
-38	24	DockWidget	Left	Left	Links	Vinstri	Sinistra	Лево	Ліворуч	Gauche	Izquierda
-39	25	DockWidget	Right	Right	Rechts	Hægri	Destra	Право	Праворуч	Droite	Derecha
+29	50	StatusTab	Hall Sensors	Hall Sensors	Hall-Effekt-Sensoren	Skynjari	Apparato sensori	Датчик Холла	Датчики Холла	Capteurs à effet Hall	Sensores de effecto Hall
+30	51	StatusTab	Hall Left	Hall Left	Hallsensor links	Vinstri skynjari	Apparato sensore sinistro	Датчик Холла слева	Лівий датчик Холла	Hall Gauche	Hall izquierda
+31	52	StatusTab	Hall Right	Hall Right	Hallsensor rechts	Hægri skynjari	Apparato sensore destro	Датчик Холла справа	Правий датчик Холла	Hall Droite	Hall derecha
+32	53	StatusTab	Carriage	Carriage	Schlitten	Vagn	Carrello	Каретка	Каретка	Chariot	Carro
+33	54	StatusTab	No carriage detected	No carriage detected	Kein Schlitten erkannt	Finn ekki vagn	Carrello non selezionato	Каретка не обнаружена	Каретку не виявлено	Chariot non détecté 	Carro no detectado
+34	56	StatusTab	direction	direction	Richtung	Stefna	direzione	направление	напрямок	direction	dirección
+35	57	StatusTab	Progress	Progress	Fortschritt	Staða	Progressione	Прогресс	Прогрес	Progrès	Progreso
+36	57	StatusTab	progress	progress	Fortschritt	staða	progressione	прогресс	прогрес	progrès	progreso
+37	23	StatusTab	Center	Centre	Zentriert	Miðja	Centra	Центр	Центр	Centre	Centrar
+38	24	StatusTab	Left	Left	Links	Vinstri	Sinistra	Лево	Ліворуч	Gauche	Izquierda
+39	25	StatusTab	Right	Right	Rechts	Hægri	Destra	Право	Праворуч	Droite	Derecha
 40	2	MainWindow	All Yarns Are Beautiful	All Yarns Are Beautiful	All Yarns Are Beautiful	Allt Garn Er Fallegt	All Yarns Are Beautiful	Вся пряжа прекрасна	Уся пряжа прекрасна	Tous Les Fils Sont Beaux	Todos Los Hilos Son Hermosos
 	3	MainWindow	Website	Website	Webseite	Vefsíða	Sito web	Интернет сайт	Веб-сайт	Site Internet	Sitio web
 	4	MainWindow	Manual	Manual	Anleitung	Handbók	Manuale	Справочник	Посібник	Manuel	Manual

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+
 # This file is part of AYAB.
 #
 #    AYAB is free software: you can redistribute it and/or modify
@@ -60,8 +61,7 @@ class Observer(QObject):
     def activate_signals(self, parent):
         self.start_row_updater.connect(parent.update_start_row)
         self.progress_bar_updater.connect(parent.progbar.update)
-        self.knit_progress_updater.connect(parent.knitprog.update,
-                                           type=Qt.BlockingQueuedConnection)
+        self.knit_progress_updater.connect(parent.knitprog.update)
         self.notification_updater.connect(parent.update_notification)
         self.blocking_popup_displayer.connect(notify.display_blocking_popup)
         self.popup_displayer.connect(notify.display_blocking_popup)

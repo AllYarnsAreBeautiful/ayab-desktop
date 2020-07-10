@@ -128,31 +128,18 @@ class Ui_MainWindow(object):
         self.widget_imgload.addWidget(self.load_file_button, 0,
                                       QtCore.Qt.AlignHCenter)
         self.vertical_layout_5.addLayout(self.widget_imgload)
-        self.options_dock = QtWidgets.QWidget(self.dockWidget_contents)
-        self.options_dock.setObjectName("options_dock")
-        self.vertical_layout_2 = QtWidgets.QVBoxLayout(self.options_dock)
-        self.vertical_layout_2.setSizeConstraint(
+        self.dock_container = QtWidgets.QWidget(self.dockWidget_contents)
+        self.dock_container.setObjectName("dock_container")
+        self.dock_container_layout = QtWidgets.QVBoxLayout(self.dock_container)
+        self.dock_container_layout.setSizeConstraint(
             QtWidgets.QLayout.SetMaximumSize)
-        self.vertical_layout_2.setObjectName("vertical_layout_2")
-        self.line = QtWidgets.QFrame(self.options_dock)
+        self.dock_container_layout.setObjectName("dock_container_layout")
+        self.line = QtWidgets.QFrame(self.dock_container)
         self.line.setFrameShape(QtWidgets.QFrame.HLine)
         self.line.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.line.setObjectName("line")
-        self.vertical_layout_2.addWidget(self.line)
-        self.knitting_options_dock = QtWidgets.QDockWidget(self.options_dock)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum,
-                                           QtWidgets.QSizePolicy.Maximum)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(
-            self.knitting_options_dock.sizePolicy().hasHeightForWidth())
-        self.knitting_options_dock.setSizePolicy(sizePolicy)
-        self.knitting_options_dock.setObjectName("knitting_options_dock")
-        self.dockWidget_contents_2 = QtWidgets.QWidget()
-        self.dockWidget_contents_2.setObjectName("dockWidget_contents_2")
-        self.knitting_options_dock.setWidget(self.dockWidget_contents_2)
-        self.vertical_layout_2.addWidget(self.knitting_options_dock)
-        self.vertical_layout_5.addWidget(self.options_dock, 0,
+        self.dock_container_layout.addWidget(self.line)
+        self.vertical_layout_5.addWidget(self.dock_container, 0,
                                          QtCore.Qt.AlignHCenter)
         self.line_2 = QtWidgets.QFrame(self.dockWidget_contents)
         self.line_2.setFrameShape(QtWidgets.QFrame.HLine)
@@ -201,7 +188,5 @@ class Ui_MainWindow(object):
             _translate("MainWindow", "Assistant"))
         self.load_file_button.setText(
             _translate("MainWindow", "1. Load Image File"))
-        self.knitting_options_dock.setWindowTitle(
-            _translate("MainWindow", "Knitting Options"))
         self.knit_button.setText(_translate("MainWindow", "2. Knit"))
         self.cancel_button.setText(_translate("MainWindow", "Cancel Knitting"))
