@@ -18,20 +18,21 @@
 #    Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
-from enum import Enum
+from enum import Enum, auto
 from .ayab_observable import Observable
 
 
 class KnitOutput(Enum):
-    NONE = 0
-    ERROR_INVALID_SETTINGS = 1
-    ERROR_SERIAL_PORT = 2
-    CONNECTING_TO_MACHINE = 3
-    WAIT_FOR_INIT = 4
-    ERROR_WRONG_API = 5
-    PLEASE_KNIT = 6
-    DEVICE_NOT_READY = 7
-    FINISHED = 8
+    NONE = auto()
+    ERROR_INVALID_SETTINGS = auto()
+    ERROR_SERIAL_PORT = auto()
+    CONNECTING_TO_MACHINE = auto()
+    WAIT_FOR_INIT = auto()
+    ERROR_WRONG_API = auto()
+    PLEASE_KNIT = auto()
+    DEVICE_NOT_READY = auto()
+    NEXT_LINE = auto()
+    FINISHED = auto()
 
 
 class KnitFeedbackHandler(Observable):
@@ -69,6 +70,9 @@ class KnitFeedbackHandler(Observable):
     def _device_not_ready(self):
         self.emit_notification("", False)
         self.emit_blocking_popup("Device not ready, try again.")
+
+    def _next_line(self):
+        self.emit_audio_player("nextline")
 
     def _finished(self):
         self.emit_notification(
