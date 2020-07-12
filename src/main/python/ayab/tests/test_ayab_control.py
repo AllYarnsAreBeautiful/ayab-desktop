@@ -235,14 +235,18 @@ class TestAyabControl(unittest.TestCase):
         ayab_control.start_row = 0
 
         # 40 pixel image set to the left
-        ayab_control.knit_mode = KnitMode.CIRCULAR_RIBBER
-        pattern = AyabPattern(Image.new('P', (40, 1)), 2)
+        ayab_control.knit_mode = KnitMode.SINGLEBED
+        im = Image.new('P', (40, 3), 0)
+        im1 = Image.new('P', (40, 1), 1)
+        im.paste(im1, (0, 0))
+        pattern = AyabPattern(im, 2)
         pattern.alignment = Alignment.LEFT
         ayab_control.pattern = pattern
         assert pattern.pat_start_needle == 0
+        assert pattern.pat_stop_needle == 39
         bits0 = bitarray()
         bits0.frombytes(
-            b'\xff\xff\xff\xff\xff\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+            b'\x00\x00\x00\x00\x00\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff'
         )
         assert ayab_control.select_needles(0, 0, False) == bits0
 
@@ -251,7 +255,7 @@ class TestAyabControl(unittest.TestCase):
         ayab_control.pattern = pattern
         bits1 = bitarray()
         bits1.frombytes(
-            b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xff\xff\xff\xff\xff\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+            b'\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\x00\x00\x00\x00\x00\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff'
         )
         assert ayab_control.select_needles(0, 0, False) == bits1
 
@@ -259,14 +263,13 @@ class TestAyabControl(unittest.TestCase):
         # blank line so central 40 pixels unset
         # flanking pixels set (2 different options)
         ayab_control.knit_mode = KnitMode.CLASSIC_RIBBER
-        assert ayab_control.select_needles(0, 0, True) == ~bits1
-        ayab_control.knit_mode = KnitMode.HEARTOFPLUTO_RIBBER
-        assert ayab_control.select_needles(0, 0, True) == ~bits1
+        assert ayab_control.select_needles(2, 1, False) == ~bits1
+        ayab_control.knit_mode = KnitMode.MIDDLECOLORSTWICE_RIBBER
+        assert ayab_control.select_needles(2, 1, False) == ~bits1
 
         # image is wider than machine width
         # all pixels set
         ayab_control.pattern = AyabPattern(Image.new('P', (202, 1)), 2)
-        ayab_control.knit_mode = KnitMode.MIDDLECOLORSTWICE_RIBBER
         assert ayab_control.select_needles(0, 0, False) == bitarray(
             [True] * Machine.WIDTH)
 
@@ -315,5 +318,5 @@ class TestAyabControl(unittest.TestCase):
         assert KnitMode.HEARTOFPLUTO_RIBBER.flanking_needles(0, 3)
         assert not KnitMode.HEARTOFPLUTO_RIBBER.flanking_needles(1, 3)
         assert not KnitMode.HEARTOFPLUTO_RIBBER.flanking_needles(2, 3)
-        assert not KnitMode.CIRCULAR_RIBBER.flanking_needles(0, 2)
+        assert KnitMode.CIRCULAR_RIBBER.flanking_needles(0, 2)
         assert not KnitMode.CIRCULAR_RIBBER.flanking_needles(1, 2)
