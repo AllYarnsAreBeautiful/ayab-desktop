@@ -84,7 +84,11 @@ class Preferences:
 
     def value(self, var):
         if var in self.settings.allKeys():
-            return self.convert(var)(self.settings.value(var))
+            try:
+                return self.convert(var)(self.settings.value(var))
+            except ValueError:
+                # saved setting is wrong type
+                return self.convert(var)()
         else:
             return self.default_value(var)
 
