@@ -30,7 +30,6 @@ from PyQt5.QtCore import Qt, QThread, QCoreApplication
 import simpleaudio as sa
 import wave
 
-from . import notify
 from .ayab_gui import Ui_MainWindow
 from .ayab_fsm import FSM
 from .ayab_observer import Observer

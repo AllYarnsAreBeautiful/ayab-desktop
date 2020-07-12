@@ -23,11 +23,12 @@ from math import ceil
 
 from PIL import Image
 from DAKimport import DAKimport
+from PyQt5.QtCore import QCoreApplication
 from PyQt5.QtWidgets import QInputDialog, QDialog, QFileDialog
 
-from . import notify
 from .ayab_transforms import Transform, Mirrors
 from .plugins.ayab_plugin.ayab_observable import Observable
+from .plugins.ayab_plugin.utils import display_blocking_popup
 from .plugins.ayab_plugin.machine import Machine
 
 
@@ -68,12 +69,14 @@ class AyabImage(Observable):
         try:
             self.__open(filename)
         except (OSError, FileNotFoundError):
-            notify.display_blocking_popup("Unable to load image file",
-                                          "error")  # FIXME translate
+            display_blocking_popup(
+                QCoreApplication.translate("Unable to load image file"),
+                "error")  # FIXME translate
             logging.error("Unable to load " + str(filename))
         except Exception as e:
-            notify.display_blocking_popup("Error loading image file",
-                                          "error")  # FIXME translate
+            display_blocking_popup(
+                QCoreApplication.translate("Error loading image file"),
+                "error")  # FIXME translate
             logging.error("Error loading image: " + str(e))
             raise
         else:
@@ -146,11 +149,7 @@ class AyabImage(Observable):
         self.apply_transform(Transform.rotate_right)
 
     def apply_transform(self, transform, *args):
-        '''Executes an image transform specified by function and args.
-
-        Calls a transform function, forwarding args and the image,
-        and replaces the QtImage on scene.
-        '''
+        """Executes an image transform specified by function and args."""
         try:
             self.image = transform(self.image, args)
         except:

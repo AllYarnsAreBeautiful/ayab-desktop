@@ -187,7 +187,7 @@ class AyabControl(object):
         return bits
 
     def knit(self, pattern, options):
-        '''Finite State Machine governing serial communication'''
+        """Finite State Machine governing serial communication"""
         method = "_knit_" + self.state.name.lower()
         if not hasattr(KnitStateMachine, method):
             # NONE, FINISHED
