@@ -67,13 +67,13 @@ class KnitMode(Enum):
         return method
 
     # FIXME this function is supposed to select needles
-    # to knit the background color along side the pattern
+    # to knit the background color alongside the pattern
     def flanking_needles(self, color, ncolors):
         # return (color == 0 and self.name == "CLASSIC_RIBBER") \
         #     or (color == ncolors - 1
         #         and (self.name == "MIDDLECOLORSTWICE_RIBBER"
         #             or self.name == "HEARTOFPLUTO_RIBBER"))
-        return color == 0 and self.name != "CIRCULAR_RIBBER"
+        return color == 0  # and self.name != "CIRCULAR_RIBBER"
 
     def add_items(box):
         tr_ = QCoreApplication.translate

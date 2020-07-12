@@ -36,7 +36,7 @@ class AyabControl(object):
     Class governing information flow with the shield.
     """
     BLOCK_LENGTH = 256
-    COLOR_SYMBOLS = "A", "B", "C", "D"
+    COLOR_SYMBOLS = "A", "B", "C", "D", "E", "F"
     API_VERSION = 0x05
     FLANKING_NEEDLES = True
 
@@ -80,7 +80,7 @@ class AyabControl(object):
         self.status.reset()
         if self.knit_mode == KnitMode.SINGLEBED:
             self.status.alt_color = self.pattern.palette[1]
-            self.status.color_symbol = "A/B"
+            self.status.color_symbol = ""  # "A/B"
         else:
             self.status.alt_color = None
         self.status.total_rows = self.pattern.pat_height
