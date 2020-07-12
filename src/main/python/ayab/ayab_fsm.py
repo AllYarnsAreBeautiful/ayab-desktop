@@ -62,7 +62,8 @@ class FSM(object):
                                     self.CONFIGURING)
         self.CHECKING.addTransition(parent.seer.knitting_starter,
                                     self.KNITTING)
-        self.KNITTING.addTransition(parent.gt.finished, self.CONFIGURING)
+        self.KNITTING.addTransition(parent.plugin_thread.finished,
+                                    self.CONFIGURING)
 
         # Actions triggered by state changes
         self.NO_IMAGE.entered.connect(
