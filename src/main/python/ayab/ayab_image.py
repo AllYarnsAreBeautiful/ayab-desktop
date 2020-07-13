@@ -45,7 +45,6 @@ class AyabImage(Observable):
         self.image = None
         self.filename = None
         self.filename_input = self.__parent.ui.filename_lineedit
-        self.statusbar = self.__parent.statusBar()
 
     def select_file(self):
         filename = self.filename_input.text()
@@ -77,7 +76,7 @@ class AyabImage(Observable):
             logging.error("Error loading image: " + str(e))
             raise
         else:
-            self.statusbar.showMessage(filename)
+            self.emit_statusbar_updater(filename, True)
 
     def __open(self, filename):
         # check for DAK files

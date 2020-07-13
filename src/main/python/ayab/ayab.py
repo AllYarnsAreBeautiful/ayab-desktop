@@ -39,6 +39,7 @@ from .ayab_scene import Scene
 from .ayab_transforms import Transform
 from .firmware_flash import FirmwareFlash
 from .ayab_preferences import Preferences
+from .ayab_statusbar import StatusBar
 from .ayab_progressbar import ProgressBar
 from .ayab_about import About
 from .ayab_knitprogress import KnitProgress
@@ -75,6 +76,8 @@ class GuiMain(QMainWindow):
         self.knitprog = KnitProgress(self)
         self.plugin = AyabPlugin(self)
         self.progbar = ProgressBar(self)
+        self.statusbar = StatusBar(self)
+        self.setStatusBar(self.statusbar)
         self.flash = FirmwareFlash(self)
         self.gt = GenericThread(self.plugin.knit)
 
