@@ -23,7 +23,7 @@ from time import sleep
 from PIL import Image
 from PyQt5.QtCore import QTranslator, QCoreApplication, QLocale, QObjectCleanupHandler
 from PyQt5.QtWidgets import QComboBox, QDockWidget, QWidget
-from . import USB_ports
+from . import utils
 from .ayab_pattern import AyabPattern
 from .ayab_control import AyabControl
 from .ayab_observable import Observable
@@ -108,7 +108,7 @@ class AyabPlugin(Observable, QDockWidget):
 
     def __populate_ports(self, port_list=None):
         combo_box = self.ui.serial_port_dropdown
-        USB_ports.populate_ports(combo_box, port_list)
+        utils.populate_ports(combo_box, port_list)
         # Add Simulation item to indicate operation without machine
         combo_box.addItem(
             QCoreApplication.translate("AyabPlugin", "Simulation"))

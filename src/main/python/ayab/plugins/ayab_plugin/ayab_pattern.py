@@ -34,14 +34,12 @@ class AyabPattern(object):
         self.__knit_start_needle = 0
         self.__knit_stop_needle = Machine.WIDTH - 1
         self.__update_pattern_data()
-        return
 
     def __update_pattern_data(self):
-        self.__pat_width = self.__pattern.size[0]
-        self.__pat_height = self.__pattern.size[1]
+        self.__pat_width = self.__pattern.width
+        self.__pat_height = self.__pattern.height
         self.__convert()
         self.__calc_pat_start_stop_needles()
-        return
 
     def __convert(self):
         num_colors = self.__num_colors
@@ -49,59 +47,61 @@ class AyabPattern(object):
         pat_height = self.__pat_height
 
         self.__pattern_intern = \
-            [[0 for i in range(pat_width)] for j in range(pat_height)]
+            [[0 for i in range(self.__pat_width)]
+                for j in range(self.__pat_height)]
         self.__pattern_colors = \
-            [[0 for i in range(num_colors)] for j in range(pat_height)]  # unused?
+            [[0 for i in range(self.__num_colors)]
+                for j in range(self.__pat_height)]  # unused?
         self.__pattern_expanded = \
-            [bitarray([False] * pat_width) for j in range(num_colors * pat_height)]
+            [bitarray([False] * self.__pat_width)
+                for j in range(self.__num_colors * self.__pat_height)]
 
         # Limit number of colors in pattern
         # self.__pattern = self.__pattern.quantize(num_colors, dither=None)
-        self.__pattern = self.__pattern.quantize(num_colors)
+        self.__pattern = self.__pattern.quantize(self.__num_colors)
 
         # Order colors most-frequent first
         # NB previously they were ordered lightest-first
         histogram = self.__pattern.histogram()
-        dest_map = list(np.argsort(histogram[0:num_colors]))
+        dest_map = list(np.argsort(histogram[0:self.__num_colors]))
         dest_map.reverse()
         self.__pattern = self.__pattern.remap_palette(dest_map)
 
         # reduce number of colors if necessary
         actual_num_colors = sum(
             map(lambda x: x > 0, self.__pattern.histogram()))
-        if actual_num_colors < num_colors:
+        if actual_num_colors < self.__num_colors:
             # TODO: issue warning if number of colors is less than expected
             # TODO: reduce number of colors
-            # self.num_colors = num_colors = actual_num_colors
+            # self.__num_colors = num_colors = actual_num_colors
             # TODO: reduce number of colors in configuration box
             pass
 
         # get palette
-        rgb = self.__pattern.getpalette()[slice(0, 3 * num_colors)]
-        col_array = np.reshape(rgb, (num_colors, 3))
+        rgb = self.__pattern.getpalette()[slice(0, 3 * self.__num_colors)]
+        col_array = np.reshape(rgb, (self.__num_colors, 3))
         self.palette = list(map(self.array2rgb, col_array))
 
         # Make internal representations of pattern
-        for row in range(pat_height):
-            for col in range(pat_width):
+        for row in range(self.__pat_height):
+            for col in range(self.__pat_width):
                 pxl = self.__pattern.getpixel((col, row))
-                for color in range(num_colors):
+                for color in range(self.__num_colors):
                     if pxl == color:
                         # color map
                         self.__pattern_intern[row][col] = color
                         # amount of bits per color per line
                         self.__pattern_colors[row][color] += 1
                         # colors separated per line
-                        self.__pattern_expanded[(num_colors * row) +
+                        self.__pattern_expanded[(self.__num_colors * row) +
                                                 color][col] = True
-        return
 
     def __calc_pat_start_stop_needles(self):
         if self.__alignment == Alignment.CENTER:
             needle_width = self.__knit_stop_needle - self.__knit_start_needle + 1
-            self.__pat_start_needle = int((self.__knit_start_needle +
-                                           needle_width / 2) -
-                                          self.pat_width / 2)
+            self.__pat_start_needle = \
+                int((self.__knit_start_needle + needle_width / 2) - \
+                    self.pat_width / 2)
             self.__pat_stop_needle = self.__pat_start_needle + self.__pat_width - 1
         elif self.__alignment == Alignment.LEFT:
             self.__pat_start_needle = self.__knit_start_needle

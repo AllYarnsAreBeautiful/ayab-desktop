@@ -20,12 +20,13 @@
 from PyQt5.QtCore import Qt, QCoreApplication, QRect
 from PyQt5.QtWidgets import QScrollArea, QGridLayout, QLayout, QLabel, QWidget
 from bitarray import bitarray
-import numpy as np
+from .plugins.ayab_plugin import utils
 
 
 class KnitProgress(QScrollArea):
     """
-    Class for the knit progress window, implemented as a subclass of `QScrollArea`.
+    Class for the knit progress window, implemented as a subclass of
+    `QScrollArea`.
 
     @author Tom Price
     @date   June 2020
@@ -48,6 +49,7 @@ class KnitProgress(QScrollArea):
     def update(self, status, row_multiplier):
         if status.current_row < 0:
             return
+        # else
         tr_ = QCoreApplication.translate
         row, swipe = divmod(status.line_number, row_multiplier)
         direction = status.line_number % 2
@@ -96,10 +98,10 @@ class KnitProgress(QScrollArea):
         table = "<table style='font-weight: normal;'><tbody><tr height='12'><td width='12' align='center' "
         if bit:
             table = table + "style='border: 1 solid black; color: #{:06x}; background-color: #{:06x};'>".format(
-                self.__contrast_color(color), color) + chr(symbol)
+                utils.contrast_color(color), color) + chr(symbol)
         elif alt_color is not None:
             table = table + "style='border: 1 solid black; color: #{:06x}; background-color: #{:06x};'>".format(
-                self.__contrast_color(alt_color), alt_color) + chr(symbol)
+                utils.contrast_color(alt_color), alt_color) + chr(symbol)
         else:
             table = table + "style='border: 1 dotted black;'>"
         table = table + "</td></tr></tbody></table>"
@@ -107,15 +109,3 @@ class KnitProgress(QScrollArea):
         label.setText(table)
         label.setTextFormat(Qt.RichText)
         return label
-
-    # functions used to calculate contrasting text color
-    def __rgb2array(self, color):
-        return np.array(
-            [color // 0x1000, (color // 0x100) & 0xFF, color & 0xFF])
-
-    def __greyscale(self, rgb):
-        return np.dot([.299, .587, .114], rgb)
-
-    def __contrast_color(self, color):
-        return [0x000000,
-                0xFFFFFF][self.__greyscale(self.__rgb2array(color)) < 0x80]

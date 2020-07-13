@@ -31,8 +31,7 @@ import subprocess
 from subprocess import Popen, PIPE, STDOUT
 
 from .firmware_flash_ui import Ui_FirmwareFlashFrame
-from .plugins.ayab_plugin import USB_ports
-from . import notify
+from .plugins.ayab_plugin import utils
 
 
 class FirmwareFlash(QFrame):
@@ -57,7 +56,7 @@ class FirmwareFlash(QFrame):
         self.ui.setupUi(self)
         self.ui.flash_firmware.setEnabled(False)
 
-        USB_ports.populate_ports(self.ui.port_combo_box)
+        utils.populate_ports(self.ui.port_combo_box)
         self.load_json()
 
         # self.ui.hardware_list.itemClicked[QListWidgetItem].connect(
@@ -179,16 +178,16 @@ class FirmwareFlash(QFrame):
 
             if rc == 0:
                 self.__logger.info("Flashing Done!")
-                notify.display_blocking_popup(
+                utils.display_blocking_popup(
                     "Flashing Done!")  # TODO translate
             else:
                 self.__logger.info("Error on flashing firmware.")
-                notify.display_blocking_popup("Error on flashing firmware.",
-                                              "error")  # TODO translate
+                utils.display_blocking_popup("Error on flashing firmware.",
+                                             "error")  # TODO translate
         except Exception as e:
             self.__logger.info("Error on flashing firmware. " + str(e))
-            notify.display_blocking_popup("Error on flashing firmware.",
-                                          "error")  # TODO translate
+            utils.display_blocking_popup("Error on flashing firmware.",
+                                         "error")  # TODO translate
 
     def generate_command(self, base_dir, os_name, port, controller_name,
                          firmware_name):
