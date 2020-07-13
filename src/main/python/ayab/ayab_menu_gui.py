@@ -12,7 +12,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MenuBar(object):
     def setupUi(self, menubar):
         menubar.setObjectName("menubar")
-        menubar.setGeometry(QtCore.QRect(0, 0, 1008, 22))
+        menubar.setNativeMenuBar(False)
         self.menu_file = QtWidgets.QMenu(menubar)
         self.menu_file.setObjectName("menu_file")
         self.menu_help = QtWidgets.QMenu(menubar)
