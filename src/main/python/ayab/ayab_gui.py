@@ -173,9 +173,6 @@ class Ui_MainWindow(object):
         self.assistant_dock.setWidget(self.dockWidget_contents)
         self.grid_layout.addWidget(self.assistant_dock, 0, 1, 3, 1)
         Ui_MainWindow.setCentralWidget(self.central_widget)
-        self.statusbar = QtWidgets.QStatusBar(Ui_MainWindow)
-        self.statusbar.setObjectName("statusbar")
-        Ui_MainWindow.setStatusBar(self.statusbar)
 
         self.retranslateUi(Ui_MainWindow)
         QtCore.QMetaObject.connectSlotsByName(Ui_MainWindow)

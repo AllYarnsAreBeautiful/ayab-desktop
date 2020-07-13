@@ -37,6 +37,7 @@ class Observer(QObject):
     progress_bar_updater = pyqtSignal(int, int, int, 'QString')
     knit_progress_updater = pyqtSignal(Status, int)
     notification_updater = pyqtSignal('QString', bool)
+    statusbar_updater = pyqtSignal('QString', bool)
     popup_displayer = pyqtSignal('QString', 'QString')
     blocking_popup_displayer = pyqtSignal('QString', 'QString')
     audio_player = pyqtSignal('QString')
