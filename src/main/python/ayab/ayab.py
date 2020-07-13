@@ -69,6 +69,7 @@ class GuiMain(QMainWindow):
 
         # add modular components
         self.menu = Menu(self)
+        self.setMenuBar(self.menu)
         self.about = About(self)
         self.seer = Observer()
         self.scene = Scene(self)
