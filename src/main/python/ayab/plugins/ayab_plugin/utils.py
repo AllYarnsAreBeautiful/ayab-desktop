@@ -17,29 +17,66 @@
 #    Copyright 2013-2020 Sebastian Oliva, Christian Obersteiner,
 #    Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
-"""
-Functions for selecting USB port.
+"""Functions that do not have a parent class."""
 
-@author Tom Price
-@date   July 2020
-"""
-
+import logging
+import numpy as np
 import serial.tools.list_ports
+from PyQt5.QtWidgets import QMessageBox
+
+
+def even(x):
+    return x % 2 == 0
+
+
+def odd(x):
+    return x % 2 == 1
+
+
+def display_blocking_popup(message="", message_type="info"):
+    """Display a modal message box."""
+    logging.debug("MessageBox {}: '{}'".format(message_type, message))
+    box_function = {
+        "error": QMessageBox.critical,
+        "info": QMessageBox.information,
+        "question": QMessageBox.question,
+        "warning": QMessageBox.warning
+    }
+    message_box_function = box_function.get(message_type)
+    ret = message_box_function(None, "AYAB", message, QMessageBox.Ok,
+                               QMessageBox.Ok)
+    if ret == QMessageBox.Ok:
+        return True
+
+
+# USB port functions
 
 
 def populate_ports(combo_box=None, port_list=None):
+    """Populate combo box with a list of ports."""
     if not port_list:
         port_list = get_serial_ports()
     combo_box.clear()
-    populate(combo_box, port_list)
-
-
-def populate(combo_box, port_list):
     for item in port_list:
         # TODO: should display the info of the device.
         combo_box.addItem(item[0])
 
 
 def get_serial_ports():
-    """Returns a list of all USB serial ports"""
+    """Return a list of all USB serial ports."""
     return list(serial.tools.list_ports.grep("USB"))
+
+
+# Color functions
+
+
+def rgb2array(color):
+    return np.array([color // 0x1000, (color // 0x100) & 0xFF, color & 0xFF])
+
+
+def greyscale(rgb):
+    return np.dot([.299, .587, .114], rgb)
+
+
+def contrast_color(color):
+    return [0x000000, 0xFFFFFF][greyscale(rgb2array(color)) < 0x80]

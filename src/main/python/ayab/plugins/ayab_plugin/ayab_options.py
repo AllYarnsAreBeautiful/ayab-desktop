@@ -58,7 +58,6 @@ class OptionsTab(QWidget):
 
     def reset(self):
         """Reset configuration options to default settings."""
-        # self.portname = ""
         self.machine = self.prefs.value("machine")
         self.knitting_mode = self.prefs.value("default_knitting_mode")
         self.num_colors = 2

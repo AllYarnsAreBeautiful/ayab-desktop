@@ -19,9 +19,9 @@
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
 from PyQt5.QtCore import QObject, pyqtSignal, Qt
-from . import notify
 from .plugins.ayab_plugin.ayab_status import Status
 from .plugins.ayab_plugin.ayab_options import Alignment
+from .plugins.ayab_plugin.utils import display_blocking_popup
 
 
 class Observer(QObject):
@@ -63,8 +63,8 @@ class Observer(QObject):
         self.progress_bar_updater.connect(parent.progbar.update)
         self.knit_progress_updater.connect(parent.knitprog.update)
         self.notification_updater.connect(parent.update_notification)
-        self.blocking_popup_displayer.connect(notify.display_blocking_popup)
-        self.popup_displayer.connect(notify.display_blocking_popup)
+        self.blocking_popup_displayer.connect(display_blocking_popup)
+        self.popup_displayer.connect(display_blocking_popup)
         self.audio_player.connect(parent.audio.play,
                                   type=Qt.BlockingQueuedConnection)
         self.needles_updater.connect(parent.scene.update_needles)
