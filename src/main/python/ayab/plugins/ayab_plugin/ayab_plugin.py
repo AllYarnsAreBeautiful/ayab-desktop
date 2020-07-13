@@ -19,7 +19,6 @@
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
 import logging
-# from copy import copy
 from time import sleep
 from PIL import Image
 from PyQt5.QtCore import QTranslator, QCoreApplication, QLocale, QObjectCleanupHandler

@@ -18,7 +18,7 @@
 #    Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
-from enum import Enum
+from enum import Enum, auto
 from PyQt5.QtCore import QCoreApplication
 from .ayab_communication import AyabCommunication, MessageToken
 from .ayab_communication_mockup import AyabCommunicationMockup
@@ -26,13 +26,13 @@ from .ayab_knit_output import KnitOutput
 
 
 class KnitState(Enum):
-    # NONE = 0
-    SETUP = 1
-    INIT = 2
-    WAIT_FOR_INIT = 3
-    START = 4
-    OPERATE = 5
-    # FINISHED = 6
+    # NONE = auto()
+    SETUP = auto()
+    INIT = auto()
+    WAIT_FOR_INIT = auto()
+    START = auto()
+    OPERATE = auto()
+    # FINISHED = auto()
 
 
 class KnitStateMachine(object):
@@ -127,5 +127,7 @@ class KnitStateMachine(object):
             if pattern_finished:
                 ayab_control.state = KnitState.SETUP
                 return KnitOutput.FINISHED
+            # else
+            return KnitOutput.NEXT_LINE
         # fallthrough
         return KnitOutput.NONE

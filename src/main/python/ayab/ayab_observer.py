@@ -67,7 +67,7 @@ class Observer(QObject):
         self.statusbar_updater.connect(parent.statusbar.update)
         self.blocking_popup_displayer.connect(notify.display_blocking_popup)
         self.popup_displayer.connect(notify.display_blocking_popup)
-        self.audio_player.connect(parent.audio,
+        self.audio_player.connect(parent.audio.play,
                                   type=Qt.BlockingQueuedConnection)
         self.needles_updater.connect(parent.scene.update_needles)
         self.alignment_updater.connect(parent.scene.update_alignment)

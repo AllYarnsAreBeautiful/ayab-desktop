@@ -21,19 +21,16 @@
 from fbs_runtime.application_context.PyQt5 import ApplicationContext
 
 import sys
-from os import path
 import logging
 
 from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox
 from PyQt5.QtCore import Qt, QThread, QCoreApplication
 
-import simpleaudio as sa
-import wave
-
 from . import notify
 from .ayab_gui import Ui_MainWindow
 from .ayab_fsm import FSM
 from .ayab_observer import Observer
+from .ayab_audio import AudioPlayer
 from .ayab_menu import Menu
 from .ayab_scene import Scene
 from .ayab_transforms import Transform
@@ -70,6 +67,7 @@ class GuiMain(QMainWindow):
 
         # add modular components
         self.menu = Menu(self)
+        self.setMenuBar(self.menu)
         self.about = About(self)
         self.seer = Observer()
         self.scene = Scene(self)
@@ -79,7 +77,8 @@ class GuiMain(QMainWindow):
         self.statusbar = StatusBar(self)
         self.setStatusBar(self.statusbar)
         self.flash = FirmwareFlash(self)
-        self.gt = GenericThread(self.plugin.knit)
+        self.audio = AudioPlayer(self)
+        self.plugin_thread = GenericThread(self.plugin.knit)
 
         # clear progress bar and notification label
         self.progbar.reset()
@@ -130,15 +129,15 @@ class GuiMain(QMainWindow):
         self.ui.filename_lineedit.setEnabled(False)
         self.ui.load_file_button.setEnabled(False)
         # start thread for knit plugin
-        self.gt.start()
+        self.plugin_thread.start()
 
-    def finish_knitting(self, audio: bool):
+    def finish_knitting(self, beep: bool):
         """(Re-)enable UI elements after knitting finishes."""
         self.menu.repopulate()
         self.ui.filename_lineedit.setEnabled(True)
         self.ui.load_file_button.setEnabled(True)
-        if audio:
-            self.audio("finish")
+        if beep:
+            self.audio.play("finish")
 
     def set_image_dimensions(self):
         """Set dimensions of image."""
@@ -161,23 +160,6 @@ class GuiMain(QMainWindow):
         if log:
             logging.info("Notification: " + text)
         self.ui.label_notifications.setText(text)
-
-    def audio(self, sound):
-        """Play audio and wait until finished."""
-        if self.prefs.value("quiet_mode"):
-            return
-        dirname = self.app_context.get_resource("assets")
-        filename = sound + ".wav"
-        try:
-            wave_read = wave.open(path.join(dirname, filename), 'rb')
-        except FileNotFoundError:
-            logging.warning("File " + filename + " not found.")
-        except OSError:
-            logging.warning("Error loading " + filename + ".")
-        else:
-            wave_obj = sa.WaveObject.from_wave_read(wave_read)
-            play_obj = wave_obj.play()
-            play_obj.wait_done()
 
     def wheelEvent(self, event):
         self.scene.zoom = event
