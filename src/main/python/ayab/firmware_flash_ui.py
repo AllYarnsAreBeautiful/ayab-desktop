@@ -2,8 +2,7 @@
 
 # Form implementation generated from reading ui file 'firmware_flash_ui.ui'
 #
-# Created: Thu Jan 26 21:52:33 2017
-#      by: PyQt5 UI code generator 5.3.2
+# Created by: PyQt5 UI code generator 5.14.2
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -21,7 +20,6 @@ class Ui_FirmwareFlashFrame(object):
         self.widget = QtWidgets.QWidget(FirmwareFlashFrame)
         self.widget.setObjectName("widget")
         self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.widget)
-        self.verticalLayout_2.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout_2.setObjectName("verticalLayout_2")
         self.textBrowser = QtWidgets.QTextBrowser(self.widget)
         self.textBrowser.setHtml(
@@ -46,12 +44,6 @@ class Ui_FirmwareFlashFrame(object):
         self.port_combo_box = QtWidgets.QComboBox(FirmwareFlashFrame)
         self.port_combo_box.setObjectName("port_combo_box")
         self.verticalLayout.addWidget(self.port_combo_box)
-        self.label_4 = QtWidgets.QLabel(FirmwareFlashFrame)
-        self.label_4.setObjectName("label_4")
-        self.verticalLayout.addWidget(self.label_4)
-        self.hardware_list = QtWidgets.QListWidget(FirmwareFlashFrame)
-        self.hardware_list.setObjectName("hardware_list")
-        self.verticalLayout.addWidget(self.hardware_list)
         self.label = QtWidgets.QLabel(FirmwareFlashFrame)
         self.label.setObjectName("label")
         self.verticalLayout.addWidget(self.label)
@@ -81,7 +73,6 @@ class Ui_FirmwareFlashFrame(object):
         FirmwareFlashFrame.setWindowTitle(
             _translate("FirmwareFlashFrame", "Firmware Flashing Utility"))
         self.label_3.setText(_translate("FirmwareFlashFrame", "Port"))
-        self.label_4.setText(_translate("FirmwareFlashFrame", "Hardware List"))
         self.label.setText(_translate("FirmwareFlashFrame", "Controller"))
         self.label_2.setText(
             _translate("FirmwareFlashFrame", "Firmware Version"))

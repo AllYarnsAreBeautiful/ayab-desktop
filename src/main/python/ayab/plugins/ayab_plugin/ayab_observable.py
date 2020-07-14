@@ -48,6 +48,6 @@ class Observable(object):
             QCoreApplication.translate("AyabPlugin", message), message_type)
 
     def emit_notification(self, message="", log=True):
-        """Sends the notification_updater signal."""
-        self.emit_notification_updater(
-            QCoreApplication.translate("AyabPlugin", message), log)
+        """Sends the notifier signal."""
+        self.emit_notifier(QCoreApplication.translate("AyabPlugin", message),
+                           log)
