@@ -24,9 +24,9 @@ from PyQt5.QtCore import QRect
 from PyQt5.QtGui import QImage, QPixmap, QBrush, QColor
 from PyQt5.QtWidgets import QGraphicsScene, QGraphicsRectItem, QGraphicsView
 
-from .ayab_image import AyabImage
-from .plugins.ayab_plugin.ayab_options import Alignment
-from .plugins.ayab_plugin.machine import Machine
+from .image import AyabImage
+from .engine.options import Alignment
+from .machine import Machine
 
 
 class Scene(QGraphicsView):

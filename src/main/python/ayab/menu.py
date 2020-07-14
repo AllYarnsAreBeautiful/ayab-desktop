@@ -18,7 +18,8 @@
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
 from PyQt5.QtWidgets import QMenuBar
-from .ayab_menu_gui import Ui_MenuBar
+
+from .menu_gui import Ui_MenuBar
 
 
 class Menu(QMenuBar):

@@ -20,12 +20,13 @@
 Mockup Class of AYABCommunication for Test/Simulation purposes
 """
 
-from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QMessageBox
-from .ayab_communication import AyabCommunication, MessageToken
-
 import logging
 from time import sleep
+
+from PyQt5 import QtWidgets
+from PyQt5.QtWidgets import QMessageBox
+
+from .communication import AyabCommunication, MessageToken
 
 
 class AyabCommunicationMockup(AyabCommunication):

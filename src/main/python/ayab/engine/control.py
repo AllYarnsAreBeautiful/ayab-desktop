@@ -21,17 +21,19 @@
 import logging
 from enum import Enum
 from bitarray import bitarray
+
 from PyQt5.QtCore import QCoreApplication
-from .ayab_communication import AyabCommunication, MessageToken
-from .ayab_communication_mockup import AyabCommunicationMockup
-from .ayab_options import Alignment
-from .ayab_knit_mode import KnitMode, KnitModeFunc
-from .ayab_knit_state import KnitState, KnitStateMachine
-from .ayab_knit_output import KnitOutput
-from .machine import Machine
+
+from .communication import AyabCommunication, MessageToken
+from .communication_mockup import AyabCommunicationMockup
+from .options import Alignment
+from .mode import KnitMode, KnitModeFunc
+from .state import KnitState, KnitStateMachine
+from .output import KnitOutput
+from ayab.machine import Machine
 
 
-class AyabControl(object):
+class KnitControl(object):
     """
     Class governing information flow with the shield.
     """

@@ -19,7 +19,8 @@
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
 from enum import Enum, auto
-from .ayab_observable import Observable
+
+from ayab.observable import Observable
 
 
 class KnitOutput(Enum):

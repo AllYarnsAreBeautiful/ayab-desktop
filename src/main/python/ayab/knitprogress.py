@@ -20,7 +20,8 @@
 from PyQt5.QtCore import Qt, QCoreApplication, QRect
 from PyQt5.QtWidgets import QScrollArea, QGridLayout, QLayout, QLabel, QWidget
 from bitarray import bitarray
-from .plugins.ayab_plugin import utils
+
+from . import utils
 
 
 class KnitProgress(QScrollArea):

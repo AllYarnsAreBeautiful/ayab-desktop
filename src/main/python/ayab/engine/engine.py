@@ -21,20 +21,22 @@
 import logging
 from time import sleep
 from PIL import Image
+
 from PyQt5.QtCore import QTranslator, QCoreApplication, QLocale, QObjectCleanupHandler
 from PyQt5.QtWidgets import QComboBox, QDockWidget, QWidget
-from . import utils
-from .ayab_pattern import AyabPattern
-from .ayab_control import AyabControl
-from .ayab_observable import Observable
-from .ayab_options import OptionsTab, Alignment, NeedleColor
-from .ayab_status import Status, StatusTab
-from .ayab_knit_mode import KnitMode
-from .ayab_knit_output import KnitOutput, KnitFeedbackHandler
-from .ayab_dock_gui import Ui_DockWidget
+
+from ayab import utils
+from ayab.observable import Observable
+from .control import KnitControl
+from .pattern import Pattern
+from .options import OptionsTab, Alignment, NeedleColor
+from .status import Status, StatusTab
+from .mode import KnitMode
+from .output import KnitOutput, KnitFeedbackHandler
+from .dock_gui import Ui_DockWidget
 
 
-class AyabPlugin(Observable, QDockWidget):
+class KnitEngine(Observable, QDockWidget):
     """
     Top-level class for the slave thread that communicates with the shield.
 
@@ -49,7 +51,7 @@ class AyabPlugin(Observable, QDockWidget):
         self.status = StatusTab()
         self.setup_ui()
         parent.ui.dock_container_layout.addWidget(self)
-        self.__control = AyabControl(self)
+        self.__control = KnitControl(self)
         self.__logger = logging.getLogger(type(self).__name__)
         self.__feedback = KnitFeedbackHandler(parent)
 
@@ -111,7 +113,7 @@ class AyabPlugin(Observable, QDockWidget):
         utils.populate_ports(combo_box, port_list)
         # Add Simulation item to indicate operation without machine
         combo_box.addItem(
-            QCoreApplication.translate("AyabPlugin", "Simulation"))
+            QCoreApplication.translate("KnitEngine", "Simulation"))
 
     def __update_needles(self):
         """Sends the needles_updater signal."""
@@ -140,7 +142,7 @@ class AyabPlugin(Observable, QDockWidget):
 
         # TODO: detect if previous conf had the same
         # image to avoid re-generating.
-        self.__pattern = AyabPattern(image, self.config.num_colors)
+        self.__pattern = Pattern(image, self.config.num_colors)
 
         # validate configuration options
         valid, msg = self.validate()
@@ -178,7 +180,7 @@ class AyabPlugin(Observable, QDockWidget):
             # continue knitting
             # typically each step involves some communication with the shield
 
-            # FIXME pattern and config are only used by AyabControl.knit()
+            # FIXME pattern and config are only used by KnitControl.knit()
             # in the KnitState.SETUP step and do not need to be sent otherwise.
             result = self.__control.knit(self.__pattern, self.config)
             self.__feedback.handle(result)

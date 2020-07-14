@@ -22,6 +22,7 @@
 import logging
 import numpy as np
 import serial.tools.list_ports
+
 from PyQt5.QtWidgets import QMessageBox
 
 

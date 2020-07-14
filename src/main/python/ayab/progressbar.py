@@ -23,7 +23,7 @@ class ProgressBar(object):
     def __init__(self, parent):
         self.__row_label = parent.ui.label_current_row
         self.__color_label = parent.ui.label_current_color
-        self.__status_label = parent.plugin.status.ui.label_progress
+        self.__status_label = parent.engine.status.ui.label_progress
         self.reset()
 
     def reset(self):

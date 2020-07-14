@@ -26,22 +26,22 @@ import logging
 from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox
 from PyQt5.QtCore import Qt, QThread, QCoreApplication
 
-from .ayab_gui import Ui_MainWindow
-from .ayab_fsm import FSM
-from .ayab_observer import Observer
-from .ayab_audio import AudioPlayer
-from .ayab_menu import Menu
-from .ayab_scene import Scene
-from .ayab_transforms import Transform
+from .main_gui import Ui_MainWindow
+from .fsm import FSM
+from .observer import Observer
+from .audio import AudioPlayer
+from .menu import Menu
+from .scene import Scene
+from .transforms import Transform
 from .firmware_flash import FirmwareFlash
-from .ayab_preferences import Preferences
-from .ayab_statusbar import StatusBar
-from .ayab_progressbar import ProgressBar
-from .ayab_about import About
-from .ayab_knitprogress import KnitProgress
-from .plugins.ayab_plugin import AyabPlugin
-from .plugins.ayab_plugin.ayab_options import Alignment
-from .plugins.ayab_plugin.machine import Machine
+from .preferences import Preferences
+from .statusbar import StatusBar
+from .progressbar import ProgressBar
+from .about import About
+from .knitprogress import KnitProgress
+from .engine import KnitEngine
+from .engine.options import Alignment
+from .machine import Machine
 
 # TODO move to generic configuration
 
@@ -51,7 +51,7 @@ class GuiMain(QMainWindow):
     GuiMain is the top level class in the AYAB GUI.
 
     GuiMain inherits from QMainWindow and instantiates a window with
-    components from `ayab_gui.ui`.
+    components from `menu_gui.ui`.
     """
     def __init__(self, app_context):
         super().__init__()
@@ -71,13 +71,13 @@ class GuiMain(QMainWindow):
         self.seer = Observer()
         self.scene = Scene(self)
         self.knitprog = KnitProgress(self)
-        self.plugin = AyabPlugin(self)
+        self.engine = KnitEngine(self)
         self.progbar = ProgressBar(self)
         self.statusbar = StatusBar(self)
         self.setStatusBar(self.statusbar)
         self.flash = FirmwareFlash(self)
         self.audio = AudioPlayer(self)
-        self.plugin_thread = GenericThread(self.plugin.knit)
+        self.engine_thread = GenericThread(self.engine.knit)
 
         # clear progress bar and notification label
         self.progbar.reset()
@@ -102,7 +102,7 @@ class GuiMain(QMainWindow):
             self.scene.ayabimage.select_file)
         self.ui.filename_lineedit.returnPressed.connect(
             self.scene.ayabimage.select_file)
-        self.ui.cancel_button.clicked.connect(self.plugin.cancel)
+        self.ui.cancel_button.clicked.connect(self.engine.cancel)
 
     def __activate_menu(self):
         self.menu.ui.action_quit.triggered.connect(
@@ -127,8 +127,8 @@ class GuiMain(QMainWindow):
         self.menu.depopulate()
         self.ui.filename_lineedit.setEnabled(False)
         self.ui.load_file_button.setEnabled(False)
-        # start thread for knit plugin
-        self.plugin_thread.start()
+        # start thread for knit engine
+        self.engine_thread.start()
 
     def finish_knitting(self, beep: bool):
         """(Re-)enable UI elements after knitting finishes."""
@@ -141,7 +141,7 @@ class GuiMain(QMainWindow):
     def set_image_dimensions(self):
         """Set dimensions of image."""
         width, height = self.scene.ayabimage.image.size
-        self.plugin.config.set_image_dimensions(width, height)
+        self.engine.config.set_image_dimensions(width, height)
         self.progbar.row = self.scene.row_progress + 1
         self.progbar.total = height
         self.progbar.refresh()

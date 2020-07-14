@@ -62,7 +62,7 @@ class FSM(object):
                                     self.CONFIGURING)
         self.CHECKING.addTransition(parent.seer.knitting_starter,
                                     self.KNITTING)
-        self.KNITTING.addTransition(parent.plugin_thread.finished,
+        self.KNITTING.addTransition(parent.engine_thread.finished,
                                     self.CONFIGURING)
 
         # Actions triggered by state changes
@@ -75,11 +75,11 @@ class FSM(object):
         self.KNITTING.entered.connect(
             lambda: logging.debug("Entered state KNITTING"))
 
-        self.NO_IMAGE.exited.connect(parent.plugin.config.refresh)
+        self.NO_IMAGE.exited.connect(parent.engine.config.refresh)
         self.CONFIGURING.entered.connect(parent.menu.add_image_actions)
         self.CONFIGURING.entered.connect(parent.progbar.reset)
         self.CHECKING.entered.connect(
-            lambda: parent.plugin.knit_config(parent.scene.ayabimage.image))
+            lambda: parent.engine.knit_config(parent.scene.ayabimage.image))
         self.KNITTING.entered.connect(parent.start_knitting)
 
     def set_properties(self, parent):
@@ -88,9 +88,9 @@ class FSM(object):
         states in Finite State Machine
         """
         # Dock widget
-        self.NO_IMAGE.assignProperty(parent.plugin, "enabled", "False")
-        self.CONFIGURING.assignProperty(parent.plugin, "enabled", "True")
-        self.KNITTING.assignProperty(parent.plugin, "enabled", "False")
+        self.NO_IMAGE.assignProperty(parent.engine, "enabled", "False")
+        self.CONFIGURING.assignProperty(parent.engine, "enabled", "True")
+        self.KNITTING.assignProperty(parent.engine, "enabled", "False")
 
         # Status tab in options dock should be activated only when knitting
         # self.NO_IMAGE.assignProperty(ui.status_tab, "enabled", "False")
