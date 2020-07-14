@@ -18,9 +18,11 @@
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
 from bitarray import bitarray
+
 from PyQt5.QtCore import QCoreApplication
 from PyQt5.QtWidgets import QWidget
-from .ayab_status_gui import Ui_StatusWidget
+
+from .status_gui import Ui_StatusWidget
 
 
 class Status(object):

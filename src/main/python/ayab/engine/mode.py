@@ -20,15 +20,10 @@
 
 import logging
 from enum import Enum
+
 from PyQt5.QtCore import QCoreApplication
 
-
-def even(x):
-    return x % 2 == 0
-
-
-def odd(x):
-    return x % 2 == 1
+from ayab.utils import odd, even
 
 
 class KnitMode(Enum):

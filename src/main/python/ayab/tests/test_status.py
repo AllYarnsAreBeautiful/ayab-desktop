@@ -20,7 +20,8 @@
 
 import pytest
 import unittest
-from ayab.plugins.ayab_plugin.ayab_status import Status
+
+from ayab.engine.status import Status
 
 
 class TestStatus(unittest.TestCase):

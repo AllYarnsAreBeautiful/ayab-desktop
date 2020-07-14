@@ -21,8 +21,9 @@
 import pytest
 import serial
 import unittest
-from ayab.plugins.ayab_plugin.ayab_communication import AyabCommunication, MessageToken
 from mock import patch
+
+from ayab.engine.communication import AyabCommunication, MessageToken
 
 
 class TestCommunication(unittest.TestCase):

@@ -6,7 +6,6 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
@@ -19,10 +18,12 @@ class Ui_MirrorDialog(object):
         self.mirror_vbox1.setObjectName("mirror_vbox1")
         self.mirror_group = QtWidgets.QGroupBox(mirror_dialog)
         self.mirror_group.setFlat(True)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred,
+                                           QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(1)
         sizePolicy.setVerticalStretch(1)
-        sizePolicy.setHeightForWidth(self.mirror_group.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.mirror_group.sizePolicy().hasHeightForWidth())
         self.mirror_group.setSizePolicy(sizePolicy)
         self.mirror_group.setObjectName("mirror_group")
         self.mirror_vbox2 = QtWidgets.QVBoxLayout(self.mirror_group)
@@ -49,7 +50,8 @@ class Ui_MirrorDialog(object):
 
     def retranslateUi(self, mirror_dialog):
         _translate = QtCore.QCoreApplication.translate
-        mirror_dialog.setWindowTitle(_translate("MirrorDialog", "Reflect image"))
+        mirror_dialog.setWindowTitle(
+            _translate("MirrorDialog", "Reflect image"))
         self.mirror_group.setTitle(_translate("MirrorDialog", "Add mirrors"))
         self.check0.setText(_translate("MirrorDialog", "Left"))
         self.check1.setText(_translate("MirrorDialog", "Right"))

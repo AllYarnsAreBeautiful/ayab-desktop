@@ -24,14 +24,15 @@ The method of configuration may differ depending on the OS.
 """
 
 import re
+
 from PyQt5.QtCore import Qt, QSettings, QCoreApplication
 from PyQt5.QtWidgets import QDialog, QFormLayout, QLabel, QCheckBox, QComboBox
-from .ayab_prefs_gui import Ui_PrefsDialog
 
-from .plugins.ayab_plugin.ayab_options import Alignment
-from .plugins.ayab_plugin.ayab_knit_mode import KnitMode
-from .plugins.ayab_plugin.machine import Machine
-from .ayab_language import Language
+from .prefs_gui import Ui_PrefsDialog
+from .engine.options import Alignment
+from .engine.mode import KnitMode
+from .machine import Machine
+from .language import Language
 
 
 def str2bool(qvariant):

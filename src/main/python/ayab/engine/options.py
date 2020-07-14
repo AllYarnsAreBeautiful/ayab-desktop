@@ -19,11 +19,13 @@
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
 from enum import Enum
+
 from PyQt5.QtCore import Qt, QCoreApplication, QSettings
 from PyQt5.QtWidgets import QWidget
-from .ayab_options_gui import Ui_OptionsWidget
-from .ayab_knit_mode import KnitMode
-from .machine import Machine
+
+from .options_gui import Ui_OptionsWidget
+from .mode import KnitMode
+from ayab.machine import Machine
 
 
 # FIXME translations for UI
@@ -114,14 +116,20 @@ class OptionsTab(QWidget):
         self.machine = self.prefs.value("machine")
         self.knit_mode = KnitMode(self.ui.knitting_mode_box.currentIndex())
         self.num_colors = int(self.ui.color_edit.value())
-        self.start_row = int(self.ui.start_row_edit.value()) - 1
+        self.start_row = self.read_start_row()
         self.inf_repeat = self.ui.inf_repeat_checkbox.isChecked()
         self.start_needle = NeedleColor.read_start_needle(self.ui)
         self.stop_needle = NeedleColor.read_stop_needle(self.ui)
-        self.alignment = Alignment(self.ui.alignment_combo_box.currentIndex())
+        self.alignment = self.read_alignment()
         self.auto_mirror = self.ui.auto_mirror_checkbox.isChecked()
         # self.continuous_reporting =
         #     self.ui.continuous_reporting_checkbox.isChecked()
+
+    def read_start_row(self):
+        return int(self.ui.start_row_edit.value()) - 1
+
+    def read_alignment(self):
+        return Alignment(self.ui.alignment_combo_box.currentIndex())
 
     def set_image_dimensions(self, width, height):
         """

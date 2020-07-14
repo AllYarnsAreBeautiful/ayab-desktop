@@ -18,10 +18,11 @@
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
 import logging
-import numpy as np
-from PyQt5.QtWidgets import QDialog
 from PIL import Image, ImageOps
-from .ayab_mirrors import Ui_MirrorDialog
+
+from PyQt5.QtWidgets import QDialog
+
+from .mirrors import Ui_MirrorDialog
 
 
 class Transform(Image.Image):
@@ -84,14 +85,14 @@ class Transform(Image.Image):
         h1 = 1 + h0 + h_
         if w1 > 1:
             im = image
-            image = image.Transform.hflip()
-            image = image.Transform.repeat((1, w1))
+            image = Transform.hflip(image)
+            image = Transform.repeat(image, (1, w1))
             for i in range(w0, w1, 2):
                 image.paste(im, (i * w, 0))
         if h1 > 1:
             im = image
-            image = image.Transform.vflip()
-            image = image.Transform.repeat((h1, 1))
+            image = Transform.vflip(image)
+            image = Transform.repeat(image, (h1, 1))
             for i in range(h0, h1, 2):
                 image.paste(im, (0, i * h))
         return image
@@ -118,11 +119,11 @@ class Mirrors:
     @date   June 2020
     '''
     def __init__(self):
-        self.mirrors = [False, False, False, False]
+        self.mirrors = [0, 0, 0, 0]
         self.result = MirrorDialog(self).exec_()
 
     def toggled(self, box):
-        self.mirrors[box] = not self.mirrors[box]
+        self.mirrors[box] = 1 - self.mirrors[box]
 
 
 class MirrorDialog(QDialog):

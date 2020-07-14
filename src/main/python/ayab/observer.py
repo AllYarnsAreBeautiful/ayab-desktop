@@ -19,9 +19,9 @@
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
 from PyQt5.QtCore import QObject, pyqtSignal, Qt
-from .plugins.ayab_plugin.ayab_status import Status
-from .plugins.ayab_plugin.ayab_options import Alignment
-from .plugins.ayab_plugin.utils import display_blocking_popup
+from .engine.status import Status
+from .engine.options import Alignment
+from .utils import display_blocking_popup
 
 
 class Observer(QObject):

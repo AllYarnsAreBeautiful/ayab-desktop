@@ -26,10 +26,10 @@ from DAKimport import DAKimport
 from PyQt5.QtCore import QCoreApplication
 from PyQt5.QtWidgets import QInputDialog, QDialog, QFileDialog
 
-from .ayab_transforms import Transform, Mirrors
-from .plugins.ayab_plugin.ayab_observable import Observable
-from .plugins.ayab_plugin.utils import display_blocking_popup
-from .plugins.ayab_plugin.machine import Machine
+from .transforms import Transform, Mirrors
+from .observable import Observable
+from .utils import display_blocking_popup
+from .machine import Machine
 
 
 class AyabImage(Observable):
@@ -149,8 +149,9 @@ class AyabImage(Observable):
 
     def apply_transform(self, transform, *args):
         """Executes an image transform specified by function and args."""
+        self.image = transform(self.image, args)
         try:
-            self.image = transform(self.image, args)
+            pass  #self.image = transform(self.image, args)
         except:
             logging.error("Error while executing image transform.")
 
