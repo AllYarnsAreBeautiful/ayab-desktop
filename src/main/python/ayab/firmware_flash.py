@@ -31,7 +31,7 @@ import subprocess
 from subprocess import Popen, PIPE, STDOUT
 
 from .firmware_flash_ui import Ui_FirmwareFlashFrame
-from .plugins.ayab_plugin import utils
+from . import utils
 
 
 class FirmwareFlash(QFrame):

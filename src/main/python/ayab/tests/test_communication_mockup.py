@@ -19,9 +19,9 @@
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
 import unittest
-from ayab.plugins.ayab_plugin.ayab_communication import MessageToken
-from ayab.plugins.ayab_plugin.ayab_communication_mockup \
-    import AyabCommunicationMockup
+
+from ayab.engine.communication import MessageToken
+from ayab.engine.communication_mockup import AyabCommunicationMockup
 
 
 class TestAyabCommunicationMockup(unittest.TestCase):

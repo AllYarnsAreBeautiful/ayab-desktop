@@ -20,11 +20,12 @@
 
 from bitarray import bitarray
 import numpy as np
-from .ayab_options import Alignment
-from .machine import Machine
+
+from .options import Alignment
+from ayab.machine import Machine
 
 
-class AyabPattern(object):
+class Pattern(object):
     def __init__(self, image, num_colors=2):
         self.__pattern = image
         self.__num_colors = num_colors
