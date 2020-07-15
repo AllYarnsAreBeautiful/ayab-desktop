@@ -22,7 +22,7 @@ from PIL import Image, ImageOps
 
 from PyQt5.QtWidgets import QDialog
 
-from .mirrors import Ui_MirrorDialog
+from .mirrors_gui import Ui_MirrorDialog
 
 
 class Transform(Image.Image):

@@ -72,4 +72,4 @@ HEADER
 
 # now that the `.ts` files have been generated
 # run `lrelease *.ts` to create binary `.qm` files
-system("lrelease *ts")
+system("lrelease *.ts")
