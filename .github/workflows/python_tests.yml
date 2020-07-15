@@ -18,10 +18,11 @@ jobs:
         python-version: 3.7
     - name: Install dependencies
       run: |
-        sudo apt-get install libasound2-dev
-        python -m pip install --upgrade pip
+        sudo apt-get update -y
+        sudo apt-get install -y libasound2-dev qt5-default qttools5-dev-tools
         pip install flake8 pytest
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        ./setup-environment.sh
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
