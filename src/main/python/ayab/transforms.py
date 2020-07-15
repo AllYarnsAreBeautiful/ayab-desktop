@@ -61,8 +61,7 @@ class Transform(Image.Image):
         Repeat `args[1]` times horizontally, `args[0]` times vertically
         Sturla Lange 2017-12-30
         """
-        old_h = image.height
-        old_w = image.width
+        old_w, old_h = image.size
         new_h = old_h * args[0]  # Vertical
         new_w = old_w * args[1]  # Horizontal
         new_im = Image.new('RGB', (new_w, new_h))
@@ -80,12 +79,10 @@ class Transform(Image.Image):
         @date   June 2020
         """
         mirrors = args[0]
-        w = image.width
-        h = image.height
-        w0 = mirrors[0]
-        h0 = mirrors[2]
-        w1 = 1 + mirrors[0] + mirrors[1]
-        h1 = 1 + mirrors[2] + mirrors[3]
+        w, h = image.size
+        w0, w_, h0, h_ = mirrors
+        w1 = 1 + w0 + w_
+        h1 = 1 + h0 + h_
         if w1 > 1:
             im = image
             image = Transform.hflip(image)
@@ -108,8 +105,7 @@ class Transform(Image.Image):
         @author Tom Price
         @date   May 2020
         """
-        old_h = image.height
-        old_w = image.width
+        old_w, old_h = image.size
         new_h = old_h * args[0]  # vertical
         new_w = old_w * args[1]  # horizontal
         return image.resize((new_w, new_h), Image.BOX)

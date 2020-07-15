@@ -67,29 +67,25 @@ class GuiMain(QMainWindow):
         # add modular components
         self.menu = Menu(self)
         self.setMenuBar(self.menu)
-        self.about = About(self)
+        self.statusbar = StatusBar(self)
+        self.setStatusBar(self.statusbar)
         self.seer = Observer()
+        self.about = About(self)
         self.scene = Scene(self)
         self.knitprog = KnitProgress(self)
         self.engine = KnitEngine(self)
         self.progbar = ProgressBar(self)
-        self.statusbar = StatusBar(self)
-        self.setStatusBar(self.statusbar)
         self.flash = FirmwareFlash(self)
         self.audio = AudioPlayer(self)
         self.engine_thread = GenericThread(self.engine.knit)
-
-        # clear progress bar and notification label
-        self.progbar.reset()
-        self.update_notification("", False)
 
         # show UI
         self.showMaximized()
 
         # Activate signals and UI elements
+        self.seer.activate_signals(self)
         self.__activate_ui()
         self.__activate_menu()
-        self.seer.activate_signals(self)
 
         # initialize FSM
         self.fsm = FSM()
@@ -145,7 +141,7 @@ class GuiMain(QMainWindow):
         self.progbar.row = self.scene.row_progress + 1
         self.progbar.total = height
         self.progbar.refresh()
-        self.update_notification(
+        self.notify(
             QCoreApplication.translate("Scene", "Image dimensions") +
             ": {} x {}".format(width, height), False)
         self.scene.refresh()
@@ -154,7 +150,7 @@ class GuiMain(QMainWindow):
         self.progbar.update(start_row)
         self.scene.row_progress = start_row
 
-    def update_notification(self, text, log=True):
+    def notify(self, text, log=True):
         """Update the notification field."""
         if log:
             logging.info("Notification: " + text)

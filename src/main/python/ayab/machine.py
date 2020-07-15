@@ -30,12 +30,6 @@ class Machine(object):
 
     def add_items(box):
         """Add items to alignment combo box."""
-        box.addItem(
-            # QCoreApplication.translate("Machine",
-            "KH-900, KH-930, KH-940, KH-965")  # )
-        box.addItem(
-            # QCoreApplication.translate("Machine",
-            "KH-910, KH-950")  # )
-        box.addItem(
-            # QCoreApplication.translate("Machine",
-            "KH-270")  # )
+        box.addItem("KH-910, KH-950i")
+        box.addItem("KH-900, KH-930, KH-940, KH-965i")
+        box.addItem("KH-270")

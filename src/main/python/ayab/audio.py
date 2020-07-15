@@ -52,10 +52,10 @@ class AudioWorker(QObject):
     def __wave(self, sound):
         """Get and cache audio."""
         if not sound in self.__cache:
-            self.__cache[sound] = self.__get_wave(sound)
+            self.__cache[sound] = self.__load_wave(sound)
         return self.__cache[sound]
 
-    def __get_wave(self, sound):
+    def __load_wave(self, sound):
         """Get audio from file."""
         filename = sound + ".wav"
         try:

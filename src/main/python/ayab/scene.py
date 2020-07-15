@@ -62,7 +62,7 @@ class Scene(QGraphicsView):
         qim = QImage(data, width, height, QImage.Format_ARGB32)
         pixmap = QPixmap.fromImage(qim)
 
-        # Add pattern and move accordingly to alignment
+        # add pattern and locate according to alignment
         pattern = qscene.addPixmap(pixmap)
         if self.__alignment == Alignment.LEFT:
             pos = self.__start_needle - Machine.WIDTH / 2
@@ -76,7 +76,7 @@ class Scene(QGraphicsView):
             return
         pattern.setPos(pos, 0)
 
-        # Draw "machine"
+        # draw "machine"
         rect_orange = QGraphicsRectItem(-Machine.WIDTH / 2.0, -self.BAR_HEIGHT,
                                         Machine.WIDTH / 2.0, self.BAR_HEIGHT)
         rect_orange.setBrush(QBrush(QColor("orange")))
@@ -87,7 +87,7 @@ class Scene(QGraphicsView):
         qscene.addItem(rect_orange)
         qscene.addItem(rect_green)
 
-        # Draw limiting lines (start/stop needle)
+        # draw limiting lines (start/stop needle)
         qscene.addItem(
             QGraphicsRectItem(self.__start_needle - 1 - Machine.WIDTH / 2,
                               -self.BAR_HEIGHT, self.LIMIT_BAR_WIDTH,
@@ -137,7 +137,7 @@ class Scene(QGraphicsView):
 
     @zoom.setter
     def zoom(self, event):
-        '''Use mouse wheel events to zoom the pattern view'''
+        '''Use mouse wheel events to zoom the graphical image'''
         if self.ayabimage.image is not None:
             # angleDelta.y is 120 or -120 when scrolling
             zoom = event.angleDelta().y() / 120

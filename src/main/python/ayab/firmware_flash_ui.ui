@@ -54,16 +54,6 @@ p, li { white-space: pre-wrap; }
       <widget class="QComboBox" name="port_combo_box"/>
      </item>
      <item>
-      <widget class="QLabel" name="label_4">
-       <property name="text">
-        <string>Hardware List</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QListWidget" name="hardware_list"/>
-     </item>
-     <item>
       <widget class="QLabel" name="label">
        <property name="text">
         <string>Controller</string>
