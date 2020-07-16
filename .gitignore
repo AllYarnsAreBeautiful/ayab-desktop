@@ -27,5 +27,8 @@ target/
 # automatically generated translation files
 *.ts
 *.qm
+# automatically generated gui files
+src/main/python/ayab/*_gui.py
+src/main/python/ayab/engine/*_gui.py
 # vim
 *.swp
