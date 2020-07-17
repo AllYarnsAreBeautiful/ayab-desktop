@@ -27,11 +27,10 @@ import logging
 import os
 import sys
 import platform
-import subprocess
 import re
-from subprocess import Popen, PIPE, STDOUT
+from subprocess import Popen, PIPE, STDOUT, run
 
-from .firmware_flash_ui import Ui_FirmwareFlashFrame
+from .firmware_flash_gui import Ui_FirmwareFlashFrame
 from . import utils
 
 
@@ -184,8 +183,8 @@ class FirmwareFlash(QFrame):
         elif os_name == "Linux":
             # We assume avrdude is available in path
             try:
-                result = subprocess.run(["which", "avrdude"],
-                                        capture_output=True)
+                # run subprocess
+                result = run(["which", "avrdude"], capture_output=True)
             except:
                 self.__logger.error("`avrdude` not found in path")
                 utils.display_blocking_popup(

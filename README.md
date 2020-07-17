@@ -13,7 +13,7 @@ After cloning the repo and installing the requirements, you should run
 
 ### Linux
 
-You need Python 3.7 and from your package manager's repository.
+You need Python 3.6 and from your package manager's repository.
 For flashing the firmware, avrdude has to be available on your system.
 To be able to work on GUI elements and translation files, the Qt Dev tools are
 needed also.
@@ -44,7 +44,7 @@ To install the development version you can checkout the git repository.
 Create a virtual enviroment in the cloned repository:
 
     cd ayab-desktop
-    virtualenv --python=/usr/bin/python3.7 --system-site-packages venv/
+    virtualenv --python=/usr/bin/python3.6 --system-site-packages venv/
     source venv/bin/activate
     pip3 install -r requirements.txt
     ./setup-environment.sh

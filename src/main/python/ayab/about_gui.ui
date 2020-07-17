@@ -35,7 +35,7 @@
       <string/>
      </property>
      <property name="pixmap">
-      <pixmap resource="resources.qrc">:/ayab_logo.jpg</pixmap>
+      <pixmap resource="ayab_logo.qrc">:/ayab_logo.jpg</pixmap>
      </property>
      <property name="scaledContents">
       <bool>true</bool>
@@ -75,7 +75,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="resources.qrc"/>
+  <include location="ayab.ayab_logo.qrc"/>
  </resources>
  <connections/>
 </ui>

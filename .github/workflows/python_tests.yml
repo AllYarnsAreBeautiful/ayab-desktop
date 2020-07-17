@@ -6,15 +6,17 @@ name: Python Tests
 on: [push, pull_request]
 
 jobs:
-  build:
+  run-pytest:
     runs-on: ubuntu-latest
-
+    strategy:
+      matrix:
+        python-version: [3.6]
     steps:
     - uses: actions/checkout@v2
-    - name: Set up Python 3.6
+    - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
-        python-version: 3.6
+        python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
         sudo apt-get update -y
@@ -29,5 +31,4 @@ jobs:
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with pytest
-      run: |
-        pytest -v
+      run: pytest -v

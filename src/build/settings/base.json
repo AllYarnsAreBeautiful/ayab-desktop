@@ -2,5 +2,7 @@
     "app_name": "AYAB",
     "main_module": "src/main/python/main.py",
     "author": "ayab-knitting.com",
-    "version": "PACKAGE_VERSION"
+    "version": "PACKAGE_VERSION",
+    "gpg_key": "B8A1C58F998BE8DBEC66A5FEA3353059B9A4D7A8",
+    "gpg_name": "Tom Price"
 }
