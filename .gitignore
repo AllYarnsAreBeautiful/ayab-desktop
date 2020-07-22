@@ -29,10 +29,8 @@ target/
 *.ts
 *.qm
 # automatically generated gui and resource files
-src/main/python/ayab/*_rc.py
-src/main/python/ayab/*_gui.py
-src/main/python/ayab/engine/*_rc.py
-src/main/python/ayab/engine/*_gui.py
+*_rc.py
+*_gui.py
 # vim
 *.swp
 # work in progress

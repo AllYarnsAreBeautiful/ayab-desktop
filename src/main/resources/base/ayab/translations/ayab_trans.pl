@@ -77,4 +77,5 @@ HEADER
 # run `lrelease *.ts` to create binary `.qm` files
 open(FILE, "<", $master);
 chdir(catfile("..", "..", "..", "..", "..", ".."));
-system("lrelease " . catfile($folder, "*.ts"))
+system("lrelease " . catfile($folder, "*.ts"));
+system("rm -f " . catfile($folder, "*.ts"));

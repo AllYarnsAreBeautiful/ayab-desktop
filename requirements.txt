@@ -1,5 +1,3 @@
-#pip==18.1
-setuptools==49.2
 fbs==0.8.6
 PyInstaller==3.4
 pyqt5==5.9.2
