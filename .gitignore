@@ -6,6 +6,7 @@ docs/_build/
 venv*/
 ayab.egg-info
 dist
+__pycache__
 # File is changed by CI
 package_version
 # Makefile directories
@@ -27,5 +28,10 @@ target/
 # automatically generated translation files
 *.ts
 *.qm
+# automatically generated gui and resource files
+*_rc.py
+*_gui.py
 # vim
 *.swp
+# work in progress
+.github/workflows/wip/

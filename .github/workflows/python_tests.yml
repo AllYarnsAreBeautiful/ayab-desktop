@@ -6,22 +6,24 @@ name: Python Tests
 on: [push, pull_request]
 
 jobs:
-  build:
-
+  run-pytest:
     runs-on: ubuntu-latest
-
+    strategy:
+      matrix:
+        python-version: [3.6]
     steps:
     - uses: actions/checkout@v2
-    - name: Set up Python 3.7
+    - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
-        python-version: 3.7
+        python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
-        sudo apt-get install libasound2-dev
-        python -m pip install --upgrade pip
+        sudo apt-get update -y
+        sudo apt-get install -y libasound2-dev qt5-default qttools5-dev-tools
         pip install flake8 pytest
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        ./setup-environment.sh
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
@@ -29,5 +31,4 @@ jobs:
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with pytest
-      run: |
-        pytest -v
+      run: pytest -v

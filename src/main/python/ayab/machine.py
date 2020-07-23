@@ -14,26 +14,22 @@
 #    You should have received a copy of the GNU General Public License
 #    along with AYAB.  If not, see <http://www.gnu.org/licenses/>.
 #
-#    Copyright 2020 Sebastian Oliva, Christian Obersteiner,
-#    Andreas Müller, Christian Gerbrandt
+#    Copyright 2013 Christian Obersteiner, Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
-import pytest
-import unittest
-
-from ayab.engine.status import Status
+# from PyQt5.QtCore import QCoreApplication
 
 
-class TestStatus(unittest.TestCase):
-    def setUp(self):
-        pass
+class Machine(object):
+    """Machine configuration class.
 
-    def test_parse_carriage_info(self):
-        p = Status()
-        p.active = True
-        msg = [0, 1, 2, 3, 4, 5, 1, 7.9]
-        p.parse_carriage_info(msg)
-        assert p.hall_l == 0x203
-        assert p.hall_r == 0x405
-        assert p.carriage_type == "K Carriage"
-        assert p.carriage_position == 7
+    @author Tom Price
+    @date   July 2020
+    """
+    WIDTH = 200
+
+    def add_items(box):
+        """Add items to alignment combo box."""
+        box.addItem("KH-910, KH-950i")
+        box.addItem("KH-900, KH-930, KH-940, KH-965i")
+        box.addItem("KH-270")
