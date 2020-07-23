@@ -54,11 +54,10 @@ class KnitStateMachine(object):
         control.pat_height = pattern.pat_height
         control.num_colors = options.num_colors
         control.start_row = options.start_row
-        control.knit_mode = options.knit_mode
+        control.mode = options.mode
         control.inf_repeat = options.inf_repeat
         control.len_pat_expanded = control.pat_height * control.num_colors
-        control.passes_per_row = control.knit_mode.row_multiplier(
-            control.num_colors)
+        control.passes_per_row = control.mode.row_multiplier(control.num_colors)
         control.reset_status()
         if not control.func_selector():
             return KnitOutput.ERROR_INVALID_SETTINGS

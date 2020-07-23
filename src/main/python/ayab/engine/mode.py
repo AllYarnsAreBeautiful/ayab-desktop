@@ -19,7 +19,7 @@
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
 import logging
-from enum import Enum
+from enum import Enum, auto
 
 from PyQt5.QtCore import QCoreApplication
 
@@ -27,11 +27,11 @@ from ayab.utils import odd, even
 
 
 class KnitMode(Enum):
-    SINGLEBED = 0
-    CLASSIC_RIBBER = 1
-    MIDDLECOLORSTWICE_RIBBER = 2
-    HEARTOFPLUTO_RIBBER = 3
-    CIRCULAR_RIBBER = 4
+    SINGLEBED = auto()
+    CLASSIC_RIBBER = auto()
+    MIDDLECOLORSTWICE_RIBBER = auto()
+    HEARTOFPLUTO_RIBBER = auto()
+    CIRCULAR_RIBBER = auto()
 
     def row_multiplier(self, ncolors):
         if self.name == "SINGLEBED":

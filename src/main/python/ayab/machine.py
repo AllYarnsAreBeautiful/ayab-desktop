@@ -19,14 +19,26 @@
 
 # from PyQt5.QtCore import QCoreApplication
 
+from enum import Enum
 
-class Machine(object):
+
+class Machine(Enum):
     """Machine configuration class.
 
     @author Tom Price
     @date   July 2020
     """
-    WIDTH = 200
+    KH910_KH950 = 0
+    KH900_KH930_KH940_KH965 = 1
+    KH270 = 2
+
+    @property
+    # number of needles on machine
+    def width(self):
+        if self == Machine.KH270:
+            return 114
+        else:
+            return 200
 
     def add_items(box):
         """Add items to alignment combo box."""

@@ -58,6 +58,7 @@ class GuiMain(QMainWindow):
         self.app_context = app_context
 
         # get preferences
+        self.seer = Observer()
         self.prefs = Preferences(self)
 
         # create UI
@@ -69,7 +70,6 @@ class GuiMain(QMainWindow):
         self.setMenuBar(self.menu)
         self.statusbar = StatusBar(self)
         self.setStatusBar(self.statusbar)
-        self.seer = Observer()
         self.about = About(self)
         self.scene = Scene(self)
         self.knitprog = KnitProgress(self)
@@ -144,6 +144,7 @@ class GuiMain(QMainWindow):
         self.notify(
             QCoreApplication.translate("Scene", "Image dimensions") +
             ": {} x {}".format(width, height), False)
+        self.engine.config.update_needles()  # in case machine width changed
         self.scene.refresh()
 
     def update_start_row(self, start_row):

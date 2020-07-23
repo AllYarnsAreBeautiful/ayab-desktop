@@ -42,7 +42,7 @@ class TestKnitControl(unittest.TestCase):
 
     def test__singlebed(self):
         control = KnitControl(self.parent)
-        control.pattern = Pattern(Image.new('P', (1, 3)), 2)
+        control.pattern = Pattern(Image.new('P', (1, 3)), Machine(0), 2)
         control.num_colors = 2
         control.start_row = 0
         control.inf_repeat = False
@@ -59,7 +59,7 @@ class TestKnitControl(unittest.TestCase):
 
     def test__classic_ribber_2col(self):
         control = KnitControl(self.parent)
-        control.pattern = Pattern(Image.new('P', (1, 5)), 2)
+        control.pattern = Pattern(Image.new('P', (1, 5)), Machine(0), 2)
         control.num_colors = 2
         control.start_row = 0
         control.inf_repeat = False
@@ -86,7 +86,7 @@ class TestKnitControl(unittest.TestCase):
 
     def test__classic_ribber_multicol(self):
         control = KnitControl(self.parent)
-        control.pattern = Pattern(Image.new('P', (1, 3)), 3)
+        control.pattern = Pattern(Image.new('P', (1, 3)), Machine(0), 3)
         control.num_colors = 3
         control.start_row = 0
         control.inf_repeat = False
@@ -118,14 +118,14 @@ class TestKnitControl(unittest.TestCase):
 
     def test__middlecolorstwice_ribber(self):
         control = KnitControl(self.parent)
-        control.pattern = Pattern(Image.new('P', (1, 5)), 3)
-        control.knit_mode = KnitMode.MIDDLECOLORSTWICE_RIBBER
+        control.pattern = Pattern(Image.new('P', (1, 5)), Machine(0), 3)
+        control.mode = KnitMode.MIDDLECOLORSTWICE_RIBBER
         control.num_colors = 3
         control.start_row = 0
         control.inf_repeat = False
         control.pat_height = control.pattern.pat_height
         control.len_pat_expanded = control.pat_height * control.num_colors
-        control.passes_per_row = control.knit_mode.row_multiplier(
+        control.passes_per_row = control.mode.row_multiplier(
             control.num_colors)
         control.func = getattr(KnitModeFunc, "_middlecolorstwice_ribber")
         assert control.func(control, 0) == (0, 0, False, False)
@@ -159,14 +159,14 @@ class TestKnitControl(unittest.TestCase):
 
     def test__heartofpluto_ribber(self):
         control = KnitControl(self.parent)
-        control.pattern = Pattern(Image.new('P', (1, 5)), 3)
-        control.knit_mode = KnitMode.HEARTOFPLUTO_RIBBER
+        control.pattern = Pattern(Image.new('P', (1, 5)), Machine(0), 3)
+        control.mode = KnitMode.HEARTOFPLUTO_RIBBER
         control.num_colors = 3
         control.start_row = 0
         control.inf_repeat = False
         control.pat_height = control.pattern.pat_height
         control.len_pat_expanded = control.pat_height * control.num_colors
-        control.passes_per_row = control.knit_mode.row_multiplier(
+        control.passes_per_row = control.mode.row_multiplier(
             control.num_colors)
         control.func = getattr(KnitModeFunc, "_heartofpluto_ribber")
         assert control.func(control, 0) == (2, 2, False, False)
@@ -200,7 +200,7 @@ class TestKnitControl(unittest.TestCase):
 
     def test__circular_ribber(self):
         control = KnitControl(self.parent)
-        control.pattern = Pattern(Image.new('P', (1, 3)), 3)
+        control.pattern = Pattern(Image.new('P', (1, 3)), Machine(0), 3)
         control.num_colors = 3
         control.start_row = 0
         control.inf_repeat = False
@@ -232,15 +232,16 @@ class TestKnitControl(unittest.TestCase):
 
     def test_select_needles(self):
         control = KnitControl(self.parent)
+        control.start(Machine(0))
         control.num_colors = 2
         control.start_row = 0
 
         # 40 pixel image set to the left
-        control.knit_mode = KnitMode.SINGLEBED
+        control.mode = KnitMode.SINGLEBED
         im = Image.new('P', (40, 3), 0)
         im1 = Image.new('P', (40, 1), 1)
         im.paste(im1, (0, 0))
-        pattern = Pattern(im, 2)
+        pattern = Pattern(im, Machine(0), 2)
         pattern.alignment = Alignment.LEFT
         control.pattern = pattern
         assert pattern.pat_start_needle == 0
@@ -263,16 +264,15 @@ class TestKnitControl(unittest.TestCase):
         # 40 pixel image set in the center
         # blank line so central 40 pixels unset
         # flanking pixels set (2 different options)
-        control.knit_mode = KnitMode.CLASSIC_RIBBER
+        control.mode = KnitMode.CLASSIC_RIBBER
         assert control.select_needles(2, 1, False) == ~bits1
-        control.knit_mode = KnitMode.MIDDLECOLORSTWICE_RIBBER
+        control.mode = KnitMode.MIDDLECOLORSTWICE_RIBBER
         assert control.select_needles(2, 1, False) == ~bits1
 
         # image is wider than machine width
         # all pixels set
-        control.pattern = Pattern(Image.new('P', (202, 1)), 2)
-        assert control.select_needles(0, 0, False) == bitarray([True] *
-                                                               Machine.WIDTH)
+        control.pattern = Pattern(Image.new('P', (202, 1)), Machine(0), 2)
+        assert control.select_needles(0, 0, False) == bitarray([True] * Machine(0).width)
 
     def test_row_multiplier(self):
         assert KnitMode.SINGLEBED.row_multiplier(2) == 1
