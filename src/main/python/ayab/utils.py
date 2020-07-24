@@ -22,6 +22,7 @@
 import logging
 import numpy as np
 import serial.tools.list_ports
+import requests
 
 from PyQt5.QtWidgets import QMessageBox
 
@@ -81,3 +82,20 @@ def greyscale(rgb):
 
 def contrast_color(color):
     return [0x000000, 0xFFFFFF][greyscale(rgb2array(color)) < 0x80]
+
+
+# Version
+
+
+def package_version(app_context):
+    version = "package_version"
+    filename_version = app_context.get_resource("ayab/package_version")
+    with open(filename_version) as version_file:
+        version = version_file.read().strip()
+    return version
+
+def latest_version(repo):
+    r = requests.get("https://api.github.com/repos/" + repo + "/releases/latest")
+    obj = r.json()
+    if obj["draft"] == False and obj["prerelease"] == False:
+        return obj["tag_name"]
