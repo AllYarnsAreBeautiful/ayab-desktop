@@ -35,7 +35,7 @@ from .scene import Scene
 from .transforms import Transform
 from .firmware_flash import FirmwareFlash
 from .preferences import Preferences
-from .statusbar import StatusBar
+# from .statusbar import StatusBar
 from .progressbar import ProgressBar
 from .about import About
 from .knitprogress import KnitProgress
@@ -67,8 +67,8 @@ class GuiMain(QMainWindow):
         # add modular components
         self.menu = Menu(self)
         self.setMenuBar(self.menu)
-        self.statusbar = StatusBar(self)
-        self.setStatusBar(self.statusbar)
+        # self.statusbar = StatusBar(self)
+        # self.setStatusBar(self.statusbar)
         self.seer = Observer()
         self.about = About(self)
         self.scene = Scene(self)

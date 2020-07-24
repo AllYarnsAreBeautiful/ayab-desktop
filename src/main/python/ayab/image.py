@@ -79,7 +79,8 @@ class AyabImage(Observable):
             logging.error("Error loading image: " + str(e))
             raise
         else:
-            self.emit_statusbar_updater(filename, True)
+            # self.emit_statusbar_updater(filename, True)
+            pass
 
     def __open(self, filename):
         # check for DAK files
