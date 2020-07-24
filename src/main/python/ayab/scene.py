@@ -134,6 +134,10 @@ class Scene(QGraphicsView):
         self.__alignment = Alignment(alignment)
         self.refresh()
 
+    def wheelEvent(self, event):
+        '''Zoom the pattern upon mouse wheel event'''
+        self.zoom = event
+
     @property
     def zoom(self):
         return self.__zoom

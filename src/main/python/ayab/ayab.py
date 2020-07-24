@@ -157,9 +157,6 @@ class GuiMain(QMainWindow):
             logging.info("Notification: " + text)
         self.ui.label_notifications.setText(text)
 
-    def wheelEvent(self, event):
-        self.scene.zoom = event
-
 
 class GenericThread(QThread):
     '''A generic thread wrapper for functions on threads.'''
