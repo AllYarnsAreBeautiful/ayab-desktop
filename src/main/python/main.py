@@ -2,16 +2,21 @@ from fbs_runtime.application_context.PyQt5 import \
     ApplicationContext, cached_property
 
 import sys
-from os import path, mkdir
+from os import path
+from shutil import copytree
 import logging
+
 from PyQt5.QtCore import \
     Qt, QCoreApplication, QTranslator, QLocale, QSettings
 from PyQt5.QtWidgets import QApplication
 
 from ayab.ayab import GuiMain
+from ayab import utils
 
 
 class AppContext(ApplicationContext):  # 1. Subclass ApplicationContext
+    REPO = "AllYarnsAreBeautiful/ayab-desktop"
+
     def __init__(self, *args, **kwargs):
         self.configure_application()
         super().__init__(*args, **kwargs)
@@ -32,12 +37,24 @@ class AppContext(ApplicationContext):  # 1. Subclass ApplicationContext
         self.configure_logger()
         self.install_translator()
         self.main_window.show()
+        tag = self.check_new_version(self.REPO)
+        if tag is not None and tag is not utils.package_version(self):
+            url = "https://github.com/" + self.REPO + "/releases/tag/" + tag
+            utils.display_blocking_popup(
+               "<p>A new version of the AYAB desktop software has been released! You can download version <strong>" + tag + "</strong> using this link:<br/><br/><a href='" + url + "'>" + url + "</a></p>")
         return self.app.exec_()  # 3. End run() with this line
+
+    def check_new_version(self, repo):
+        try:
+            return utils.latest_version(repo)
+        except Exception:
+            pass
 
     def make_user_directory(self):
         self.userdata_path = path.expanduser(path.join("~", "AYAB"))
         if not path.isdir(self.userdata_path):
-            mkdir(self.userdata_path)
+            # create user directory and copy patterns into it
+            copytree(self.get_resource("patterns"), self.userdata_path)
 
     def configure_logger(self):
         logfile = path.join(self.userdata_path, "ayab_log.txt")
