@@ -26,14 +26,14 @@ from ayab.machine import Machine
 
 
 class Pattern(object):
-    def __init__(self, image, num_colors=2):
+    def __init__(self, image, machine, num_colors=2):
         self.__pattern = image
         self.__num_colors = num_colors
         self.__alignment = Alignment.CENTER
         self.__pat_start_needle = -1
         self.__pat_stop_needle = -1
         self.__knit_start_needle = 0
-        self.__knit_stop_needle = Machine.WIDTH - 1
+        self.__knit_stop_needle = machine.width - 1
         self.__update_pattern_data()
 
     def __update_pattern_data(self):
@@ -110,19 +110,16 @@ class Pattern(object):
         elif self.__alignment == Alignment.RIGHT:
             self.__pat_stop_needle = self.__knit_stop_needle
             self.__pat_start_needle = self.__pat_stop_needle - self.__pat_width + 1
-        # elif int(self.__alignment) > 0 and int(self.__alignment) < Machine.WIDTH:
-        #     self.__pat_start_needle = int(self.__alignment)
-        #     self.__pat_stop_needle = self.__pat_start_needle + self.__pat_width - 1
         else:
             return False
         return True
 
-    def set_knit_needles(self, knit_start, knit_stop):
+    def set_knit_needles(self, knit_start, knit_stop, machine):
         """
         set the start and stop needle
         """
         if (knit_start <
-                knit_stop) and knit_start >= 0 and knit_stop < Machine.WIDTH:
+                knit_stop) and knit_start >= 0 and knit_stop < machine.width:
             self.__knit_start_needle = knit_start
             self.__knit_stop_needle = knit_stop
         self.__update_pattern_data()

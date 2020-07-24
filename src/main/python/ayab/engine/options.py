@@ -23,13 +23,14 @@ from enum import Enum
 from PyQt5.QtCore import Qt, QCoreApplication, QSettings
 from PyQt5.QtWidgets import QWidget
 
+from ayab.observable import Observable
 from .options_gui import Ui_OptionsWidget
 from .mode import KnitMode
 from ayab.machine import Machine
 
 
 # FIXME translations for UI
-class OptionsTab(QWidget):
+class OptionsTab(Observable, QWidget):
     """
     Class for the configuration options tab of the dock widget,
     implemented as a subclass of `QWidget`.
@@ -37,14 +38,15 @@ class OptionsTab(QWidget):
     @author Tom Price
     @date   June 2020
     """
-    def __init__(self, prefs):
-        super().__init__()
-        self.prefs = prefs
+    def __init__(self, parent):
+        super().__init__(parent.seer)
+        self.prefs = parent.prefs
         self.ui = Ui_OptionsWidget()
-        self.setup_ui()
-        # self.reset()
+        self.__setup_ui()
+        self.__activate_ui()
+        # self.__reset()
 
-    def setup_ui(self):
+    def __setup_ui(self):
         self.ui.setupUi(self)
 
         # Combo boxes
@@ -58,16 +60,45 @@ class OptionsTab(QWidget):
         # Remove "continuous reporting" checkbox tab for now
         self.ui.continuous_reporting_checkbox.setVisible(False)
 
-    def reset(self):
+    def __activate_ui(self):
+        """Connects UI elements to signal slots."""
+        self.ui.start_row_edit.valueChanged.connect(
+            lambda: self.emit_start_row_updater(self.__read_start_row()))
+        self.ui.start_needle_edit.valueChanged.connect(self.update_needles)
+        self.ui.stop_needle_edit.valueChanged.connect(self.update_needles)
+        self.ui.start_needle_color.currentIndexChanged.connect(self.update_needles)
+        self.ui.stop_needle_color.currentIndexChanged.connect(self.update_needles)
+        self.ui.alignment_combo_box.currentIndexChanged.connect(
+            lambda: self.emit_alignment_updater(self.__read_alignment()))
+
+    def update_needles(self):
+        """Sends the needles_updater signal."""
+        self.__update_machine()
+        start_needle = NeedleColor.read_start_needle(self.ui, self.machine)
+        stop_needle = NeedleColor.read_stop_needle(self.ui, self.machine)
+        self.emit_needles_updater(start_needle, stop_needle)
+
+    def __read_start_row(self):
+        return int(self.ui.start_row_edit.value()) - 1
+
+    def __read_alignment(self):
+        return Alignment(self.ui.alignment_combo_box.currentIndex())
+
+    def __update_machine(self):
+        self.machine = Machine(self.prefs.value("machine"))
+        self.ui.start_needle_edit.setMaximum(self.machine.width // 2)
+        self.ui.stop_needle_edit.setMaximum(self.machine.width // 2)
+
+    def __reset(self):
         """Reset configuration options to default settings."""
-        self.machine = self.prefs.value("machine")
-        self.knitting_mode = self.prefs.value("default_knitting_mode")
+        self.__update_machine()
+        self.mode = KnitMode(self.prefs.value("default_knitting_mode"))
         self.num_colors = 2
         self.start_row = 0
         self.inf_repeat = self.prefs.value("default_infinite_repeat")
         self.start_needle = 0
-        self.stop_needle = Machine.WIDTH - 1
-        self.alignment = self.prefs.value("default_alignment")
+        self.stop_needle = self.machine.width
+        self.alignment = Alignment(self.prefs.value("default_alignment"))
         self.auto_mirror = self.prefs.value("default_mirroring")
         self.continuous_reporting = False
 
@@ -79,8 +110,8 @@ class OptionsTab(QWidget):
         There is no need to refresh options that do not have
         default settings.
         """
-        self.reset()
-        self.ui.knitting_mode_box.setCurrentIndex(self.knitting_mode)
+        self.__reset()
+        self.ui.knitting_mode_box.setCurrentIndex(self.mode.value)
         # self.ui.color_edit
         # self.ui.start_row_edit
         if self.inf_repeat:
@@ -91,7 +122,7 @@ class OptionsTab(QWidget):
         # self.ui.start_needle_edit
         # self.ui.stop_needle_color
         # self.ui.stop_needle_edit
-        self.ui.alignment_combo_box.setCurrentIndex(self.alignment)
+        self.ui.alignment_combo_box.setCurrentIndex(self.alignment.value)
         if self.auto_mirror:
             self.ui.auto_mirror_checkbox.setCheckState(Qt.Checked)
         else:
@@ -99,37 +130,32 @@ class OptionsTab(QWidget):
         # self.ui.continuous_reporting_checkbox
 
     def as_dict(self):
-        return dict([("portname", self.portname), ("machine", self.machine),
-                     ("knitting_mode", self.knitting_mode),
+        return dict([("portname", self.portname),
+                     ("machine", self.machine.name),
+                     ("mode", self.mode.name),
                      ("num_colors", self.num_colors),
                      ("start_row", self.start_row),
                      ("inf_repeat", self.inf_repeat),
                      ("start_needle", self.start_needle),
                      ("stop_needle", self.stop_needle),
-                     ("alignment", self.alignment),
+                     ("alignment", self.alignment.name),
                      ("auto_mirror", self.auto_mirror),
                      ("continuous_reporting", self.continuous_reporting)])
 
     def read(self, portname):
         """Get configuration options from the UI elements."""
+        self.__update_machine()
         self.portname = portname
-        self.machine = self.prefs.value("machine")
-        self.knit_mode = KnitMode(self.ui.knitting_mode_box.currentIndex())
+        self.mode = KnitMode(self.ui.knitting_mode_box.currentIndex())
         self.num_colors = int(self.ui.color_edit.value())
-        self.start_row = self.read_start_row()
+        self.start_row = self.__read_start_row()
         self.inf_repeat = self.ui.inf_repeat_checkbox.isChecked()
-        self.start_needle = NeedleColor.read_start_needle(self.ui)
-        self.stop_needle = NeedleColor.read_stop_needle(self.ui)
-        self.alignment = self.read_alignment()
+        self.start_needle = NeedleColor.read_start_needle(self.ui, self.machine)
+        self.stop_needle = NeedleColor.read_stop_needle(self.ui, self.machine)
+        self.alignment = self.__read_alignment()
         self.auto_mirror = self.ui.auto_mirror_checkbox.isChecked()
         # self.continuous_reporting =
         #     self.ui.continuous_reporting_checkbox.isChecked()
-
-    def read_start_row(self):
-        return int(self.ui.start_row_edit.value()) - 1
-
-    def read_alignment(self):
-        return Alignment(self.ui.alignment_combo_box.currentIndex())
 
     def set_image_dimensions(self, width, height):
         """
@@ -151,11 +177,11 @@ class OptionsTab(QWidget):
             if self.start_needle > self.stop_needle:
                 return False, "Invalid needle start and end."
         # else
-        if self.knit_mode == KnitMode.SINGLEBED \
+        if self.mode == KnitMode.SINGLEBED \
                 and self.num_colors >= 3:
             return False, "Singlebed knitting currently supports only 2 colors."
         # else
-        if self.knit_mode == KnitMode.CIRCULAR_RIBBER \
+        if self.mode == KnitMode.CIRCULAR_RIBBER \
                 and self.num_colors >= 3:
             return False, "Circular knitting supports only 2 colors."
         # else
@@ -185,20 +211,20 @@ class NeedleColor(Enum):
         box.addItem(tr_("NeedleColor", "orange"))
         box.addItem(tr_("NeedleColor", "green"))
 
-    def read(self, needle):
+    def read(self, needle, machine):
         if self == NeedleColor.ORANGE:
-            return Machine.WIDTH // 2 - int(needle)
+            return machine.width // 2 - int(needle)
         elif self == NeedleColor.GREEN:
-            return Machine.WIDTH // 2 - 1 + int(needle)
+            return machine.width // 2 - 1 + int(needle)
 
-    def read_start_needle(ui):
+    def read_start_needle(ui, machine):
         '''Read the start needle prefs from UI and normalize'''
         start_needle_col = NeedleColor(ui.start_needle_color.currentIndex())
         start_needle_text = ui.start_needle_edit.value()
-        return start_needle_col.read(start_needle_text)
+        return start_needle_col.read(start_needle_text, machine)
 
-    def read_stop_needle(ui):
+    def read_stop_needle(ui, machine):
         '''Read the stop needle prefs from UI and normalize'''
         stop_needle_col = NeedleColor(ui.stop_needle_color.currentIndex())
         stop_needle_text = ui.stop_needle_edit.value()
-        return stop_needle_col.read(stop_needle_text)
+        return stop_needle_col.read(stop_needle_text, machine)

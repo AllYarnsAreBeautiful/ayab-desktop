@@ -104,6 +104,7 @@ class AyabImage(Observable):
         self.apply_transform(Transform.invert)
 
     def repeat(self):
+        machine_width = Machine(self.__parent.prefs.value("machine")).width
         v = QInputDialog.getInt(self.__parent,
                                 "Repeat",
                                 "Vertical",
@@ -114,10 +115,11 @@ class AyabImage(Observable):
                                 "Horizontal",
                                 value=1,
                                 min=1,
-                                max=ceil(Machine.WIDTH / self.image.width))
+                                max=ceil(machine_width / self.image.width))
         self.apply_transform(Transform.repeat, v[0], h[0])
 
     def stretch(self):
+        machine_width = Machine(self.__parent.prefs.value("machine")).width
         v = QInputDialog.getInt(self.__parent,
                                 "Stretch",
                                 "Vertical",
@@ -128,7 +130,7 @@ class AyabImage(Observable):
                                 "Horizontal",
                                 value=1,
                                 min=1,
-                                max=ceil(Machine.WIDTH / self.image.width))
+                                max=ceil(machine_width / self.image.width))
         self.apply_transform(Transform.stretch, v[0], h[0])
 
     def reflect(self):

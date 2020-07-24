@@ -8,33 +8,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## 1.0.0 / Unreleased
 
+* #395 GUI: Check for new release on startup
+* #393 Documentation: Add forthcoming features to CHANGELOG
 * #389 GUI: Rollback to Python3.6, PyQt5==5.9.2
-* #379 GUI: Fix bug in menu bar
-* #371 Documentation: Add installation of avrdude for Linux
+* #379 GUI: Change appearance of menu bar
+* #371 Documentation: Add installation of avrdude for Linux to README
 * #364 Engine: Force communication with GUI solely through signals
   to ensure thread safety
-* #363 Engine: Change finite state machine structures
+* #363 Engine, GUI: Change implementation of finite state machines
 * #356 Engine: Add classes for configuration options
 * #354 Devops: Make translation files from master during build
-* #353 GUI: Add translation files for additional languages
+* #353 GUI: Add translations for languages other than German
 * #348 Engine: Fix color of needles flanking image to background
-* #345 GUI: Remove configuration button
+* #345 GUI: Remove Configure button
 * #342 GUI: Add link to documentation in Help-About form
 * #338 GUI: Fix crash on knitting restart
 * #326 Engine: Change parsing of serial communication
 * #311 Engine: Add CRC8 check for serial communication
 * #308 Engine: Change representation of pattern from grayscale to color
 * #303 GUI: Change dependencies to most recent versions
-* #301 Engine: Add tests of Python code to CI
+* #301 Devops: Add tests of Python code to CI workflow
 * #300 GUI: Add Simulation mode
 * #298 GUI: Add ability to load and convert DAK .PAT and .STP files
 * #290 GUI: Remove shield test from firmware flash menu
 * #286 GUI: Improve visibility of icon
 * #278,#310 Devops: Add Windows, OSX, and AppImage builds to Github workflow
-* #271 Engine: Add Heart of Pluto method for DBJ
 * #270 GUI: Limit excessive pattern width when transforming image
 * #238 GUI: Add preference settings menu item and dialog
-* #236 GUI: Add checkbox for image mirroring
+* #236 GUI: Add checkbox to options dock for image mirroring
 * #226 GUI: Add knit progress area reporting line-by-line graphics
 * #208 GUI: Add sound effects at start, end, and new line
 * #145 GUI: Add feedback while flashing firmware

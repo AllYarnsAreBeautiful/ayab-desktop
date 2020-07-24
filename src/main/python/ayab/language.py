@@ -49,7 +49,7 @@ class Language(object):
 
     def __available_locales(self):
         lang_dir = self.__app_context.get_resource("ayab/translations")
-        lang_files = glob(path.join(lang_dir, "ayab_trans.*.ts"))
+        lang_files = glob(path.join(lang_dir, "ayab_trans.*.qm"))
         return sorted(map(self.__locale, lang_files))
 
     def __locale(self, string):
