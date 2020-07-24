@@ -10,4 +10,5 @@ DAKimport==0.0.4
 bitarray-hardbyte==1.1.0
 simpleaudio==1.0.4
 wave==0.0.2
+requests
 pre-commit

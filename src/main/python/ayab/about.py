@@ -21,37 +21,31 @@ from PyQt5.QtWidgets import QFrame
 from PyQt5.QtCore import Qt, QCoreApplication
 
 from .about_gui import Ui_AboutForm
+from . import utils
 
 
-class About(object):
+class About(QFrame):
     def __init__(self, parent):
-        self.__version = "package_version"
-        filename_version = parent.app_context.get_resource(
-            "ayab/package_version")
-        with open(filename_version) as version_file:
-            self.__version = version_file.read().strip()
-
-    def show(self):
-        self.__about = QFrame()
-        __about_ui = Ui_AboutForm()
-        __about_ui.setupUi(self.__about)
-        __about_ui.title_label.setText(
+        super().__init__()
+        self.__version = utils.package_version(parent.app_context)
+        self.__ui = Ui_AboutForm()
+        self.__ui.setupUi(self)
+        self.__ui.title_label.setText(
             QCoreApplication.translate("MainWindow", "All Yarns Are Beautiful")
-            + " v " + self.__version)
-        __about_ui.link_label.setText(
+            + " " + self.__version)
+        self.__ui.link_label.setText(
             QCoreApplication.translate("MainWindow", "Website") +
             ": <a href='http://ayab-knitting.com'>http://ayab-knitting.com</a>"
         )
-        __about_ui.link_label.setTextFormat(Qt.RichText)
-        __about_ui.link_label.setTextInteractionFlags(
+        self.__ui.link_label.setTextFormat(Qt.RichText)
+        self.__ui.link_label.setTextInteractionFlags(
             Qt.TextBrowserInteraction)
-        __about_ui.link_label.setOpenExternalLinks(True)
-        __about_ui.manual_label.setText(
+        self.__ui.link_label.setOpenExternalLinks(True)
+        self.__ui.manual_label.setText(
             QCoreApplication.translate("MainWindow", "Manual") +
             ": <a href='http://manual.ayab-knitting.com'>http://manual.ayab-knitting.com</a>"
         )
-        __about_ui.manual_label.setTextFormat(Qt.RichText)
-        __about_ui.manual_label.setTextInteractionFlags(
+        self.__ui.manual_label.setTextFormat(Qt.RichText)
+        self.__ui.manual_label.setTextInteractionFlags(
             Qt.TextBrowserInteraction)
-        __about_ui.manual_label.setOpenExternalLinks(True)
-        self.__about.show()
+        self.__ui.manual_label.setOpenExternalLinks(True)
