@@ -46,7 +46,7 @@ class KnitEngine(Observable, QDockWidget):
         super().__init__(parent.seer)
         self.ui = Ui_DockWidget()
         self.ui.setupUi(self)
-        self.config = OptionsTab(parent.prefs)
+        self.config = OptionsTab(parent)
         self.config.refresh()
         self.status = StatusTab()
         self.setup_ui()
@@ -56,7 +56,7 @@ class KnitEngine(Observable, QDockWidget):
         self.__feedback = KnitFeedbackHandler(parent)
 
     def __del__(self):
-        self.__control.close()
+        self.__control.stop()
 
     def setup_ui(self):
         # insert tabs
@@ -74,7 +74,6 @@ class KnitEngine(Observable, QDockWidget):
 
         # activate UI elements
         self.__activate_ui()
-
 
 #  def __activate_status_tab(self):
 #      self.ui.tab_widget.setTabEnabled(1, True)
@@ -95,18 +94,6 @@ class KnitEngine(Observable, QDockWidget):
         """Connects UI elements to signal slots."""
         self.__populate_ports()
         self.ui.refresh_ports_button.clicked.connect(self.__populate_ports)
-        self.config.ui.start_row_edit.valueChanged.connect(
-            lambda: self.emit_start_row_updater(self.config.read_start_row()))
-        self.config.ui.start_needle_edit.valueChanged.connect(
-            self.__update_needles)
-        self.config.ui.stop_needle_edit.valueChanged.connect(
-            self.__update_needles)
-        self.config.ui.start_needle_color.currentIndexChanged.connect(
-            self.__update_needles)
-        self.config.ui.stop_needle_color.currentIndexChanged.connect(
-            self.__update_needles)
-        self.config.ui.alignment_combo_box.currentIndexChanged.connect(
-            lambda: self.emit_alignment_updater(self.config.read_alignment()))
 
     def __populate_ports(self, port_list=None):
         combo_box = self.ui.serial_port_dropdown
@@ -114,12 +101,6 @@ class KnitEngine(Observable, QDockWidget):
         # Add Simulation item to indicate operation without machine
         combo_box.addItem(
             QCoreApplication.translate("KnitEngine", "Simulation"))
-
-    def __update_needles(self):
-        """Sends the needles_updater signal."""
-        start_needle = NeedleColor.read_start_needle(self.config.ui)
-        stop_needle = NeedleColor.read_stop_needle(self.config.ui)
-        self.emit_needles_updater(start_needle, stop_needle)
 
     # def refresh(self, image):
     #     self.portname = ""
@@ -142,7 +123,7 @@ class KnitEngine(Observable, QDockWidget):
 
         # TODO: detect if previous conf had the same
         # image to avoid re-generating.
-        self.__pattern = Pattern(image, self.config.num_colors)
+        self.__pattern = Pattern(image, self.config.machine, self.config.num_colors)
 
         # validate configuration options
         valid, msg = self.validate()
@@ -152,8 +133,7 @@ class KnitEngine(Observable, QDockWidget):
 
         # update pattern
         if self.config.start_needle and self.config.stop_needle:
-            self.__pattern.set_knit_needles(self.config.start_needle,
-                                            self.config.stop_needle)
+            self.__pattern.set_knit_needles(self.config.start_needle, self.config.stop_needle, self.config.machine)
         self.__pattern.alignment = self.config.alignment
 
         # update progress bar
@@ -163,6 +143,9 @@ class KnitEngine(Observable, QDockWidget):
         # switch to status tab
         # if self.config.continuous_reporting:
         #     self.__status_tab.activate()
+
+        # start knitting controller
+        self.__control.start(self.config.machine)
 
         # send signal to start knitting
         self.emit_knitting_starter()
@@ -189,7 +172,7 @@ class KnitEngine(Observable, QDockWidget):
                 break
 
         self.__logger.info("Finished knitting.")
-        self.__control.close()
+        self.__control.stop()
 
         # small delay to finish printing to knit progress window
         # before "finish.wav" sound plays
@@ -209,7 +192,7 @@ class KnitEngine(Observable, QDockWidget):
         # will change before the information is written to the UI.
         data = Status()
         data.copy(self.__control.status)
-        row_multiplier = self.__control.knit_mode.row_multiplier(
+        row_multiplier = self.__control.mode.row_multiplier(
             self.__control.num_colors)
         self.emit_knit_progress_updater(data, row_multiplier)
         self.emit_progress_bar_updater(data.current_row, data.total_rows,

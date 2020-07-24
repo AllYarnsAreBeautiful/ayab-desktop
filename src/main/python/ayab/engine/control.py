@@ -45,17 +45,16 @@ class KnitControl(object):
     def __init__(self, parent):
         self.logger = logging.getLogger(type(self).__name__)
         self.status = parent.status
-        # set initial state of finite state machine
+
+    def start(self, machine):
+        self.machine_width = machine.width
         self.state = KnitState.SETUP
 
-    def close(self):
+    def stop(self):
         try:
             self.com.close_serial()
         except Exception:
             pass
-        # we must reset the state to SETUP before closing
-        # so that the machine is in the correct state when knitting resumes
-        self.state = KnitState.SETUP
 
     def func_selector(self):
         """
@@ -65,22 +64,22 @@ class KnitControl(object):
         @author Tom Price
         @date   June 2020
         """
-        if not self.knit_mode.good_ncolors(self.num_colors):
+        if not self.mode.good_ncolors(self.num_colors):
             self.logger.error("Wrong number of colours for the knitting mode")
             return False
         # else
-        func_name = self.knit_mode.knit_func(self.num_colors)
+        func_name = self.mode.knit_func(self.num_colors)
         if not hasattr(KnitModeFunc, func_name):
             self.logger.error(
                 "Unrecognized value returned from KnitMode.knit_func()")
             return False
         # else
-        self.knit_mode_func = getattr(KnitModeFunc, func_name)
+        self.mode_func = getattr(KnitModeFunc, func_name)
         return True
 
     def reset_status(self):
         self.status.reset()
-        if self.knit_mode == KnitMode.SINGLEBED:
+        if self.mode == KnitMode.SINGLEBED:
             self.status.alt_color = self.pattern.palette[1]
             self.status.color_symbol = ""  # "A/B"
         else:
@@ -120,7 +119,7 @@ class KnitControl(object):
         line_number += self.BLOCK_LENGTH * self.line_block
 
         # get data for next line of knitting
-        color, row_index, blank_line, last_line = self.knit_mode_func(
+        color, row_index, blank_line, last_line = self.mode_func(
             self, line_number)
         bits = self.select_needles(color, row_index, blank_line)
 
@@ -155,7 +154,7 @@ class KnitControl(object):
         self.status.line_number = line_number
         if self.inf_repeat:
             self.status.repeats = self.pattern_repeats
-        if self.knit_mode != KnitMode.SINGLEBED:
+        if self.mode != KnitMode.SINGLEBED:
             self.status.color_symbol = self.COLOR_SYMBOLS[color]
         self.status.color = self.pattern.palette[color]
         if self.FLANKING_NEEDLES:
@@ -165,17 +164,17 @@ class KnitControl(object):
             self.status.bits = bits[self.__first_needle:self.__last_needle]
 
     def select_needles(self, color, row_index, blank_line):
-        bits = bitarray([False] * Machine.WIDTH, endian="little")
+        bits = bitarray([False] * self.machine_width, endian="little")
         first_needle = max(0, self.pattern.pat_start_needle)
         last_needle = min(
             self.pattern.pat_width + self.pattern.pat_start_needle,
-            Machine.WIDTH)
+            self.machine_width)
 
         # select needles flanking the pattern
         # if necessary to knit the background color
-        if self.knit_mode.flanking_needles(color, self.num_colors):
+        if self.mode.flanking_needles(color, self.num_colors):
             bits[0:first_needle] = True
-            bits[last_needle:Machine.WIDTH] = True
+            bits[last_needle:self.machine_width] = True
 
         if not blank_line:
             first_pixel = first_needle - self.pattern.pat_start_needle

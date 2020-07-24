@@ -29,6 +29,7 @@ from PyQt5.QtCore import Qt, QSettings, QCoreApplication
 from PyQt5.QtWidgets import QDialog, QFormLayout, QLabel, QCheckBox, QComboBox
 
 from .prefs_gui import Ui_PrefsDialog
+from .observable import Observable
 from .engine.options import Alignment
 from .engine.mode import KnitMode
 from .machine import Machine
@@ -42,7 +43,7 @@ def str2bool(qvariant):
         return qvariant
 
 
-class Preferences:
+class Preferences(Observable):
     """Default settings class.
 
     Variable names and classes are defined in the dict `variables`.
@@ -67,6 +68,7 @@ class Preferences:
     }
 
     def __init__(self, parent):
+        super().__init__(parent.seer)
         self.parent = parent
         self.languages = Language(self.parent.app_context)
         self.settings = QSettings()
@@ -122,7 +124,10 @@ class Preferences:
         return 0
 
     def open_dialog(self):
-        return PrefsDialog(self.parent).exec_()
+        machine_width = Machine(self.value("machine")).width
+        result = PrefsDialog(self.parent).exec_()
+        if machine_width != Machine(self.value("machine")).width:
+            self.emit_image_resizer()
 
 
 class PrefsDialog(QDialog):

@@ -43,10 +43,12 @@ class Scene(QGraphicsView):
         super().__init__(parent.ui.graphics_splitter)
         self.setGeometry(QRect(0, 0, 700, 686))
         self.ayabimage = AyabImage(parent)
-        default = parent.prefs.settings.value("default_alignment")
+        self.__prefs = parent.prefs
+        default = self.__prefs.value("default_alignment")
         self.__alignment = Alignment(default)
-        self.__start_needle = 80
-        self.__stop_needle = 119
+        machine_width = Machine(self.__prefs.value("machine")).width
+        self.__start_needle = (machine_width // 2) - 20
+        self.__stop_needle = (machine_width // 2 - 1) + 20
         self.__row_progress = 0
 
         # zoom behavior
@@ -64,24 +66,25 @@ class Scene(QGraphicsView):
 
         # add pattern and locate according to alignment
         pattern = qscene.addPixmap(pixmap)
+        machine_width = Machine(self.__prefs.value("machine")).width
         if self.__alignment == Alignment.LEFT:
-            pos = self.__start_needle - Machine.WIDTH / 2
+            pos = self.__start_needle - machine_width / 2
         elif self.__alignment == Alignment.CENTER:
             pos = (self.__start_needle + self.__stop_needle - pixmap.width() -
-                   Machine.WIDTH) / 2
+                   machine_width) / 2
         elif self.__alignment == Alignment.RIGHT:
-            pos = self.__stop_needle - pixmap.width() - Machine.WIDTH / 2
+            pos = self.__stop_needle - pixmap.width() - machine_width / 2
         else:
             logging.warning("invalid alignment")
             return
         pattern.setPos(pos, 0)
 
         # draw "machine"
-        rect_orange = QGraphicsRectItem(-Machine.WIDTH / 2.0, -self.BAR_HEIGHT,
-                                        Machine.WIDTH / 2.0, self.BAR_HEIGHT)
+        rect_orange = QGraphicsRectItem(-machine_width / 2.0, -self.BAR_HEIGHT,
+                                        machine_width / 2.0, self.BAR_HEIGHT)
         rect_orange.setBrush(QBrush(QColor("orange")))
         rect_green = QGraphicsRectItem(0.0, -self.BAR_HEIGHT,
-                                       Machine.WIDTH / 2.0, self.BAR_HEIGHT)
+                                       machine_width / 2.0, self.BAR_HEIGHT)
         rect_green.setBrush(QBrush(QColor("green")))
 
         qscene.addItem(rect_orange)
@@ -89,19 +92,19 @@ class Scene(QGraphicsView):
 
         # draw limiting lines (start/stop needle)
         qscene.addItem(
-            QGraphicsRectItem(self.__start_needle - 1 - Machine.WIDTH / 2,
+            QGraphicsRectItem(self.__start_needle - machine_width / 2,
                               -self.BAR_HEIGHT, self.LIMIT_BAR_WIDTH,
                               pixmap.height() + 2 * self.BAR_HEIGHT))
         qscene.addItem(
-            QGraphicsRectItem(self.__stop_needle - Machine.WIDTH / 2,
+            QGraphicsRectItem(self.__stop_needle + 1 - machine_width / 2,
                               -self.BAR_HEIGHT, self.LIMIT_BAR_WIDTH,
                               pixmap.height() + 2 * self.BAR_HEIGHT))
 
         # Draw knitting progress
         qscene.addItem(
-            QGraphicsRectItem(-Machine.WIDTH / 2,
+            QGraphicsRectItem(-machine_width / 2,
                               pixmap.height() - self.__row_progress,
-                              Machine.WIDTH, self.LIMIT_BAR_WIDTH))
+                              machine_width, self.LIMIT_BAR_WIDTH))
 
         self.resetTransform()
         self.scale(self.zoom, self.zoom)
