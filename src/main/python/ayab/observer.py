@@ -37,7 +37,7 @@ class Observer(QObject):
     progress_bar_updater = pyqtSignal(int, int, int, 'QString')
     knit_progress_updater = pyqtSignal(Status, int)
     notifier = pyqtSignal('QString', bool)
-    statusbar_updater = pyqtSignal('QString', bool)
+    # statusbar_updater = pyqtSignal('QString', bool)
     popup_displayer = pyqtSignal('QString', 'QString')
     blocking_popup_displayer = pyqtSignal('QString', 'QString')
     audio_player = pyqtSignal('QString')
@@ -64,6 +64,7 @@ class Observer(QObject):
         self.progress_bar_updater.connect(parent.progbar.update)
         self.knit_progress_updater.connect(parent.knitprog.update)
         self.notifier.connect(parent.notify)
+        # self.statusbar_updater.connect(parent.statusbar.update)
         self.blocking_popup_displayer.connect(display_blocking_popup)
         self.popup_displayer.connect(display_blocking_popup)
         self.audio_player.connect(parent.audio.play,
