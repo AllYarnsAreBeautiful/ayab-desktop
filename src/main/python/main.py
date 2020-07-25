@@ -3,8 +3,8 @@ from fbs_runtime.application_context.PyQt5 import \
 
 import sys
 from os import path
-from shutil import copytree
 import logging
+from distutils.dir_util import copy_tree
 
 from PyQt5.QtCore import \
     Qt, QCoreApplication, QTranslator, QLocale, QSettings
@@ -52,9 +52,8 @@ class AppContext(ApplicationContext):  # 1. Subclass ApplicationContext
 
     def make_user_directory(self):
         self.userdata_path = path.expanduser(path.join("~", "AYAB"))
-        if not path.isdir(self.userdata_path):
-            # create user directory and copy patterns into it
-            copytree(self.get_resource("patterns"), self.userdata_path)
+        # copy patterns into user directory
+        copy_tree(self.get_resource("patterns"), self.userdata_path)
 
     def configure_logger(self):
         logfile = path.join(self.userdata_path, "ayab_log.txt")

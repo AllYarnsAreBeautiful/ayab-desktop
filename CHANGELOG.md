@@ -32,6 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * #300 GUI: Add Simulation mode
 * #298 GUI: Add ability to load and convert DAK .PAT and .STP files
 * #290 GUI: Remove shield test from firmware flash menu
+* #289 GUI: Copy pattern files to user directory on startup
 * #286 GUI: Improve visibility of icon
 * #278,#310 Devops: Add Windows, OSX, and AppImage builds to Github workflow
 * #270 GUI: Limit excessive pattern width when transforming image
