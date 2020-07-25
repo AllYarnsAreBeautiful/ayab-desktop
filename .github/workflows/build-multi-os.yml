@@ -29,6 +29,8 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
+      with:
+        submodules: recursive
     - name: Set variables
       id: vars
       run: |
@@ -107,6 +109,8 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
+      with:
+        submodules: recursive
     - name: Set variables
       id: vars
       run: |
@@ -163,6 +167,8 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
+      with:
+        submodules: recursive
     - name: Set variables
       id: vars
       run: |
