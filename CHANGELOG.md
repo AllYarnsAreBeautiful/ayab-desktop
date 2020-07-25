@@ -41,6 +41,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * #208 GUI: Add sound effects at start, end, and new line
 * #145 GUI: Add feedback while flashing firmware
 * #131,#261 GUI: Add stretch and reflect image actions
+* #155 GUI: Fix scrolling of pattern when scrolling the sidebar
 
 ## 0.95 / 2019-01-28
 
