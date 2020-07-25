@@ -70,21 +70,22 @@ class Scene(QGraphicsView):
         if self.__alignment == Alignment.LEFT:
             pos = self.__start_needle - machine_width / 2
         elif self.__alignment == Alignment.CENTER:
-            pos = (self.__start_needle + self.__stop_needle - pixmap.width() -
-                   machine_width) / 2
+            pos = (self.__start_needle + self.__stop_needle + 1 - pixmap.width() - machine_width) / 2
         elif self.__alignment == Alignment.RIGHT:
-            pos = self.__stop_needle - pixmap.width() - machine_width / 2
+            pos = self.__stop_needle + 1 - machine_width / 2 - pixmap.width()
         else:
             logging.warning("invalid alignment")
             return
         pattern.setPos(pos, 0)
 
         # draw "machine"
-        rect_orange = QGraphicsRectItem(-machine_width / 2.0, -self.BAR_HEIGHT,
-                                        machine_width / 2.0, self.BAR_HEIGHT)
+        rect_orange = QGraphicsRectItem(
+            -machine_width / 2.0 - self.LIMIT_BAR_WIDTH, -self.BAR_HEIGHT,
+            machine_width / 2.0 + self.LIMIT_BAR_WIDTH, self.BAR_HEIGHT)
         rect_orange.setBrush(QBrush(QColor("orange")))
-        rect_green = QGraphicsRectItem(0.0, -self.BAR_HEIGHT,
-                                       machine_width / 2.0, self.BAR_HEIGHT)
+        rect_green = QGraphicsRectItem(
+            0.0, -self.BAR_HEIGHT,
+            machine_width / 2.0 + self.LIMIT_BAR_WIDTH, self.BAR_HEIGHT)
         rect_green.setBrush(QBrush(QColor("green")))
 
         qscene.addItem(rect_orange)
@@ -92,19 +93,23 @@ class Scene(QGraphicsView):
 
         # draw limiting lines (start/stop needle)
         qscene.addItem(
-            QGraphicsRectItem(self.__start_needle - machine_width / 2,
-                              -self.BAR_HEIGHT, self.LIMIT_BAR_WIDTH,
-                              pixmap.height() + 2 * self.BAR_HEIGHT))
+            QGraphicsRectItem(
+                self.__start_needle - machine_width / 2 - self.LIMIT_BAR_WIDTH,
+                -self.BAR_HEIGHT, self.LIMIT_BAR_WIDTH,
+                pixmap.height() + self.BAR_HEIGHT))
         qscene.addItem(
-            QGraphicsRectItem(self.__stop_needle + 1 - machine_width / 2,
-                              -self.BAR_HEIGHT, self.LIMIT_BAR_WIDTH,
-                              pixmap.height() + 2 * self.BAR_HEIGHT))
+            QGraphicsRectItem(
+                self.__stop_needle + 1 - machine_width / 2,
+                -self.BAR_HEIGHT, self.LIMIT_BAR_WIDTH,
+                pixmap.height() + self.BAR_HEIGHT))
 
         # Draw knitting progress
         qscene.addItem(
-            QGraphicsRectItem(-machine_width / 2,
-                              pixmap.height() - self.__row_progress,
-                              machine_width, self.LIMIT_BAR_WIDTH))
+            QGraphicsRectItem(
+                -machine_width / 2 - self.LIMIT_BAR_WIDTH,
+                pixmap.height() - self.__row_progress + self.LIMIT_BAR_WIDTH,
+                machine_width + 2 * self.LIMIT_BAR_WIDTH,
+                self.LIMIT_BAR_WIDTH))
 
         self.resetTransform()
         self.scale(self.zoom, self.zoom)

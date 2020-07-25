@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## 1.0.0 / Unreleased
 
+* GUI: Fix image alignment and placement of limit lines in graphical scene
 * #395 GUI: Check for new release on startup
 * #393 Documentation: Add forthcoming features to CHANGELOG
 * #389 GUI: Rollback to Python3.6, PyQt5==5.9.2
