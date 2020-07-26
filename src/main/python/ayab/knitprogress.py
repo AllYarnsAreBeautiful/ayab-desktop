@@ -22,6 +22,7 @@ from PyQt5.QtWidgets import QScrollArea, QGridLayout, QLayout, QLabel, QWidget
 from bitarray import bitarray
 
 from . import utils
+from .engine.status import Direction
 
 
 class KnitProgress(QScrollArea):
@@ -53,7 +54,6 @@ class KnitProgress(QScrollArea):
         # else
         tr_ = QCoreApplication.translate
         row, swipe = divmod(status.line_number, row_multiplier)
-        direction = status.line_number % 2
         # row
         w0 = self.__label(tr_("KnitProgress", "Row"))
         self.grid.addWidget(w0, status.line_number, 0)
@@ -74,7 +74,12 @@ class KnitProgress(QScrollArea):
             carriage = status.carriage[0] + status.carriage[2] + " "
         except Exception:
             carriage = ""
-        w4 = self.__label(carriage + ["\u2192 ", "\u2190 "][direction])
+        # direction = status.direction
+        if status.line_number % 2 == 0:
+            direction = Direction.LEFT_TO_RIGHT
+        else:
+            direction = Direction.RIGHT_TO_LEFT
+        w4 = self.__label(carriage + direction.symbol)
         self.grid.addWidget(w4, status.line_number, 4)
         # TODO: hints, notes, memos
         w0.show()

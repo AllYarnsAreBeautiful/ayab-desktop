@@ -17,12 +17,39 @@
 #    Copyright 2014 Sebastian Oliva, Christian Obersteiner, Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
+from enum import Enum, auto
 from bitarray import bitarray
 
 from PyQt5.QtCore import QCoreApplication
 from PyQt5.QtWidgets import QWidget
 
 from .status_gui import Ui_StatusWidget
+
+
+class Direction(Enum):
+    UNKNOWN = auto()
+    LEFT_TO_RIGHT = auto()
+    RIGHT_TO_LEFT = auto()
+
+    @property
+    def symbol(self):
+        if self == Direction.LEFT_TO_RIGHT:
+            return "\u2192 "
+        # else
+        if self == Direction.RIGHT_TO_LEFT:
+            return "\u2190 "
+        # else
+        return "  "
+
+    @property
+    def text(self):
+        if self == Direction.LEFT_TO_RIGHT:
+            return "Left to Right"
+        # else
+        if self == Direction.RIGHT_TO_LEFT:
+            return "Right to Left"
+        # else
+        return ""
 
 
 class Status(object):
@@ -52,6 +79,7 @@ class Status(object):
         self.hall_r = 0
         self.carriage_type = ""
         self.carriage_position = 0
+        self.direction = Direction.UNKNOWN
 
     def copy(self, status):
         self.active = status.active
@@ -67,6 +95,7 @@ class Status(object):
         self.hall_r = status.hall_r
         self.carriage_type = status.carriage_type
         self.carriage_position = status.carriage_position
+        self.direction = status.direction
 
     def parse_carriage_info(self, msg):
         if not (self.active):
@@ -93,6 +122,8 @@ class Status(object):
         self.hall_r = hall_r
         self.carriage_type = carriage_type
         self.carriage_position = carriage_position
+
+        # TODO: get carriage direction
 
 
 # FIXME translations for UI
@@ -122,3 +153,4 @@ class StatusTab(Status, QWidget):
         self.ui.label_hall_r.setText(str(status.hall_r))
         self.ui.slider_position.setValue(status.carriage_position)
         self.ui.label_carriage.setText(status.carriage_type)
+        self.ui.label_direction.setText(status.direction.text)
