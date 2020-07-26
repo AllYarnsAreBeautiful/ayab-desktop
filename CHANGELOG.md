@@ -13,12 +13,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * #393 Documentation: Add forthcoming features to CHANGELOG
 * #389 GUI: Rollback to Python3.6, PyQt5==5.9.2
 * #379 GUI: Change appearance of menu bar
-* #371 Documentation: Add installation of avrdude for Linux to README
-* #364 Engine: Force communication with GUI solely through signals
+* #375 Devops: Add script to make PyQt5 files from XML during build
+* #371 Documentation: Add need to install avrdude for Linux to README
+* #364 Engine: Force engine to communicate with GUI via signals
   to ensure thread safety
 * #363 Engine, GUI: Change implementation of finite state machines
 * #356 Engine: Add classes for configuration options
-* #354 Devops: Make translation files from master during build
+* #354 Devops: Add script to make translation files from master during build
 * #353 GUI: Add translations for languages other than German
 * #348 Engine: Fix color of needles flanking image to background
 * #345 GUI: Remove Configure button
@@ -27,7 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * #326 Engine: Change parsing of serial communication
 * #311 Engine: Add CRC8 check for serial communication
 * #308 Engine: Change representation of pattern from grayscale to color
-* #303 GUI: Change dependencies to most recent versions
+* #303 GUI: Update Python dependencies
 * #301 Devops: Add tests of Python code to CI workflow
 * #300 GUI: Add Simulation mode
 * #298 GUI: Add ability to load and convert DAK .PAT and .STP files
@@ -40,26 +41,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * #236 GUI: Add checkbox to options dock for image mirroring
 * #226 GUI: Add knit progress area reporting line-by-line graphics
 * #208 GUI: Add sound effects at start, end, and new line
+* #206 GUI: Add 10 second timeout for firmware flash
 * #145 GUI: Add feedback while flashing firmware
-* #131,#261 GUI: Add stretch and reflect image actions
+* #131,#261 GUI: Add stretch and reflect to image actions submenu
 * #155 GUI: Fix scrolling of pattern when scrolling the sidebar
 
 ## 0.95 / 2019-01-28
 
 * #280 GUI: Fix crash when pattern is outside left edge
-* #271 Engine: Add Heart of Pluto Ribber mode (see AYAB manual)
+* #271 Engine: Add Heart-of-Pluto Ribber mode (see AYAB manual)
 * #259 GUI: Write date and time to the log
-* #253 Devops: Fix Mac installation (OSX 10.12 (Sierra) or newer is required)
-* #249 GUI: Fix lace patterns 8-29, 8-30, 8-31, 9-32, 10-33, 10-34, 10-35,
-  10-36
+* #253 Devops: Fix Mac installation: need OSX 10.12 (Sierra) or newer
+* #249 GUI: Fix lace patterns 8-29, 8-30, 8-31, 9-32, 10-33 thru 10-36
 * #248 GUI: Show number of completed repeats
 * #246 Engine: Reduce carriage turn around time
 * #245 GUI: Center patterns with an odd number of stitches on green 1
-* #244 Engine: Allow some backwards carriage movement without advancing to the
-  next row
+* #244 Engine: Allow some backwards carriage movement without advancing
+  to the next row
 * #239 Engine: Add Middle-Color-Twice Ribber mode (see AYAB manual)
-* #226 GUI: Show current color
-* #225 GUI: Display row number larger
+* #226 GUI: Show current color in progess bar
+* #225 GUI: Enlarge row number in progress bar
 
 ## 0.91 / 2018-04-01 [UNRELEASED]
 

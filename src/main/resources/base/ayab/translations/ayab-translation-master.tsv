@@ -1,98 +1,105 @@
-Dest	Src	Context	en_US	en_GB	de_DE	is_IS	it_IT	ru_RU	uk_UA	fr_FR	es_Es
-2	58	AyabPlugin	Simulation	Simulation	Simulation	Hermir	Simulazione	Моделирование	Моделювання	Simulation	Simulación
-3	74	AyabPlugin	You need to set an image.	You need to set an image.	Bitte Muster wählen.	Þú verður að hlaða mynd.	Devi impostare un'immagine.	Вам нужно установить изображение.	Виберіть зображення.	Choisissez une image pour continuer.	Necesitar configurar una imagen.
-4	75	AyabPlugin	Invalid needle start and end.	Invalid needle start and end.	Ungültige Startnadel oder Endnadel.	Röng start nál og enda nál.	Ago iniziale e finale invalidi.	Недопустимое начало или конец иглы.	Неправильна стартова або кінцева голка.	Erreur sur la première et dernière aiguille du tricot.	Inicio y fin de la aguja no válidos.
-5	76	AyabPlugin	Start row is larger than the image.	Start row is larger than the image.	Die Startzeile ist höher als das Muster.	Byrjunaröð er stærri en mynd.	Il giro d'inizio è più grande dell'immagine.	Начальный ряд больше изображения.	Початковий ряд більший за зображення.	Le premier rang est plus grand que l'image.	La fila de inicio es más grande que la imagen.
-6	77	AyabPlugin	Please choose a valid port.	Please choose a valid port.	Bitte wählen Sie einen gültigen Port.	Veljið rétt port.	Scegli una porta seriale valida.	Пожалуйста, выберите действующий порт.	Виберіть дійсний порт.	Veuillez choisir un port valide.	Elija un puerto válido.
-7	78	AyabPlugin	Single bed knitting currently supports only 2 colors.	Single bed knitting currently supports only 2 colours.	Einzelbettstricken unterstützt nur 2 Farben.	Stilling styður bara tvo liti.	La lavorazione in frontura singola supporta solo 2 colori.	Однофонтурное вязание поддерживает только двухцветное вязание.	Однофонтурне в'язання підтримує лише 2 кольори.	Le tricot en simple fonture est limité à deux couleurs.	El tejido de una frontura actualmente solo soporta 2 colores.
-8	79	AyabPlugin	Circular knitting supports only 2 colors.	Circular knitting supports only 2 colours.	Rundstricken unterstützt nur 2 Farben.	Hringprjón styður bara tvo liti.	La lavorazione circolare supporta solo 2 colori.	Круговое вязание поддерживает только двухцветное вязание.	В'язання по колу підтримує лише 2 кольори.	Le mode tricot circulaire est limité à deux couleurs.	Tejido circular soporta solo 2 colores.
-9	80	AyabPlugin	Connecting to machine...	Connecting to machine...	Verbinde zur Maschine...	Tengist vél...	Connessione in corso…	Подключение к машине.	Підключення до машини...	Connection en cours...	Conexión a la máquina.
-10	81	AyabPlugin	Please start machine. (Set the carriage to mode KC-I or KC-II and move the carriage over the left turn mark).	Please start machine. (Set the carriage to mode KC-I or KC-II and move the carriage over the left turn mark).	Bitte starten Sie die Maschine. (Stellen Sie den Schlitten auf KC-I oder KC-II und bewegen Sie den Schlitten über die linke Umkehrmarke.)	Kveikið á vélinni. (Stillið vagninn á KC-I eða KC-II og færið vagninn til vinstra yfir skynjarann).	Avvia la macchina. (Imposta il carrello su KC-I o KC-II e sposta il carrello oltre il segno sinistro d'inizio.)	Пожалуйста, включите машину. (установите каретку в положение КС-1 или КС-2 и переведите каретку влево за датчик).	Будь ласка, запустіть машину. (Налаштуйте каретку на KC-I або KC-II і перемістіть каретку ліворуч за датчик.)	Veuillez démarrer la machine. (Mettre le chariot sur le mode KC-I ou KCII et le placer sur le côté gauche).	Por favor, inicie la máquina. (Ajuste el carro al modo KC-I o KC-II y mueva el carro sobre la marca de giro a la izquierda).
-11	82	AyabPlugin	Wrong Arduino firmware version. Please check that you have flashed the latest version.	Wrong Arduino firmware version. Please check that you have flashed the latest version.	Falsche Arduino-Firmware-Version.	Röng Arduino vélbúnaðarútgáfa. Vinsamlegast kannið hvort þú hafir nýjustu útgáfuna.	Versione del firmware di Arduino errata. Controlla di aver eseguito correttamente il flash all'ultima versione.	Неправильная прошивка версии андурино. Пожалуйста, проверьте что Вы установили последюю версию.	Неправильна версія прошивки Arduino. Перевірте, чи встановлено останню версію.	Mauvaise version du firmware Arduino. Vérifiez que vous avez la dernière version.	Versión incorrecta del firmware de Arduino. Por favor, compruebe que ha flasheado la última versión.
-12	83	AyabPlugin	Please knit.	Please knit.	Bitte fangen Sie an zu stricken.	Vinsamlegast prjónið.	Inizia il lavoro.	Вяжите пожалуйста.	В'яжіть будь-ласка.	Commencez le tricot.	Comience a tejer.
-13	84	AyabPlugin	Device not ready, try again.	Device not ready, try again.	Gerät nicht bereit, bitte versuchen Sie es erneut.	Tækið ekki tilbúið, reyndu aftur.	Il dispositivo non è pronto, riprova.	Устройство не отвечает, повторите попытку.	Пристрій не готовий. Повторіть спробу.	La machine n'est pas prête, essayez encore.	Dispositivo no listo, inténtelo de nuevo.
-14	85	AyabPlugin	Image transmission finished. Please knit until you hear the double beep sound.	Image transmission finished. Please knit until you hear the double beep sound.	Musterübertragung beendet. Bitte stricken Sie, bis Sie den doppelten Piepton hören.	Myndhleðslu lokið. Prjónið þangað til þú heyrir tvöfalt píphljóð.	Trasferimento dell'immagine finito. Lavora finché senti il doppio bip.	Передача изображения завершена. Вяжите после того как услышите двойной звуковой сигнал.	Передачу зображення завершено. Будь ласка, в'яжіть, поки не почуєте подвійний звуковий сигнал.	Image transmise. Tricotez jusqu'à ce que vous entendiez un double bip.	Transmisión de imagen terminada. Por favor, tejer hasta que escuche el sonido de doble pitido.
-15	86	AyabPlugin	Knitting canceled.	Knitting cancelled.	Stricken abgebrochen.	Hætt við prjón.	Lavorazione eliminata.	Вязание завершено.	В’язання скасовано.	Annulation du tricot.	Tejido de punto cancelado.
-16	42	DockWidget	Port Selection	Port Selection	Port wählen	Velja port	Selezione porta seriale	Выбрать порт	Вибір порту	Sélection du port	Seleccionar puerto
-17	30	DockWidget	Refresh	Refresh	Aktualisieren	Endurnýja	Ricarica	Обновить	Оновити	Réactualiser	Actualizar
-18	61	DockWidget	Settings	Settings	Einstellungen	Stillingar	Impostazioni	Настройки	Налаштування	Paramètres	Ajustes
-19	68	DockWidget	Knitting Mode	Knitting Mode	Strickmodus	Prjóna stilling	Modalità di lavorazione	Режим вязание	Режим в'язання	Mode tricot	Método de tejido
-20	31	OptionsWidget	Colors	Colours	Farben	Litir	Colori	Цвета	Кольори	Couleurs	Colores
-21	41	OptionsWidget	Start Row	Start Row	Startzeile	Byrja umferð	Inizio giro	Начальный ряд	Початковий ряд	Commencer le rang	Fila de inicio
-22	43	OptionsWidget	Infinite Repeat	Infinite Repeat	Unendlich wiederholen	Endurtekning	Ripetizione infinita	Повторять	Нескінченне повторення	Répétition a l'infini	Repetición infinita
-23	44	OptionsWidget	Start Needle	Start Needle	Startnadel	Byrjunar nál	Ago iniziale	Стартовая игла 	Початкова голка	Première aiguille	Aguja de inicio
-24	45	OptionsWidget	Stop Needle	Stop Needle	Stopnadel	Enda nál	Ago finale	Конечная игла 	Остання голка	Dernière aiguille	Aguja de parada
-25	46	OptionsWidget	Alignment	Alignment	Ausrichtung	Jafna	Allineamento	Выравнивание	Вирівнювання	Alignement	Alineamiento
-26	47	OptionsWidget	Mirror Image	Mirror Image	Muster spiegeln	Spegilmynd	Ribalta l'immagine	Зеркальное отражение	Дзеркальне зображення	Image miroir	Imagen espejo
-27	48	OptionsWidget	Continuous Status Reporting	Continuous Status Reporting	Kontinuierlicher Status	Stöðug skýrsla	Report continuativo	Непрерывный отчет о статусе	Постійне звітування про стан	Rapport de situation en continu	Informe de estado continuo
-28	49	DockWidget	Status	Status	Status	Staða	Stato	Статус	Стан	Statut	Estado
-29	50	StatusTab	Hall Sensors	Hall Sensors	Hall-Effekt-Sensoren	Skynjari	Apparato sensori	Датчик Холла	Датчики Холла	Capteurs à effet Hall	Sensores de effecto Hall
-30	51	StatusTab	Hall Left	Hall Left	Hallsensor links	Vinstri skynjari	Apparato sensore sinistro	Датчик Холла слева	Лівий датчик Холла	Hall Gauche	Hall izquierda
-31	52	StatusTab	Hall Right	Hall Right	Hallsensor rechts	Hægri skynjari	Apparato sensore destro	Датчик Холла справа	Правий датчик Холла	Hall Droite	Hall derecha
-32	53	StatusTab	Carriage	Carriage	Schlitten	Vagn	Carrello	Каретка	Каретка	Chariot	Carro
-33	54	StatusTab	No carriage detected	No carriage detected	Kein Schlitten erkannt	Finn ekki vagn	Carrello non selezionato	Каретка не обнаружена	Каретку не виявлено	Chariot non détecté 	Carro no detectado
-34	56	StatusTab	direction	direction	Richtung	Stefna	direzione	направление	напрямок	direction	dirección
-35	57	StatusTab	Progress	Progress	Fortschritt	Staða	Progressione	Прогресс	Прогрес	Progrès	Progreso
-36	57	StatusTab	progress	progress	Fortschritt	staða	progressione	прогресс	прогрес	progrès	progreso
-37	23	StatusTab	Center	Centre	Zentriert	Miðja	Centra	Центр	Центр	Centre	Centrar
-38	24	StatusTab	Left	Left	Links	Vinstri	Sinistra	Лево	Ліворуч	Gauche	Izquierda
-39	25	StatusTab	Right	Right	Rechts	Hægri	Destra	Право	Праворуч	Droite	Derecha
-40	2	MainWindow	All Yarns Are Beautiful	All Yarns Are Beautiful	All Yarns Are Beautiful	Allt Garn Er Fallegt	All Yarns Are Beautiful	Вся пряжа прекрасна	Уся пряжа прекрасна	Tous Les Fils Sont Beaux	Todos Los Hilos Son Hermosos
-	3	MainWindow	Website	Website	Webseite	Vefsíða	Sito web	Интернет сайт	Веб-сайт	Site Internet	Sitio web
-	4	MainWindow	Manual	Manual	Anleitung	Handbók	Manuale	Справочник	Посібник	Manuel	Manual
-41	39	MainWindow	Assistant	Assistant	Assistent	Aðstoð	Assistente	Помощник	Помічник	Assistant	Asistente
-42	35	MainWindow	1. Load Image File	1. Load Image File	1. Muster öffnen	1. Hlaðið myndskrá	1. Carica l'immagine	1. Загрузить изображение	1. Завантажити зображення	1. Charger une image	1. Cargar archivo de imagen
-43	36	MainWindow	Knitting Options	Knitting Options	Strickeinstellungen	Prjóna valkostir	Opzioni Lavorazione	Варианты вязания	Варіанти в'язання	Options de tricot	Opciones de tejido
-44	37	MainWindow	2. Knit	2. Knit	2. Stricken	2. Prjónið	2. Lavora	2. Вязание	2. В'язання	2. Tricoter	2. Tejer
-45	38	MainWindow	Cancel Knitting	Cancel Knitting	Stricken abbrechen	Hætta við að prjóna	Annulla la lavorazione	Отменить вязание	Скасувати в’язання	Annuler	Cancelar tejido
-46	5	MenuBar	File	File	Datei	Skrá	File	Файл	Файл	Fichier	Archivo
-47	6	MenuBar	Help	Help	Hilfe	Hjálp	Aiuto	Помощь	Допомога	Aide	Ayuda
-48	7	MenuBar	Tools	Tools	Werkzeuge	Verkfæri	Strumenti	Инструменты	Інструменти	Outils	Utiles
-49	59	MenuBar	Preferences	Preferences	Einstellungen	Forstillingar	Preferenze	Персональные настройки	Налаштування	Préférences	Preferencias
-50	8	MenuBar	Image Actions	Image Actions	Musterbearbeitung	Mynd	Azioni immagine	Действия с изображением	Дії з зображенням	Image	Imagen
-51	9	MenuBar	Load AYAB Firmware	Load AYAB Firmware	AYAB Firmware aufspielen	Hlaða AYAB vélbúnaði	Carica il firmware AYAB	Загрузить прошивку AYAB	Завантажити прошивку AYAB	Chargement du firmware AYAB	Cargar el firmware AYAB
-52	10	MenuBar	Quit	Quit	Beenden	Hætta	Chiudi	Выход	Вихід	Quitter	Salir
-53	11	MainWindow	Open Knitting Project	Open Knitting Project	Projekt öffnen	Opna skrá	Apri il progetto	Начать новый проект	Відкрити в'язальний проєкт	Ouvrir un projet	Abrir proyecto de tejido
-54	12	MenuBar	Help – About	Help – About	Hilfe – Über	Hjálp – Um	Aiuto – Informazioni	Помощь	Допомога – Про	Aide – À propos	Ayuda – Sobre
-55	6	MenuBar	Help	Help	Hilfe	Hjálp	Aiuto	Помощь	Допомога	Aide	Ayuda
-56	13	MenuBar	Invert	Invert	Invertieren	Á hvolfi	Inverti	Инвертировать 	Інвертувати	Inverser	Invertir
-57	14	MenuBar	Stretch	Stretch	Strecken	Teygja	Allunga	Растянуть	Розтягнути	Etirer	Tramo
-58	15	MenuBar	Repeat	Repeat	Wiederholen	Endurtaka	Ripeti	Повторить	Повторити	Répéter	Repetir
-59	16	MenuBar	Reflect	Reflect	Spiegeln	Endurspegla	Rifletti	Отразить	Відобразити	Refléter	Reflejar
-60	17	MenuBar	Horizontal Flip	Horizontal Flip	Horizontal spiegeln	Snúa lárétt	Inverti orizzontale	Отражение по горизонтали	Відобразити по горизонталі	Retourner horizontal	Volteo horizontal
-61	18	MenuBar	Vertical Flip	Vertical Flip	Vertikal spiegeln	Snúa lóðrétt	Inverti verticale	Отражение по вертикали	Відобразити по вертикалі	Retourner vertical	Volteo vertical
-62	19	MenuBar	Rotate Left	Rotate Left	Links drehen	Snúa til vinstri	Ruota a sinistra	Поворот влево	Обертати ліворуч	Rotation à gauche	Girar a la izquierda
-63	20	MenuBar	Rotate Right	Rotate Right	Rechts drehen	Snúa til hægri	Ruota a destra	Поворот вправо	Обертати праворуч	Rotation à droite	Girar a la derecha
-64	60	MenuBar	Set Preferences	Set Preferences	Einstellungen festlegen	Setjið forstillingar	Imposta preferenze	Установить персональные настройки	Встановити налаштування	Indiquez vos préférences	Cofigurar preferencias
-65	21	MirrorDialog	Reflect image	Reflect image	Muster spiegeln	Endurspegla mynd	Rifletti l'immagine	Отразить изображение	Відобразити зображення	Refléter l'image	Reflejar imagen
-66	22	MirrorDialog	Add mirrors	Add mirrors	Spiegelungen hinzufügen	Spegla	Specchia	Добавить зеркальное отражение	Додати дзеркальне відображення	Miroirs	Agregar espejos
-67	24	MirrorDialog	Left	Left	Links	Vinstri	Sinistra	Лево	Ліворуч	Gauche	Izquierda
-68	25	MirrorDialog	Right	Right	Rechts	Hægri	Destra	Право	Праворуч	Droite	Derecha
-69	26	MirrorDialog	Top	Top	Oben	Efst	Sopra	Верх	Верх	Haut	Arriba
-70	27	MirrorDialog	Bottom	Bottom	Unten	Neðst	Sotto	Низ	Низ	Bas	Abajo
-71	28	MirrorDialog	OK	OK	OK	Í lagi	Conferma	ОК 	ОК	Confirmer	OK
-72	60	PrefsDialog	Set Preferences	Set Preferences	Einstellungen festlegen	Setjið forstillingar	Imposta preferenze	Установить персональные настройки	Встановити налаштування	Indiquez vos préférences	Cofigurar preferencias
-73	61	PrefsDialog	Settings	Settings	Einstellungen	Stillingar	Impostazioni	Настройки	Налаштування	Paramètres	Ajustes
-74	62	PrefsDialog	Default Knitting Mode	Default Knitting Mode	Vorauswahl Strickmodus	Sjálfgefin prjónahamur	Modalità di lavorazione automatica	Режим вязания по умолчанию	Режим в'язання за замовчуванням	Mode tricot par défaut	Método de tejer por defecto
-75	63	PrefsDialog	Default Infinite Repeat	Default Infinite Repeat	Vorauswahl Unendlich wiederholen	Sjálfgefin endurtekning	Ripetizione automatica	Повторение по умолчанию	Нескінченне повторення за замовчуванням	Répétition a l'infini par défaut	Repetición por defecto infinita
-76	64	PrefsDialog	Default Alignment	Default Alignment	Vorauswahl Ausrichtung	Sjálfgefin jafna	Allineamento automatico	Выравнивание по умолчанию	Вирівнювання за замовчуванням	Alignement par défaut	Alineación por defecto
-77	65	PrefsDialog	Default Mirroring	Default Mirroring	Vorauswahl Spiegelung	Sjálfgefin speglun	Ribaltamento automatico	Зеркальное отображение по умолчанию	Дзеркальне відображення за замовчуванням	Image miroir par défaut	Reflejo por defecto
-78	66	PrefsDialog	Quiet Mode	Quiet Mode	Lautlos	Hljóðlaus stilling	Modalità silenziosa	Без звука	Режим без звуку	Mode silencieux	Modo silencioso
-79	67	PrefsDialog	Language	Language	Sprache	Tungumál	Lingua	Язык	Мова	Langue	Lenguaje
-80	28	PrefsDialog	OK	OK	OK	Í lagi	Conferma	ОК 	ОК	Confirmer	OK
-81	29	PrefsDialog	Reset	Reset	Zurücksetzen	Endurstilla	Resetta	Сброс	Скинути за замовчуванням	Réinitialiser	Reiniciar
-82	57	Progress	Progress	Progress	Fortschritt	Staða	Progressione	Прогресс	Прогрес	Progrès	Progreso
-83	40	KnitProgress	Row	Row	Zeile	Umferð	Giro	Ряд	Ряд	Rang	Fila
-84	55	KnitProgress	Pass	Pass	Durchgang	Pass	Passa	Пройти	Пропуск	Passage	Paso
-85	32	KnitProgress	Color	Colour	Farbe	Litur	Colore	Цвет	Колір	Couleur	Color
-86	33	NeedleColor	green	green	grün	grænn	verde	зелёный (зеленый)	зелений	vert	verde
-87	34	NeedleColor	orange	orange	orange	appelsínugulur	arancione	оранжевый	помаранчевий	orange	naranja
-88	69	KnitMode	Singlebed	Singlebed	Einzelbett	Eitt borð	Frontura singola	Однофонтурное вязание	Однофонтурне	Fonture simple	Frontura simple
-89	70	KnitMode	Ribber: Classic	Ribber: Classic	Doppelbett: Klassisch	Ribber: Klassískt	2a Frontura: Classico	двухфонтурное: Классика	Двофонтурне: Класика	2ème Fonture: Classique	Doble frontura: Clásico
-90	71	KnitMode	Ribber: Middle-Colors-Twice	Ribber: Middle-Colours-Twice	Doppelbett: Middle-Colors-Twice	Ribber: Miðlitur-Tvisvar	2a Frontura: Middle-Colors-Twice	двухфонтурное: Средний-цвет-дважды	Двофонтурне: Подвоєння середнього кольору	2ème Fonture: Middle-Colors-Twice	Doble frontura: Colores medios dos veces
-91	72	KnitMode	Ribber: Heart of Pluto	Ribber: Heart of Pluto	Doppelbett: Heart of Pluto	Ribber: Heart of Pluto	2a Frontura: Heart of Pluto	двухфонтурное: сердце Плутона	Двофонтурне: серце Плутона	2ème Fonture: Heart of Pluto	Doble frontura: Heart of Pluto
-92	73	KnitMode	Ribber: Circular	Ribber: Circular	Doppelbett: Rundstricken	Ribber: Hringurprjón	2a Frontura: Circolare	двухфонтурное: Круговое	Двофонтурне: По колу	2ème Fonture: Circulaire	Doble frontura: Circular
-93	23	Alignment	Center	Centre	Zentriert	Miðja	Centra	Центр	Центр	Centre	Centrar
-94	24	Alignment	Left	Left	Links	Vinstri	Sinistra	Лево	Ліворуч	Gauche	Izquierda
-95	25	Alignment	Right	Right	Rechts	Hægri	Destra	Право	Праворуч	Droite	Derecha
-96	87	Scene	Image dimensions	Image dimensions	Mustergröße	Myndastærð	Dimensione dell'immagine	Размер изображения	Розмір зображення	Dimensions de l'image	Dimensiones de la imagen
+Context	en_US	en_GB	de_DE	is_IS	it_IT	ru_RU	uk_UA	fr_FR	es_ES	ko_KR
+Firmware	Error flashing firmware.	Error flashing firmware.								
+Firmware	Flashing done!	Flashing done!								
+Firmware	Firmware Flashing Utility	Firmware Flashing Utility	Firmware-Dienstprogramm							
+Firmware	Port	Port	Port	Port	Porta	порт	порт	Port	Puerto	
+Firmware	Controller	Controller	Mikrocontroller	Örstýring	Microcontroller	Микроконтроллер	Мікроконтролер	Microcontrôleur	Microcontrolador	
+Firmware	Firmware Version	Firmware Version	Firmware-Version	Vélbúnaðarútgáfa	Versione del Firmware	Версия Прошивки	Версія Прошивки	Version du Firmware	Versión del Firmware	
+Firmware	Flash	Flash	Flashen		Programma			Flasher	Flashear	
+Scene	Image dimensions	Image dimensions	Mustergröße	Myndastærð	Dimensione dell'immagine	Размер изображения	Розмір зображення	Dimensions de l'image	Dimensiones de la imagen	이미지 치수
+Dock	Port Selection	Port Selection	Port wählen	Velja port	Selezione porta seriale	Выбрать порт	Вибір порту	Sélection du port	Seleccionar puerto	포트 선택
+Dock	Refresh	Refresh	Aktualisieren	Endurnýja	Ricarica	Обновить	Оновити	Réactualiser	Actualizar	리플레시
+Dock	Settings	Settings	Einstellungen	Stillingar	Impostazioni	Настройки	Налаштування	Paramètres	Ajustes	설정
+Dock	Knitting Mode	Knitting Mode	Strickmodus	Prjóna stilling	Modalità di lavorazione	Режим вязание	Режим в'язання	Mode tricot	Método de tejido	니팅 모드
+Dock	Status	Status	Status	Staða	Stato	Статус	Стан	Statut	Estado	상태
+Options	Colors	Colours	Farben	Litir	Colori	Цвета	Кольори	Couleurs	Colores	색상들
+Options	Start Row	Start Row	Startzeile	Byrja umferð	Inizio giro	Начальный ряд	Початковий ряд	Commencer le rang	Fila de inicio	시작 단
+Options	Infinite Repeat	Infinite Repeat	Unendlich wiederholen	Endurtekning	Ripetizione infinita	Повторять	Нескінченне повторення	Répétition a l'infini	Repetición infinita	무한 반복
+Options	Start Needle	Start Needle	Startnadel	Byrjunar nál	Ago iniziale	Стартовая игла	Початкова голка	Première aiguille	Aguja de inicio	시작 바늘
+Options	Stop Needle	Stop Needle	Stopnadel	Enda nál	Ago finale	Конечная игла	Остання голка	Dernière aiguille	Aguja de parada	끝나는 바늘
+Options	Alignment	Alignment	Ausrichtung	Jafna	Allineamento	Выравнивание	Вирівнювання	Alignement	Alineamiento	조정
+Options	Mirror Image	Mirror Image	Muster spiegeln	Spegilmynd	Ribalta l'immagine	Зеркальное отражение	Дзеркальне зображення	Image miroir	Imagen espejo	거울 이미지
+Options	Continuous Status Reporting	Continuous Status Reporting	Kontinuierlicher Status	Stöðug skýrsla	Report continuativo	Непрерывный отчет о статусе	Постійне звітування про стан	Rapport de situation en continu	Informe de estado continuo	지속적 상태 보고
+StatusTab	Hall Sensors	Hall Sensors	Hall-Effekt-Sensoren	Skynjari	Apparato sensori	Датчик Холла	Датчики Холла	Capteurs à effet Hall	Sensores de effecto Hall	홀 센서
+StatusTab	Hall Left	Hall Left	Hallsensor links	Vinstri skynjari	Apparato sensore sinistro	Датчик Холла слева	Лівий датчик Холла	Hall Gauche	Hall izquierda	홀 왼쪽
+StatusTab	Hall Right	Hall Right	Hallsensor rechts	Hægri skynjari	Apparato sensore destro	Датчик Холла справа	Правий датчик Холла	Hall Droite	Hall derecha	홀 오른쪽
+StatusTab	Carriage	Carriage	Schlitten	Vagn	Carrello	Каретка	Каретка	Chariot	Carro	캐리지
+StatusTab	No carriage detected	No carriage detected	Kein Schlitten erkannt	Finn ekki vagn	Carrello non selezionato	Каретка не обнаружена	Каретку не виявлено	Chariot non détecté 	Carro no detectado	캐리지가 연결되지 않음
+StatusTab	direction	direction	Richtung	Stefna	direzione	направление	напрямок	direction	dirección	방향
+StatusTab	Progress	Progress	Fortschritt	Staða	Progressione	Прогресс	Прогрес	Progrès	Progreso	진행
+StatusTab	progress	progress	Fortschritt	staða	progressione	прогресс	прогрес	progrès	progreso	진행
+StatusTab	Center	Centre	Zentriert	Miðja	Centra	Центр	Центр	Centre	Centrar	중앙
+StatusTab	Left	Left	Links	Vinstri	Sinistra	Лево	Ліворуч	Gauche	Izquierda	왼쪽
+StatusTab	Right	Right	Rechts	Hægri	Destra	Право	Праворуч	Droite	Derecha	오른쪽
+MainWindow	All Yarns Are Beautiful	All Yarns Are Beautiful	All Yarns Are Beautiful	Allt Garn Er Fallegt	All Yarns Are Beautiful	Вся пряжа прекрасна	Уся пряжа прекрасна	Tous Les Fils Sont Beaux	Todos Los Hilos Son Hermosos	모든 실은 아름답다
+MainWindow	Website	Website	Webseite	Vefsíða	Sito web	Интернет сайт	Веб-сайт	Site Internet	Sitio web	웹사이트
+MainWindow	Manual	Manual	Anleitung	Handbók	Manuale	Справочник	Посібник	Manuel	Manual	매뉴얼
+MainWindow	Assistant	Assistant	Assistent	Aðstoð	Assistente	Помощник	Помічник	Assistant	Asistente	어시스턴트
+MainWindow	1. Load Image File	1. Load Image File	1. Muster öffnen	1. Hlaðið myndskrá	1. Carica l'immagine	1. Загрузить изображение	1. Завантажити зображення	1. Charger une image	1. Cargar archivo de imagen	1. 이미지 파일 부르기
+MainWindow	Knitting Options	Knitting Options	Strickeinstellungen	Prjóna valkostir	Opzioni Lavorazione	Варианты вязания	Варіанти в'язання	Options de tricot	Opciones de tejido	니팅 옵션
+MainWindow	2. Knit	2. Knit	2. Stricken	2. Prjónið	2. Lavora	2. Вязание	2. В'язання	2. Tricoter	2. Tejer	2. 니트!
+MainWindow	Cancel Knitting	Cancel Knitting	Stricken abbrechen	Hætta við að prjóna	Annulla la lavorazione	Отменить вязание	Скасувати в’язання	Annuler	Cancelar tejido	니팅 취소
+MainWindow	Open Knitting Project	Open Knitting Project	Projekt öffnen	Opna skrá	Apri il progetto	Начать новый проект	Відкрити в'язальний проєкт	Ouvrir un projet	Abrir proyecto de tejido	니팅 프로젝트 열기
+MenuBar	File	File	Datei	Skrá	File	Файл	Файл	Fichier	Archivo	파일
+MenuBar	Help	Help	Hilfe	Hjálp	Aiuto	Помощь	Допомога	Aide	Ayuda	도움
+MenuBar	Tools	Tools	Werkzeuge	Verkfæri	Strumenti	Инструменты	Інструменти	Outils	Utiles	도구
+MenuBar	Preferences	Preferences	Einstellungen	Forstillingar	Preferenze	Персональные настройки	Налаштування	Préférences	Preferencias	환경 설정
+MenuBar	Image Actions	Image Actions	Musterbearbeitung	Mynd	Azioni immagine	Действия с изображением	Дії з зображенням	Image	Imagen	이미지 변경
+MenuBar	Load AYAB Firmware	Load AYAB Firmware	AYAB Firmware aufspielen	Hlaða AYAB vélbúnaði	Carica il firmware AYAB	Загрузить прошивку AYAB	Завантажити прошивку AYAB	Chargement du firmware AYAB	Cargar el firmware AYAB	AYAB 펌웨어 설정
+MenuBar	Quit	Quit	Beenden	Hætta	Chiudi	Выход	Вихід	Quitter	Salir	끝내기
+MenuBar	Help – About	Help – About	Hilfe – Über	Hjálp – Um	Aiuto – Informazioni	Помощь	Допомога – Про	Aide – À propos	Ayuda – Sobre	도움 - 관하여
+MenuBar	Help	Help	Hilfe	Hjálp	Aiuto	Помощь	Допомога	Aide	Ayuda	도움
+MenuBar	Invert	Invert	Invertieren	Á hvolfi	Inverti	Инвертировать	Інвертувати	Inverser	Invertir	뒤집기
+MenuBar	Stretch	Stretch	Strecken	Teygja	Allunga	Растянуть	Розтягнути	Etirer	Tramo	늘리기
+MenuBar	Repeat	Repeat	Wiederholen	Endurtaka	Ripeti	Повторить	Повторити	Répéter	Repetir	반복
+MenuBar	Reflect	Reflect	Spiegeln	Endurspegla	Rifletti	Отразить	Відобразити	Refléter	Reflejar	반영
+MenuBar	Horizontal Flip	Horizontal Flip	Horizontal spiegeln	Snúa lárétt	Inverti orizzontale	Отражение по горизонтали	Відобразити по горизонталі	Retourner horizontal	Volteo horizontal	수평 뒤집기
+MenuBar	Vertical Flip	Vertical Flip	Vertikal spiegeln	Snúa lóðrétt	Inverti verticale	Отражение по вертикали	Відобразити по вертикалі	Retourner vertical	Volteo vertical	수직 뒤집기
+MenuBar	Rotate Left	Rotate Left	Links drehen	Snúa til vinstri	Ruota a sinistra	Поворот влево	Обертати ліворуч	Rotation à gauche	Girar a la izquierda	왼쪽으로 돌리기
+MenuBar	Rotate Right	Rotate Right	Rechts drehen	Snúa til hægri	Ruota a destra	Поворот вправо	Обертати праворуч	Rotation à droite	Girar a la derecha	오른쪽으로 돌리기
+MenuBar	Set Preferences	Set Preferences	Einstellungen festlegen	Setjið forstillingar	Imposta preferenze	Установить персональные настройки	Встановити налаштування	Indiquez vos préférences	Cofigurar preferencias	기본 설정
+Mirrors	Reflect image	Reflect image	Muster spiegeln	Endurspegla mynd	Rifletti l'immagine	Отразить изображение	Відобразити зображення	Refléter l'image	Reflejar imagen	이미지 반영
+Mirrors	Add mirrors	Add mirrors	Spiegelungen hinzufügen	Spegla	Specchia	Добавить зеркальное отражение	Додати дзеркальне відображення	Miroirs	Agregar espejos	반영 추가
+Mirrors	Left	Left	Links	Vinstri	Sinistra	Лево	Ліворуч	Gauche	Izquierda	왼쪽
+Mirrors	Right	Right	Rechts	Hægri	Destra	Право	Праворуч	Droite	Derecha	오른쪽
+Mirrors	Top	Top	Oben	Efst	Sopra	Верх	Верх	Haut	Arriba	맨위
+Mirrors	Bottom	Bottom	Unten	Neðst	Sotto	Низ	Низ	Bas	Abajo	맨아래
+Mirrors	OK	OK	OK	Í lagi	Conferma	ОК	ОК	Confirmer	OK	예
+Prefs	Set Preferences	Set Preferences	Einstellungen festlegen	Setjið forstillingar	Imposta preferenze	Установить персональные настройки	Встановити налаштування	Indiquez vos préférences	Cofigurar preferencias	기본 설정
+Prefs	Settings	Settings	Einstellungen	Stillingar	Impostazioni	Настройки	Налаштування	Paramètres	Ajustes	설정
+Prefs	Default Knitting Mode	Default Knitting Mode	Vorauswahl Strickmodus	Sjálfgefin prjónahamur	Modalità di lavorazione automatica	Режим вязания по умолчанию	Режим в'язання за замовчуванням	Mode tricot par défaut	Método de tejer por defecto	기본 니팅 모드
+Prefs	Default Infinite Repeat	Default Infinite Repeat	Vorauswahl Unendlich wiederholen	Sjálfgefin endurtekning	Ripetizione automatica	Повторение по умолчанию	Нескінченне повторення за замовчуванням	Répétition a l'infini par défaut	Repetición por defecto infinita	기본 무한 반복
+Prefs	Default Alignment	Default Alignment	Vorauswahl Ausrichtung	Sjálfgefin jafna	Allineamento automatico	Выравнивание по умолчанию	Вирівнювання за замовчуванням	Alignement par défaut	Alineación por defecto	기본 정렬
+Prefs	Default Mirroring	Default Mirroring	Vorauswahl Spiegelung	Sjálfgefin speglun	Ribaltamento automatico	Зеркальное отображение по умолчанию	Дзеркальне відображення за замовчуванням	Image miroir par défaut	Reflejo por defecto	기본 미러링
+Prefs	Quiet Mode	Quiet Mode	Lautlos	Hljóðlaus stilling	Modalità silenziosa	Без звука	Режим без звуку	Mode silencieux	Modo silencioso	저소음 모드
+Prefs	Language	Language	Sprache	Tungumál	Lingua	Язык	Мова	Langue	Lenguaje	언어
+Prefs	OK	OK	OK	Í lagi	Conferma	ОК	ОК	Confirmer	OK	예
+Prefs	Reset	Reset	Zurücksetzen	Endurstilla	Resetta	Сброс	Скинути за замовчуванням	Réinitialiser	Reiniciar	리셋
+Progress	Progress	Progress	Fortschritt	Staða	Progressione	Прогресс	Прогрес	Progrès	Progreso	진행
+KnitProgress	Row	Row	Zeile	Umferð	Giro	Ряд	Ряд	Rang	Fila	단
+KnitProgress	Pass	Pass	Durchgang	Pass	Passa	Пройти	Пропуск	Passage	Paso	통과
+KnitProgress	Color	Colour	Farbe	Litur	Colore	Цвет	Колір	Couleur	Color	색상
+NeedleColor	green	green	grün	grænn	verde	зелёный (зеленый)	зелений	vert	verde	녹색
+NeedleColor	orange	orange	orange	appelsínugulur	arancione	оранжевый	помаранчевий	orange	naranja	오렌지색
+KnitMode	Singlebed	Singlebed	Einzelbett	Eitt borð	Frontura singola	Однофонтурное вязание	Однофонтурне	Fonture simple	Frontura simple	싱글 배드
+KnitMode	Ribber: Classic	Ribber: Classic	Doppelbett: Klassisch	Ribber: Klassískt	2a Frontura: Classico	двухфонтурное: Классика	Двофонтурне: Класика	2ème Fonture: Classique	Doble frontura: Clásico	고무단클래식
+KnitMode	Ribber: Middle-Colors-Twice	Ribber: Middle-Colours-Twice	Doppelbett: Middle-Colors-Twice	Ribber: Miðlitur-Tvisvar	2a Frontura: Middle-Colors-Twice	двухфонтурное: Средний-цвет-дважды	Двофонтурне: Подвоєння середнього кольору	2ème Fonture: Middle-Colors-Twice	Doble frontura: Colores medios dos veces	고무단중간-색-두번
+KnitMode	Ribber: Heart of Pluto	Ribber: Heart of Pluto	Doppelbett: Heart of Pluto	Ribber: Heart of Pluto	2a Frontura: Heart of Pluto	двухфонтурное: сердце Плутона	Двофонтурне: серце Плутона	2ème Fonture: Heart of Pluto	Doble frontura: Heart of Pluto	고무단 Heart of Pluto
+KnitMode	Ribber: Circular	Ribber: Circular	Doppelbett: Rundstricken	Ribber: Hringurprjón	2a Frontura: Circolare	двухфонтурное: Круговое	Двофонтурне: По колу	2ème Fonture: Circulaire	Doble frontura: Circular	고무단원형
+Alignment	Center	Centre	Zentriert	Miðja	Centra	Центр	Центр	Centre	Centrar	중앙
+Alignment	Left	Left	Links	Vinstri	Sinistra	Лево	Ліворуч	Gauche	Izquierda	왼쪽
+Alignment	Right	Right	Rechts	Hægri	Destra	Право	Праворуч	Droite	Derecha	오른쪽
+KnitEngine	Simulation	Simulation	Simulation	Hermir	Simulazione	Моделирование	Моделювання	Simulation	Simulación	시뮬레이션
+KnitEngine	You need to set an image.	You need to set an image.	Bitte Muster wählen.	Þú verður að hlaða mynd.	Devi impostare un'immagine.	Вам нужно установить изображение.	Виберіть зображення.	Choisissez une image pour continuer.	Necesitar configurar una imagen.	이미지를 설정하세요.
+KnitEngine	Invalid needle start and end.	Invalid needle start and end.	Ungültige Startnadel oder Endnadel.	Röng start nál og enda nál.	Ago iniziale e finale invalidi.	Недопустимое начало или конец иглы.	Неправильна стартова або кінцева голка.	Erreur sur la première et dernière aiguille du tricot.	Inicio y fin de la aguja no válidos.	바늘 시작이나 끝이 잘못 됐습니다.
+KnitEngine	Start row is larger than the image.	Start row is larger than the image.	Die Startzeile ist höher als das Muster.	Byrjunaröð er stærri en mynd.	Il giro d'inizio è più grande dell'immagine.	Начальный ряд больше изображения.	Початковий ряд більший за зображення.	Le premier rang est plus grand que l'image.	La fila de inicio es más grande que la imagen.	시작 단이 이미지보다 큼니다.
+KnitEngine	Please choose a valid port.	Please choose a valid port.	Bitte wählen Sie einen gültigen Port.	Veljið rétt port.	Scegli una porta seriale valida.	Пожалуйста, выберите действующий порт.	Виберіть дійсний порт.	Veuillez choisir un port valide.	Elija un puerto válido.	유효한 포트를 선택하세요.
+KnitEngine	Single bed knitting currently supports only 2 colors.	Single bed knitting currently supports only 2 colours.	Einzelbettstricken unterstützt nur 2 Farben.	Stilling styður bara tvo liti.	La lavorazione in frontura singola supporta solo 2 colori.	Однофонтурное вязание поддерживает только двухцветное вязание.	Однофонтурне в'язання підтримує лише 2 кольори.	Le tricot en simple fonture est limité à deux couleurs.	El tejido de una frontura actualmente solo soporta 2 colores.	싱글배드 니팅은 2가지 색만 지원합니다.
+KnitEngine	Circular knitting supports only 2 colors.	Circular knitting supports only 2 colours.	Rundstricken unterstützt nur 2 Farben.	Hringprjón styður bara tvo liti.	La lavorazione circolare supporta solo 2 colori.	Круговое вязание поддерживает только двухцветное вязание.	В'язання по колу підтримує лише 2 кольори.	Le mode tricot circulaire est limité à deux couleurs.	Tejido circular soporta solo 2 colores.	원형 니팅은 2가지 색만 지원합니다.
+KnitEngine	Connecting to machine...	Connecting to machine...	Verbinde zur Maschine...	Tengist vél...	Connessione in corso…	Подключение к машине.	Підключення до машини...	Connection en cours...	Conexión a la máquina.	기계에 연결 중...
+KnitEngine	Please start machine. (Set the carriage to mode KC-I or KC-II and move the carriage over the left turn mark).	Please start machine. (Set the carriage to mode KC-I or KC-II and move the carriage over the left turn mark).	Bitte starten Sie die Maschine. (Stellen Sie den Schlitten auf KC-I oder KC-II und bewegen Sie den Schlitten über die linke Umkehrmarke.)	Kveikið á vélinni. (Stillið vagninn á KC-I eða KC-II og færið vagninn til vinstra yfir skynjarann).	Avvia la macchina. (Imposta il carrello su KC-I o KC-II e sposta il carrello oltre il segno sinistro d'inizio.)	Пожалуйста, включите машину. (установите каретку в положение КС-1 или КС-2 и переведите каретку влево за датчик).	Будь ласка, запустіть машину. (Налаштуйте каретку на KC-I або KC-II і перемістіть каретку ліворуч за датчик.)	Veuillez démarrer la machine. (Mettre le chariot sur le mode KC-I ou KCII et le placer sur le côté gauche).	Por favor, inicie la máquina. (Ajuste el carro al modo KC-I o KC-II y mueva el carro sobre la marca de giro a la izquierda).	기계를 시작하세요.(캐리지의 체인지놉을 KC-I 또는 KC-II로 설정하고 캐리지를 왼쪽 센서 넘어로 이동). 
+KnitEngine	Wrong Arduino firmware version. Please check that you have flashed the latest version.	Wrong Arduino firmware version. Please check that you have flashed the latest version.	Falsche Arduino-Firmware-Version.	Röng Arduino vélbúnaðarútgáfa. Vinsamlegast kannið hvort þú hafir nýjustu útgáfuna.	Versione del firmware di Arduino errata. Controlla di aver eseguito correttamente il flash all'ultima versione.	Неправильная прошивка версии андурино. Пожалуйста, проверьте что Вы установили последюю версию.	Неправильна версія прошивки Arduino. Перевірте, чи встановлено останню версію.	Mauvaise version du firmware Arduino. Vérifiez que vous avez la dernière version.	Versión incorrecta del firmware de Arduino. Por favor, compruebe que ha flasheado la última versión.	아두이노 펌웨가 문제가 있습니다. 최신 버전인지 체크해 주세요.
+KnitEngine	Please knit.	Please knit.	Bitte fangen Sie an zu stricken.	Vinsamlegast prjónið.	Inizia il lavoro.	Вяжите пожалуйста.	В'яжіть будь-ласка.	Commencez le tricot.	Comience a tejer.	니트 시작
+KnitEngine	Device not ready, try again.	Device not ready, try again.	Gerät nicht bereit, bitte versuchen Sie es erneut.	Tækið ekki tilbúið, reyndu aftur.	Il dispositivo non è pronto, riprova.	Устройство не отвечает, повторите попытку.	Пристрій не готовий. Повторіть спробу.	La machine n'est pas prête, essayez encore.	Dispositivo no listo, inténtelo de nuevo.	장비가 준비 되지 않았음. 다시 시도.
+KnitEngine	Image transmission finished. Please knit until you hear the double beep sound.	Image transmission finished. Please knit until you hear the double beep sound.	Musterübertragung beendet. Bitte stricken Sie, bis Sie den doppelten Piepton hören.	Myndhleðslu lokið. Prjónið þangað til þú heyrir tvöfalt píphljóð.	Trasferimento dell'immagine finito. Lavora finché senti il doppio bip.	Передача изображения завершена. Вяжите после того как услышите двойной звуковой сигнал.	Передачу зображення завершено. Будь ласка, в'яжіть, поки не почуєте подвійний звуковий сигнал.	Image transmise. Tricotez jusqu'à ce que vous entendiez un double bip.	Transmisión de imagen terminada. Por favor, tejer hasta que escuche el sonido de doble pitido.	이미지 전송이 완료 됐습니다. 삐소리가 2번 들릴 때까지 뜨세요.
+KnitEngine	Knitting canceled.	Knitting cancelled.	Stricken abgebrochen.	Hætt við prjón.	Lavorazione eliminata.	Вязание завершено.	В’язання скасовано.	Annulation du tricot.	Tejido de punto cancelado.	니팅을 취소합니다.

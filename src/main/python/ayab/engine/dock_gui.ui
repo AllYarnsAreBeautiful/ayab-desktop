@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>DockWidget</class>
+ <class>Dock</class>
  <widget class="QDockWidget" name="DockWidget">
   <property name="features">
    <set>QDockWidget::NoDockWidgetFeatures</set>
