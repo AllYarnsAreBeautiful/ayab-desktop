@@ -28,11 +28,11 @@ class TestStatus(unittest.TestCase):
     def setUp(self):
         pass
 
-    def test_parse_carriage_info(self):
+    def test_parse_device_state_API6(self):
         p = Status()
         p.active = True
         msg = [0, 1, 2, 3, 4, 5, 1, 7.9]
-        p.parse_carriage_info(msg)
+        p.parse_device_state_API6(1, msg)
         assert p.hall_l == 0x203
         assert p.hall_r == 0x405
         assert p.carriage_type == "K Carriage"

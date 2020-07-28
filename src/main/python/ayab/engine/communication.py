@@ -35,10 +35,14 @@ import pprint
 class MessageToken(Enum):
     unknown = -2
     none = -1
-    cnfStart = 0xC1
+    reqInfo = 0x03
     cnfInfo = 0xC3
-    reqLine = 0x82
+    reqTest = 0x04
     cnfTest = 0xC4
+    reqStart = 0x01
+    cnfStart = 0xC1
+    reqLine = 0x82
+    cnfLine = 0x42
     indState = 0x84
 
 
@@ -90,7 +94,58 @@ class AyabCommunication(object):
                 self.__logger.warning("Closing Serial port failed. \
                                       Was it ever open?")
 
-    def update(self):
+    # NB this method must be the same for all API versions
+    def req_info(self):
+        """Sends a request for information to controller."""
+        data = self.__driver.send(bytes([MessageToken.reqInfo.value]))
+        self.__ser.write(data)
+
+    def req_test_API6(self):
+        """"""
+        data = self.__driver.send(bytes([MessageToken.reqTest.value]))
+        self.__ser.write(data)
+
+    def req_start_API6(self, machine_val, start_needle, stop_needle, continuous_reporting):
+        """Sends a start message to the controller."""
+        data = bytearray()
+        data.append(MessageToken.reqStart.value)
+        data.append(machine_val)
+        data.append(start_needle)
+        data.append(stop_needle)
+        data.append(continuous_reporting)
+        hash = 0
+        hash = add_crc(hash, data)
+        data.append(hash)
+        data = self.__driver.send(bytes(data))
+        self.__ser.write(data)
+
+    def cnf_line_API6(self, line_number, color, flags, line_data):
+        """Sends a line of data via the serial port.
+
+        Sends a line of data to the serial port, all arguments are mandatory.
+        The data sent here is parsed by the Arduino controller which sets the
+        knitting needles accordingly.
+
+        Args:
+          line_number (int): The line number to be sent.
+          color (int): The yarn color to be sent.
+          flags (int): The flags sent to the controller.
+          line_data (bytes): The bytearray to be sent to needles.
+
+        """
+        data = bytearray()
+        data.append(MessageToken.cnfLine.value)
+        data.append(line_number)
+        data.append(color)
+        data.append(flags)
+        data.extend(line_data)
+        hash = 0
+        hash = add_crc(hash, data)
+        data.append(hash)
+        data = self.__driver.send(bytes(data))
+        self.__ser.write(data)
+
+    def update_API6(self):
         """Reads data from serial and tries to parse as SLIP packet."""
         if self.__ser:
             data = self.__ser.read(1000)
@@ -98,11 +153,11 @@ class AyabCommunication(object):
                 self.__rx_msg_list.extend(self.__driver.receive(data))
 
             if len(self.__rx_msg_list) > 0:
-                return self.parse_update(self.__rx_msg_list.pop(0))
+                return self.parse_update_API6(self.__rx_msg_list.pop(0))
 
         return None, MessageToken.none, 0
 
-    def parse_update(self, msg):
+    def parse_update_API6(self, msg):
         if msg is None:
             return None, MessageToken.none, 0
 
@@ -115,50 +170,6 @@ class AyabCommunication(object):
         pp = pprint.PrettyPrinter(indent=4)
         pp.pprint(msg)
         return msg, MessageToken.unknown, 0
-
-    def req_start(self, start_needle, stop_needle, continuous_reporting):
-        """Sends a start message to the controller."""
-        data = bytearray()
-        data.append(0x01)
-        data.append(start_needle)
-        data.append(stop_needle)
-        data.append(continuous_reporting)
-        data = self.__driver.send(bytes(data))
-        self.__ser.write(data)
-
-    def req_info(self):
-        """Sends a request for information to controller."""
-        data = self.__driver.send(b'\x03')
-        self.__ser.write(data)
-
-    def req_test(self):
-        """"""
-        data = self.__driver.send(b'\x04')
-        self.__ser.write(data)
-
-    def cnf_line(self, line_number, line_data, flags):
-        """Sends a line of data via the serial port.
-
-        Sends a line of data to the serial port, all arguments are mandatory.
-        The data sent here is parsed by the Arduino controller which sets the
-        knitting needles accordingly.
-
-        Args:
-          line_number (int): The line number to be sent.
-          line_data (bytes): The bytearray to be sent to needles.
-          flags (bytes): The flags sent to the controller.
-
-        """
-        data = bytearray()
-        data.append(0x42)
-        data.append(line_number)
-        data.extend(line_data)
-        data.append(flags)
-        hash = 0
-        hash = add_crc(hash, data)
-        data.append(hash)
-        data = self.__driver.send(bytes(data))
-        self.__ser.write(data)
 
 
 # CRC algorithm after Maxim/Dallas

@@ -230,7 +230,7 @@ class TestKnitControl(unittest.TestCase):
         control.start_row = 1
         assert control.func(control, 12) == (0, 0, False, False)
 
-    def test_select_needles(self):
+    def test_select_needles_API6(self):
         control = KnitControl(self.parent)
         control.start(Machine(0))
         control.num_colors = 2
@@ -250,7 +250,7 @@ class TestKnitControl(unittest.TestCase):
         bits0.frombytes(
             b'\x00\x00\x00\x00\x00\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff'
         )
-        assert control.select_needles(0, 0, False) == bits0
+        assert control.select_needles_API6(0, 0, False) == bits0
 
         # 40 pixel image set to the center
         pattern.alignment = Alignment.CENTER
@@ -259,20 +259,20 @@ class TestKnitControl(unittest.TestCase):
         bits1.frombytes(
             b'\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\x00\x00\x00\x00\x00\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff'
         )
-        assert control.select_needles(0, 0, False) == bits1
+        assert control.select_needles_API6(0, 0, False) == bits1
 
         # 40 pixel image set in the center
         # blank line so central 40 pixels unset
         # flanking pixels set (2 different options)
         control.mode = KnitMode.CLASSIC_RIBBER
-        assert control.select_needles(2, 1, False) == ~bits1
+        assert control.select_needles_API6(2, 1, False) == ~bits1
         control.mode = KnitMode.MIDDLECOLORSTWICE_RIBBER
-        assert control.select_needles(2, 1, False) == ~bits1
+        assert control.select_needles_API6(2, 1, False) == ~bits1
 
         # image is wider than machine width
         # all pixels set
         control.pattern = Pattern(Image.new('P', (202, 1)), Machine(0), 2)
-        assert control.select_needles(0, 0, False) == bitarray([True] * Machine(0).width)
+        assert control.select_needles_API6(0, 0, False) == bitarray([True] * Machine(0).width)
 
     def test_row_multiplier(self):
         assert KnitMode.SINGLEBED.row_multiplier(2) == 1

@@ -27,6 +27,7 @@ from .communication_mockup import AyabCommunicationMockup
 from .output import KnitOutput
 
 
+# NB no test states
 class KnitState(Enum):
     # NONE = auto()
     SETUP = auto()
@@ -76,35 +77,42 @@ class KnitStateMachine(object):
         control.state = KnitState.INIT
         return KnitOutput.NONE
 
+    # NB this communication sequence must be the same for every API version
     def _knit_init(control, pattern, options):
         control.logger.debug("KnitState INIT")
         rcvMsg, rcvParam = control.check_serial()
         if rcvMsg == MessageToken.cnfInfo:
-            if rcvParam == control.API_VERSION:
+            if rcvParam >= control.FIRST_SUPPORTED_API_VERSION:
+                control.api_version = rcvParam
                 control.state = KnitState.WAIT_FOR_INIT
                 return KnitOutput.WAIT_FOR_INIT
             else:
                 control.logger.error("Wrong API version: " + str(rcvParam) +
-                                     ", expected: " + str(control.API_VERSION))
+                                     ", expected >= " + str(control.FIRST_SUPPORTED_API_VERSION))
                 return KnitOutput.ERROR_WRONG_API
         # else
         control.com.req_info()
         return KnitOutput.CONNECTING_TO_MACHINE
 
+    # TODO: polymorphic dispatch on control.api_version to ensure backwards compatibility
     def _knit_wait_for_init(control, pattern, options):
         control.logger.debug("KnitState WAIT_FOR_INIT")
         rcvMsg, rcvParam = control.check_serial()
         if rcvMsg == MessageToken.indState:
             if rcvParam == 1:
-                control.com.req_start(control.pattern.knit_start_needle,
-                                      control.pattern.knit_stop_needle,
-                                      options.continuous_reporting)
+                control.com.req_start_API6(options.machine.value,
+                                           control.pattern.knit_start_needle,
+                                           control.pattern.knit_stop_needle,
+                                           options.continuous_reporting)
                 control.state = KnitState.START
             else:
+                # any value of rcvParam other than 1 is some kind of error code
                 control.logger.debug("Init failed")
+                # TODO: more output to describe error
         # fallthrough
         return KnitOutput.NONE
 
+    # TODO: polymorphic dispatch on control.api_version to ensure backwards compatibility
     def _knit_start(control, pattern, options):
         control.logger.debug("KnitState START")
         rcvMsg, rcvParam = control.check_serial()
@@ -113,16 +121,19 @@ class KnitStateMachine(object):
                 control.state = KnitState.OPERATE
                 return KnitOutput.PLEASE_KNIT
             else:
+                # any value of rcvParam other than 1 is some kind of error code
                 control.logger.error("Device not ready")
+                # TODO: more output to describe error
                 return KnitOutput.DEVICE_NOT_READY
         # fallthrough
         return KnitOutput.NONE
 
+    # TODO: polymorphic dispatch on control.api_version to ensure backwards compatibility
     def _knit_operate(control, pattern, options):
         control.logger.debug("KnitState OPERATE")
         rcvMsg, rcvParam = control.check_serial()
         if rcvMsg == MessageToken.reqLine:
-            pattern_finished = control.cnf_line(rcvParam)
+            pattern_finished = control.cnf_line_API6(rcvParam)
             if pattern_finished:
                 control.state = KnitState.SETUP
                 return KnitOutput.FINISHED

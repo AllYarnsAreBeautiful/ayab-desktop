@@ -39,7 +39,7 @@ class KnitControl(object):
     """
     BLOCK_LENGTH = 256
     COLOR_SYMBOLS = "A", "B", "C", "D", "E", "F"
-    API_VERSION = 0x05
+    FIRST_SUPPORTED_API_VERSION = 0x06  # currently this is the only supported version
     FLANKING_NEEDLES = True
 
     def __init__(self, parent):
@@ -86,12 +86,12 @@ class KnitControl(object):
             self.status.alt_color = None
         self.status.total_rows = self.pattern.pat_height
 
-    def check_serial(self):
-        msg, token, param = self.com.update()
+    def check_serial_API6(self):
+        msg, token, param = self.com.update_API6()
         if token == MessageToken.cnfInfo:
             self.__log_cnfInfo(msg)
         elif token == MessageToken.indState:
-            self.status.parse_carriage_info(msg)
+            self.status.parse_device_state_API6(param, msg)
         return token, param
 
     def __log_cnfInfo(self, msg):
@@ -101,7 +101,7 @@ class KnitControl(object):
             log += ", FW v" + str(msg[2]) + "." + str(msg[3])
         self.logger.info(log)
 
-    def cnf_line(self, line_number):
+    def cnf_line_API6(self, line_number):
         if not (line_number < self.BLOCK_LENGTH):
             self.logger.error("Requested line number out of range")
             return True  # stop knitting
@@ -121,11 +121,11 @@ class KnitControl(object):
         # get data for next line of knitting
         color, row_index, blank_line, last_line = self.mode_func(
             self, line_number)
-        bits = self.select_needles(color, row_index, blank_line)
+        bits = self.select_needles_API6(color, row_index, blank_line)
 
         # send line to machine
-        self.com.cnf_line(requested_line, bits.tobytes(), last_line
-                          and not self.inf_repeat)
+        flag = last_line and not self.inf_repeat
+        self.com.cnf_line_API6(requested_line, color, flag, bits.tobytes())
 
         # screen output
         # TODO tidy up this code
@@ -163,7 +163,7 @@ class KnitControl(object):
         else:
             self.status.bits = bits[self.__first_needle:self.__last_needle]
 
-    def select_needles(self, color, row_index, blank_line):
+    def select_needles_API6(self, color, row_index, blank_line):
         bits = bitarray([False] * self.machine_width, endian="little")
         first_needle = max(0, self.pattern.pat_start_needle)
         last_needle = min(
