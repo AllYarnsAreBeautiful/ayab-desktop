@@ -97,9 +97,12 @@ class Status(object):
         self.carriage_position = status.carriage_position
         self.direction = status.direction
 
-    def parse_carriage_info(self, msg):
+    def parse_device_state_API6(self, state, msg):
         if not (self.active):
             return
+
+        # else
+        # TODO: if state != 1 report error and return
 
         # else
         hall_l = int((msg[2] << 8) + msg[3])
