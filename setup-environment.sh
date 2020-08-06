@@ -4,6 +4,8 @@
 # after setting up the Python virtual environment
 # to generate additional necessary resources
 
+git submodule update --init --recursive
+
 # convert PyQt5 `.ui` files to Python code
 pyuic5 src/main/python/ayab/about_gui.ui -o src/main/python/ayab/about_gui.py
 pyuic5 src/main/python/ayab/firmware_flash_gui.ui -o src/main/python/ayab/firmware_flash_gui.py
