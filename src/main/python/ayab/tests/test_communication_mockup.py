@@ -20,14 +20,14 @@
 
 import unittest
 
-from ayab.engine.communication import MessageToken
-from ayab.engine.communication_mockup import AyabCommunicationMockup
+from ayab.engine.communication import Token
+from ayab.engine.communication_mockup import CommunicationMockup
 from ayab.machine import Machine
 
 
-class TestAyabCommunicationMockup(unittest.TestCase):
+class TestCommunicationMockup(unittest.TestCase):
     def setUp(self):
-        self.comm_dummy = AyabCommunicationMockup(delay=False)
+        self.comm_dummy = CommunicationMockup(delay=False)
 
     def test_close_serial(self):
         self.comm_dummy.close_serial()
@@ -39,34 +39,32 @@ class TestAyabCommunicationMockup(unittest.TestCase):
         assert self.comm_dummy.is_open()
 
     def test_update_API6(self):
-        assert self.comm_dummy.update_API6() == (None, MessageToken.none, 0)
+        assert self.comm_dummy.update_API6() == (None, Token.none, 0)
 
     def test_req_start_API6(self):
         machine_val, start_val, end_val, continuous_reporting, crc8 = 0, 0, 10, True, 0xb9
-        expected_result = (bytes([MessageToken.cnfStart.value,
-                                  1]), MessageToken.cnfStart, 1)
+        expected_result = (bytes([Token.cnfStart.value, 1]), Token.cnfStart, 1)
         self.comm_dummy.req_start_API6(machine_val, start_val, end_val,
                                        continuous_reporting)
         bytes_read = self.comm_dummy.update_API6()
         assert bytes_read == expected_result
 
     def test_req_info(self):
-        expected_result = (bytes([MessageToken.cnfInfo.value, 5, 0xff,
-                                  0xff]), MessageToken.cnfInfo, 5)
+        expected_result = (bytes([Token.cnfInfo.value, 5, 0xff,
+                                  0xff]), Token.cnfInfo, 5)
         self.comm_dummy.req_info()
         bytes_read = self.comm_dummy.update_API6()
         assert bytes_read == expected_result
 
         # indState shall be sent automatically, also
         expected_result = (bytes(
-            [MessageToken.indState.value, 1, 0xff, 0xff, 0xff, 0xff, 1,
-             0x7f]), MessageToken.indState, 1)
+            [Token.indState.value, 1, 0xff, 0xff, 0xff, 0xff, 1,
+             0x7f]), Token.indState, 1)
         bytes_read = self.comm_dummy.update_API6()
         assert bytes_read == expected_result
 
     def test_req_test_API6(self):
-        expected_result = (bytes([MessageToken.cnfTest.value,
-                                  1]), MessageToken.cnfTest, 1)
+        expected_result = (bytes([Token.cnfTest.value, 1]), Token.cnfTest, 1)
         self.comm_dummy.req_test_API6(Machine.KH910_KH950)
         bytes_read = self.comm_dummy.update_API6()
         assert bytes_read == expected_result
@@ -89,5 +87,5 @@ class TestAyabCommunicationMockup(unittest.TestCase):
 
         for i in range(0, 256):
             bytes_read = self.comm_dummy.update_API6()
-            assert bytes_read == (bytearray([MessageToken.reqLine.value,
-                                             i]), MessageToken.reqLine, i)
+            assert bytes_read == (bytearray([Token.reqLine.value,
+                                             i]), Token.reqLine, i)

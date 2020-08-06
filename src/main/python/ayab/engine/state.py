@@ -22,17 +22,17 @@ from enum import Enum, auto
 
 from PyQt5.QtCore import QCoreApplication
 
-from .communication import AyabCommunication, MessageToken
-from .communication_mockup import AyabCommunicationMockup
-from .output import KnitOutput
+from .communication import Communication, Token
+from .communication_mockup import CommunicationMockup
+from .output import Output
 
 
-class KnitOperation(Enum):
+class Operation(Enum):
     KNIT = auto()
     TEST = auto()
 
 
-class KnitState(Enum):
+class State(Enum):
     SETUP = auto()
     INIT = auto()
     REQUEST_START = auto()
@@ -43,7 +43,7 @@ class KnitState(Enum):
     RUN_TEST = auto()
 
 
-class KnitStateMachine(object):
+class StateMachine(object):
     """
     Each method is a step in the finite state machine that governs
     communication with the shield and is called only by `AyabControl.knit()`
@@ -51,133 +51,121 @@ class KnitStateMachine(object):
     @author Tom Price
     @date   June 2020
     """
-    def _API6_setup(control, pattern, options, operation):
-        control.logger.debug("KnitState SETUP")
-        control.former_request = 0
-        control.line_block = 0
-        control.pattern_repeats = 0
-        control.pattern = pattern
-        control.pat_height = pattern.pat_height
-        control.num_colors = options.num_colors
-        control.start_row = options.start_row
-        control.mode = options.mode
-        control.inf_repeat = options.inf_repeat
-        control.len_pat_expanded = control.pat_height * control.num_colors
-        control.passes_per_row = control.mode.row_multiplier(
-            control.num_colors)
-        control.reset_status()
-        if not control.func_selector():
-            return KnitOutput.ERROR_INVALID_SETTINGS
+    def _API6_setup(control, operation):
+        control.logger.debug("State SETUP")
+        if operation == Operation.KNIT:
+            if not control.func_selector():
+                return Output.ERROR_INVALID_SETTINGS
         # else
-        control.logger.debug(options.portname)
-        if options.portname == QCoreApplication.translate(
+        control.logger.debug(control.portname)
+        if control.portname == QCoreApplication.translate(
                 "KnitEngine", "Simulation"):
-            control.com = AyabCommunicationMockup()
+            control.com = CommunicationMockup()
         else:
-            control.com = AyabCommunication()
-        if not control.com.open_serial(options.portname):
+            control.com = Communication()
+        if not control.com.open_serial(control.portname):
             control.logger.error("Could not open serial port")
-            return KnitOutput.ERROR_SERIAL_PORT
+            return Output.ERROR_SERIAL_PORT
         # else
         # setup complete
-        control.state = KnitState.INIT
-        return KnitOutput.NONE
+        control.state = State.INIT
+        return Output.NONE
 
-    def _API6_init(control, pattern, options, operation):
-        control.logger.debug("KnitState INIT")
+    def _API6_init(control, operation):
+        control.logger.debug("State INIT")
         rcvMsg, rcvParam = control.check_serial()
-        if rcvMsg == MessageToken.cnfInfo:
+        if rcvMsg == Token.cnfInfo:
             if rcvParam >= control.FIRST_SUPPORTED_API_VERSION:
                 control.api_version = rcvParam
-                if operation == KnitOperation.TEST:
-                    control.state = KnitState.REQUEST_TEST
+                if operation == Operation.TEST:
+                    control.state = State.REQUEST_TEST
                 else:
-                    control.state = KnitState.REQUEST_START
-                return KnitOutput.WAIT_FOR_INIT
+                    control.state = State.REQUEST_START
+                return Output.WAIT_FOR_INIT
             else:
                 control.logger.error("Wrong API version: " + str(rcvParam) +
                                      ", expected >= " +
                                      str(control.FIRST_SUPPORTED_API_VERSION))
-                return KnitOutput.ERROR_WRONG_API
+                return Output.ERROR_WRONG_API
         # else
         control.com.req_info()
-        return KnitOutput.CONNECTING_TO_MACHINE
+        return Output.CONNECTING_TO_MACHINE
 
-    def _API6_request_start(control, pattern, options, operation):
-        control.logger.debug("KnitState REQUEST_START")
+    def _API6_request_start(control, operation):
+        control.logger.debug("State REQUEST_START")
         rcvMsg, rcvParam = control.check_serial()
-        if rcvMsg == MessageToken.indState:
+        if rcvMsg == Token.indState:
             if rcvParam == 1:
-                control.com.req_start_API6(options.machine.value,
+                control.com.req_start_API6(control.machine.value,
                                            control.pattern.knit_start_needle,
                                            control.pattern.knit_stop_needle,
-                                           options.continuous_reporting)
-                control.state = KnitState.CONFIRM_START
+                                           control.continuous_reporting)
+                control.state = State.CONFIRM_START
             else:
                 # any value of rcvParam other than 1 is some kind of error code
                 control.logger.debug("Knit init failed")
                 # TODO: more output to describe error
         # fallthrough
-        return KnitOutput.NONE
+        return Output.NONE
 
-    def _API6_confirm_start(control, pattern, options, operation):
-        control.logger.debug("KnitState CONFIRM_START")
+    def _API6_confirm_start(control, operation):
+        control.logger.debug("State CONFIRM_START")
         rcvMsg, rcvParam = control.check_serial()
-        if rcvMsg == MessageToken.cnfStart:
+        if rcvMsg == Token.cnfStart:
             if rcvParam == 1:
-                control.state = KnitState.RUN_KNIT
-                return KnitOutput.PLEASE_KNIT
+                control.state = State.RUN_KNIT
+                return Output.PLEASE_KNIT
             else:
                 # any value of rcvParam other than 1 is some kind of error code
                 control.logger.error("Device not ready")
                 # TODO: more output to describe error
-                return KnitOutput.DEVICE_NOT_READY
+                return Output.DEVICE_NOT_READY
         # fallthrough
-        return KnitOutput.NONE
+        return Output.NONE
 
-    def _API6_run_knit(control, pattern, options, operation):
-        control.logger.debug("KnitState RUN_KNIT")
+    def _API6_run_knit(control, operation):
+        control.logger.debug("State RUN_KNIT")
         rcvMsg, rcvParam = control.check_serial()
-        if rcvMsg == MessageToken.reqLine:
+        if rcvMsg == Token.reqLine:
             pattern_finished = control.cnf_line_API6(rcvParam)
             if pattern_finished:
-                control.state = KnitState.SETUP
-                return KnitOutput.FINISHED
+                control.state = State.SETUP
+                return Output.FINISHED
             # else
-            return KnitOutput.NEXT_LINE
+            return Output.NEXT_LINE
         # fallthrough
-        return KnitOutput.NONE
+        return Output.NONE
 
-    def _API6_request_test(control, pattern, options, operation):
-        control.logger.debug("KnitState REQUEST_TEST")
+    def _API6_request_test(control, operation):
+        control.logger.debug("State REQUEST_TEST")
         rcvMsg, rcvParam = control.check_serial()
-        if rcvMsg == MessageToken.indState:
+        if rcvMsg == Token.indState:
             if rcvParam == 1:
-                control.com.req_test_API6(options.machine.value)
-                control.state = KnitState.CONFIRM_TEST
+                control.com.req_test_API6(control.machine.value)
+                control.state = State.CONFIRM_TEST
             else:
                 # any value of rcvParam other than 1 is some kind of error code
                 control.logger.debug("Test init failed")
                 # TODO: more output to describe error
         # fallthrough
-        return KnitOutput.NONE
+        return Output.NONE
 
-    def _API6_confirm_test(control, pattern, options, operation):
-        control.logger.debug("KnitState CONFIRM_TEST")
+    def _API6_confirm_test(control, operation):
+        control.logger.debug("State CONFIRM_TEST")
         rcvMsg, rcvParam = control.check_serial()
-        if rcvMsg == MessageToken.cnfTest:
+        if rcvMsg == Token.cnfTest:
             if rcvParam == 1:
-                control.state = KnitState.RUN_TEST
-                return KnitOutput.NONE
+                control.state = State.RUN_TEST
+                return Output.NONE
             else:
                 # any value of rcvParam other than 1 is some kind of error code
                 control.logger.error("Device not ready")
                 # TODO: more output to describe error
-                return KnitOutput.DEVICE_NOT_READY
+                return Output.DEVICE_NOT_READY
         # fallthrough
-        return KnitOutput.NONE
+        return Output.NONE
 
-    def _API6_run_test(control, pattern, options, operation):
-        control.logger.debug("KnitState RUN_TEST")
+    def _API6_run_test(control, operation):
+        control.logger.debug("State RUN_TEST")
         # TODO: open serial monitor
-        return KnitOutput.NONE
+        return Output.NONE

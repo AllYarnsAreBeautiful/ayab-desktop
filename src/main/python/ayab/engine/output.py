@@ -23,7 +23,7 @@ from enum import Enum, auto
 from ayab.observable import Observable
 
 
-class KnitOutput(Enum):
+class Output(Enum):
     NONE = auto()
     ERROR_INVALID_SETTINGS = auto()
     ERROR_SERIAL_PORT = auto()
@@ -36,11 +36,11 @@ class KnitOutput(Enum):
     FINISHED = auto()
 
 
-class KnitFeedbackHandler(Observable):
+class FeedbackHandler(Observable):
     """Polymorphic dispatch of notification signals on KnitOutput.
 
     @author Tom Price
-    @data   July 2020
+    @date   July 2020
     """
     def __init__(self, parent):
         super().__init__(parent.seer)

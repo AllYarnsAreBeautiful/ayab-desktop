@@ -25,7 +25,7 @@ from PyQt5.QtWidgets import QWidget
 
 from ayab.observable import Observable
 from .options_gui import Ui_Options
-from .mode import KnitMode
+from .mode import Mode
 from ayab.machine import Machine
 
 
@@ -50,7 +50,7 @@ class OptionsTab(Observable, QWidget):
         self.ui.setupUi(self)
 
         # Combo boxes
-        KnitMode.add_items(self.ui.knitting_mode_box)
+        Mode.add_items(self.ui.knitting_mode_box)
         Alignment.add_items(self.ui.alignment_combo_box)
         NeedleColor.add_items(self.ui.start_needle_color)
         NeedleColor.add_items(self.ui.stop_needle_color)
@@ -66,8 +66,10 @@ class OptionsTab(Observable, QWidget):
             lambda: self.emit_start_row_updater(self.__read_start_row()))
         self.ui.start_needle_edit.valueChanged.connect(self.update_needles)
         self.ui.stop_needle_edit.valueChanged.connect(self.update_needles)
-        self.ui.start_needle_color.currentIndexChanged.connect(self.update_needles)
-        self.ui.stop_needle_color.currentIndexChanged.connect(self.update_needles)
+        self.ui.start_needle_color.currentIndexChanged.connect(
+            self.update_needles)
+        self.ui.stop_needle_color.currentIndexChanged.connect(
+            self.update_needles)
         self.ui.alignment_combo_box.currentIndexChanged.connect(
             lambda: self.emit_alignment_updater(self.__read_alignment()))
 
@@ -92,7 +94,7 @@ class OptionsTab(Observable, QWidget):
     def __reset(self):
         """Reset configuration options to default settings."""
         self.__update_machine()
-        self.mode = KnitMode(self.prefs.value("default_knitting_mode"))
+        self.mode = Mode(self.prefs.value("default_knitting_mode"))
         self.num_colors = 2
         self.start_row = 0
         self.inf_repeat = self.prefs.value("default_infinite_repeat")
@@ -131,8 +133,7 @@ class OptionsTab(Observable, QWidget):
 
     def as_dict(self):
         return dict([("portname", self.portname),
-                     ("machine", self.machine.name),
-                     ("mode", self.mode.name),
+                     ("machine", self.machine.name), ("mode", self.mode.name),
                      ("num_colors", self.num_colors),
                      ("start_row", self.start_row),
                      ("inf_repeat", self.inf_repeat),
@@ -146,11 +147,12 @@ class OptionsTab(Observable, QWidget):
         """Get configuration options from the UI elements."""
         self.__update_machine()
         self.portname = portname
-        self.mode = KnitMode(self.ui.knitting_mode_box.currentIndex())
+        self.mode = Mode(self.ui.knitting_mode_box.currentIndex())
         self.num_colors = int(self.ui.color_edit.value())
         self.start_row = self.__read_start_row()
         self.inf_repeat = self.ui.inf_repeat_checkbox.isChecked()
-        self.start_needle = NeedleColor.read_start_needle(self.ui, self.machine)
+        self.start_needle = NeedleColor.read_start_needle(
+            self.ui, self.machine)
         self.stop_needle = NeedleColor.read_stop_needle(self.ui, self.machine)
         self.alignment = self.__read_alignment()
         self.auto_mirror = self.ui.auto_mirror_checkbox.isChecked()
@@ -177,11 +179,11 @@ class OptionsTab(Observable, QWidget):
             if self.start_needle > self.stop_needle:
                 return False, "Invalid needle start and end."
         # else
-        if self.mode == KnitMode.SINGLEBED \
+        if self.mode == Mode.SINGLEBED \
                 and self.num_colors >= 3:
             return False, "Singlebed knitting currently supports only 2 colors."
         # else
-        if self.mode == KnitMode.CIRCULAR_RIBBER \
+        if self.mode == Mode.CIRCULAR_RIBBER \
                 and self.num_colors >= 3:
             return False, "Circular knitting supports only 2 colors."
         # else

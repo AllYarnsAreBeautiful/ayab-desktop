@@ -21,6 +21,7 @@
 from PyQt5.QtCore import QObject, pyqtSignal, Qt
 from .engine.status import Status
 from .engine.options import Alignment
+from .engine.state import Operation
 from .utils import display_blocking_popup
 
 
@@ -48,7 +49,7 @@ class Observer(QObject):
     new_image_flag = pyqtSignal()
     bad_config_flag = pyqtSignal()
     knitting_starter = pyqtSignal()
-    knitting_finisher = pyqtSignal(bool)
+    operation_finisher = pyqtSignal(Operation, bool)
 
     def __init__(self):
         super().__init__()
@@ -72,4 +73,4 @@ class Observer(QObject):
         self.needles_updater.connect(parent.scene.update_needles)
         self.alignment_updater.connect(parent.scene.update_alignment)
         self.image_resizer.connect(parent.set_image_dimensions)
-        self.knitting_finisher.connect(parent.finish_knitting)
+        self.operation_finisher.connect(parent.finish_operation)

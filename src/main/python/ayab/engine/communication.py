@@ -32,7 +32,7 @@ import logging
 import pprint
 
 
-class MessageToken(Enum):
+class Token(Enum):
     unknown = -2
     none = -1
     reqInfo = 0x03
@@ -47,7 +47,7 @@ class MessageToken(Enum):
     slipFrameEnd = 0xc0
 
 
-class AyabCommunication(object):
+class Communication(object):
     """Class Handling the serial communication protocol."""
     def __init__(self, serial=None):
         """Create an AyabCommunication object,
@@ -98,20 +98,19 @@ class AyabCommunication(object):
     # NB this method must be the same for all API versions
     def req_info(self):
         """Send a request for information to the device."""
-        data = self.__driver.send(bytes([MessageToken.reqInfo.value]))
+        data = self.__driver.send(bytes([Token.reqInfo.value]))
         self.__ser.write(data)
 
     def req_test_API6(self, machine_val):
         """Send a request for testing to the device."""
-        data = self.__driver.send(
-            bytes([MessageToken.reqTest.value, machine_val]))
+        data = self.__driver.send(bytes([Token.reqTest.value, machine_val]))
         self.__ser.write(data)
 
     def req_start_API6(self, machine_val, start_needle, stop_needle,
                        continuous_reporting):
         """Send a start message to the device."""
         data = bytearray()
-        data.append(MessageToken.reqStart.value)
+        data.append(Token.reqStart.value)
         data.append(machine_val)
         data.append(start_needle)
         data.append(stop_needle)
@@ -137,7 +136,7 @@ class AyabCommunication(object):
 
         """
         data = bytearray()
-        data.append(MessageToken.cnfLine.value)
+        data.append(Token.cnfLine.value)
         data.append(line_number)
         data.append(color)
         data.append(flags)
@@ -158,13 +157,13 @@ class AyabCommunication(object):
             if len(self.__rx_msg_list) > 0:
                 return self.parse_update_API6(self.__rx_msg_list.pop(0))
 
-        return None, MessageToken.none, 0
+        return None, Token.none, 0
 
     def parse_update_API6(self, msg):
         if msg is None:
-            return None, MessageToken.none, 0
+            return None, Token.none, 0
 
-        for t in list(MessageToken):
+        for t in list(Token):
             if msg[0] == t.value:
                 return msg, t, msg[1]
 
@@ -172,7 +171,7 @@ class AyabCommunication(object):
         self.__logger.debug("unknown message: ")  # drop crlf
         pp = pprint.PrettyPrinter(indent=4)
         pp.pprint(msg)
-        return msg, MessageToken.unknown, 0
+        return msg, Token.unknown, 0
 
 
 # CRC algorithm after Maxim/Dallas

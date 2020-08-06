@@ -39,7 +39,8 @@ from .preferences import Preferences
 from .progressbar import ProgressBar
 from .about import About
 from .knitprogress import KnitProgress
-from .engine import KnitEngine
+from .engine import Engine
+from .engine.state import Operation
 from .engine.options import Alignment
 from .machine import Machine
 
@@ -73,11 +74,12 @@ class GuiMain(QMainWindow):
         self.about = About(self)
         self.scene = Scene(self)
         self.knitprog = KnitProgress(self)
-        self.engine = KnitEngine(self)
+        self.engine = Engine(self)
         self.progbar = ProgressBar(self)
         self.flash = FirmwareFlash(self)
         self.audio = AudioPlayer(self)
-        self.engine_thread = GenericThread(self.engine.knit)
+        self.knit_thread = GenericThread(self.engine.run, Operation.KNIT)
+        self.test_thread = GenericThread(self.engine.run, Operation.TEST)
 
         # show UI
         self.showMaximized()
@@ -117,21 +119,34 @@ class GuiMain(QMainWindow):
 
     def start_knitting(self):
         """Start the knitting process."""
+        self.start_operation()
         # reset knit progress window
         self.knitprog.reset()
+        # start thread for knit engine
+        self.knit_thread.start()
+
+    def start_testing(self):
+        """Start the testing process."""
+        self.start_operation()
+        # start thread for test engine
+        self.test_thread.start()
+
+    def start_operation(self):
         # disable UI elements at start of knitting
         self.menu.depopulate()
         self.ui.filename_lineedit.setEnabled(False)
         self.ui.load_file_button.setEnabled(False)
-        # start thread for knit engine
-        self.engine_thread.start()
+        self.ui.test_button.setEnabled(False)
+        self.ui.cancel_button.setEnabled(True)
 
-    def finish_knitting(self, beep: bool):
+    def finish_operation(self, operation: Operation, beep: bool):
         """(Re-)enable UI elements after knitting finishes."""
         self.menu.repopulate()
         self.ui.filename_lineedit.setEnabled(True)
         self.ui.load_file_button.setEnabled(True)
-        if beep:
+        self.ui.test_button.setEnabled(True)
+        self.ui.cancel_button.setEnabled(False)
+        if operation == Operation.KNIT and beep:
             self.audio.play("finish")
 
     def set_image_dimensions(self):

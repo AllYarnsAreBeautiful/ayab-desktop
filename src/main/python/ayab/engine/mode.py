@@ -26,7 +26,7 @@ from PyQt5.QtCore import QCoreApplication
 from ayab.utils import odd, even
 
 
-class KnitMode(Enum):
+class Mode(Enum):
     SINGLEBED = 0
     CLASSIC_RIBBER = 1
     MIDDLECOLORSTWICE_RIBBER = 2
@@ -79,12 +79,12 @@ class KnitMode(Enum):
         box.addItem(tr_("KnitMode", "Ribber: Circular"))
 
 
-class KnitModeFunc(object):
+class ModeFunc(object):
     """
     Methods available to `AyabControl.func_selector()`.
 
     @author Tom Price
-    @datei  June 2020
+    @date   June 2020
     """
 
     # singlebed, 2 color
