@@ -106,7 +106,7 @@ class KnitControl(object):
             self.logger.error("Requested line number out of range")
             return True  # stop knitting
         # else
-        # TODO some better algorithm for block wrapping
+        # TODO: some better algorithm for block wrapping
         if self.former_request == self.BLOCK_LENGTH - 1 and line_number == 0:
             # wrap to next block of lines
             self.line_block += 1
@@ -128,7 +128,7 @@ class KnitControl(object):
         self.com.cnf_line_API6(requested_line, color, flag, bits.tobytes())
 
         # screen output
-        # TODO tidy up this code
+        # TODO: tidy up this code
         msg = str(self.line_block) + " " + str(line_number) + " reqLine: " + \
             str(requested_line) + " pat_row: " + str(self.pat_row)
         if blank_line:
@@ -187,12 +187,11 @@ class KnitControl(object):
         self.__last_needle = last_needle
         return bits
 
-    def knit(self, pattern, options):
+    def operate(self, pattern, options, operation, API_version=6):
         """Finite State Machine governing serial communication"""
-        method = "_knit_" + self.state.name.lower()
+        method = "_API" + str(API_version) + "_" + self.state.name.lower()
         if not hasattr(KnitStateMachine, method):
-            # NONE, FINISHED
             return KnitOutput.NONE
         dispatch = getattr(KnitStateMachine, method)
-        result = dispatch(self, pattern, options)
+        result = dispatch(self, pattern, options, operation)
         return result

@@ -42,6 +42,7 @@ class FSM(object):
         self.CONFIGURING = QState(self.machine)
         self.CHECKING = QState(self.machine)
         self.KNITTING = QState(self.machine)
+        # self.TESTING = QState(self.machine)
 
         # Set machine states
         self.machine.setInitialState(self.NO_IMAGE)
@@ -54,6 +55,8 @@ class FSM(object):
                                     self.CONFIGURING)
         self.CONFIGURING.addTransition(parent.ui.knit_button.clicked,
                                        self.CHECKING)
+        # self.CONFIGURING.addTransition(parent.ui.test_button.clicked,
+        #                                self.TESTING)
         self.CHECKING.addTransition(parent.seer.got_image_flag,
                                     self.CONFIGURING)
         self.CHECKING.addTransition(parent.seer.new_image_flag,
@@ -74,6 +77,8 @@ class FSM(object):
             lambda: logging.debug("Entered state CHECKING"))
         self.KNITTING.entered.connect(
             lambda: logging.debug("Entered state KNITTING"))
+        # self.TESTING.entered.connect(
+        #     lambda: logging.debug("Entered state TESTING"))
 
         self.NO_IMAGE.exited.connect(parent.engine.config.refresh)
         self.CONFIGURING.entered.connect(parent.menu.add_image_actions)
@@ -91,22 +96,28 @@ class FSM(object):
         self.NO_IMAGE.assignProperty(parent.engine, "enabled", "False")
         self.CONFIGURING.assignProperty(parent.engine, "enabled", "True")
         self.KNITTING.assignProperty(parent.engine, "enabled", "False")
+        # self.TESTING.assignProperty(parent.engine, "enabled", "False")
 
         # Status tab in options dock should be activated only when knitting
         # self.NO_IMAGE.assignProperty(ui.status_tab, "enabled", "False")
         # self.CONFIGURING.assignProperty(ui.status_tab, "enabled", "False")
         # self.KNITTING.assignProperty(ui.status_tab, "enabled", "True")
+        # self.TESTING.assignProperty(ui.status_tab, "enabled", "False")  # ?
 
         # Knit button
         self.NO_IMAGE.assignProperty(parent.ui.knit_button, "enabled", "False")
-        self.CONFIGURING.assignProperty(parent.ui.knit_button, "enabled",
-                                        "True")
+        self.CONFIGURING.assignProperty(parent.ui.knit_button, "enabled", "True")
         self.KNITTING.assignProperty(parent.ui.knit_button, "enabled", "False")
+        # self.TESTING.assignProperty(parent.ui.knit_button, "enabled", "False")
+
+        # Test button
+        # self.NO_IMAGE.assignProperty(parent.ui.test_button, "enabled", "True")
+        # self.CONFIGURING.assignProperty(parent.ui.test_button, "enabled", "True")
+        # self.KNITTING.assignProperty(parent.ui.knit_button, "enabled", "False")
+        # self.TESTING.assignProperty(parent.ui.knit_button, "enabled", "False")
 
         # Cancel button
-        self.NO_IMAGE.assignProperty(parent.ui.cancel_button, "enabled",
-                                     "False")
-        self.CONFIGURING.assignProperty(parent.ui.cancel_button, "enabled",
-                                        "False")
-        self.KNITTING.assignProperty(parent.ui.cancel_button, "enabled",
-                                     "True")
+        self.NO_IMAGE.assignProperty(parent.ui.cancel_button, "enabled", "False")
+        self.CONFIGURING.assignProperty(parent.ui.cancel_button, "enabled", "False")
+        self.KNITTING.assignProperty(parent.ui.cancel_button, "enabled", "True")
+        # self.TESTING.assignProperty(parent.ui.cancel_button, "enabled", "True")

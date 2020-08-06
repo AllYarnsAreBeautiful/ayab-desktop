@@ -24,11 +24,13 @@ import unittest
 from mock import patch
 
 from ayab.engine.communication import AyabCommunication, MessageToken
+from ayab.machine import Machine
 
 
 class TestCommunication(unittest.TestCase):
     def setUp(self):
-        self.dummy_serial = serial.serial_for_url("loop://logging=debug", timeout=0.1)
+        self.dummy_serial = serial.serial_for_url("loop://logging=debug",
+                                                  timeout=0.1)
         self.comm_dummy = AyabCommunication(self.dummy_serial)
 
     def test_close_serial(self):
@@ -59,29 +61,41 @@ class TestCommunication(unittest.TestCase):
                                                 timeout=0.1)
 
     def test_update_API6(self):
-        byte_array = bytearray([0xc0, 0xc1, 0x01, 0xc0])
+        byte_array = bytearray([0xc0, MessageToken.cnfStart.value, 1, 0xc0])
         self.dummy_serial.write(byte_array)
         result = self.comm_dummy.update_API6()
-        expected_result = (b'\xc1\x01', MessageToken.cnfStart, 1)
+        expected_result = (bytes([MessageToken.cnfStart.value,
+                                  1]), MessageToken.cnfStart, 1)
         assert result == expected_result
 
     def test_req_start_API6(self):
         machine_val, start_val, end_val, continuous_reporting, crc8 = 0, 0, 10, True, 0x74
-        self.comm_dummy.req_start_API6(machine_val, start_val, end_val, continuous_reporting)
-        byte_array = bytearray(
-            [0xc0, 0x01, machine_val, start_val, end_val, continuous_reporting, crc8, 0xc0])
+        self.comm_dummy.req_start_API6(machine_val, start_val, end_val,
+                                       continuous_reporting)
+        byte_array = bytearray([
+            MessageToken.slipFrameEnd.value, MessageToken.reqStart.value,
+            machine_val, start_val, end_val, continuous_reporting, crc8,
+            MessageToken.slipFrameEnd.value
+        ])
         bytes_read = self.dummy_serial.read(len(byte_array))
         self.assertEqual(bytes_read, byte_array)
 
     def test_req_info(self):
         self.comm_dummy.req_info()
-        byte_array = bytearray([0xc0, 0x03, 0xc0])
+        byte_array = bytearray([
+            MessageToken.slipFrameEnd.value, MessageToken.reqInfo.value,
+            MessageToken.slipFrameEnd.value
+        ])
         bytes_read = self.dummy_serial.read(len(byte_array))
         assert bytes_read == byte_array
 
     def test_req_test_API6(self):
-        self.comm_dummy.req_test_API6()
-        byte_array = bytearray([0xc0, 0x04, 0xc0])
+        machine_val = Machine.KH910_KH950.value
+        self.comm_dummy.req_test_API6(machine_val)
+        byte_array = bytearray([
+            MessageToken.slipFrameEnd.value, MessageToken.reqTest.value,
+            machine_val, MessageToken.slipFrameEnd.value
+        ])
         bytes_read = self.dummy_serial.read(len(byte_array))
         assert bytes_read == byte_array
 
@@ -92,12 +106,11 @@ class TestCommunication(unittest.TestCase):
         line_data = b'\xde\xad\xbe\xef\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0'
         crc8 = 0xa7
         self.comm_dummy.cnf_line_API6(line_number, color, flags, line_data)
-        byte_array = bytearray([0xc0, 0x42])
-        byte_array.append(line_number)
-        byte_array.append(color)
-        byte_array.append(flags)
+        byte_array = bytearray([
+            MessageToken.slipFrameEnd.value, MessageToken.cnfLine.value,
+            line_number, color, flags
+        ])
         byte_array.extend(line_data)
-        byte_array.append(crc8)
-        byte_array.append(0xc0)
+        byte_array.extend(bytes([crc8, MessageToken.slipFrameEnd.value]))
         bytes_read = self.dummy_serial.read(len(byte_array))
         assert bytes_read == byte_array

@@ -44,13 +44,14 @@ class MessageToken(Enum):
     reqLine = 0x82
     cnfLine = 0x42
     indState = 0x84
+    slipFrameEnd = 0xc0
 
 
 class AyabCommunication(object):
     """Class Handling the serial communication protocol."""
     def __init__(self, serial=None):
-        """Creates an AyabCommunication object,
-        with an optional serial-like object."""
+        """Create an AyabCommunication object,
+        with an optional serial communication object."""
         logging.basicConfig(level=logging.DEBUG)
         self.__logger = logging.getLogger(type(self).__name__)
         self.__ser = serial
@@ -58,7 +59,7 @@ class AyabCommunication(object):
         self.__rx_msg_list = list()
 
     def __del__(self):
-        """Handles on delete behaviour closing serial port object."""
+        """Handle behaviour on deletion by closing the serial port connection."""
         self.close_serial()
 
     def is_open(self):
@@ -69,7 +70,7 @@ class AyabCommunication(object):
             return False
 
     def open_serial(self, portname=None):
-        """Opens serial port communication with a portName."""
+        """Open serial port communication."""
         if not self.__ser:
             self.__portname = portname
             try:
@@ -83,7 +84,7 @@ class AyabCommunication(object):
             return True
 
     def close_serial(self):
-        """Closes serial port."""
+        """Close the serial port."""
         if self.__ser is not None and self.__ser.is_open is True:
             try:
                 self.__ser.close()
@@ -96,17 +97,19 @@ class AyabCommunication(object):
 
     # NB this method must be the same for all API versions
     def req_info(self):
-        """Sends a request for information to controller."""
+        """Send a request for information to the device."""
         data = self.__driver.send(bytes([MessageToken.reqInfo.value]))
         self.__ser.write(data)
 
-    def req_test_API6(self):
-        """"""
-        data = self.__driver.send(bytes([MessageToken.reqTest.value]))
+    def req_test_API6(self, machine_val):
+        """Send a request for testing to the device."""
+        data = self.__driver.send(
+            bytes([MessageToken.reqTest.value, machine_val]))
         self.__ser.write(data)
 
-    def req_start_API6(self, machine_val, start_needle, stop_needle, continuous_reporting):
-        """Sends a start message to the controller."""
+    def req_start_API6(self, machine_val, start_needle, stop_needle,
+                       continuous_reporting):
+        """Send a start message to the device."""
         data = bytearray()
         data.append(MessageToken.reqStart.value)
         data.append(machine_val)
@@ -120,9 +123,9 @@ class AyabCommunication(object):
         self.__ser.write(data)
 
     def cnf_line_API6(self, line_number, color, flags, line_data):
-        """Sends a line of data via the serial port.
+        """Send a line of data via the serial port.
 
-        Sends a line of data to the serial port, all arguments are mandatory.
+        Send a line of data to the serial port. All arguments are mandatory.
         The data sent here is parsed by the Arduino controller which sets the
         knitting needles accordingly.
 
@@ -146,7 +149,7 @@ class AyabCommunication(object):
         self.__ser.write(data)
 
     def update_API6(self):
-        """Reads data from serial and tries to parse as SLIP packet."""
+        """Read data from serial and parse as SLIP packet."""
         if self.__ser:
             data = self.__ser.read(1000)
             if len(data) > 0:

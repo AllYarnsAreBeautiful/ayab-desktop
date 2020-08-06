@@ -22,6 +22,7 @@ import unittest
 
 from ayab.engine.communication import MessageToken
 from ayab.engine.communication_mockup import AyabCommunicationMockup
+from ayab.machine import Machine
 
 
 class TestAyabCommunicationMockup(unittest.TestCase):
@@ -42,26 +43,31 @@ class TestAyabCommunicationMockup(unittest.TestCase):
 
     def test_req_start_API6(self):
         machine_val, start_val, end_val, continuous_reporting, crc8 = 0, 0, 10, True, 0xb9
-        expected_result = (b'\xc1\x01', MessageToken.cnfStart, 1)
-        self.comm_dummy.req_start_API6(machine_val, start_val, end_val, continuous_reporting)
+        expected_result = (bytes([MessageToken.cnfStart.value,
+                                  1]), MessageToken.cnfStart, 1)
+        self.comm_dummy.req_start_API6(machine_val, start_val, end_val,
+                                       continuous_reporting)
         bytes_read = self.comm_dummy.update_API6()
         assert bytes_read == expected_result
 
     def test_req_info(self):
-        expected_result = (b'\xc3\x05\xff\xff', MessageToken.cnfInfo, 5)
+        expected_result = (bytes([MessageToken.cnfInfo.value, 5, 0xff,
+                                  0xff]), MessageToken.cnfInfo, 5)
         self.comm_dummy.req_info()
         bytes_read = self.comm_dummy.update_API6()
         assert bytes_read == expected_result
 
         # indState shall be sent automatically, also
-        expected_result = (b'\x84\x01\xff\xff\xff\xff\x01\x7f',
-                           MessageToken.indState, 1)
+        expected_result = (bytes(
+            [MessageToken.indState.value, 1, 0xff, 0xff, 0xff, 0xff, 1,
+             0x7f]), MessageToken.indState, 1)
         bytes_read = self.comm_dummy.update_API6()
         assert bytes_read == expected_result
 
     def test_req_test_API6(self):
-        expected_result = (b'\xc4\x01', MessageToken.cnfTest, 1)
-        self.comm_dummy.req_test_API6()
+        expected_result = (bytes([MessageToken.cnfTest.value,
+                                  1]), MessageToken.cnfTest, 1)
+        self.comm_dummy.req_test_API6(Machine.KH910_KH950)
         bytes_read = self.comm_dummy.update_API6()
         assert bytes_read == expected_result
 
@@ -71,14 +77,17 @@ class TestAyabCommunicationMockup(unittest.TestCase):
         flags = 0x12
         lineData = [0x23, 0x24]
         crc8 = 0x24
-        assert self.comm_dummy.cnf_line_API6(lineNumber, color, flags, lineData)
+        assert self.comm_dummy.cnf_line_API6(lineNumber, color, flags,
+                                             lineData)
 
     def test_req_line_API6(self):
         self.comm_dummy.open_serial()
         machine_val, start_val, end_val, continuous_reporting = 0, 0, 10, True
-        self.comm_dummy.req_start_API6(machine_val, start_val, end_val, continuous_reporting)
+        self.comm_dummy.req_start_API6(machine_val, start_val, end_val,
+                                       continuous_reporting)
         self.comm_dummy.update_API6()  # cnfStart
 
         for i in range(0, 256):
             bytes_read = self.comm_dummy.update_API6()
-            assert bytes_read == (bytearray([0x82, i]), MessageToken.reqLine, i)
+            assert bytes_read == (bytearray([MessageToken.reqLine.value,
+                                             i]), MessageToken.reqLine, i)

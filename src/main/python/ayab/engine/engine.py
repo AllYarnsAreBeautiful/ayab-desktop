@@ -28,6 +28,7 @@ from PyQt5.QtWidgets import QComboBox, QDockWidget, QWidget
 from ayab import utils
 from ayab.observable import Observable
 from .control import KnitControl
+from .state import KnitOperation
 from .pattern import Pattern
 from .options import OptionsTab, Alignment, NeedleColor
 from .status import Status, StatusTab
@@ -72,6 +73,7 @@ class KnitEngine(Observable, QDockWidget):
 
         # activate UI elements
         self.__activate_ui()
+
 
 #  def __activate_status_tab(self):
 #      self.ui.tab_widget.setTabEnabled(1, True)
@@ -121,7 +123,8 @@ class KnitEngine(Observable, QDockWidget):
 
         # TODO: detect if previous conf had the same
         # image to avoid re-generating.
-        self.__pattern = Pattern(image, self.config.machine, self.config.num_colors)
+        self.__pattern = Pattern(image, self.config.machine,
+                                 self.config.num_colors)
 
         # validate configuration options
         valid, msg = self.validate()
@@ -131,7 +134,9 @@ class KnitEngine(Observable, QDockWidget):
 
         # update pattern
         if self.config.start_needle and self.config.stop_needle:
-            self.__pattern.set_knit_needles(self.config.start_needle, self.config.stop_needle, self.config.machine)
+            self.__pattern.set_knit_needles(self.config.start_needle,
+                                            self.config.stop_needle,
+                                            self.config.machine)
         self.__pattern.alignment = self.config.alignment
 
         # update progress bar
@@ -163,7 +168,8 @@ class KnitEngine(Observable, QDockWidget):
 
             # FIXME pattern and config are only used by KnitControl.knit()
             # in the KnitState.SETUP step and do not need to be sent otherwise.
-            result = self.__control.knit(self.__pattern, self.config)
+            result = self.__control.operate(self.__pattern, self.config,
+                                            KnitOperation.KNIT)
             self.__feedback.handle(result)
             self.__status_handler()
             if self.__canceled or result is KnitOutput.FINISHED:

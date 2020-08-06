@@ -62,14 +62,17 @@ class AyabCommunicationMockup(AyabCommunication):
     def req_info(self) -> None:
         cnfInfo = bytearray([MessageToken.cnfInfo.value, 0x5, 0xFF, 0xFF])
         self.__rx_msg_list.append(cnfInfo)
-        indState = bytearray([MessageToken.indState.value, 0x1, 0xFF, 0xFF, 0xFF, 0xFF, 0x1, 0x7F])
+        indState = bytearray([
+            MessageToken.indState.value, 0x1, 0xFF, 0xFF, 0xFF, 0xFF, 0x1, 0x7F
+        ])
         self.__rx_msg_list.append(indState)
 
-    def req_test_API6(self) -> None:
+    def req_test_API6(self, machine_val) -> None:
         cnfTest = bytearray([MessageToken.cnfTest.value, 0x1])
         self.__rx_msg_list.append(cnfTest)
 
-    def req_start_API6(self, machine_val, start_needle, stop_needle, continuous_reporting) -> None:
+    def req_start_API6(self, machine_val, start_needle, stop_needle,
+                       continuous_reporting) -> None:
         self.__is_started = True
         cnfStart = bytearray([MessageToken.cnfStart.value, 0x1])
         self.__rx_msg_list.append(cnfStart)
@@ -79,7 +82,8 @@ class AyabCommunicationMockup(AyabCommunication):
 
     def update_API6(self) -> tuple:
         if self.__is_open and self.__is_started:
-            reqLine = bytearray([MessageToken.reqLine.value, self.__line_count])
+            reqLine = bytearray(
+                [MessageToken.reqLine.value, self.__line_count])
             self.__line_count += 1
             self.__line_count %= 256
             self.__rx_msg_list.append(reqLine)
