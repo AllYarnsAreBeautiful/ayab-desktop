@@ -104,7 +104,7 @@ class GuiMain(QMainWindow):
         self.menu.ui.action_quit.triggered.connect(
             QCoreApplication.instance().quit)
         self.menu.ui.action_load_AYAB_firmware.triggered.connect(
-            self.flash.show)
+            self.flash.open)
         self.menu.ui.action_set_preferences.triggered.connect(
             self.prefs.open_dialog)
         self.menu.ui.action_about.triggered.connect(self.about.show)

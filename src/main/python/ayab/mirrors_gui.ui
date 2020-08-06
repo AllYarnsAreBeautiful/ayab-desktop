@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>MirrorDialog</class>
+ <class>Mirrors</class>
  <widget class="QDialog" name="mirror_dialog">
   <property name="modal">
    <bool>true</bool>

@@ -33,7 +33,7 @@ from .options import OptionsTab, Alignment, NeedleColor
 from .status import Status, StatusTab
 from .mode import KnitMode
 from .output import KnitOutput, KnitFeedbackHandler
-from .dock_gui import Ui_DockWidget
+from .dock_gui import Ui_Dock
 
 
 class KnitEngine(Observable, QDockWidget):
@@ -44,7 +44,7 @@ class KnitEngine(Observable, QDockWidget):
     """
     def __init__(self, parent):
         super().__init__(parent.seer)
-        self.ui = Ui_DockWidget()
+        self.ui = Ui_Dock()
         self.ui.setupUi(self)
         self.config = OptionsTab(parent)
         self.config.refresh()
@@ -61,10 +61,8 @@ class KnitEngine(Observable, QDockWidget):
     def setup_ui(self):
         # insert tabs
         tr_ = QCoreApplication.translate
-        self.ui.tab_widget.insertTab(0, self.config,
-                                     tr_("DockWidget", "Settings"))
-        self.ui.tab_widget.insertTab(1, self.status,
-                                     tr_("DockWidget", "Status"))
+        self.ui.tab_widget.insertTab(0, self.config, tr_("Dock", "Settings"))
+        self.ui.tab_widget.insertTab(1, self.status, tr_("Dock", "Status"))
 
         # disable status tab at first
         self.__disable_status_tab()

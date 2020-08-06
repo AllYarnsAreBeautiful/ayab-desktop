@@ -28,9 +28,9 @@ import os
 import sys
 import platform
 import re
-from subprocess import Popen, PIPE, STDOUT, run
+from subprocess import run, STDOUT, PIPE, check_output
 
-from .firmware_flash_gui import Ui_FirmwareFlashFrame
+from .firmware_flash_gui import Ui_Firmware
 from . import utils
 
 
@@ -52,12 +52,9 @@ class FirmwareFlash(QFrame):
         self.__logger = logging.getLogger(type(self).__name__)
         self.__app_context = parent.app_context
 
-        self.ui = Ui_FirmwareFlashFrame()
+        self.ui = Ui_Firmware()
         self.ui.setupUi(self)
         self.ui.flash_firmware.setEnabled(False)
-
-        utils.populate_ports(self.ui.port_combo_box)
-        self.port = ""
         self.load_json()
 
         self.ui.port_combo_box.currentIndexChanged.connect(self.port_selected)
@@ -66,6 +63,11 @@ class FirmwareFlash(QFrame):
         self.ui.firmware_list.itemClicked[QListWidgetItem].connect(
             self.firmware_item_activated)
         self.ui.flash_firmware.clicked.connect(self.execute_flash_command)
+
+    def open(self):
+        utils.populate_ports(self.ui.port_combo_box)
+        self.port_selected()
+        self.show()
 
     def load_json(self):
         self.json_object = self.parse_json("")
@@ -130,6 +132,7 @@ class FirmwareFlash(QFrame):
         self.ui.firmware_list.addItem(version)
 
     def execute_flash_command(self):
+        self.ui.flash_firmware.setEnabled(False)
         self.__logger.debug("port " + str(self.port))
         os_name = platform.system()
         base_dir = os.path.dirname(__file__)
@@ -147,32 +150,17 @@ class FirmwareFlash(QFrame):
         # else
         tr_ = QCoreApplication.translate
         try:
-            p = Popen(command, stdout=PIPE, stderr=STDOUT, shell=True)
-
-            rc = p.poll()
-            while rc != 0:
-                while True:
-                    line = p.stdout.readline()
-                    # self.__logger.debug(line)
-                    if not line:
-                        break
-                rc = p.poll()
-
-            if rc == 0:
-                self.__logger.info("Flashing done!")
-                utils.display_blocking_popup(
-                    tr_("FirmwareFlash", "Flashing done!"))
-                return True
-            else:
-                self.__logger.info("Error flashing firmware.")
-                utils.display_blocking_popup(
-                    tr_("FirmwareFlash", "Error flashing firmware."), "error")
-                return False
+            p = check_output(command, stderr=STDOUT, timeout=10, shell=True)
         except Exception as e:
             self.__logger.info("Error flashing firmware: " + str(e))
             utils.display_blocking_popup(
-                tr_("FirmwareFlash", "Error flashing firmware."), "error")
-        return False
+                tr_("Firmware", "Error flashing firmware."), "error")
+            return False
+        else:
+            self.__logger.info("Flashing done!")
+            utils.display_blocking_popup(
+                tr_("Firmware", "Flashing done!"))
+            return True
 
     def generate_command(self, base_dir, os_name, controller_name,
                          firmware_name):
@@ -184,7 +172,8 @@ class FirmwareFlash(QFrame):
             # We assume avrdude is available in path
             try:
                 # run subprocess
-                result = run(["which", "avrdude"], capture_output=True)
+                result = run(["which", "avrdude"], stdout=PIPE, stderr=PIPE)
+                print(result)
             except:
                 self.__logger.error("`avrdude` not found in path")
                 utils.display_blocking_popup(
@@ -193,7 +182,7 @@ class FirmwareFlash(QFrame):
                         "Error flashing firmware: `avrdude` not found."),
                     "error")
                 return None
-            exe_route = re.sub(r"\n$", r"", str(result.stdout))
+            exe_route = re.sub(r"\n$", r"", result.stdout.decode("ascii"))
         elif os_name == "Darwin":  # macOS
             exe_route = self.__app_context.get_resource(
                 "ayab/firmware/avrdude_mac")
@@ -207,8 +196,7 @@ class FirmwareFlash(QFrame):
         # avrdude command.
         # http://www.ladyada.net/learn/avr/avrdude.html
         # http://sharats.me/the-ever-useful-and-neat-subprocess-module.html
-        exec_command = """{0} -p {1} -c {2} -P {3} -b115200 -D -Uflash:w:"{4}":i """.format(
-            exe_route, device, programmer, self.port, binary_file)
+        exec_command = """{0} -p {1} -c {2} -P {3} -b115200 -D -Uflash:w:"{4}":i """.format(exe_route, device, programmer, self.port, binary_file)
 
         if os_name == "Windows" or os_name == "Darwin":
             exec_command += " -C \"" + self.__app_context.get_resource(

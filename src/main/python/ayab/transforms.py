@@ -22,7 +22,7 @@ from PIL import Image, ImageOps
 
 from PyQt5.QtWidgets import QDialog
 
-from .mirrors_gui import Ui_MirrorDialog
+from .mirrors_gui import Ui_Mirrors
 
 
 class Transform(Image.Image):
@@ -135,7 +135,7 @@ class MirrorDialog(QDialog):
     '''
     def __init__(self, parent):
         super().__init__()  # FIXME set the parent widget as GuiMain
-        self.__ui = Ui_MirrorDialog()
+        self.__ui = Ui_Mirrors()
         self.__ui.setupUi(self)
         self.__ui.check0.toggled.connect(lambda: parent.toggled(0))
         self.__ui.check1.toggled.connect(lambda: parent.toggled(1))

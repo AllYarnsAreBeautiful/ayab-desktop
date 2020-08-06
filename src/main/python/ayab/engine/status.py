@@ -23,7 +23,7 @@ from bitarray import bitarray
 from PyQt5.QtCore import QCoreApplication
 from PyQt5.QtWidgets import QWidget
 
-from .status_gui import Ui_StatusWidget
+from .status_gui import Ui_StatusTab
 
 
 class Direction(Enum):
@@ -137,7 +137,7 @@ class StatusTab(Status, QWidget):
     """
     def __init__(self):
         super().__init__()
-        self.ui = Ui_StatusWidget()
+        self.ui = Ui_StatusTab()
         self.ui.setupUi(self)
 
     def refresh(self):

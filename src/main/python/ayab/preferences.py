@@ -28,7 +28,7 @@ import re
 from PyQt5.QtCore import Qt, QSettings, QCoreApplication
 from PyQt5.QtWidgets import QDialog, QFormLayout, QLabel, QCheckBox, QComboBox
 
-from .prefs_gui import Ui_PrefsDialog
+from .prefs_gui import Ui_Prefs
 from .observable import Observable
 from .engine.options import Alignment
 from .engine.mode import KnitMode
@@ -141,7 +141,7 @@ class PrefsDialog(QDialog):
         self.__prefs = parent.prefs
 
         # set up preferences dialog
-        self.__ui = Ui_PrefsDialog()
+        self.__ui = Ui_Prefs()
         self.__ui.setupUi(self)
         self.__form = QFormLayout(self.__ui.prefs_group)
 
@@ -162,7 +162,7 @@ class PrefsDialog(QDialog):
 
     def __make_label(self, var):
         title = re.sub(r"_", r" ", var).title()
-        return QLabel(QCoreApplication.translate("PrefsDialog", title))
+        return QLabel(QCoreApplication.translate("Prefs", title))
 
     def __make_widget(self, var):
         cls = self.__prefs.variables[var]

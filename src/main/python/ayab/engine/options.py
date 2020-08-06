@@ -24,7 +24,7 @@ from PyQt5.QtCore import Qt, QCoreApplication, QSettings
 from PyQt5.QtWidgets import QWidget
 
 from ayab.observable import Observable
-from .options_gui import Ui_OptionsWidget
+from .options_gui import Ui_Options
 from .mode import KnitMode
 from ayab.machine import Machine
 
@@ -41,7 +41,7 @@ class OptionsTab(Observable, QWidget):
     def __init__(self, parent):
         super().__init__(parent.seer)
         self.prefs = parent.prefs
-        self.ui = Ui_OptionsWidget()
+        self.ui = Ui_Options()
         self.__setup_ui()
         self.__activate_ui()
         # self.__reset()

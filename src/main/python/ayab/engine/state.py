@@ -64,7 +64,7 @@ class KnitStateMachine(object):
         # else
         control.logger.debug(options.portname)
         if options.portname == QCoreApplication.translate(
-                "AyabPlugin", "Simulation"):
+                "KnitEngine", "Simulation"):
             control.com = AyabCommunicationMockup()
         else:
             control.com = AyabCommunication()
