@@ -25,6 +25,7 @@ from PyQt5.QtCore import QCoreApplication
 from .communication import Communication, Token
 from .communication_mockup import CommunicationMockup
 from .output import Output
+from .console import Console
 
 
 class Operation(Enum):
@@ -63,9 +64,9 @@ class StateMachine(object):
             control.com = CommunicationMockup()
         else:
             control.com = Communication()
-        if not control.com.open_serial(control.portname):
-            control.logger.error("Could not open serial port")
-            return Output.ERROR_SERIAL_PORT
+            if not control.com.open_serial(control.portname):
+                control.logger.error("Could not open serial port")
+                return Output.ERROR_SERIAL_PORT
         # else
         # setup complete
         control.state = State.INIT
@@ -73,7 +74,7 @@ class StateMachine(object):
 
     def _API6_init(control, operation):
         control.logger.debug("State INIT")
-        rcvMsg, rcvParam = control.check_serial()
+        rcvMsg, rcvParam = control.check_serial_API6()
         if rcvMsg == Token.cnfInfo:
             if rcvParam >= control.FIRST_SUPPORTED_API_VERSION:
                 control.api_version = rcvParam
@@ -93,7 +94,7 @@ class StateMachine(object):
 
     def _API6_request_start(control, operation):
         control.logger.debug("State REQUEST_START")
-        rcvMsg, rcvParam = control.check_serial()
+        rcvMsg, rcvParam = control.check_serial_API6()
         if rcvMsg == Token.indState:
             if rcvParam == 1:
                 control.com.req_start_API6(control.machine.value,
@@ -110,7 +111,7 @@ class StateMachine(object):
 
     def _API6_confirm_start(control, operation):
         control.logger.debug("State CONFIRM_START")
-        rcvMsg, rcvParam = control.check_serial()
+        rcvMsg, rcvParam = control.check_serial_API6()
         if rcvMsg == Token.cnfStart:
             if rcvParam == 1:
                 control.state = State.RUN_KNIT
@@ -125,7 +126,7 @@ class StateMachine(object):
 
     def _API6_run_knit(control, operation):
         control.logger.debug("State RUN_KNIT")
-        rcvMsg, rcvParam = control.check_serial()
+        rcvMsg, rcvParam = control.check_serial_API6()
         if rcvMsg == Token.reqLine:
             pattern_finished = control.cnf_line_API6(rcvParam)
             if pattern_finished:
@@ -138,7 +139,7 @@ class StateMachine(object):
 
     def _API6_request_test(control, operation):
         control.logger.debug("State REQUEST_TEST")
-        rcvMsg, rcvParam = control.check_serial()
+        rcvMsg, rcvParam = control.check_serial_API6()
         if rcvMsg == Token.indState:
             if rcvParam == 1:
                 control.com.req_test_API6(control.machine.value)
@@ -152,7 +153,7 @@ class StateMachine(object):
 
     def _API6_confirm_test(control, operation):
         control.logger.debug("State CONFIRM_TEST")
-        rcvMsg, rcvParam = control.check_serial()
+        rcvMsg, rcvParam = control.check_serial_API6()
         if rcvMsg == Token.cnfTest:
             if rcvParam == 1:
                 control.state = State.RUN_TEST
@@ -167,5 +168,6 @@ class StateMachine(object):
 
     def _API6_run_test(control, operation):
         control.logger.debug("State RUN_TEST")
-        # TODO: open serial monitor
+        # open serial monitor
+        console = Console()
         return Output.NONE

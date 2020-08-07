@@ -44,6 +44,9 @@ from .engine.state import Operation
 from .engine.options import Alignment
 from .machine import Machine
 
+from PyQt5.QtWidgets import QDialog, QVBoxLayout
+from .engine.console import Console
+
 # TODO move to generic configuration
 
 
@@ -65,6 +68,13 @@ class GuiMain(QMainWindow):
         # create UI
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+
+        self.dialog = QDialog()
+        self.layout = QVBoxLayout(self.dialog)
+        self.console = Console(self)
+        self.layout.addWidget(self.console)
+        self.console.grabKeyboard()
+        self.dialog.show()
 
         # add modular components
         self.menu = Menu(self)

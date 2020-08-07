@@ -48,6 +48,7 @@ class Engine(Observable, QDockWidget):
         self.ui = Ui_Dock()
         self.ui.setupUi(self)
         self.config = OptionsTab(parent)
+        self.config.portname = self.__read_portname()
         self.config.refresh()
         self.status = StatusTab()
         self.setup_ui()
@@ -107,12 +108,15 @@ class Engine(Observable, QDockWidget):
     #     self.portname = ""
     #     self.config.refresh()
 
+    def __read_portname(self):
+        return self.ui.serial_port_dropdown.currentText()
+
     def knit_config(self, image):
         """
         Read and check configuration options from options dock UI.
         """
         # get configuration options
-        self.config.read(self.ui.serial_port_dropdown.currentText())
+        self.config.read(self.__read_portname())
         self.__logger.debug(self.config.as_dict())
 
         # start to knit with the bottom first
@@ -161,6 +165,7 @@ class Engine(Observable, QDockWidget):
         self.__canceled = False
 
         # setup knitting controller
+        self.config.portname = self.__read_portname()
         self.__control.start(self.pattern, self.config, operation)
 
         while True:

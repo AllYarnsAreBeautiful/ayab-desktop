@@ -90,9 +90,9 @@ class Communication(object):
                 self.__ser.close()
                 del (self.__ser)
                 self.__ser = None
-                self.__logger.info("Closing Serial port successful.")
+                self.__logger.info("Closing serial port successful.")
             except:
-                self.__logger.warning("Closing Serial port failed. \
+                self.__logger.warning("Closing serial port failed. \
                                       Was it ever open?")
 
     # NB this method must be the same for all API versions
@@ -172,6 +172,10 @@ class Communication(object):
         pp = pprint.PrettyPrinter(indent=4)
         pp.pprint(msg)
         return msg, Token.unknown, 0
+
+    def hw_test_send_cmd_API6(self, cmd):
+        # no SLIP protocol, no CRC8
+        self.__ser.write(data)
 
 
 # CRC algorithm after Maxim/Dallas

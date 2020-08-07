@@ -26,6 +26,7 @@ from time import sleep
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QMessageBox
 
+M
 from .communication import Communication, Token
 
 
@@ -104,3 +105,12 @@ class CommunicationMockup(Communication):
             return self.parse_update_API6(self.__rx_msg_list.pop(0))
 
         return None, Token.none, 0
+
+    def hw_test_setup_API6(self):
+        self.__hw_test_mock = HardwareTestMock()
+
+    def hw_test_send_cmd_API6(self, cmd):
+        self.__hw_test_mock.send(cmd)
+
+    def hw_test_read_API6(self, cmd):
+        return self.__hw_test_mock.read()
