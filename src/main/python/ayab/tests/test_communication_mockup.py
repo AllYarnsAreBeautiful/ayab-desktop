@@ -50,8 +50,8 @@ class TestCommunicationMockup(unittest.TestCase):
         assert bytes_read == expected_result
 
     def test_req_info(self):
-        expected_result = (bytes([Token.cnfInfo.value, 5, 0xff,
-                                  0xff]), Token.cnfInfo, 5)
+        expected_result = (bytes([Token.cnfInfo.value, 6, 1,
+                                  0]), Token.cnfInfo, 6)
         self.comm_dummy.req_info()
         bytes_read = self.comm_dummy.update_API6()
         assert bytes_read == expected_result

@@ -26,7 +26,6 @@ from time import sleep
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QMessageBox
 
-M
 from .communication import Communication, Token
 
 
@@ -61,7 +60,7 @@ class CommunicationMockup(Communication):
         return True
 
     def req_info(self) -> None:
-        cnfInfo = bytearray([Token.cnfInfo.value, 0x5, 0xFF, 0xFF])
+        cnfInfo = bytearray([Token.cnfInfo.value, 6, 1, 0])  # APIv6, FWv1.0
         self.__rx_msg_list.append(cnfInfo)
         indState = bytearray(
             [Token.indState.value, 0x1, 0xFF, 0xFF, 0xFF, 0xFF, 0x1, 0x7F])
@@ -105,12 +104,3 @@ class CommunicationMockup(Communication):
             return self.parse_update_API6(self.__rx_msg_list.pop(0))
 
         return None, Token.none, 0
-
-    def hw_test_setup_API6(self):
-        self.__hw_test_mock = HardwareTestMock()
-
-    def hw_test_send_cmd_API6(self, cmd):
-        self.__hw_test_mock.send(cmd)
-
-    def hw_test_read_API6(self, cmd):
-        return self.__hw_test_mock.read()

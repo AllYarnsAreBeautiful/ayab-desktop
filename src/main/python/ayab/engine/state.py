@@ -21,11 +21,12 @@
 from enum import Enum, auto
 
 from PyQt5.QtCore import QCoreApplication
+from PyQt5.QtWidgets import QApplication
 
 from .communication import Communication, Token
 from .communication_mockup import CommunicationMockup
 from .output import Output
-from .console import Console
+from .hw_test import HardwareTest
 
 
 class Operation(Enum):
@@ -42,6 +43,7 @@ class State(Enum):
     REQUEST_TEST = auto()
     CONFIRM_TEST = auto()
     RUN_TEST = auto()
+    FINISHED = auto()
 
 
 class StateMachine(object):
@@ -58,15 +60,15 @@ class StateMachine(object):
             if not control.func_selector():
                 return Output.ERROR_INVALID_SETTINGS
         # else
-        control.logger.debug(control.portname)
+        control.logger.debug("Port name: " + control.portname)
         if control.portname == QCoreApplication.translate(
                 "KnitEngine", "Simulation"):
             control.com = CommunicationMockup()
         else:
             control.com = Communication()
-            if not control.com.open_serial(control.portname):
-                control.logger.error("Could not open serial port")
-                return Output.ERROR_SERIAL_PORT
+        if not control.com.open_serial(control.portname):
+            control.logger.error("Could not open serial port")
+            return Output.ERROR_SERIAL_PORT
         # else
         # setup complete
         control.state = State.INIT
@@ -80,9 +82,11 @@ class StateMachine(object):
                 control.api_version = rcvParam
                 if operation == Operation.TEST:
                     control.state = State.REQUEST_TEST
+                    # TODO: need more informative messages for HW test
+                    return Output.NONE
                 else:
                     control.state = State.REQUEST_START
-                return Output.WAIT_FOR_INIT
+                    return Output.WAIT_FOR_INIT
             else:
                 control.logger.error("Wrong API version: " + str(rcvParam) +
                                      ", expected >= " +
@@ -130,7 +134,7 @@ class StateMachine(object):
         if rcvMsg == Token.reqLine:
             pattern_finished = control.cnf_line_API6(rcvParam)
             if pattern_finished:
-                control.state = State.SETUP
+                control.state = State.FINISHED
                 return Output.FINISHED
             # else
             return Output.NEXT_LINE
@@ -157,6 +161,7 @@ class StateMachine(object):
         if rcvMsg == Token.cnfTest:
             if rcvParam == 1:
                 control.state = State.RUN_TEST
+                # TODO: need more informative messages for HW test
                 return Output.NONE
             else:
                 # any value of rcvParam other than 1 is some kind of error code
@@ -168,6 +173,12 @@ class StateMachine(object):
 
     def _API6_run_test(control, operation):
         control.logger.debug("State RUN_TEST")
-        # open serial monitor
-        console = Console()
+        control.hw_test = HardwareTest()
+        control.hw_test.exec()
+        control.state = State.FINISHED
+        return Output.NONE
+
+    def _API6_finished(control, operation):
+        control.logger.debug("State FINISHED")
+        control.state = State.SETUP
         return Output.NONE

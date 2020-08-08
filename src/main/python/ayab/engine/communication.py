@@ -175,7 +175,7 @@ class Communication(object):
 
     def hw_test_send_cmd_API6(self, cmd):
         # no SLIP protocol, no CRC8
-        self.__ser.write(data)
+        self.__ser.write(cmd)
 
 
 # CRC algorithm after Maxim/Dallas

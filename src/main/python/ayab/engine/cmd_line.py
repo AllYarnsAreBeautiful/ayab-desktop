@@ -19,41 +19,41 @@
 
 from PyQt5.QtWidgets import QPlainTextEdit, QScrollBar
 from PyQt5.QtGui import QPalette, QTextCursor
-from PyQt5.QtCore import pyqtSignal, Qt
+from PyQt5.QtCore import pyqtSignal, Qt, QSize
 
 
-class Console(QPlainTextEdit):
-    data_getter = pyqtSignal(bytearray)
+class CmdLine(QPlainTextEdit):
+    cmd_sender = pyqtSignal(str)
 
     def __init__(self, parent):
         super().__init__(parent)
-        # self.bar = QScrollBar(self)
-        # self.cursor = QTextCursor()
         self.setCursor(Qt.IBeamCursor)
         self.ensureCursorVisible()
-        p = QPalette()
-        p.setColor(QPalette.Base, Qt.black)
-        p.setColor(QPalette.Text, Qt.green)
-        self.setPalette(p)
-        self.local_echo_enabled = True
-
-    def put_data(self, data):
-        self.insertPlainText(data)
-        # self.bar.setValue(self.bar.maximum())
+        # p = QPalette()
+        # p.setColor(QPalette.Base, Qt.black)
+        # p.setColor(QPalette.Text, Qt.green)
+        # self.setPalette(p)
+        self.setMaximumHeight(50)
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.cmd_sender.connect(parent.hw_test_send_cmd_API6)
 
     def keyPressEvent(self, event):
         key = event.key()
         if key == Qt.Key_Escape:
-            self.close()  # send signal to close parent dialog
-            return
-        # else
-        if key in []:  #Qt.Key_Delete, Qt.Key_Backspace, Qt.Key_Left, Qt.Key_Right, Qt.Key_Up, Qt.Key_Down]:
+            self.cmd_sender.emit("quit")
+        elif key == Qt.Key_Return:
+            self.cmd_sender.emit(self.toPlainText())
+            self.setPlainText("")
+        elif key == Qt.Key_Backspace:
+            self.textCursor().deletePreviousChar()
+        elif key in [
+                Qt.Key_Delete, Qt.Key_Left, Qt.Key_Right, Qt.Key_Up,
+                Qt.Key_Down
+        ]:
             pass
         else:
-            if self.local_echo_enabled:
-                # QPlainTextEdit.keyPressEvent(event)
-                self.put_data(event.text())
-                # emit data_getter(event.text())
+            self.insertPlainText(event.text())
 
     def mousePressEvent(self, event):
         self.setFocus()

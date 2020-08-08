@@ -51,6 +51,9 @@ class FeedbackHandler(Observable):
             dispatch = getattr(self, method)
             dispatch()
 
+    def _none(self):
+        self.emit_notification("", False)
+
     def _connecting_to_machine(self):
         self.emit_notification("Connecting to machine...", False)
 

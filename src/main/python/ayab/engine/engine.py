@@ -28,7 +28,7 @@ from PyQt5.QtWidgets import QComboBox, QDockWidget, QWidget
 from ayab import utils
 from ayab.observable import Observable
 from .control import Control
-from .state import Operation
+from .state import Operation, State
 from .pattern import Pattern
 from .options import OptionsTab, Alignment, NeedleColor
 from .status import Status, StatusTab
@@ -171,11 +171,11 @@ class Engine(Observable, QDockWidget):
         while True:
             # continue operating
             # typically each step involves some communication with the device
-            result = self.__control.operate(operation)
-            self.__feedback.handle(result)
+            output = self.__control.operate(operation)
+            self.__feedback.handle(output)
             if operation == Operation.KNIT:
                 self.__status_handler()
-            if self.__canceled or result is Output.FINISHED:
+            if self.__canceled or self.__control.state == State.FINISHED:
                 break
 
         self.__control.stop()

@@ -18,35 +18,44 @@
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
 from time import sleep
+from PyQt5.QtCore import QObject, pyqtSignal
 
 
-class HardwareTestMock(object):
+class HardwareTestMock(QObject):
+    hw_output_sender = pyqtSignal(str)
     commands = [
         "setSingle", "setAll", "readEOLsensors", "readEncoders", "beep",
-        "autoRead", "autoTest", "send", "stop", "help"
+        "autoRead", "autoTest", "send", "stop", "quit", "help"
     ]
 
-    def __init__(self):
-        self.autoReadOn = False
-        self.autoTestOn = False
-        self.__output = []
+    def __init__(self, parent):
+        super().__init__()
+        self.__autoReadOn = False
+        self.__autoTestOn = False
+        self.__output = list()
+        self.__auto = list()
+        self.__quit = False
         self.setup()
+        self.hw_output_sender.connect(parent.hw_test_read_API6)
 
     def send(self, cmd):
-        tokens = cmd.split()
-        if tokens[0] in self.commands:
-            dispatch = getattr(self, tokens[0] + "Cmd")
-            dispatch(self, tokens)
-        else:
+        tokens = cmd.lower().split()
+        try:
+            i = [x.lower() for x in self.commands].index(tokens[0])
+        except Exception as e:
             self.unrecognizedCmd(cmd)
+        else:
+            dispatch = getattr(self, self.commands[i] + "Cmd")
+            dispatch(tokens)
 
     def read(self):
-        output = self.__output.join
-        self.output = []
-        return output
+        output = "".join(self.__output)
+        self.__output = list()
+        self.hw_output_sender.emit(output)
 
     def prompt(self):
-        self.__output.append("$ \n")
+        # self.__output.append("$ \n")
+        pass
 
     def helpCmd(self, tokens):
         self.__output.append("The following commands are available:\n")
@@ -58,20 +67,18 @@ class HardwareTestMock(object):
         self.__output.append("autoRead\n")
         self.__output.append("autoTest\n")
         self.__output.append("send\n")
+        self.__output.append("stop\n")
         self.__output.append("help\n")
-        self.prompt()
 
     def sendCmd(self, tokens):
         self.__output.append("Called send\n")
-        self.__output.append("\x01\x02\x03\n")
-        self.prompt()
+        self.__output.append("\x01\x02\x03\n")  # FIXME ???
 
     def beep(self):
         pass
 
     def beepCmd(self, tokens):
         self.__output.append("Called beep\n")
-        self.prompt()
 
     def encoderAChange(self):
         self.beep()
@@ -81,13 +88,11 @@ class HardwareTestMock(object):
         if tokens[1] == "":
             return
         # else
-        solenoidNumber = int(arg)
+        solenoidNumber = int(tokens[1])
         if (solenoidNumber > 15):
             self.__output.append("Invalid argument: " + str(solenoidNumber) +
                                  "\n")
-            return
         # else
-        self.prompt()
 
     def setAllCmd(self, tokens):
         self.__output.append("Called setAll\n")
@@ -97,75 +102,71 @@ class HardwareTestMock(object):
         if tokens[2] == "":
             return
         # else
-        self.prompt()
 
-    def readEOLsensors(self):
-        self.__output.append("  EOL_L: 0")
-        self.__output.append("  EOL_R: 0")
+    def readEOLsensors(self, output):
+        output.append("  EOL_L: 0")
+        output.append("  EOL_R: 0")
 
     def readEOLsensorsCmd(self, tokens):
         self.__output.append("Called readEOLsensors\n")
-        self.readEOLsensors()
+        self.readEOLsensors(self.__output)
         self.__output.append("\n")
-        self.prompt()
 
-    def readEncoders(self):
-        self.__output.append("  ENC_A: LOW")
-        self.__output.append("  ENC_B: LOW")
-        self.__output.append("  ENC_C: LOW")
+    def readEncoders(self, output):
+        output.append("  ENC_A: LOW")
+        output.append("  ENC_B: LOW")
+        output.append("  ENC_C: LOW")
 
     def readEncodersCmd(self, tokens):
         self.__output.append("Called readEncoders\n")
-        self.readEncoders()
+        self.readEncoders(self.__output)
         self.__output.append("\n")
-        self.prompt()
 
     def autoRead(self):
-        self.__output.append("\n")
-        self.readEOLsensors()
-        self.readEncoders()
-        self.__output.append("\n")
-        self.prompt()
+        self.readEOLsensors(self.__auto)
+        self.readEncoders(self.__auto)
+        self.__auto.append("\n")
         sleep(1)
 
     def autoReadCmd(self, tokens):
         self.__output.append("Called autoRead, send stop to quit\n")
-        self.autoReadOn = True
-        self.readEncoders()
-        self.__output.append("\n")
-        self.prompt()
+        self.__autoReadOn = True
 
     def autoTest(self):
-        self.__output.append("\n")
-        self.__output.append("Set even solenoids\n")
+        self.__auto.append("Set even solenoids\n")
         sleep(0.5)
-        self.__output.append("\n")
-        self.__output.append("Set odd solenoids\n")
-        self.prompt()
+        self.__auto.append("Set odd solenoids\n")
         sleep(0.5)
 
     def autoTestCmd(self, tokens):
         self.__output.append("Called autoTest, send stop to quit\n")
-        self.autoTestOn = True
+        self.__autoTestOn = True
 
     def stopCmd(self, tokens):
-        self.autoReadOn = True
-        self.autoTestOn = True
-        self.prompt()
+        self.__autoReadOn = False
+        self.__autoTestOn = False
 
     def unrecognizedCmd(self, cmd):
-        self.__output.append("Unrecognized command\n")
-        self.__output.append(cmd + "\n")
+        self.__output.append("Unrecognized command: " + cmd + "\n")
         self.helpCmd([])
 
     def setup(self):
         self.__output.append("AYAB Hardware Test v1.0 API v6\n\n")
         self.helpCmd([])
 
+    def quitCmd(self, tokens):
+        self.__quit = True
+
     def loop(self):
-        if self.autoReadOn:
-            self.autoRead()
-        if self.autoTestOn:
-            self.autoTest()
-        # limit length of output to 100 strings
-        self.__output = self.__output[:100]
+        while not self.__quit:
+            if self.__autoReadOn:
+                self.autoRead()
+            if self.__autoTestOn:
+                self.autoTest()
+            if len(self.__output) > 0:
+                self.read()
+            if len(self.__auto) > 0:
+                if self.__autoReadOn or self.__autoTestOn:
+                    self.__output = self.__auto
+                    self.read()
+                self.__auto = list()

@@ -39,15 +39,11 @@ from .preferences import Preferences
 from .progressbar import ProgressBar
 from .about import About
 from .knitprogress import KnitProgress
+from .thread import GenericThread
 from .engine import Engine
 from .engine.state import Operation
 from .engine.options import Alignment
 from .machine import Machine
-
-from PyQt5.QtWidgets import QDialog, QVBoxLayout
-from .engine.console import Console
-
-# TODO move to generic configuration
 
 
 class GuiMain(QMainWindow):
@@ -68,13 +64,6 @@ class GuiMain(QMainWindow):
         # create UI
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-
-        self.dialog = QDialog()
-        self.layout = QVBoxLayout(self.dialog)
-        self.console = Console(self)
-        self.layout.addWidget(self.console)
-        self.console.grabKeyboard()
-        self.dialog.show()
 
         # add modular components
         self.menu = Menu(self)
@@ -181,26 +170,3 @@ class GuiMain(QMainWindow):
         if log:
             logging.info("Notification: " + text)
         self.ui.label_notifications.setText(text)
-
-
-class GenericThread(QThread):
-    '''A generic thread wrapper for functions on threads.'''
-    def __init__(self, function, *args, **kwargs):
-        QThread.__init__(self)
-        self.function = function
-        self.args = args
-        self.kwargs = kwargs
-
-    def __del__(self):
-        #self.join()
-        self.wait()
-
-    def run(self):
-        try:
-            self.function(*self.args, **self.kwargs)
-        except Exception:
-            for arg in self.args:
-                print(arg)
-            for key, value in self.kwargs.items():
-                print(key, value)
-            raise

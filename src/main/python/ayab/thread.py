@@ -14,19 +14,30 @@
 #    You should have received a copy of the GNU General Public License
 #    along with AYAB.  If not, see <http://www.gnu.org/licenses/>.
 #
-#    Copyright 2013 Christian Obersteiner, Andreas Müller, Christian Gerbrandt
+#    Copyright 2014 Sebastian Oliva, Christian Obersteiner, Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
-import serial
 
-from .test_mock import TestMock
-from .communication import Communication
-from .communication_mockup import CommunicationMockup
-from ayab import GenericThread
+from PyQt5.QtCore import QThread
 
-if portname == Simulation:
-    self.__com = CommunicationMockup()
-    self.test_mock = TestMock()
-    self.test_mock_thread = GenericThread(self.test_mock.loop)
-    self.test_mock_thread.start()
 
-# test mock thread goes on forever unless it is killed
+class GenericThread(QThread):
+    '''A generic thread wrapper for functions on threads.'''
+    def __init__(self, function, *args, **kwargs):
+        QThread.__init__(self)
+        self.function = function
+        self.args = args
+        self.kwargs = kwargs
+
+    def __del__(self):
+        #self.join()
+        self.wait()
+
+    def run(self):
+        try:
+            self.function(*self.args, **self.kwargs)
+        except Exception:
+            for arg in self.args:
+                print(arg)
+            for key, value in self.kwargs.items():
+                print(key, value)
+            raise
