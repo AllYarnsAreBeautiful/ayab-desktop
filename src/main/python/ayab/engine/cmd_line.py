@@ -23,9 +23,8 @@ from PyQt5.QtCore import pyqtSignal, Qt, QSize
 
 
 class CmdLine(QPlainTextEdit):
-    cmd_sender = pyqtSignal(str)
-
     def __init__(self, parent):
+        # set up UI
         super().__init__(parent)
         self.setCursor(Qt.IBeamCursor)
         self.ensureCursorVisible()
@@ -36,14 +35,17 @@ class CmdLine(QPlainTextEdit):
         self.setMaximumHeight(50)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.cmd_sender.connect(parent.hw_test_send_cmd_API6)
+        # self.cmd_sender.connect(parent.send_cmd_API6)
+        self.__hw_test_dialog = parent
 
     def keyPressEvent(self, event):
         key = event.key()
         if key == Qt.Key_Escape:
-            self.cmd_sender.emit("quit")
+            # self.cmd_sender.emit("quit")
+            self.__hw_test_dialog.send_cmd_API6("quit")
         elif key == Qt.Key_Return:
-            self.cmd_sender.emit(self.toPlainText())
+            # self.cmd_sender.emit(self.toPlainText())
+            self.__hw_test_dialog.send_cmd_API6(self.toPlainText())
             self.setPlainText("")
         elif key == Qt.Key_Backspace:
             self.textCursor().deletePreviousChar()

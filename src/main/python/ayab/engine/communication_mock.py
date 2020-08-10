@@ -17,7 +17,7 @@
 #    Copyright 2013 Christian Obersteiner, Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 """
-Mockup Class of Communication for Test/Simulation purposes
+Mock Class of Communication for Test/Simulation purposes
 """
 
 import logging
@@ -29,7 +29,7 @@ from PyQt5.QtWidgets import QMessageBox
 from .communication import Communication, Token
 
 
-class CommunicationMockup(Communication):
+class CommunicationMock(Communication):
     """Class Handling the serial communication protocol."""
     def __init__(self, delay=True, step=False) -> None:
         logging.basicConfig(level=logging.DEBUG)
@@ -87,7 +87,6 @@ class CommunicationMockup(Communication):
             self.__rx_msg_list.append(reqLine)
             if self.__delay:
                 sleep(1)  # wait for knitting progress dialog to update
-
             # step through output line by line
             if self.__step:
                 # pop up box waits for user input before moving on to next line
@@ -99,8 +98,7 @@ class CommunicationMockup(Communication):
                 ret = msg.exec_()
                 while ret == None:
                     pass
-
         if len(self.__rx_msg_list) > 0:
-            return self.parse_update_API6(self.__rx_msg_list.pop(0))
-
-        return None, Token.none, 0
+            return self.parse_API6(self.__rx_msg_list.pop(0))
+        # else
+        return self.parse_API6(None)

@@ -22,11 +22,11 @@ import logging
 from time import sleep
 from PIL import Image
 
-from PyQt5.QtCore import QTranslator, QCoreApplication, QLocale, QObjectCleanupHandler
+from PyQt5.QtCore import QTranslator, QCoreApplication, QLocale, QObjectCleanupHandler, pyqtSignal
 from PyQt5.QtWidgets import QComboBox, QDockWidget, QWidget
 
-from ayab import utils
-from ayab.observable import Observable
+from .. import utils
+from ..observable import Observable
 from .control import Control
 from .state import Operation, State
 from .pattern import Pattern
@@ -43,7 +43,10 @@ class Engine(Observable, QDockWidget):
 
     Implemented as a subclass of `QDockWidget` and `Observable`.
     """
+    port_opener = pyqtSignal()
+
     def __init__(self, parent):
+        # set up UI
         super().__init__(parent.seer)
         self.ui = Ui_Dock()
         self.ui.setupUi(self)
@@ -53,13 +56,15 @@ class Engine(Observable, QDockWidget):
         self.status = StatusTab()
         self.setup_ui()
         parent.ui.dock_container_layout.addWidget(self)
-        self.__control = Control(self)
-        self.__logger = logging.getLogger(type(self).__name__)
-        self.__feedback = FeedbackHandler(parent)
+
         self.pattern = None
+        self.control = Control(parent, self)
+        self.__feedback = FeedbackHandler(parent)
+        self.__logger = logging.getLogger(type(self).__name__)
+        # self.fs =
 
     def __del__(self):
-        self.__control.stop()
+        self.control.stop()
 
     def setup_ui(self):
         # insert tabs
@@ -166,19 +171,19 @@ class Engine(Observable, QDockWidget):
 
         # setup knitting controller
         self.config.portname = self.__read_portname()
-        self.__control.start(self.pattern, self.config, operation)
+        self.control.start(self.pattern, self.config, operation)
 
         while True:
             # continue operating
             # typically each step involves some communication with the device
-            output = self.__control.operate(operation)
+            output = self.control.operate(operation)
             self.__feedback.handle(output)
             if operation == Operation.KNIT:
                 self.__status_handler()
-            if self.__canceled or self.__control.state == State.FINISHED:
+            if self.__canceled or self.control.state == State.FINISHED:
                 break
 
-        self.__control.stop()
+        self.control.stop()
 
         if operation == Operation.KNIT:
             if self.__canceled:
@@ -210,9 +215,9 @@ class Engine(Observable, QDockWidget):
         # updating, otherwise if the knit progress window lags the status
         # will change before the information is written to the UI.
         data = Status()
-        data.copy(self.__control.status)
-        row_multiplier = self.__control.mode.row_multiplier(
-            self.__control.num_colors)
+        data.copy(self.control.status)
+        row_multiplier = self.control.mode.row_multiplier(
+            self.control.num_colors)
         self.emit_knit_progress_updater(data, row_multiplier)
         self.emit_progress_bar_updater(data.current_row, data.total_rows,
                                        data.repeats, data.color_symbol)

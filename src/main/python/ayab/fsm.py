@@ -121,3 +121,13 @@ class FSM(object):
                                         "True")
         self.KNITTING.assignProperty(parent.ui.knit_button, "enabled", "False")
         self.TESTING.assignProperty(parent.ui.knit_button, "enabled", "False")
+
+        # Cancel button
+        self.NO_IMAGE.assignProperty(parent.ui.cancel_button, "enabled",
+                                     "False")
+        self.CONFIGURING.assignProperty(parent.ui.cancel_button, "enabled",
+                                        "False")
+        self.KNITTING.assignProperty(parent.ui.cancel_button, "enabled",
+                                     "True")
+        self.TESTING.assignProperty(parent.ui.cancel_button, "enabled",
+                                    "False")

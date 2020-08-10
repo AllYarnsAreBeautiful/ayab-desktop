@@ -20,55 +20,56 @@
 import serial
 from PyQt5.QtWidgets import QDialog, QVBoxLayout, QPlainTextEdit
 from PyQt5.QtGui import QFont
+from PyQt5.QtCore import QTimer
 
-from .communication import Communication
-from .communication_mockup import CommunicationMockup
-from .hw_test_mock import HardwareTestMock
 from .cmd_line import CmdLine
-from ..thread import GenericThread
-"""Console for hardware test."""
+from .state import State
+from .hw_test_communication_mock import HardwareTestCommunicationMock
 
 
-class HardwareTest(QDialog):
-    def __init__(self):
+class HardwareTestDialog(QDialog):
+    """Console for hardware test."""
+    def __init__(self, parent):
         super().__init__()
-        # self.setModal(True)
-        self.setWindowTitle("Hardware Test")
+        self.setModal(True)
+        self.setWindowTitle("Hardware Test")  # TODO: translate
         self.resize(800, 800)
-        self.__hw = HardwareTestMock(self)
-        self.__layout = QVBoxLayout()
+        self.__cmd_line = CmdLine(self)
         self.__console = QPlainTextEdit(self)
         self.__console.setReadOnly(True)
-        self.__cmd_line = CmdLine(self)
+        self.__layout = QVBoxLayout()
         self.__layout.addWidget(self.__console)
-        # self.__cmd_line.grabKeyboard()
+        self.__layout.addWidget(self.__cmd_line)
         self.setLayout(self.__layout)
-        # font = QFont("Ubuntu Mono", 14)
+        self.__bar = self.__console.verticalScrollBar()
         font = QFont("Courier New", 14)
         self.__console.setFont(font)
         self.__cmd_line.setFont(font)
-        self.__layout.addWidget(self.__cmd_line)
-        self.__bar = self.__console.verticalScrollBar()
-        self.open()
 
-    def open(self):
-        # if portname == Simulation:
-        self.__test_mock_thread = GenericThread(self.__hw.loop)
-        self.__test_mock_thread.finished.connect(self.quit)
-        self.__test_mock_thread.start()
+    def open(self, control):
+        # self.__cmd_line.grabKeyboard()
+        self.__control = control
+        self.__timer = QTimer()
+        self.__timer.timeout.connect(self.auto)
+        if isinstance(self.__control.com, HardwareTestCommunicationMock):
+            self.__timer.start(500)  # every 0.5 s
         self.show()
 
-    def hw_test_send_cmd_API6(self, cmd):
-        self.__hw.send(cmd)
-        self.__console.appendPlainText("$ " + cmd + "\n")
-        self.__bar.setValue(self.__bar.maximum())
+    def auto(self):
+        self.__control.com.auto()
 
-    def hw_test_read_API6(self, msg):
+    def output(self, msg):
         self.__console.insertPlainText(msg)
         self.__bar.setValue(self.__bar.maximum())
 
-    def quit(self):
-        # HardwareTestMock.loop() already finished
-        # close serial connection
-        # close dialog
+    def send_cmd_API6(self, cmd):
+        self.__control.com.write_API6(cmd)
+        self.output("\n$ " + cmd + "\n")
+        if cmd.lower() == "quit":
+            self.hide()
+
+    def hideEvent(self, event):
+        self.__timer.stop()
+        self.__console.setPlainText("")
+        self.__control.state == State.FINISHED
         self.accept()

@@ -33,7 +33,7 @@ class Output(Enum):
     PLEASE_KNIT = auto()
     DEVICE_NOT_READY = auto()
     NEXT_LINE = auto()
-    FINISHED = auto()
+    KNITTING_FINISHED = auto()
 
 
 class FeedbackHandler(Observable):
@@ -78,7 +78,7 @@ class FeedbackHandler(Observable):
     def _next_line(self):
         self.emit_audio_player("nextline")
 
-    def _finished(self):
+    def _knitting_finished(self):
         self.emit_notification(
             "Image transmission finished. Please knit until you " +
             "hear the double beep sound.")

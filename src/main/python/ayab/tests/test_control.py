@@ -23,6 +23,7 @@ import unittest
 from PIL import Image
 from bitarray import bitarray
 
+from ayab.observer import Observer
 from ayab.engine.control import Control
 from ayab.engine.options import Alignment
 from ayab.engine.mode import Mode, ModeFunc
@@ -33,6 +34,12 @@ from ayab.machine import Machine
 
 class Parent(object):
     def __init__(self):
+        self.seer = Observer()
+        self.engine = Engine()
+
+
+class Engine(object):
+    def __init__(self):
         self.status = Status()
 
 
@@ -41,7 +48,7 @@ class TestControl(unittest.TestCase):
         self.parent = Parent()
 
     def test__singlebed(self):
-        control = Control(self.parent)
+        control = Control(self.parent, self.parent.engine)
         control.pattern = Pattern(Image.new('P', (1, 3)), Machine(0), 2)
         control.num_colors = 2
         control.start_row = 0
@@ -58,7 +65,7 @@ class TestControl(unittest.TestCase):
         assert control.func(control, 2) == (0, 0, False, False)
 
     def test__classic_ribber_2col(self):
-        control = Control(self.parent)
+        control = Control(self.parent, self.parent.engine)
         control.pattern = Pattern(Image.new('P', (1, 5)), Machine(0), 2)
         control.num_colors = 2
         control.start_row = 0
@@ -85,7 +92,7 @@ class TestControl(unittest.TestCase):
         assert control.func(control, 8) == (1, 1, False, False)
 
     def test__classic_ribber_multicol(self):
-        control = Control(self.parent)
+        control = Control(self.parent, self.parent.engine)
         control.pattern = Pattern(Image.new('P', (1, 3)), Machine(0), 3)
         control.num_colors = 3
         control.start_row = 0
@@ -117,7 +124,7 @@ class TestControl(unittest.TestCase):
         assert control.func(control, 12) == (0, 0, False, False)
 
     def test__middlecolorstwice_ribber(self):
-        control = Control(self.parent)
+        control = Control(self.parent, self.parent.engine)
         control.pattern = Pattern(Image.new('P', (1, 5)), Machine(0), 3)
         control.mode = Mode.MIDDLECOLORSTWICE_RIBBER
         control.num_colors = 3
@@ -158,7 +165,7 @@ class TestControl(unittest.TestCase):
         assert control.func(control, 16) == (1, 1, False, False)
 
     def test__heartofpluto_ribber(self):
-        control = Control(self.parent)
+        control = Control(self.parent, self.parent.engine)
         control.pattern = Pattern(Image.new('P', (1, 5)), Machine(0), 3)
         control.mode = Mode.HEARTOFPLUTO_RIBBER
         control.num_colors = 3
@@ -199,7 +206,7 @@ class TestControl(unittest.TestCase):
         assert control.func(control, 16) == (1, 1, False, False)
 
     def test__circular_ribber(self):
-        control = Control(self.parent)
+        control = Control(self.parent, self.parent.engine)
         control.pattern = Pattern(Image.new('P', (1, 3)), Machine(0), 3)
         control.num_colors = 3
         control.start_row = 0
@@ -231,7 +238,7 @@ class TestControl(unittest.TestCase):
         assert control.func(control, 12) == (0, 0, False, False)
 
     def test_select_needles_API6(self):
-        control = Control(self.parent)
+        control = Control(self.parent, self.parent.engine)
         control.machine = Machine(0)
         control.num_colors = 2
         control.start_row = 0

@@ -19,21 +19,21 @@
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
 import logging
-from enum import Enum
 from bitarray import bitarray
 
 from PyQt5.QtCore import QCoreApplication
 
+from ..observable import Observable
 from .communication import Communication, Token
-from .communication_mockup import CommunicationMockup
+from .communication_mock import CommunicationMock
 from .options import Alignment
 from .mode import Mode, ModeFunc
 from .state import State, StateMachine, Operation
 from .output import Output
-from ayab.machine import Machine
+from ..machine import Machine
 
 
-class Control(object):
+class Control(Observable):
     """
     Class governing information flow with the shield.
     """
@@ -42,9 +42,10 @@ class Control(object):
     FIRST_SUPPORTED_API_VERSION = 0x06  # currently this is the only supported version
     FLANKING_NEEDLES = True
 
-    def __init__(self, parent):
+    def __init__(self, parent, engine):
+        super().__init__(parent.seer)
         self.logger = logging.getLogger(type(self).__name__)
-        self.status = parent.status
+        self.status = engine.status
 
     def start(self, pattern, options, operation):
         if operation == Operation.KNIT:

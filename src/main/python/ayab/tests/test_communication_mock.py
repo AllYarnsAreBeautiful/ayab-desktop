@@ -21,13 +21,13 @@
 import unittest
 
 from ayab.engine.communication import Token
-from ayab.engine.communication_mockup import CommunicationMockup
+from ayab.engine.communication_mock import CommunicationMock
 from ayab.machine import Machine
 
 
-class TestCommunicationMockup(unittest.TestCase):
+class TestCommunicationMock(unittest.TestCase):
     def setUp(self):
-        self.comm_dummy = CommunicationMockup(delay=False)
+        self.comm_dummy = CommunicationMock(delay=False)
 
     def test_close_serial(self):
         self.comm_dummy.close_serial()

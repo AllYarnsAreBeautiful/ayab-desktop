@@ -24,7 +24,7 @@ import sys
 import logging
 
 from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox
-from PyQt5.QtCore import Qt, QThread, QCoreApplication
+from PyQt5.QtCore import Qt, QThread, QCoreApplication, QTimer
 
 from .main_gui import Ui_MainWindow
 from .fsm import FSM
@@ -43,6 +43,7 @@ from .thread import GenericThread
 from .engine import Engine
 from .engine.state import Operation
 from .engine.options import Alignment
+from .engine.hw_test import HardwareTestDialog
 from .machine import Machine
 
 
@@ -74,6 +75,7 @@ class GuiMain(QMainWindow):
         self.scene = Scene(self)
         self.knitprog = KnitProgress(self)
         self.engine = Engine(self)
+        self.hw_test = HardwareTestDialog(self)
         self.progbar = ProgressBar(self)
         self.flash = FirmwareFlash(self)
         self.audio = AudioPlayer(self)
@@ -131,20 +133,18 @@ class GuiMain(QMainWindow):
         self.test_thread.start()
 
     def start_operation(self):
-        # disable UI elements at start of knitting
+        """Disable UI elements at start of operation."""
         self.menu.depopulate()
         self.ui.filename_lineedit.setEnabled(False)
         self.ui.load_file_button.setEnabled(False)
         self.ui.test_button.setEnabled(False)
-        self.ui.cancel_button.setEnabled(True)
 
     def finish_operation(self, operation: Operation, beep: bool):
-        """(Re-)enable UI elements after knitting finishes."""
+        """(Re-)enable UI elements after operation finishes."""
         self.menu.repopulate()
         self.ui.filename_lineedit.setEnabled(True)
         self.ui.load_file_button.setEnabled(True)
         self.ui.test_button.setEnabled(True)
-        self.ui.cancel_button.setEnabled(False)
         if operation == Operation.KNIT and beep:
             self.audio.play("finish")
 

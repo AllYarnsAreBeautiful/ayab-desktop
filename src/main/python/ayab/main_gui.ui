@@ -254,16 +254,6 @@
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="test_button">
-             <property name="text">
-              <string>Test</string>
-             </property>
-             <property name="shortcut">
-              <string notr="true">T</string>
-             </property>
-            </widget>
-           </item>
-           <item>
             <widget class="QPushButton" name="cancel_button">
              <property name="enabled">
               <bool>False</bool>
@@ -273,6 +263,16 @@
              </property>
              <property name="shortcut">
               <string notr="true">Esc</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="test_button">
+             <property name="text">
+              <string>Test</string>
+             </property>
+             <property name="shortcut">
+              <string notr="true">T</string>
              </property>
             </widget>
            </item>

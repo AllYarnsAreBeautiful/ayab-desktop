@@ -149,33 +149,36 @@ class Communication(object):
 
     def update_API6(self):
         """Read data from serial and parse as SLIP packet."""
-        if self.__ser:
-            data = self.__ser.read(1000)
-            if len(data) > 0:
-                self.__rx_msg_list.extend(self.__driver.receive(data))
+        return self.parse_API6(self.read_API6())
 
-            if len(self.__rx_msg_list) > 0:
-                return self.parse_update_API6(self.__rx_msg_list.pop(0))
-
-        return None, Token.none, 0
-
-    def parse_update_API6(self, msg):
+    def parse_API6(self, msg):
         if msg is None:
             return None, Token.none, 0
-
+        # else
         for t in list(Token):
             if msg[0] == t.value:
                 return msg, t, msg[1]
-
         # fallthrough
         self.__logger.debug("unknown message: ")  # drop crlf
         pp = pprint.PrettyPrinter(indent=4)
         pp.pprint(msg)
         return msg, Token.unknown, 0
 
-    def hw_test_send_cmd_API6(self, cmd):
+    def read_API6(self):
+        """Read data from serial as SLIP packet."""
+        if self.__ser:
+            data = self.__ser.read(1000)
+            if len(data) > 0:
+                self.__rx_msg_list.extend(self.__driver.receive(data))
+            if len(self.__rx_msg_list) > 0:
+                return self.__rx_msg_list.pop(0)
+        # else
+        return None
+
+    def write_API6(self, cmd: str) -> None:
         # no SLIP protocol, no CRC8
-        self.__ser.write(cmd)
+        if self.__ser:
+            self.__ser.write(cmd)
 
 
 # CRC algorithm after Maxim/Dallas
