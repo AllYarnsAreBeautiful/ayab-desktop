@@ -34,8 +34,8 @@ The Python module dependencies can be found in *requirements.txt*.
 To be able to communicate with your Arduino, it might be necessary to add the
 rights for USB communication by adding your user to some groups.
 
-    sudo usermod -a -G tty [userName]
-    sudo usermod -a -G dialout [userName]
+    sudo usermod -aG tty [userName]
+    sudo usermod -aG dialout [userName]
 
 To install the development version you can checkout the git repository.
 

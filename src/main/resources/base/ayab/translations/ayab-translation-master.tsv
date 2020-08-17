@@ -38,7 +38,8 @@ MainWindow	Assistant	Assistant	Assistent	Aðstoð	Assistente	Помощник	П
 MainWindow	1. Load Image File	1. Load Image File	1. Muster öffnen	1. Hlaðið myndskrá	1. Carica l'immagine	1. Загрузить изображение	1. Завантажити зображення	1. Charger une image	1. Cargar archivo de imagen	1. 이미지 파일 부르기
 MainWindow	Knitting Options	Knitting Options	Strickeinstellungen	Prjóna valkostir	Opzioni Lavorazione	Варианты вязания	Варіанти в'язання	Options de tricot	Opciones de tejido	니팅 옵션
 MainWindow	2. Knit	2. Knit	2. Stricken	2. Prjónið	2. Lavora	2. Вязание	2. В'язання	2. Tricoter	2. Tejer	2. 니트!
-MainWindow	Cancel Knitting	Cancel Knitting	Stricken abbrechen	Hætta við að prjóna	Annulla la lavorazione	Отменить вязание	Скасувати в’язання	Annuler	Cancelar tejido	니팅 취소
+MainWindow	Test	Test	Testen	Prófa	Test		Тест	Тест	Tester	Test	테스트
+MainWindow	Cancel	Cancel	Abbrechen	Hætta við	Annulla	Отмена	Скасувати	Annuler	Cancelar	취소
 MainWindow	Open Knitting Project	Open Knitting Project	Projekt öffnen	Opna skrá	Apri il progetto	Начать новый проект	Відкрити в'язальний проєкт	Ouvrir un projet	Abrir proyecto de tejido	니팅 프로젝트 열기
 MenuBar	File	File	Datei	Skrá	File	Файл	Файл	Fichier	Archivo	파일
 MenuBar	Help	Help	Hilfe	Hjálp	Aiuto	Помощь	Допомога	Aide	Ayuda	도움

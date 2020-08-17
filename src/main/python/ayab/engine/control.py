@@ -19,36 +19,52 @@
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
 import logging
-from enum import Enum
 from bitarray import bitarray
 
 from PyQt5.QtCore import QCoreApplication
 
-from .communication import AyabCommunication, MessageToken
-from .communication_mockup import AyabCommunicationMockup
+from ..observable import Observable
+from .communication import Communication, Token
+from .communication_mock import CommunicationMock
 from .options import Alignment
-from .mode import KnitMode, KnitModeFunc
-from .state import KnitState, KnitStateMachine
-from .output import KnitOutput
-from ayab.machine import Machine
+from .mode import Mode, ModeFunc
+from .state import State, StateMachine, Operation
+from .output import Output
+from ..machine import Machine
 
 
-class KnitControl(object):
+class Control(Observable):
     """
     Class governing information flow with the shield.
     """
     BLOCK_LENGTH = 256
     COLOR_SYMBOLS = "A", "B", "C", "D", "E", "F"
-    API_VERSION = 0x05
+    FIRST_SUPPORTED_API_VERSION = 0x06  # currently this is the only supported version
     FLANKING_NEEDLES = True
 
-    def __init__(self, parent):
+    def __init__(self, parent, engine):
+        super().__init__(parent.seer)
         self.logger = logging.getLogger(type(self).__name__)
-        self.status = parent.status
+        self.status = engine.status
 
-    def start(self, machine):
-        self.machine_width = machine.width
-        self.state = KnitState.SETUP
+    def start(self, pattern, options, operation):
+        if operation == Operation.KNIT:
+            self.former_request = 0
+            self.line_block = 0
+            self.pattern_repeats = 0
+            self.pattern = pattern
+            self.pat_height = pattern.pat_height
+            self.num_colors = options.num_colors
+            self.start_row = options.start_row
+            self.mode = options.mode
+            self.inf_repeat = options.inf_repeat
+            self.continuous_reporting = options.continuous_reporting
+            self.len_pat_expanded = self.pat_height * self.num_colors
+            self.passes_per_row = self.mode.row_multiplier(self.num_colors)
+            self.reset_status()
+        self.portname = options.portname
+        self.machine = options.machine
+        self.state = State.SETUP
 
     def stop(self):
         try:
@@ -69,29 +85,29 @@ class KnitControl(object):
             return False
         # else
         func_name = self.mode.knit_func(self.num_colors)
-        if not hasattr(KnitModeFunc, func_name):
+        if not hasattr(ModeFunc, func_name):
             self.logger.error(
-                "Unrecognized value returned from KnitMode.knit_func()")
+                "Unrecognized value returned from Mode.knit_func()")
             return False
         # else
-        self.mode_func = getattr(KnitModeFunc, func_name)
+        self.mode_func = getattr(ModeFunc, func_name)
         return True
 
     def reset_status(self):
         self.status.reset()
-        if self.mode == KnitMode.SINGLEBED:
+        if self.mode == Mode.SINGLEBED:
             self.status.alt_color = self.pattern.palette[1]
             self.status.color_symbol = ""  # "A/B"
         else:
             self.status.alt_color = None
         self.status.total_rows = self.pattern.pat_height
 
-    def check_serial(self):
-        msg, token, param = self.com.update()
-        if token == MessageToken.cnfInfo:
+    def check_serial_API6(self):
+        msg, token, param = self.com.update_API6()
+        if token == Token.cnfInfo:
             self.__log_cnfInfo(msg)
-        elif token == MessageToken.indState:
-            self.status.parse_carriage_info(msg)
+        elif token == Token.indState:
+            self.status.parse_device_state_API6(param, msg)
         return token, param
 
     def __log_cnfInfo(self, msg):
@@ -101,12 +117,12 @@ class KnitControl(object):
             log += ", FW v" + str(msg[2]) + "." + str(msg[3])
         self.logger.info(log)
 
-    def cnf_line(self, line_number):
+    def cnf_line_API6(self, line_number):
         if not (line_number < self.BLOCK_LENGTH):
             self.logger.error("Requested line number out of range")
             return True  # stop knitting
         # else
-        # TODO some better algorithm for block wrapping
+        # TODO: some better algorithm for block wrapping
         if self.former_request == self.BLOCK_LENGTH - 1 and line_number == 0:
             # wrap to next block of lines
             self.line_block += 1
@@ -121,14 +137,14 @@ class KnitControl(object):
         # get data for next line of knitting
         color, row_index, blank_line, last_line = self.mode_func(
             self, line_number)
-        bits = self.select_needles(color, row_index, blank_line)
+        bits = self.select_needles_API6(color, row_index, blank_line)
 
         # send line to machine
-        self.com.cnf_line(requested_line, bits.tobytes(), last_line
-                          and not self.inf_repeat)
+        flag = last_line and not self.inf_repeat
+        self.com.cnf_line_API6(requested_line, color, flag, bits.tobytes())
 
         # screen output
-        # TODO tidy up this code
+        # TODO: tidy up this code
         msg = str(self.line_block) + " " + str(line_number) + " reqLine: " + \
             str(requested_line) + " pat_row: " + str(self.pat_row)
         if blank_line:
@@ -154,7 +170,7 @@ class KnitControl(object):
         self.status.line_number = line_number
         if self.inf_repeat:
             self.status.repeats = self.pattern_repeats
-        if self.mode != KnitMode.SINGLEBED:
+        if self.mode != Mode.SINGLEBED:
             self.status.color_symbol = self.COLOR_SYMBOLS[color]
         self.status.color = self.pattern.palette[color]
         if self.FLANKING_NEEDLES:
@@ -163,18 +179,18 @@ class KnitControl(object):
         else:
             self.status.bits = bits[self.__first_needle:self.__last_needle]
 
-    def select_needles(self, color, row_index, blank_line):
-        bits = bitarray([False] * self.machine_width, endian="little")
+    def select_needles_API6(self, color, row_index, blank_line):
+        bits = bitarray([False] * self.machine.width, endian="little")
         first_needle = max(0, self.pattern.pat_start_needle)
         last_needle = min(
             self.pattern.pat_width + self.pattern.pat_start_needle,
-            self.machine_width)
+            self.machine.width)
 
         # select needles flanking the pattern
         # if necessary to knit the background color
         if self.mode.flanking_needles(color, self.num_colors):
             bits[0:first_needle] = True
-            bits[last_needle:self.machine_width] = True
+            bits[last_needle:self.machine.width] = True
 
         if not blank_line:
             first_pixel = first_needle - self.pattern.pat_start_needle
@@ -187,12 +203,11 @@ class KnitControl(object):
         self.__last_needle = last_needle
         return bits
 
-    def knit(self, pattern, options):
+    def operate(self, operation, API_version=6):
         """Finite State Machine governing serial communication"""
-        method = "_knit_" + self.state.name.lower()
-        if not hasattr(KnitStateMachine, method):
-            # NONE, FINISHED
-            return KnitOutput.NONE
-        dispatch = getattr(KnitStateMachine, method)
-        result = dispatch(self, pattern, options)
+        method = "_API" + str(API_version) + "_" + self.state.name.lower()
+        if not hasattr(StateMachine, method):
+            return Output.NONE
+        dispatch = getattr(StateMachine, method)
+        result = dispatch(self, operation)
         return result

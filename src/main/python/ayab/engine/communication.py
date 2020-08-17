@@ -32,21 +32,26 @@ import logging
 import pprint
 
 
-class MessageToken(Enum):
+class Token(Enum):
     unknown = -2
     none = -1
-    cnfStart = 0xC1
+    reqInfo = 0x03
     cnfInfo = 0xC3
-    reqLine = 0x82
+    reqTest = 0x04
     cnfTest = 0xC4
+    reqStart = 0x01
+    cnfStart = 0xC1
+    reqLine = 0x82
+    cnfLine = 0x42
     indState = 0x84
+    slipFrameEnd = 0xc0
 
 
-class AyabCommunication(object):
+class Communication(object):
     """Class Handling the serial communication protocol."""
     def __init__(self, serial=None):
-        """Creates an AyabCommunication object,
-        with an optional serial-like object."""
+        """Create an AyabCommunication object,
+        with an optional serial communication object."""
         logging.basicConfig(level=logging.DEBUG)
         self.__logger = logging.getLogger(type(self).__name__)
         self.__ser = serial
@@ -54,7 +59,7 @@ class AyabCommunication(object):
         self.__rx_msg_list = list()
 
     def __del__(self):
-        """Handles on delete behaviour closing serial port object."""
+        """Handle behaviour on deletion by closing the serial port connection."""
         self.close_serial()
 
     def is_open(self):
@@ -65,7 +70,7 @@ class AyabCommunication(object):
             return False
 
     def open_serial(self, portname=None):
-        """Opens serial port communication with a portName."""
+        """Open serial port communication."""
         if not self.__ser:
             self.__portname = portname
             try:
@@ -79,86 +84,101 @@ class AyabCommunication(object):
             return True
 
     def close_serial(self):
-        """Closes serial port."""
+        """Close the serial port."""
         if self.__ser is not None and self.__ser.is_open is True:
             try:
                 self.__ser.close()
                 del (self.__ser)
                 self.__ser = None
-                self.__logger.info("Closing Serial port successful.")
+                self.__logger.info("Closing serial port successful.")
             except:
-                self.__logger.warning("Closing Serial port failed. \
+                self.__logger.warning("Closing serial port failed. \
                                       Was it ever open?")
 
-    def update(self):
-        """Reads data from serial and tries to parse as SLIP packet."""
-        if self.__ser:
-            data = self.__ser.read(1000)
-            if len(data) > 0:
-                self.__rx_msg_list.extend(self.__driver.receive(data))
+    # NB this method must be the same for all API versions
+    def req_info(self):
+        """Send a request for information to the device."""
+        data = self.__driver.send(bytes([Token.reqInfo.value]))
+        self.__ser.write(data)
 
-            if len(self.__rx_msg_list) > 0:
-                return self.parse_update(self.__rx_msg_list.pop(0))
+    def req_test_API6(self, machine_val):
+        """Send a request for testing to the device."""
+        data = self.__driver.send(bytes([Token.reqTest.value, machine_val]))
+        self.__ser.write(data)
 
-        return None, MessageToken.none, 0
-
-    def parse_update(self, msg):
-        if msg is None:
-            return None, MessageToken.none, 0
-
-        for t in list(MessageToken):
-            if msg[0] == t.value:
-                return msg, t, msg[1]
-
-        # fallthrough
-        self.__logger.debug("unknown message: ")  # drop crlf
-        pp = pprint.PrettyPrinter(indent=4)
-        pp.pprint(msg)
-        return msg, MessageToken.unknown, 0
-
-    def req_start(self, start_needle, stop_needle, continuous_reporting):
-        """Sends a start message to the controller."""
+    def req_start_API6(self, machine_val, start_needle, stop_needle,
+                       continuous_reporting):
+        """Send a start message to the device."""
         data = bytearray()
-        data.append(0x01)
+        data.append(Token.reqStart.value)
+        data.append(machine_val)
         data.append(start_needle)
         data.append(stop_needle)
         data.append(continuous_reporting)
-        data = self.__driver.send(bytes(data))
-        self.__ser.write(data)
-
-    def req_info(self):
-        """Sends a request for information to controller."""
-        data = self.__driver.send(b'\x03')
-        self.__ser.write(data)
-
-    def req_test(self):
-        """"""
-        data = self.__driver.send(b'\x04')
-        self.__ser.write(data)
-
-    def cnf_line(self, line_number, line_data, flags):
-        """Sends a line of data via the serial port.
-
-        Sends a line of data to the serial port, all arguments are mandatory.
-        The data sent here is parsed by the Arduino controller which sets the
-        knitting needles accordingly.
-
-        Args:
-          line_number (int): The line number to be sent.
-          line_data (bytes): The bytearray to be sent to needles.
-          flags (bytes): The flags sent to the controller.
-
-        """
-        data = bytearray()
-        data.append(0x42)
-        data.append(line_number)
-        data.extend(line_data)
-        data.append(flags)
         hash = 0
         hash = add_crc(hash, data)
         data.append(hash)
         data = self.__driver.send(bytes(data))
         self.__ser.write(data)
+
+    def cnf_line_API6(self, line_number, color, flags, line_data):
+        """Send a line of data via the serial port.
+
+        Send a line of data to the serial port. All arguments are mandatory.
+        The data sent here is parsed by the Arduino controller which sets the
+        knitting needles accordingly.
+
+        Args:
+          line_number (int): The line number to be sent.
+          color (int): The yarn color to be sent.
+          flags (int): The flags sent to the controller.
+          line_data (bytes): The bytearray to be sent to needles.
+
+        """
+        data = bytearray()
+        data.append(Token.cnfLine.value)
+        data.append(line_number)
+        data.append(color)
+        data.append(flags)
+        data.extend(line_data)
+        hash = 0
+        hash = add_crc(hash, data)
+        data.append(hash)
+        data = self.__driver.send(bytes(data))
+        self.__ser.write(data)
+
+    def update_API6(self):
+        """Read data from serial and parse as SLIP packet."""
+        return self.parse_API6(self.read_API6())
+
+    def parse_API6(self, msg):
+        if msg is None:
+            return None, Token.none, 0
+        # else
+        for t in list(Token):
+            if msg[0] == t.value:
+                return msg, t, msg[1]
+        # fallthrough
+        self.__logger.debug("unknown message: ")  # drop crlf
+        pp = pprint.PrettyPrinter(indent=4)
+        pp.pprint(msg)
+        return msg, Token.unknown, 0
+
+    def read_API6(self):
+        """Read data from serial as SLIP packet."""
+        if self.__ser:
+            data = self.__ser.read(1000)
+            if len(data) > 0:
+                self.__rx_msg_list.extend(self.__driver.receive(data))
+            if len(self.__rx_msg_list) > 0:
+                return self.__rx_msg_list.pop(0)
+        # else
+        return None
+
+    def write_API6(self, cmd: str) -> None:
+        # no SLIP protocol, no CRC8
+        if self.__ser:
+            self.__ser.write(cmd)
 
 
 # CRC algorithm after Maxim/Dallas

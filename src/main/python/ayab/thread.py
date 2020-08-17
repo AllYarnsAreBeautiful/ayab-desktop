@@ -14,26 +14,30 @@
 #    You should have received a copy of the GNU General Public License
 #    along with AYAB.  If not, see <http://www.gnu.org/licenses/>.
 #
-#    Copyright 2020 Sebastian Oliva, Christian Obersteiner,
-#    Andreas Müller, Christian Gerbrandt
+#    Copyright 2014 Sebastian Oliva, Christian Obersteiner, Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
-import pytest
-import unittest
-
-from ayab.engine.status import Status
+from PyQt5.QtCore import QThread
 
 
-class TestStatus(unittest.TestCase):
-    def setUp(self):
-        pass
+class GenericThread(QThread):
+    '''A generic thread wrapper for functions on threads.'''
+    def __init__(self, function, *args, **kwargs):
+        QThread.__init__(self)
+        self.function = function
+        self.args = args
+        self.kwargs = kwargs
 
-    def test_parse_device_state_API6(self):
-        p = Status()
-        p.active = True
-        msg = [0, 1, 2, 3, 4, 5, 1, 7.9]
-        p.parse_device_state_API6(1, msg)
-        assert p.hall_l == 0x203
-        assert p.hall_r == 0x405
-        assert p.carriage_type == "K Carriage"
-        assert p.carriage_position == 7
+    def __del__(self):
+        #self.join()
+        self.wait()
+
+    def run(self):
+        try:
+            self.function(*self.args, **self.kwargs)
+        except Exception:
+            for arg in self.args:
+                print(arg)
+            for key, value in self.kwargs.items():
+                print(key, value)
+            raise

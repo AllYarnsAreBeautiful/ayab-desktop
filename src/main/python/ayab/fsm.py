@@ -37,13 +37,15 @@ class FSM(object):
         # Finite State Machine
         self.machine = QStateMachine()
 
-        # Image states
+        # Machine states
         self.NO_IMAGE = QState(self.machine)
+        self.TESTING_NO_IMAGE = QState(self.machine)
         self.CONFIGURING = QState(self.machine)
         self.CHECKING = QState(self.machine)
         self.KNITTING = QState(self.machine)
+        self.TESTING = QState(self.machine)
 
-        # Set machine states
+        # Set machine state
         self.machine.setInitialState(self.NO_IMAGE)
 
     def set_transitions(self, parent):
@@ -52,8 +54,14 @@ class FSM(object):
         # Events that trigger state changes
         self.NO_IMAGE.addTransition(parent.seer.got_image_flag,
                                     self.CONFIGURING)
+        self.NO_IMAGE.addTransition(parent.ui.test_button.clicked,
+                                    self.TESTING_NO_IMAGE)
+        self.TESTING_NO_IMAGE.addTransition(parent.test_thread.finished,
+                                            self.NO_IMAGE)
         self.CONFIGURING.addTransition(parent.ui.knit_button.clicked,
                                        self.CHECKING)
+        self.CONFIGURING.addTransition(parent.ui.test_button.clicked,
+                                       self.TESTING)
         self.CHECKING.addTransition(parent.seer.got_image_flag,
                                     self.CONFIGURING)
         self.CHECKING.addTransition(parent.seer.new_image_flag,
@@ -62,25 +70,34 @@ class FSM(object):
                                     self.CONFIGURING)
         self.CHECKING.addTransition(parent.seer.knitting_starter,
                                     self.KNITTING)
-        self.KNITTING.addTransition(parent.engine_thread.finished,
+        self.KNITTING.addTransition(parent.knit_thread.finished,
                                     self.CONFIGURING)
+        self.TESTING.addTransition(parent.test_thread.finished,
+                                   self.CONFIGURING)
 
         # Actions triggered by state changes
         self.NO_IMAGE.entered.connect(
             lambda: logging.debug("Entered state NO_IMAGE"))
+        self.TESTING_NO_IMAGE.entered.connect(
+            lambda: logging.debug("Entered state TESTING_NO_IMAGE"))
         self.CONFIGURING.entered.connect(
             lambda: logging.debug("Entered state CONFIGURING"))
         self.CHECKING.entered.connect(
             lambda: logging.debug("Entered state CHECKING"))
         self.KNITTING.entered.connect(
             lambda: logging.debug("Entered state KNITTING"))
+        self.TESTING.entered.connect(
+            lambda: logging.debug("Entered state TESTING"))
 
         self.NO_IMAGE.exited.connect(parent.engine.config.refresh)
+        self.TESTING_NO_IMAGE.entered.connect(parent.start_testing)
         self.CONFIGURING.entered.connect(parent.menu.add_image_actions)
         self.CONFIGURING.entered.connect(parent.progbar.reset)
         self.CHECKING.entered.connect(
             lambda: parent.engine.knit_config(parent.scene.ayabimage.image))
         self.KNITTING.entered.connect(parent.start_knitting)
+        self.TESTING.entered.connect(parent.start_testing)
+        self.TESTING_NO_IMAGE.entered.connect(parent.start_testing)
 
     def set_properties(self, parent):
         """
@@ -91,6 +108,7 @@ class FSM(object):
         self.NO_IMAGE.assignProperty(parent.engine, "enabled", "False")
         self.CONFIGURING.assignProperty(parent.engine, "enabled", "True")
         self.KNITTING.assignProperty(parent.engine, "enabled", "False")
+        self.TESTING.assignProperty(parent.engine, "enabled", "False")
 
         # Status tab in options dock should be activated only when knitting
         # self.NO_IMAGE.assignProperty(ui.status_tab, "enabled", "False")
@@ -102,6 +120,7 @@ class FSM(object):
         self.CONFIGURING.assignProperty(parent.ui.knit_button, "enabled",
                                         "True")
         self.KNITTING.assignProperty(parent.ui.knit_button, "enabled", "False")
+        self.TESTING.assignProperty(parent.ui.knit_button, "enabled", "False")
 
         # Cancel button
         self.NO_IMAGE.assignProperty(parent.ui.cancel_button, "enabled",
@@ -110,3 +129,5 @@ class FSM(object):
                                         "False")
         self.KNITTING.assignProperty(parent.ui.cancel_button, "enabled",
                                      "True")
+        self.TESTING.assignProperty(parent.ui.cancel_button, "enabled",
+                                    "False")

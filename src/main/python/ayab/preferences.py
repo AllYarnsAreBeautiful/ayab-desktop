@@ -31,7 +31,7 @@ from PyQt5.QtWidgets import QDialog, QFormLayout, QLabel, QCheckBox, QComboBox
 from .prefs_gui import Ui_Prefs
 from .observable import Observable
 from .engine.options import Alignment
-from .engine.mode import KnitMode
+from .engine.mode import Mode
 from .machine import Machine
 from .language import Language
 
@@ -58,7 +58,7 @@ class Preferences(Observable):
     """
     variables = {
         'machine': Machine,
-        'default_knitting_mode': KnitMode,
+        'default_knitting_mode': Mode,
         'default_infinite_repeat': bool,
         'default_alignment': Alignment,
         'default_mirroring': bool,

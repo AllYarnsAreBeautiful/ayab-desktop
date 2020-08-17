@@ -23,9 +23,10 @@ import unittest
 from PIL import Image
 from bitarray import bitarray
 
-from ayab.engine.control import KnitControl
+from ayab.observer import Observer
+from ayab.engine.control import Control
 from ayab.engine.options import Alignment
-from ayab.engine.mode import KnitMode, KnitModeFunc
+from ayab.engine.mode import Mode, ModeFunc
 from ayab.engine.pattern import Pattern
 from ayab.engine.status import Status
 from ayab.machine import Machine
@@ -33,21 +34,27 @@ from ayab.machine import Machine
 
 class Parent(object):
     def __init__(self):
+        self.seer = Observer()
+        self.engine = Engine()
+
+
+class Engine(object):
+    def __init__(self):
         self.status = Status()
 
 
-class TestKnitControl(unittest.TestCase):
+class TestControl(unittest.TestCase):
     def setUp(self):
         self.parent = Parent()
 
     def test__singlebed(self):
-        control = KnitControl(self.parent)
+        control = Control(self.parent, self.parent.engine)
         control.pattern = Pattern(Image.new('P', (1, 3)), Machine(0), 2)
         control.num_colors = 2
         control.start_row = 0
         control.inf_repeat = False
         control.pat_height = control.pattern.pat_height
-        control.func = getattr(KnitModeFunc, "_singlebed")
+        control.func = getattr(ModeFunc, "_singlebed")
         assert control.func(control, 0) == (0, 0, False, False)
         assert control.func(control, 1) == (0, 2, False, False)
         assert control.func(control, 2) == (0, 4, False, True)
@@ -58,14 +65,14 @@ class TestKnitControl(unittest.TestCase):
         assert control.func(control, 2) == (0, 0, False, False)
 
     def test__classic_ribber_2col(self):
-        control = KnitControl(self.parent)
+        control = Control(self.parent, self.parent.engine)
         control.pattern = Pattern(Image.new('P', (1, 5)), Machine(0), 2)
         control.num_colors = 2
         control.start_row = 0
         control.inf_repeat = False
         control.pat_height = control.pattern.pat_height
         control.len_pat_expanded = control.pat_height * control.num_colors
-        control.func = getattr(KnitModeFunc, "_classic_ribber_2col")
+        control.func = getattr(ModeFunc, "_classic_ribber_2col")
         assert control.func(control, 0) == (0, 0, False, False)
         assert control.func(control, 1) == (1, 1, False, False)
         assert control.func(control, 2) == (1, 3, False, False)
@@ -85,14 +92,14 @@ class TestKnitControl(unittest.TestCase):
         assert control.func(control, 8) == (1, 1, False, False)
 
     def test__classic_ribber_multicol(self):
-        control = KnitControl(self.parent)
+        control = Control(self.parent, self.parent.engine)
         control.pattern = Pattern(Image.new('P', (1, 3)), Machine(0), 3)
         control.num_colors = 3
         control.start_row = 0
         control.inf_repeat = False
         control.pat_height = control.pattern.pat_height
         control.len_pat_expanded = control.pat_height * control.num_colors
-        control.func = getattr(KnitModeFunc, "_classic_ribber_multicol")
+        control.func = getattr(ModeFunc, "_classic_ribber_multicol")
         assert control.func(control, 0) == (0, 0, False, False)
         assert control.func(control, 1) == (0, 0, True, False)
         assert control.func(control, 2) == (1, 1, False, False)
@@ -117,9 +124,9 @@ class TestKnitControl(unittest.TestCase):
         assert control.func(control, 12) == (0, 0, False, False)
 
     def test__middlecolorstwice_ribber(self):
-        control = KnitControl(self.parent)
+        control = Control(self.parent, self.parent.engine)
         control.pattern = Pattern(Image.new('P', (1, 5)), Machine(0), 3)
-        control.mode = KnitMode.MIDDLECOLORSTWICE_RIBBER
+        control.mode = Mode.MIDDLECOLORSTWICE_RIBBER
         control.num_colors = 3
         control.start_row = 0
         control.inf_repeat = False
@@ -127,7 +134,7 @@ class TestKnitControl(unittest.TestCase):
         control.len_pat_expanded = control.pat_height * control.num_colors
         control.passes_per_row = control.mode.row_multiplier(
             control.num_colors)
-        control.func = getattr(KnitModeFunc, "_middlecolorstwice_ribber")
+        control.func = getattr(ModeFunc, "_middlecolorstwice_ribber")
         assert control.func(control, 0) == (0, 0, False, False)
         assert control.func(control, 1) == (2, 2, True, False)
         assert control.func(control, 2) == (2, 2, False, False)
@@ -158,9 +165,9 @@ class TestKnitControl(unittest.TestCase):
         assert control.func(control, 16) == (1, 1, False, False)
 
     def test__heartofpluto_ribber(self):
-        control = KnitControl(self.parent)
+        control = Control(self.parent, self.parent.engine)
         control.pattern = Pattern(Image.new('P', (1, 5)), Machine(0), 3)
-        control.mode = KnitMode.HEARTOFPLUTO_RIBBER
+        control.mode = Mode.HEARTOFPLUTO_RIBBER
         control.num_colors = 3
         control.start_row = 0
         control.inf_repeat = False
@@ -168,7 +175,7 @@ class TestKnitControl(unittest.TestCase):
         control.len_pat_expanded = control.pat_height * control.num_colors
         control.passes_per_row = control.mode.row_multiplier(
             control.num_colors)
-        control.func = getattr(KnitModeFunc, "_heartofpluto_ribber")
+        control.func = getattr(ModeFunc, "_heartofpluto_ribber")
         assert control.func(control, 0) == (2, 2, False, False)
         assert control.func(control, 1) == (1, 1, False, False)
         assert control.func(control, 2) == (1, 1, True, False)
@@ -199,14 +206,14 @@ class TestKnitControl(unittest.TestCase):
         assert control.func(control, 16) == (1, 1, False, False)
 
     def test__circular_ribber(self):
-        control = KnitControl(self.parent)
+        control = Control(self.parent, self.parent.engine)
         control.pattern = Pattern(Image.new('P', (1, 3)), Machine(0), 3)
         control.num_colors = 3
         control.start_row = 0
         control.inf_repeat = False
         control.pat_height = control.pattern.pat_height
         control.len_pat_expanded = control.pat_height * control.num_colors
-        control.func = getattr(KnitModeFunc, "_circular_ribber")
+        control.func = getattr(ModeFunc, "_circular_ribber")
         assert control.func(control, 0) == (0, 0, False, False)
         assert control.func(control, 1) == (0, 0, True, False)
         assert control.func(control, 2) == (1, 1, False, False)
@@ -230,14 +237,14 @@ class TestKnitControl(unittest.TestCase):
         control.start_row = 1
         assert control.func(control, 12) == (0, 0, False, False)
 
-    def test_select_needles(self):
-        control = KnitControl(self.parent)
-        control.start(Machine(0))
+    def test_select_needles_API6(self):
+        control = Control(self.parent, self.parent.engine)
+        control.machine = Machine(0)
         control.num_colors = 2
         control.start_row = 0
 
         # 40 pixel image set to the left
-        control.mode = KnitMode.SINGLEBED
+        control.mode = Mode.SINGLEBED
         im = Image.new('P', (40, 3), 0)
         im1 = Image.new('P', (40, 1), 1)
         im.paste(im1, (0, 0))
@@ -250,7 +257,7 @@ class TestKnitControl(unittest.TestCase):
         bits0.frombytes(
             b'\x00\x00\x00\x00\x00\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff'
         )
-        assert control.select_needles(0, 0, False) == bits0
+        assert control.select_needles_API6(0, 0, False) == bits0
 
         # 40 pixel image set to the center
         pattern.alignment = Alignment.CENTER
@@ -259,65 +266,64 @@ class TestKnitControl(unittest.TestCase):
         bits1.frombytes(
             b'\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\x00\x00\x00\x00\x00\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff'
         )
-        assert control.select_needles(0, 0, False) == bits1
+        assert control.select_needles_API6(0, 0, False) == bits1
 
         # 40 pixel image set in the center
         # blank line so central 40 pixels unset
         # flanking pixels set (2 different options)
-        control.mode = KnitMode.CLASSIC_RIBBER
-        assert control.select_needles(2, 1, False) == ~bits1
-        control.mode = KnitMode.MIDDLECOLORSTWICE_RIBBER
-        assert control.select_needles(2, 1, False) == ~bits1
+        control.mode = Mode.CLASSIC_RIBBER
+        assert control.select_needles_API6(2, 1, False) == ~bits1
+        control.mode = Mode.MIDDLECOLORSTWICE_RIBBER
+        assert control.select_needles_API6(2, 1, False) == ~bits1
 
         # image is wider than machine width
         # all pixels set
         control.pattern = Pattern(Image.new('P', (202, 1)), Machine(0), 2)
-        assert control.select_needles(0, 0, False) == bitarray([True] * Machine(0).width)
+        assert control.select_needles_API6(0, 0, False) == bitarray(
+            [True] * Machine(0).width)
 
     def test_row_multiplier(self):
-        assert KnitMode.SINGLEBED.row_multiplier(2) == 1
-        assert KnitMode.CLASSIC_RIBBER.row_multiplier(2) == 2
-        assert KnitMode.CLASSIC_RIBBER.row_multiplier(3) == 6
-        assert KnitMode.MIDDLECOLORSTWICE_RIBBER.row_multiplier(3) == 4
-        assert KnitMode.HEARTOFPLUTO_RIBBER.row_multiplier(4) == 6
-        assert KnitMode.CIRCULAR_RIBBER.row_multiplier(2) == 4
+        assert Mode.SINGLEBED.row_multiplier(2) == 1
+        assert Mode.CLASSIC_RIBBER.row_multiplier(2) == 2
+        assert Mode.CLASSIC_RIBBER.row_multiplier(3) == 6
+        assert Mode.MIDDLECOLORSTWICE_RIBBER.row_multiplier(3) == 4
+        assert Mode.HEARTOFPLUTO_RIBBER.row_multiplier(4) == 6
+        assert Mode.CIRCULAR_RIBBER.row_multiplier(2) == 4
 
     def test_good_ncolors(self):
-        assert KnitMode.SINGLEBED.good_ncolors(2)
-        assert not KnitMode.SINGLEBED.good_ncolors(3)
-        assert KnitMode.CLASSIC_RIBBER.good_ncolors(2)
-        assert KnitMode.CLASSIC_RIBBER.good_ncolors(3)
-        assert KnitMode.MIDDLECOLORSTWICE_RIBBER.good_ncolors(2)
-        assert KnitMode.MIDDLECOLORSTWICE_RIBBER.good_ncolors(3)
-        assert KnitMode.HEARTOFPLUTO_RIBBER.good_ncolors(2)
-        assert KnitMode.HEARTOFPLUTO_RIBBER.good_ncolors(3)
-        assert KnitMode.CIRCULAR_RIBBER.good_ncolors(2)
-        assert not KnitMode.CIRCULAR_RIBBER.good_ncolors(3)
+        assert Mode.SINGLEBED.good_ncolors(2)
+        assert not Mode.SINGLEBED.good_ncolors(3)
+        assert Mode.CLASSIC_RIBBER.good_ncolors(2)
+        assert Mode.CLASSIC_RIBBER.good_ncolors(3)
+        assert Mode.MIDDLECOLORSTWICE_RIBBER.good_ncolors(2)
+        assert Mode.MIDDLECOLORSTWICE_RIBBER.good_ncolors(3)
+        assert Mode.HEARTOFPLUTO_RIBBER.good_ncolors(2)
+        assert Mode.HEARTOFPLUTO_RIBBER.good_ncolors(3)
+        assert Mode.CIRCULAR_RIBBER.good_ncolors(2)
+        assert not Mode.CIRCULAR_RIBBER.good_ncolors(3)
 
     def test_knit_func(self):
-        assert KnitMode.SINGLEBED.knit_func(2) == "_singlebed"
-        assert KnitMode.CLASSIC_RIBBER.knit_func(2) == "_classic_ribber_2col"
-        assert KnitMode.CLASSIC_RIBBER.knit_func(
-            3) == "_classic_ribber_multicol"
-        assert KnitMode.MIDDLECOLORSTWICE_RIBBER.knit_func(
+        assert Mode.SINGLEBED.knit_func(2) == "_singlebed"
+        assert Mode.CLASSIC_RIBBER.knit_func(2) == "_classic_ribber_2col"
+        assert Mode.CLASSIC_RIBBER.knit_func(3) == "_classic_ribber_multicol"
+        assert Mode.MIDDLECOLORSTWICE_RIBBER.knit_func(
             3) == "_middlecolorstwice_ribber"
-        assert KnitMode.HEARTOFPLUTO_RIBBER.knit_func(
-            4) == "_heartofpluto_ribber"
-        assert KnitMode.CIRCULAR_RIBBER.knit_func(2) == "_circular_ribber"
+        assert Mode.HEARTOFPLUTO_RIBBER.knit_func(4) == "_heartofpluto_ribber"
+        assert Mode.CIRCULAR_RIBBER.knit_func(2) == "_circular_ribber"
 
     def test_flanking_needles(self):
-        assert KnitMode.SINGLEBED.flanking_needles(0, 2)
-        assert not KnitMode.SINGLEBED.flanking_needles(1, 2)
-        assert KnitMode.CLASSIC_RIBBER.flanking_needles(0, 2)
-        assert not KnitMode.CLASSIC_RIBBER.flanking_needles(1, 2)
-        assert KnitMode.CLASSIC_RIBBER.flanking_needles(0, 3)
-        assert not KnitMode.CLASSIC_RIBBER.flanking_needles(1, 3)
-        assert not KnitMode.CLASSIC_RIBBER.flanking_needles(2, 3)
-        assert KnitMode.MIDDLECOLORSTWICE_RIBBER.flanking_needles(0, 3)
-        assert not KnitMode.MIDDLECOLORSTWICE_RIBBER.flanking_needles(1, 3)
-        assert not KnitMode.MIDDLECOLORSTWICE_RIBBER.flanking_needles(2, 3)
-        assert KnitMode.HEARTOFPLUTO_RIBBER.flanking_needles(0, 3)
-        assert not KnitMode.HEARTOFPLUTO_RIBBER.flanking_needles(1, 3)
-        assert not KnitMode.HEARTOFPLUTO_RIBBER.flanking_needles(2, 3)
-        assert KnitMode.CIRCULAR_RIBBER.flanking_needles(0, 2)
-        assert not KnitMode.CIRCULAR_RIBBER.flanking_needles(1, 2)
+        assert Mode.SINGLEBED.flanking_needles(0, 2)
+        assert not Mode.SINGLEBED.flanking_needles(1, 2)
+        assert Mode.CLASSIC_RIBBER.flanking_needles(0, 2)
+        assert not Mode.CLASSIC_RIBBER.flanking_needles(1, 2)
+        assert Mode.CLASSIC_RIBBER.flanking_needles(0, 3)
+        assert not Mode.CLASSIC_RIBBER.flanking_needles(1, 3)
+        assert not Mode.CLASSIC_RIBBER.flanking_needles(2, 3)
+        assert Mode.MIDDLECOLORSTWICE_RIBBER.flanking_needles(0, 3)
+        assert not Mode.MIDDLECOLORSTWICE_RIBBER.flanking_needles(1, 3)
+        assert not Mode.MIDDLECOLORSTWICE_RIBBER.flanking_needles(2, 3)
+        assert Mode.HEARTOFPLUTO_RIBBER.flanking_needles(0, 3)
+        assert not Mode.HEARTOFPLUTO_RIBBER.flanking_needles(1, 3)
+        assert not Mode.HEARTOFPLUTO_RIBBER.flanking_needles(2, 3)
+        assert Mode.CIRCULAR_RIBBER.flanking_needles(0, 2)
+        assert not Mode.CIRCULAR_RIBBER.flanking_needles(1, 2)

@@ -17,7 +17,7 @@
 #    Copyright 2013 Christian Obersteiner, Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 """
-Mockup Class of AYABCommunication for Test/Simulation purposes
+Mock Class of Communication for Test/Simulation purposes
 """
 
 import logging
@@ -26,10 +26,10 @@ from time import sleep
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QMessageBox
 
-from .communication import AyabCommunication, MessageToken
+from .communication import Communication, Token
 
 
-class AyabCommunicationMockup(AyabCommunication):
+class CommunicationMock(Communication):
     """Class Handling the serial communication protocol."""
     def __init__(self, delay=True, step=False) -> None:
         logging.basicConfig(level=logging.DEBUG)
@@ -59,15 +59,34 @@ class AyabCommunicationMockup(AyabCommunication):
         #     sleep(2) # wait for knitting progress dialog
         return True
 
-    def update(self) -> tuple:
+    def req_info(self) -> None:
+        cnfInfo = bytearray([Token.cnfInfo.value, 6, 1, 0])  # APIv6, FWv1.0
+        self.__rx_msg_list.append(cnfInfo)
+        indState = bytearray(
+            [Token.indState.value, 0x1, 0xFF, 0xFF, 0xFF, 0xFF, 0x1, 0x7F])
+        self.__rx_msg_list.append(indState)
+
+    def req_test_API6(self, machine_val) -> None:
+        cnfTest = bytearray([Token.cnfTest.value, 0x1])
+        self.__rx_msg_list.append(cnfTest)
+
+    def req_start_API6(self, machine_val, start_needle, stop_needle,
+                       continuous_reporting) -> None:
+        self.__is_started = True
+        cnfStart = bytearray([Token.cnfStart.value, 0x1])
+        self.__rx_msg_list.append(cnfStart)
+
+    def cnf_line_API6(self, line_number, color, flags, line_data) -> bool:
+        return True
+
+    def update_API6(self) -> tuple:
         if self.__is_open and self.__is_started:
-            reqLine = bytearray([0x82, self.__line_count])
+            reqLine = bytearray([Token.reqLine.value, self.__line_count])
             self.__line_count += 1
             self.__line_count %= 256
             self.__rx_msg_list.append(reqLine)
             if self.__delay:
                 sleep(1)  # wait for knitting progress dialog to update
-
             # step through output line by line
             if self.__step:
                 # pop up box waits for user input before moving on to next line
@@ -79,28 +98,7 @@ class AyabCommunicationMockup(AyabCommunication):
                 ret = msg.exec_()
                 while ret == None:
                     pass
-
         if len(self.__rx_msg_list) > 0:
-            return self.parse_update(self.__rx_msg_list.pop(0))
-
-        return None, MessageToken.none, 0
-
-    def req_start(self, start_needle, stop_needle,
-                  continuous_reporting) -> None:
-        self.__is_started = True
-        cnfStart = bytearray([0xC1, 0x1])
-        self.__rx_msg_list.append(cnfStart)
-
-    def req_info(self) -> None:
-        cnfInfo = bytearray([0xC3, 0x5, 0xFF, 0xFF])
-        self.__rx_msg_list.append(cnfInfo)
-
-        indState = bytearray([0x84, 0x1, 0xFF, 0xFF, 0xFF, 0xFF, 0x1, 0x7F])
-        self.__rx_msg_list.append(indState)
-
-    def req_test(self) -> None:
-        cnfTest = bytearray([0xC4, 0x1])
-        self.__rx_msg_list.append(cnfTest)
-
-    def cnf_line(self, line_number, line_data, flags) -> bool:
-        return True
+            return self.parse_API6(self.__rx_msg_list.pop(0))
+        # else
+        return self.parse_API6(None)

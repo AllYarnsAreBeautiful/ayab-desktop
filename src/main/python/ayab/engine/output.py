@@ -23,7 +23,7 @@ from enum import Enum, auto
 from ayab.observable import Observable
 
 
-class KnitOutput(Enum):
+class Output(Enum):
     NONE = auto()
     ERROR_INVALID_SETTINGS = auto()
     ERROR_SERIAL_PORT = auto()
@@ -33,14 +33,14 @@ class KnitOutput(Enum):
     PLEASE_KNIT = auto()
     DEVICE_NOT_READY = auto()
     NEXT_LINE = auto()
-    FINISHED = auto()
+    KNITTING_FINISHED = auto()
 
 
-class KnitFeedbackHandler(Observable):
+class FeedbackHandler(Observable):
     """Polymorphic dispatch of notification signals on KnitOutput.
 
     @author Tom Price
-    @data   July 2020
+    @date   July 2020
     """
     def __init__(self, parent):
         super().__init__(parent.seer)
@@ -50,6 +50,9 @@ class KnitFeedbackHandler(Observable):
         if hasattr(self, method):
             dispatch = getattr(self, method)
             dispatch()
+
+    def _none(self):
+        self.emit_notification("", False)
 
     def _connecting_to_machine(self):
         self.emit_notification("Connecting to machine...", False)
@@ -75,7 +78,7 @@ class KnitFeedbackHandler(Observable):
     def _next_line(self):
         self.emit_audio_player("nextline")
 
-    def _finished(self):
+    def _knitting_finished(self):
         self.emit_notification(
             "Image transmission finished. Please knit until you " +
             "hear the double beep sound.")

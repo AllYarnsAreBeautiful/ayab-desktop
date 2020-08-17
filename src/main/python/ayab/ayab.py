@@ -24,7 +24,7 @@ import sys
 import logging
 
 from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox
-from PyQt5.QtCore import Qt, QThread, QCoreApplication
+from PyQt5.QtCore import Qt, QThread, QCoreApplication, QTimer
 
 from .main_gui import Ui_MainWindow
 from .fsm import FSM
@@ -39,11 +39,12 @@ from .preferences import Preferences
 from .progressbar import ProgressBar
 from .about import About
 from .knitprogress import KnitProgress
-from .engine import KnitEngine
+from .thread import GenericThread
+from .engine import Engine
+from .engine.state import Operation
 from .engine.options import Alignment
+from .engine.hw_test import HardwareTestDialog
 from .machine import Machine
-
-# TODO move to generic configuration
 
 
 class GuiMain(QMainWindow):
@@ -73,11 +74,13 @@ class GuiMain(QMainWindow):
         self.about = About(self)
         self.scene = Scene(self)
         self.knitprog = KnitProgress(self)
-        self.engine = KnitEngine(self)
+        self.engine = Engine(self)
+        self.hw_test = HardwareTestDialog(self)
         self.progbar = ProgressBar(self)
         self.flash = FirmwareFlash(self)
         self.audio = AudioPlayer(self)
-        self.engine_thread = GenericThread(self.engine.knit)
+        self.knit_thread = GenericThread(self.engine.run, Operation.KNIT)
+        self.test_thread = GenericThread(self.engine.run, Operation.TEST)
 
         # show UI
         self.showMaximized()
@@ -117,21 +120,32 @@ class GuiMain(QMainWindow):
 
     def start_knitting(self):
         """Start the knitting process."""
+        self.start_operation()
         # reset knit progress window
         self.knitprog.reset()
-        # disable UI elements at start of knitting
+        # start thread for knit engine
+        self.knit_thread.start()
+
+    def start_testing(self):
+        """Start the testing process."""
+        self.start_operation()
+        # start thread for test engine
+        self.test_thread.start()
+
+    def start_operation(self):
+        """Disable UI elements at start of operation."""
         self.menu.depopulate()
         self.ui.filename_lineedit.setEnabled(False)
         self.ui.load_file_button.setEnabled(False)
-        # start thread for knit engine
-        self.engine_thread.start()
+        self.ui.test_button.setEnabled(False)
 
-    def finish_knitting(self, beep: bool):
-        """(Re-)enable UI elements after knitting finishes."""
+    def finish_operation(self, operation: Operation, beep: bool):
+        """(Re-)enable UI elements after operation finishes."""
         self.menu.repopulate()
         self.ui.filename_lineedit.setEnabled(True)
         self.ui.load_file_button.setEnabled(True)
-        if beep:
+        self.ui.test_button.setEnabled(True)
+        if operation == Operation.KNIT and beep:
             self.audio.play("finish")
 
     def set_image_dimensions(self):
@@ -156,26 +170,3 @@ class GuiMain(QMainWindow):
         if log:
             logging.info("Notification: " + text)
         self.ui.label_notifications.setText(text)
-
-
-class GenericThread(QThread):
-    '''A generic thread wrapper for functions on threads.'''
-    def __init__(self, function, *args, **kwargs):
-        QThread.__init__(self)
-        self.function = function
-        self.args = args
-        self.kwargs = kwargs
-
-    def __del__(self):
-        #self.join()
-        self.wait()
-
-    def run(self):
-        try:
-            self.function(*self.args, **self.kwargs)
-        except Exception:
-            for arg in self.args:
-                print(arg)
-            for key, value in self.kwargs.items():
-                print(key, value)
-            raise

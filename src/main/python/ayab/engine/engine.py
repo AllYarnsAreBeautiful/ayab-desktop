@@ -22,41 +22,49 @@ import logging
 from time import sleep
 from PIL import Image
 
-from PyQt5.QtCore import QTranslator, QCoreApplication, QLocale, QObjectCleanupHandler
+from PyQt5.QtCore import QTranslator, QCoreApplication, QLocale, QObjectCleanupHandler, pyqtSignal
 from PyQt5.QtWidgets import QComboBox, QDockWidget, QWidget
 
-from ayab import utils
-from ayab.observable import Observable
-from .control import KnitControl
+from .. import utils
+from ..observable import Observable
+from .control import Control
+from .state import Operation, State
 from .pattern import Pattern
 from .options import OptionsTab, Alignment, NeedleColor
 from .status import Status, StatusTab
-from .mode import KnitMode
-from .output import KnitOutput, KnitFeedbackHandler
+from .mode import Mode
+from .output import Output, FeedbackHandler
 from .dock_gui import Ui_Dock
 
 
-class KnitEngine(Observable, QDockWidget):
+class Engine(Observable, QDockWidget):
     """
     Top-level class for the slave thread that communicates with the shield.
 
     Implemented as a subclass of `QDockWidget` and `Observable`.
     """
+    port_opener = pyqtSignal()
+
     def __init__(self, parent):
+        # set up UI
         super().__init__(parent.seer)
         self.ui = Ui_Dock()
         self.ui.setupUi(self)
         self.config = OptionsTab(parent)
+        self.config.portname = self.__read_portname()
         self.config.refresh()
         self.status = StatusTab()
         self.setup_ui()
         parent.ui.dock_container_layout.addWidget(self)
-        self.__control = KnitControl(self)
+
+        self.pattern = None
+        self.control = Control(parent, self)
+        self.__feedback = FeedbackHandler(parent)
         self.__logger = logging.getLogger(type(self).__name__)
-        self.__feedback = KnitFeedbackHandler(parent)
+        # self.fs =
 
     def __del__(self):
-        self.__control.stop()
+        self.control.stop()
 
     def setup_ui(self):
         # insert tabs
@@ -72,6 +80,7 @@ class KnitEngine(Observable, QDockWidget):
 
         # activate UI elements
         self.__activate_ui()
+
 
 #  def __activate_status_tab(self):
 #      self.ui.tab_widget.setTabEnabled(1, True)
@@ -104,12 +113,15 @@ class KnitEngine(Observable, QDockWidget):
     #     self.portname = ""
     #     self.config.refresh()
 
+    def __read_portname(self):
+        return self.ui.serial_port_dropdown.currentText()
+
     def knit_config(self, image):
         """
         Read and check configuration options from options dock UI.
         """
         # get configuration options
-        self.config.read(self.ui.serial_port_dropdown.currentText())
+        self.config.read(self.__read_portname())
         self.__logger.debug(self.config.as_dict())
 
         # start to knit with the bottom first
@@ -121,7 +133,8 @@ class KnitEngine(Observable, QDockWidget):
 
         # TODO: detect if previous conf had the same
         # image to avoid re-generating.
-        self.__pattern = Pattern(image, self.config.machine, self.config.num_colors)
+        self.pattern = Pattern(image, self.config.machine,
+                               self.config.num_colors)
 
         # validate configuration options
         valid, msg = self.validate()
@@ -131,54 +144,67 @@ class KnitEngine(Observable, QDockWidget):
 
         # update pattern
         if self.config.start_needle and self.config.stop_needle:
-            self.__pattern.set_knit_needles(self.config.start_needle, self.config.stop_needle, self.config.machine)
-        self.__pattern.alignment = self.config.alignment
+            self.pattern.set_knit_needles(self.config.start_needle,
+                                          self.config.stop_needle,
+                                          self.config.machine)
+        self.pattern.alignment = self.config.alignment
 
         # update progress bar
         self.emit_progress_bar_updater(self.config.start_row + 1,
-                                       self.__pattern.pat_height, 0, "")
+                                       self.pattern.pat_height, 0, "")
 
         # switch to status tab
         # if self.config.continuous_reporting:
         #     self.__status_tab.activate()
 
-        # start knitting controller
-        self.__control.start(self.config.machine)
-
         # send signal to start knitting
         self.emit_knitting_starter()
 
     def validate(self):
-        if self.config.start_row > self.__pattern.pat_height:
+        if self.config.start_row > self.pattern.pat_height:
             return False, "Start row is larger than the image."
         # else
         return self.config.validate()
 
-    def knit(self):
+    def run(self, operation):
         self.__canceled = False
 
-        while True:
-            # continue knitting
-            # typically each step involves some communication with the shield
+        # setup knitting controller
+        self.config.portname = self.__read_portname()
+        self.control.start(self.pattern, self.config, operation)
 
-            # FIXME pattern and config are only used by KnitControl.knit()
-            # in the KnitState.SETUP step and do not need to be sent otherwise.
-            result = self.__control.knit(self.__pattern, self.config)
-            self.__feedback.handle(result)
-            self.__status_handler()
-            if self.__canceled or result is KnitOutput.FINISHED:
+        while True:
+            # continue operating
+            # typically each step involves some communication with the device
+            output = self.control.operate(operation)
+            self.__feedback.handle(output)
+            if operation == Operation.KNIT:
+                self.__status_handler()
+            if self.__canceled or self.control.state == State.FINISHED:
                 break
 
-        self.__logger.info("Finished knitting.")
-        self.__control.stop()
+        self.control.stop()
 
-        # small delay to finish printing to knit progress window
-        # before "finish.wav" sound plays
-        sleep(1)
+        if operation == Operation.KNIT:
+            if self.__canceled:
+                self.emit_notification("Knitting canceled.")
+                self.__logger.info("Knitting canceled.")
+            else:
+                self.__logger.info("Finished knitting.")
+            # small delay to finish printing to knit progress window
+            # before "finish.wav" sound plays
+            sleep(1)
+        else:
+            # TODO: provide translations for these messages
+            if self.__canceled:
+                self.emit_notification("Testing canceled.")
+                self.__logger.info("Testing canceled.")
+            else:
+                self.__logger.info("Finished testing.")
 
-        # send signal to finish knitting
+        # send signal to finish operation
         # "finish.wav" sound only plays if knitting was not canceled
-        self.emit_knitting_finisher(not self.__canceled)
+        self.emit_operation_finisher(operation, not self.__canceled)
 
     def __status_handler(self):
         if self.status.active:
@@ -189,13 +215,12 @@ class KnitEngine(Observable, QDockWidget):
         # updating, otherwise if the knit progress window lags the status
         # will change before the information is written to the UI.
         data = Status()
-        data.copy(self.__control.status)
-        row_multiplier = self.__control.mode.row_multiplier(
-            self.__control.num_colors)
+        data.copy(self.control.status)
+        row_multiplier = self.control.mode.row_multiplier(
+            self.control.num_colors)
         self.emit_knit_progress_updater(data, row_multiplier)
         self.emit_progress_bar_updater(data.current_row, data.total_rows,
                                        data.repeats, data.color_symbol)
 
     def cancel(self):
-        self.emit_notification("Knitting canceled.")
         self.__canceled = True

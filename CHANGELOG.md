@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## 1.0.0 / Unreleased
 
+* #413 Engine: Add run-time test methods and change required API version to 6 
 * GUI: Fix image alignment and placement of limit lines in graphical scene
 * #395 GUI: Check for new release on startup
 * #393 Documentation: Add forthcoming features to CHANGELOG
