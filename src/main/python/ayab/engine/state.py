@@ -132,7 +132,7 @@ M
         control.logger.debug("State REQUEST_START")
         token, param = control.check_serial_API6()
         if token == Token.indState:
-            if param == 1:
+            if param == 0:
                 control.com.req_start_API6(control.machine.value,
                                            control.pattern.knit_start_needle,
                                            control.pattern.knit_stop_needle,
@@ -149,7 +149,7 @@ M
         control.logger.debug("State CONFIRM_START")
         token, param = control.check_serial_API6()
         if token == Token.cnfStart:
-            if param == 1:
+            if param == 0:
                 control.state = State.RUN_KNIT
                 return Output.PLEASE_KNIT
             else:
@@ -177,7 +177,7 @@ M
         control.logger.debug("State REQUEST_TEST")
         token, param = control.check_serial_API6()
         if token == Token.indState:
-            if param == 1:
+            if param == 0:
                 control.com.req_test_API6(control.machine.value)
                 control.state = State.CONFIRM_TEST
             else:
@@ -191,7 +191,7 @@ M
         control.logger.debug("State CONFIRM_TEST")
         token, param = control.check_serial_API6()
         if token == Token.cnfTest:
-            if param == 1:
+            if param == 0:
                 control.emit_hw_test_starter(control)
                 control.state = State.RUN_TEST
                 # TODO: need more informative messages for HW test

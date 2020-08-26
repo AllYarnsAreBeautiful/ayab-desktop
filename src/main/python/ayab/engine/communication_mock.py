@@ -63,17 +63,17 @@ class CommunicationMock(Communication):
         cnfInfo = bytearray([Token.cnfInfo.value, 6, 1, 0])  # APIv6, FWv1.0
         self.__rx_msg_list.append(cnfInfo)
         indState = bytearray(
-            [Token.indState.value, 0x1, 0xFF, 0xFF, 0xFF, 0xFF, 0x1, 0x7F])
+            [Token.indState.value, 0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0x1, 0x7F])
         self.__rx_msg_list.append(indState)
 
     def req_test_API6(self, machine_val) -> None:
-        cnfTest = bytearray([Token.cnfTest.value, 0x1])
+        cnfTest = bytearray([Token.cnfTest.value, 0x00])
         self.__rx_msg_list.append(cnfTest)
 
     def req_start_API6(self, machine_val, start_needle, stop_needle,
                        continuous_reporting) -> None:
         self.__is_started = True
-        cnfStart = bytearray([Token.cnfStart.value, 0x1])
+        cnfStart = bytearray([Token.cnfStart.value, 0x00])
         self.__rx_msg_list.append(cnfStart)
 
     def cnf_line_API6(self, line_number, color, flags, line_data) -> bool:
