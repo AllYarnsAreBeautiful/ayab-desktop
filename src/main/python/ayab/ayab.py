@@ -102,6 +102,8 @@ class GuiMain(QMainWindow):
         self.ui.filename_lineedit.returnPressed.connect(
             self.scene.ayabimage.select_file)
         self.ui.cancel_button.clicked.connect(self.engine.cancel)
+        self.hw_test.finished.connect(
+            lambda: self.finish_operation(Operation.TEST, False))
 
     def __activate_menu(self):
         self.menu.ui.action_quit.triggered.connect(
@@ -137,14 +139,12 @@ class GuiMain(QMainWindow):
         self.menu.depopulate()
         self.ui.filename_lineedit.setEnabled(False)
         self.ui.load_file_button.setEnabled(False)
-        self.ui.test_button.setEnabled(False)
 
     def finish_operation(self, operation: Operation, beep: bool):
         """(Re-)enable UI elements after operation finishes."""
         self.menu.repopulate()
         self.ui.filename_lineedit.setEnabled(True)
         self.ui.load_file_button.setEnabled(True)
-        self.ui.test_button.setEnabled(True)
         if operation == Operation.KNIT and beep:
             self.audio.play("finish")
 

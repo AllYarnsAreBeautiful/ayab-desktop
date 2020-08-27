@@ -44,8 +44,17 @@ class Token(Enum):
     reqLine = 0x82
     cnfLine = 0x42
     indState = 0x84
+    helpCmd = 0x26
+    sendCmd = 0x27
+    beepCmd = 0x28
+    readCmd = 0x29
+    autoCmd = 0x2a
+    testCmd = 0x2b
+    quitCmd = 0x2c
+    setCmd = 0x2d
+    testRes = 0xee
+    debug = 0x9f
     slipFrameEnd = 0xc0
-
 
 class Communication(object):
     """Class Handling the serial communication protocol."""
@@ -56,7 +65,7 @@ class Communication(object):
         self.__logger = logging.getLogger(type(self).__name__)
         self.__ser = serial
         self.__driver = sliplib.Driver()
-        self.__rx_msg_list = list()
+        self.rx_msg_list = list()
 
     def __del__(self):
         """Handle behaviour on deletion by closing the serial port connection."""
@@ -133,7 +142,6 @@ class Communication(object):
           color (int): The yarn color to be sent.
           flags (int): The flags sent to the controller.
           line_data (bytes): The bytearray to be sent to needles.
-
         """
         data = bytearray()
         data.append(Token.cnfLine.value)
@@ -161,7 +169,7 @@ class Communication(object):
         # fallthrough
         self.__logger.debug("unknown message: ")  # drop crlf
         pp = pprint.PrettyPrinter(indent=4)
-        pp.pprint(msg)
+        pp.pprint(msg.decode())
         return msg, Token.unknown, 0
 
     def read_API6(self):
@@ -169,14 +177,14 @@ class Communication(object):
         if self.__ser:
             data = self.__ser.read(1000)
             if len(data) > 0:
-                self.__rx_msg_list.extend(self.__driver.receive(data))
-            if len(self.__rx_msg_list) > 0:
-                return self.__rx_msg_list.pop(0)
+                self.rx_msg_list.extend(self.__driver.receive(data))
+            if len(self.rx_msg_list) > 0:
+                return self.rx_msg_list.pop(0)  # FIFO
         # else
         return None
 
     def write_API6(self, cmd: str) -> None:
-        # no SLIP protocol, no CRC8
+        # SLIP protocol, no CRC8
         if self.__ser:
             self.__ser.write(cmd)
 

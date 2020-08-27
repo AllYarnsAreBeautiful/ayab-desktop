@@ -206,9 +206,7 @@ M
 
     def _API6_run_test(control, operation):
         # control.logger.debug("State RUN_TEST")
-        msg = control.com.read_API6()
-        if msg != "":
-            control.emit_hw_test_writer(msg)
+        token, param = control.check_serial_API6()
         return Output.NONE
 
     def _API6_finished(control, operation):
