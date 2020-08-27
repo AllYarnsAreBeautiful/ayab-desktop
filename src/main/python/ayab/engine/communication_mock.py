@@ -44,7 +44,7 @@ class CommunicationMock(Communication):
     def reset(self):
         self.__is_open = False
         self.__is_started = False
-        self.__rx_msg_list = list()
+        self.rx_msg_list = list()
         self.__line_count = 0
 
     def is_open(self) -> bool:
@@ -60,31 +60,31 @@ class CommunicationMock(Communication):
         return True
 
     def req_info(self) -> None:
-        cnfInfo = bytearray([Token.cnfInfo.value, 6, 1, 0])  # APIv6, FWv1.0
-        self.__rx_msg_list.append(cnfInfo)
-        indState = bytearray(
+        cnfInfo = bytes([Token.cnfInfo.value, 6, 1, 0])  # APIv6, FWv1.0
+        self.rx_msg_list.append(cnfInfo)
+        indState = bytes(
             [Token.indState.value, 0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0x1, 0x7F])
-        self.__rx_msg_list.append(indState)
+        self.rx_msg_list.append(indState)
 
     def req_test_API6(self, machine_val) -> None:
-        cnfTest = bytearray([Token.cnfTest.value, 0x00])
-        self.__rx_msg_list.append(cnfTest)
+        cnfTest = bytes([Token.cnfTest.value, 0x00])
+        self.rx_msg_list.append(cnfTest)
 
     def req_start_API6(self, machine_val, start_needle, stop_needle,
                        continuous_reporting) -> None:
         self.__is_started = True
-        cnfStart = bytearray([Token.cnfStart.value, 0x00])
-        self.__rx_msg_list.append(cnfStart)
+        cnfStart = bytes([Token.cnfStart.value, 0x00])
+        self.rx_msg_list.append(cnfStart)
 
     def cnf_line_API6(self, line_number, color, flags, line_data) -> bool:
         return True
 
     def update_API6(self) -> tuple:
         if self.__is_open and self.__is_started:
-            reqLine = bytearray([Token.reqLine.value, self.__line_count])
+            reqLine = bytes([Token.reqLine.value, self.__line_count])
             self.__line_count += 1
             self.__line_count %= 256
-            self.__rx_msg_list.append(reqLine)
+            self.rx_msg_list.append(reqLine)
             if self.__delay:
                 sleep(1)  # wait for knitting progress dialog to update
             # step through output line by line
@@ -98,7 +98,7 @@ class CommunicationMock(Communication):
                 ret = msg.exec_()
                 while ret == None:
                     pass
-        if len(self.__rx_msg_list) > 0:
-            return self.parse_API6(self.__rx_msg_list.pop(0))
+        if len(self.rx_msg_list) > 0:
+            return self.parse_API6(self.rx_msg_list.pop(0))  # FIFO
         # else
         return self.parse_API6(None)

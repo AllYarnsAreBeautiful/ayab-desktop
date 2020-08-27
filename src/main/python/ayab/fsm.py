@@ -54,14 +54,12 @@ class FSM(object):
         # Events that trigger state changes
         self.NO_IMAGE.addTransition(parent.seer.got_image_flag,
                                     self.CONFIGURING)
-        self.NO_IMAGE.addTransition(parent.ui.test_button.clicked,
-                                    self.TESTING_NO_IMAGE)
+        self.NO_IMAGE.addTransition(parent.menu.ui.action_test_AYAB_device.triggered, self.TESTING_NO_IMAGE)
         self.TESTING_NO_IMAGE.addTransition(parent.test_thread.finished,
                                             self.NO_IMAGE)
         self.CONFIGURING.addTransition(parent.ui.knit_button.clicked,
                                        self.CHECKING)
-        self.CONFIGURING.addTransition(parent.ui.test_button.clicked,
-                                       self.TESTING)
+        self.CONFIGURING.addTransition(parent.menu.ui.action_test_AYAB_device.triggered, self.TESTING)
         self.CHECKING.addTransition(parent.seer.got_image_flag,
                                     self.CONFIGURING)
         self.CHECKING.addTransition(parent.seer.new_image_flag,

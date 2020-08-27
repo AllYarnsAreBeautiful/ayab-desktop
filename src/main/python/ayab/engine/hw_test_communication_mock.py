@@ -17,154 +17,150 @@
 #    Copyright 2013 Christian Obersteiner, Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
+import re
 from time import sleep
-from collections import deque
 from PyQt5.QtCore import QObject, pyqtSignal
 
+from .communication import Token
 from .communication_mock import CommunicationMock
 
 
 class HardwareTestCommunicationMock(QObject, CommunicationMock):
-    commands = [
-        "setSingle", "setAll", "readEOLsensors", "readEncoders", "beep",
-        "autoRead", "autoTest", "send", "stop", "quit", "help", "test"
-    ]
+    """Simulate device for hardware tests."""
 
     def __init__(self):
         super().__init__()
-        self.__autoReadOn = False
-        self.__autoTestOn = False
-        self.__output = deque()  # FIFO
-        self.__flag = True
-        self.setup()
+        self.__tokens = [Token[key] for key in Token._member_map_.keys() if re.search("Cmd$", key)]
 
     def setup(self):
-        self.__output.appendleft("AYAB Hardware Test v1.0 API v6\n\n")
-        self.helpCmd([])
-
-    def write_API6(self, cmd: str) -> None:
-        tokens = cmd.lower().split()
-        try:
-            i = [x.lower() for x in self.commands].index(tokens[0])
-        except Exception as e:
-            self.unrecognizedCmd(cmd)
-        else:
-            dispatch = getattr(self, self.commands[i] + "Cmd")
-            dispatch(tokens)
-
-    def read_API6(self) -> str:
-        if len(self.__output) == 0:
-            return ""
-        # else
-        return self.__output.pop()
-
-    def prompt(self):
-        # self.__output.appendleft("$ \n")
-        pass
-
-    def helpCmd(self, tokens):
-        self.__output.appendleft("The following commands are available:\n")
-        self.__output.appendleft("setSingle [0..15] [1/0]\n")
-        self.__output.appendleft("setAll [0..255] [0..255]\n")
-        self.__output.appendleft("readEOLsensors\n")
-        self.__output.appendleft("readEncoders\n")
-        self.__output.appendleft("beep\n")
-        self.__output.appendleft("autoRead\n")
-        self.__output.appendleft("autoTest\n")
-        self.__output.appendleft("send\n")
-        self.__output.appendleft("stop\n")
-        self.__output.appendleft("help\n")
-
-    def sendCmd(self, tokens):
-        self.__output.appendleft("Called send\n")
-        self.__output.appendleft("\x01\x02\x03\n")  # FIXME ???
-
-    def beep(self):
-        pass
-
-    def beepCmd(self, tokens):
-        self.__output.appendleft("Called beep\n")
-
-    def encoderAChange(self):
-        self.beep()
-
-    def setSingleCmd(self, tokens):
-        self.__output.appendleft("Called setSingle\n")
-        if len(tokens) < 2 or tokens[1] == "":
-            return
-        # else
-        solenoidNumber = int(tokens[1])
-        if (solenoidNumber > 15):
-            self.__output.appendleft("Invalid argument: " +
-                                     str(solenoidNumber) + "\n")
-        # arguments ignored
-
-    def setAllCmd(self, tokens):
-        self.__output.appendleft("Called setAll\n")
-        # arguments ignored
-
-    def readEOLsensors(self, output):
-        output.appendleft("  EOL_L: 0")
-        output.appendleft("  EOL_R: 0")
-
-    def readEOLsensorsCmd(self, tokens):
-        self.__output.appendleft("Called readEOLsensors\n")
-        self.readEOLsensors(self.__output)
-        self.__output.appendleft("\n")
-
-    def readEncoders(self, output):
-        output.appendleft("  ENC_A: LOW")
-        output.appendleft("  ENC_B: LOW")
-        output.appendleft("  ENC_C: LOW")
-
-    def readEncodersCmd(self, tokens):
-        self.__output.appendleft("Called readEncoders\n")
-        self.readEncoders(self.__output)
-        self.__output.appendleft("\n")
-
-    def autoRead(self):
-        self.readEOLsensors(self.__output)
-        self.readEncoders(self.__output)
-        self.__output.appendleft("\n")
-        #sleep(1)
-
-    def autoReadCmd(self, tokens):
-        self.__output.appendleft("Called autoRead, send stop to quit\n")
-        self.__autoReadOn = True
-
-    def autoTest_even(self):
-        self.__output.appendleft("Set even solenoids\n")
-        # sleep(0.5)
-
-    def autoTest_odd(self):
-        self.__output.appendleft("Set odd solenoids\n")
-        # sleep(0.5)
-
-    def autoTestCmd(self, tokens):
-        self.__output.appendleft("Called autoTest, send stop to quit\n")
-        self.__autoTestOn = True
-
-    def stopCmd(self, tokens):
+        self.reset()
         self.__autoReadOn = False
         self.__autoTestOn = False
+        self.__timer_event_odd = False
+        self.__output(Token.testRes, "AYAB Hardware Test v1.0 API v6\n\n")
+        self._handle_helpCmd(bytes())
 
-    def unrecognizedCmd(self, cmd):
-        self.__output.appendleft("Unrecognized command: " + cmd + "\n")
-        self.helpCmd([])
+    def write_API6(self, msg: bytes) -> None:
+        token = msg[0]
+        try:
+            i = [t.value for t in self.__tokens].index(token)
+        except ValueError:
+            self.__handle_unrecognizedCmd()
+        else:
+            cmd = self.__tokens[i].name
+            self.__output(Token.testRes, "Called " + re.sub("CMD$", "", cmd.upper()) + "\n")
+            dispatch = getattr(self, "_handle_" + cmd)
+            dispatch(msg)
 
-    def quitCmd(self, tokens):
+    def update_API6(self):
+        return self.parse_API6(self.read_API6())
+
+    def read_API6(self):
+        if len(self.rx_msg_list) == 0:
+            return None
+        # else
+        res = self.rx_msg_list.pop(0)  # FIFO
+        return res
+
+    def __output(self, token: Token, msg: str) -> None:
+        if len(self.rx_msg_list) >= 100:
+            return
+        # else
+        self.rx_msg_list.append(bytes([token.value]) + msg.encode())
+
+    # command handlers
+
+    def _handle_helpCmd(self, msg):
+        self.__output(Token.testRes, "The following commands are available:\n")
+        self.__output(Token.testRes, "SET solenoid [0..15] [0/1]\n")
+        self.__output(Token.testRes, "READ encoders and EOL sensors\n")
+        self.__output(Token.testRes, "AUTO [0/1] continuous reads\n")
+        self.__output(Token.testRes, "TEST [0/1] toggle solenoids\n")
+        self.__output(Token.testRes, "SEND a test message\n")
+        self.__output(Token.testRes, "BEEP test buzzer\n")
+        self.__output(Token.testRes, "HELP show commands\n")
+
+    def _handle_sendCmd(self, msg):
+        self.__output(Token.testRes, "\x01\x02\x03\n")
+
+    def _handle_beepCmd(self, msg):
+        self.__beep()
+
+    def _handle_readCmd(self, msg):
+        self.__read_EOL_sensors()
+        self.__read_encoders()
+        self.__output(Token.testRes, "\n")
+
+    def _handle_autoCmd(self, msg):
+        self.__autoReadOn = msg[1]
+
+    def _handle_testCmd(self, msg):
+        self.__autoTestOn = msg[1]
+
+    def _handle_quitCmd(self, msg):
         pass
 
-    def testCmd(self, tokens):
-        self.auto()
+    def _handle_setCmd(self, msg):
+        if len(msg) < 3:
+            return
+        # else
+        try:
+            solenoidNumber = int(msg[1])
+        except ValueError:
+            self.__bad_arg(msg[1])
+            return
+        if (solenoidNumber < 0 or solenoidNumber > 15):
+            self.__bad_arg(msg[1])
+            return
+        # else
+        try:
+            solenoidValue = int(msg[2])
+        except ValueError:
+            self.__bad_arg(msg[2])
+            return
+        if (solenoidValue < 0 or solenoidValue > 1):
+            self.__bad_arg(msg[2])
+            return
+        # arguments ignored
 
-    def auto(self):
-        self.__flag = not self.__flag
+    def __handle_unrecognizedCmd():
+        pass
+        
+    def __beep(self):
+        pass
+
+    def __read_EOL_sensors(self):
+        self.__output(Token.testRes, "  EOL_L: 0")
+        self.__output(Token.testRes, "  EOL_R: 0")
+
+    def __read_encoders(self):
+        self.__output(Token.testRes, "  ENC_A: LOW")
+        self.__output(Token.testRes, "  ENC_B: LOW")
+        self.__output(Token.testRes, "  ENC_C: LOW")
+
+    def __bad_arg(self, arg):
+        self.__output(Token.testRes, "Invalid argument: " + arg + "\n")
+
+    # timer event handlers
+
+    def timer_event(self):
         if self.__autoReadOn:
-            if self.__flag:
-                self.autoRead()
+            if self.__timer_event_odd:
+                self.__auto_read()
         if self.__autoTestOn:
-            if self.__flag:
-                self.autoTest_even()
+            if self.__timer_event_odd:
+                self.__auto_test_odd()
             else:
-                self.autoTest_odd()
+                self.__auto_test_even()
+        self.__timer_event_odd = not self.__timer_event_odd
+
+    def __auto_read(self):
+        self.__read_EOL_sensors()
+        self.__read_encoders()
+        self.__output(Token.testRes, "\n")
+
+    def __auto_test_even(self):
+        self.__output(Token.testRes, "Set even solenoids\n")
+
+    def __auto_test_odd(self):
+        self.__output(Token.testRes, "Set odd solenoids\n")
