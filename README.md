@@ -7,17 +7,24 @@ For information on how to install the release version of the software, see
 
 ## Running from Source & Development
 
+The AYAB desktop software runs using Python 3.6. This is not the current
+version of Python, so it is recommended to install the software to a
+virtual environment. Miniconda provides a virtual environment that is
+platform-independent and easy to use: download the lastest version from
+https://docs.conda.io/en/latest/miniconda.html and follow the instructions
+for installation.
+
+The Python module dependencies can be found in *requirements.txt*.
+
 This repository uses [pre-commit](https://pre-commit.com/) hooks.
 After cloning the repo and installing the requirements, you should run
 `pre-commit install` to set up the git hook scripts.
 
 ### Linux
 
-You need Python 3.6 and from your package manager's repository.
 For flashing the firmware, avrdude has to be available on your system.
 To be able to work on GUI elements and translation files, the Qt Dev tools are
 needed also.
-The Python module dependencies can be found in *requirements.txt*.
 
 #### Debian/Ubuntu
 
@@ -44,8 +51,8 @@ To install the development version you can checkout the git repository.
 Create a virtual enviroment in the cloned repository:
 
     cd ayab-desktop
-    virtualenv --python=/usr/bin/python3.6 --system-site-packages venv/
-    source venv/bin/activate
+    conda create --name venv -c conda-forge python=3.6.* pip
+    source activate venv
     pip3 install -r requirements.txt
     ./setup-environment.sh
 
@@ -55,26 +62,21 @@ Now start ayab with
 
 ### Windows
 
-You need Python Version 3.5.3 (Important: the 64 bit version!) and PyQt5 (we used 5.11.3).
-
-Download and install Python 3.5.3 (64 bit) (pip is already contained in this installer) from
-    https://www.python.org/downloads/windows/ (https://www.python.org/ftp/python/3.5.3/python-3.5.3-amd64.exe)
-
-You may also need [PyWin32](https://sourceforge.net/projects/pywin32/files/pywin32/).
-
-You can download the git repository with:
+Download and run the Git for Windows installer from https://git-scm.com/download/win
+ 
+Now you can download the git repository from the Anaconda prompt with:
 
     git clone https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
 Create a virtual enviroment in the cloned repository:
 
     cd ayab-desktop
-    virtualenv venv/
-    venv\Scripts\activate
+    conda create --name venv -c conda-forge python=3.6.* pip
+    conda activate venv
 
 Then install the remaining prerequisites with:
 
-    pip3 install -r requirements.txt
+    pip install -r requirements.txt
     ./setup-environment.sh
 
 Now start ayab with
@@ -83,36 +85,23 @@ Now start ayab with
 
 ### macOS
 
-You need Python 3.5.3 and PyQt5.  For Python I would recommend `pyenv`.
-You can install it using Homebrew:
+You can install Git using Homebrew:
 
-    brew install pyenv
-    brew install pyenv-virtualenv
+    brew install git
 
 You will also need the Xcode command line tools:
 
     xcode-select --install
 
-Next install the required version of Python.
-
-    env PYTHON_CONFIGURE_OPTS="--enable-framework" CFLAGS="-I$(xcrun --show-sdk-path)/usr/include" pyenv install 3.5.3
-
-To install the development version, you can download the git repository:
+Next download the git repository:
 
     git clone https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
 Create a virtual enviroment in the cloned repository.
 
     cd ayab-desktop
-    pyenv virtualenv 3.5.3 venv
-    pyenv activate venv
-
-(If the pyenv commands don't work out, you probably have to add
-
-    eval "$(pyenv init -)"
-    eval "$(pyenv virtualenv-init -)"
-
-to your ~/.bash_profile)
+    conda create --name venv -c conda-forge python=3.6.* pip
+    source activate venv
 
 Then install the remaining prerequisites with:
 
