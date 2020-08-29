@@ -17,58 +17,66 @@
 #    Copyright 2014 Sebastian Oliva, Christian Obersteiner, Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
-from PyQt5.QtCore import Qt, QCoreApplication, QRect
-from PyQt5.QtWidgets import QScrollArea, QGridLayout, QLayout, QLabel, QWidget
+from PyQt5.QtCore import Qt, QCoreApplication, QRect, QSize
+from PyQt5.QtWidgets import QTableWidget, QTableWidgetItem, QLabel, QSizePolicy, QAbstractItemView, QWidget, QHBoxLayout
 from bitarray import bitarray
 
 from . import utils
 from .engine.status import Direction
 
 
-class KnitProgress(QScrollArea):
+class KnitProgress(QTableWidget):
     """
-    Class for the knit progress window, implemented as a subclass of
-    `QScrollArea`.
+    Class for the knit progress window, implemented as a subclass of `QScrollArea`.
 
     @author Tom Price
     @date   June 2020
     """
+    green = 0xBBCCBB
+    orange = 0xEECC99
+
     def __init__(self, parent):
         super().__init__(parent.ui.graphics_splitter)
+        self.clear()
+        self.setRowCount(0)
+        self.setStyleSheet("border-width: 0;")
         self.setGeometry(QRect(0, 0, 700, 220))
         self.setContentsMargins(1, 1, 1, 1)
+        self.verticalHeader().setDefaultSectionSize(16)
+        self.blank = QTableWidgetItem()
+        self.blank.setSizeHint(QSize(0, 0))
+        self.setColumnCount(6)
+        for r in range(6):
+            self.setHorizontalHeaderItem(r, self.blank)
 
-    def reset(self):
-        self.container = QWidget()
-        self.container.setMinimumSize(100, 100)
-        self.grid = QGridLayout(self.container)
-        self.grid.setContentsMargins(1, 1, 1, 1)
-        self.grid.setSpacing(0)
-        self.grid.setSizeConstraint(QLayout.SetMinAndMaxSize)
-        self.setWidget(self.container)
+    def start(self):
+        self.clearContents()
+        self.clearSelection()
+        self.setRowCount(0)
         self.row = -1
+        self.color = True
 
-    def update(self, status, row_multiplier):
+    def update(self, status, row_multiplier, midline, auto_mirror):
         if status.current_row < 0:
             return
         # else
         tr_ = QCoreApplication.translate
         row, swipe = divmod(status.line_number, row_multiplier)
+
         # row
-        w0 = self.__label(tr_("KnitProgress", "Row"))
-        self.grid.addWidget(w0, status.line_number, 0)
-        w1 = self.__label(str(status.current_row))
-        self.grid.addWidget(w1, status.line_number, 1, 1, 1, Qt.AlignRight)
+        w0 = self.__item(tr_("KnitProgress", "Row") + " " + str(status.current_row))
+
         # pass
-        w2 = self.__label(tr_("KnitProgress", "Pass") + " " + str(swipe + 1))
-        self.grid.addWidget(w2, status.line_number, 2)
+        w1 = self.__item(tr_("KnitProgress", "Pass") + " " + str(swipe + 1))
+
         # color
         if status.color_symbol == "":
-            coltext = ""
+            self.color = False
+            self.setColumnHidden(2, True)
         else:
             coltext = tr_("KnitProgress", "Color") + " " + status.color_symbol
-        w3 = self.__label(coltext)
-        self.grid.addWidget(w3, status.line_number, 3)
+            w2 = self.__item(coltext)
+
         # carriage and direction
         try:
             carriage = status.carriage[0] + status.carriage[2] + " "
@@ -79,39 +87,65 @@ class KnitProgress(QScrollArea):
             direction = Direction.LEFT_TO_RIGHT
         else:
             direction = Direction.RIGHT_TO_LEFT
-        w4 = self.__label(carriage + direction.symbol)
-        self.grid.addWidget(w4, status.line_number, 4)
-        # TODO: hints, notes, memos
-        w0.show()
-        w1.show()
-        w2.show()
-        w3.show()
-        w4.show()
-        self.ensureWidgetVisible(w0)
+        w3 = self.__item(carriage + direction.symbol)
+
         # graph line of stitches
-        for c in range(len(status.bits)):
-            wc = self.__stitch(status.color, status.bits[c], status.alt_color)
-            self.grid.addWidget(wc, status.line_number, 6 + c)
+        status.bits.reverse()
+        midline = len(status.bits) - midline
 
-    def __label(self, text):
-        table = "<table><tbody><tr height='12'><td style='font-weight: normal;'>" + text + "</td></tr></tbody></table>"
-        label = QLabel()
-        label.setText(table)
-        label.setTextFormat(Qt.RichText)
-        return label
+        table_text = "<table style='cell-spacing: 1; cell-padding: 1; background-color: #{:06x};'><tr> ".format(self.orange)
+        for c in range(0, midline):
+            table_text += self.__stitch(status.color, status.bits[c], status.alt_color)
+        table_text += "</tr></table>"
+        # FIXME: align label right
+        # w4 = QWidget()
+        # w4a = QHBoxLayout()
+        # w4b = QLabel(table_text)
+        # w4a.setAlignment(Qt.AlignRight)
+        # w4a.addWidget(w4b)
+        # w4.setLayout(w4a)
+        w4 = QLabel(table_text)
 
-    def __stitch(self, color, bit, alt_color=None, symbol=0x20):
-        table = "<table style='font-weight: normal;'><tbody><tr height='12'><td width='12' align='center' "
+        table_text = "<table style='cell-spacing: 1; cell-padding: 1; background-color: #{:06x};'><tr> ".format(self.green)
+        for c in range(midline, len(status.bits)):
+            table_text += self.__stitch(status.color, status.bits[c], status.alt_color)
+        table_text += "</tr></table>"
+        # FIXME: align label left
+        # w5 = QWidget()
+        # w5a = QHBoxLayout()
+        # w5b = QLabel(table_text)
+        # w5a.setAlignment(Qt.AlignLeft)
+        # w5a.addWidget(w5b)
+        # w5.setLayout(w5a)
+        w5 = QLabel(table_text)
+
+        self.insertRow(0)
+        self.setItem(0, 0, w0)
+        self.setItem(0, 1, w1)
+        if self.color:
+            self.setItem(0, 2, w2)
+        self.setItem(0, 3, w3)
+        self.setCellWidget(0, 4, w4)
+        self.setCellWidget(0, 5, w5)
+        blank = QTableWidgetItem()
+        blank.setSizeHint(QSize(0, 0))
+        self.setVerticalHeaderItem(0, blank)
+        self.resizeColumnsToContents()
+        # self.ensureWidgetVisible(w0)
+
+    def __item(self, text):
+        table = "<table><tr><td>" + text + "</td></tr></table>"
+        item = QTableWidgetItem(text)
+        return item
+
+    def __stitch(self, color, bit, alt_color=None):
+        # FIXME: borders are not visible
+        text = "<td width='12' style='"
         if bit:
-            table = table + "style='border: 1 solid black; color: #{:06x}; background-color: #{:06x};'>".format(
-                utils.contrast_color(color), color) + chr(symbol)
+            text += "border: 1 solid black; background-color: #{:06x};".format(color)
         elif alt_color is not None:
-            table = table + "style='border: 1 solid black; color: #{:06x}; background-color: #{:06x};'>".format(
-                utils.contrast_color(alt_color), alt_color) + chr(symbol)
+            text += "border: 1 solid black; background-color: #{:06x};".format(alt_color)
         else:
-            table = table + "style='border: 1 dotted black;'>"
-        table = table + "</td></tr></tbody></table>"
-        label = QLabel()
-        label.setText(table)
-        label.setTextFormat(Qt.RichText)
-        return label
+            text += "border: 1 dotted black;"
+        text += "'/>"
+        return text

@@ -74,6 +74,7 @@ class Status(object):
         self.color = -1
         self.alt_color = None
         self.bits = bitarray()
+        self.mirror = False
         # carriage info
         self.hall_l = 0
         self.hall_r = 0
@@ -85,7 +86,6 @@ class Status(object):
         self.active = status.active
         self.current_row = status.current_row
         self.line_number = status.line_number
-        self.total_rows = status.total_rows
         self.repeats = status.repeats
         self.color_symbol = status.color_symbol
         self.color = status.color

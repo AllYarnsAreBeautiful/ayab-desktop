@@ -88,14 +88,14 @@ class ModeFunc(object):
     """
 
     # singlebed, 2 color
-    def _singlebed(ayab_control, line_number):
-        line_number += ayab_control.start_row
+    def _singlebed(control, line_number):
+        line_number += control.start_row
 
         # when knitting infinitely, keep the requested
         # line_number in its limits
-        if ayab_control.inf_repeat:
-            line_number %= ayab_control.pat_height
-        ayab_control.pat_row = line_number
+        if control.inf_repeat:
+            line_number %= control.pat_height
+        control.pat_row = line_number
 
         # 0   1   2   3   4 .. (pat_row)
         # |   |   |   |   |
@@ -105,28 +105,28 @@ class ModeFunc(object):
         # because both colors are knitted at once
         color = 0
 
-        row_index = 2 * ayab_control.pat_row
+        row_index = 2 * control.pat_row
 
         blank_line = False
 
         # Check if the last line of the pattern was requested
-        last_line = (ayab_control.pat_row == ayab_control.pat_height - 1)
+        last_line = (control.pat_row == control.pat_height - 1)
 
         return color, row_index, blank_line, last_line
 
     # doublebed, 2 color
-    def _classic_ribber_2col(ayab_control, line_number):
-        line_number += 2 * ayab_control.start_row
+    def _classic_ribber_2col(control, line_number):
+        line_number += 2 * control.start_row
 
         # calculate line number index for colors
         i = line_number % 4
 
         # when knitting infinitely, keep the requested
         # line_number in its limits
-        if ayab_control.inf_repeat:
-            line_number %= ayab_control.len_pat_expanded
+        if control.inf_repeat:
+            line_number %= control.len_pat_expanded
 
-        ayab_control.pat_row = line_number // 2
+        control.pat_row = line_number // 2
 
         # 0 0 1 1 2 2 3 3 4 4 .. (pat_row)
         # 0 1 2 3 4 5 6 7 8 9 .. (line_number)
@@ -137,43 +137,43 @@ class ModeFunc(object):
         color = [0, 1, 1, 0][i]  # 0 = A, 1 = B
 
         row_index = (line_number +
-                     [0, 0, 1, -1][i]) % ayab_control.len_pat_expanded
+                     [0, 0, 1, -1][i]) % control.len_pat_expanded
 
         blank_line = False
 
-        last_line = (ayab_control.pat_row
-                     == ayab_control.pat_height - 1) and (i == 1 or i == 3)
+        last_line = (control.pat_row
+                     == control.pat_height - 1) and (i == 1 or i == 3)
 
         return color, row_index, blank_line, last_line
 
     # doublebed, multicolor
-    def _classic_ribber_multicol(ayab_control, line_number):
+    def _classic_ribber_multicol(control, line_number):
 
         # halve line_number because every second line is BLANK
         blank_line = odd(line_number)
         h = line_number // 2
 
-        h += ayab_control.num_colors * ayab_control.start_row
+        h += control.num_colors * control.start_row
 
         # when knitting infinitely, keep the
         # half line_number within its limits
-        if ayab_control.inf_repeat:
-            h %= ayab_control.len_pat_expanded
+        if control.inf_repeat:
+            h %= control.len_pat_expanded
 
-        ayab_control.pat_row, color = divmod(h, ayab_control.num_colors)
+        control.pat_row, color = divmod(h, control.num_colors)
 
-        row_index = ayab_control.pat_row * ayab_control.num_colors + color
+        row_index = control.pat_row * control.num_colors + color
 
         last_line = (row_index
-                     == ayab_control.len_pat_expanded - 1) and blank_line
+                     == control.len_pat_expanded - 1) and blank_line
 
         if not blank_line:
-            ayab_control.logger.debug("COLOR " + str(color))
+            control.logger.debug("COLOR " + str(color))
 
         return color, row_index, blank_line, last_line
 
     # Ribber, Middle-Colors-Twice
-    def _middlecolorstwice_ribber(ayab_control, line_number):
+    def _middlecolorstwice_ribber(control, line_number):
 
         # doublebed middle-colors-twice multicolor
         # 0-00 1-11 2-22 3-33 4-44 5-55 .. (pat_row)
@@ -185,34 +185,34 @@ class ModeFunc(object):
         #
         # A-CB B-CA A-CB B-CA A-CB B-CA .. (color)
 
-        line_number += ayab_control.passes_per_row * ayab_control.start_row
+        line_number += control.passes_per_row * control.start_row
 
-        ayab_control.pat_row, r = divmod(line_number,
-                                         ayab_control.passes_per_row)
+        control.pat_row, r = divmod(line_number,
+                                         control.passes_per_row)
 
         first_col = (r == 0)
-        last_col = (r == ayab_control.passes_per_row - 1)
+        last_col = (r == control.passes_per_row - 1)
 
         if first_col or last_col:
-            color = (last_col + ayab_control.pat_row) % 2
+            color = (last_col + control.pat_row) % 2
         else:
             color = (r + 3) // 2
 
-        if ayab_control.inf_repeat:
-            ayab_control.pat_row %= ayab_control.pat_height
+        if control.inf_repeat:
+            control.pat_row %= control.pat_height
 
-        row_index = ayab_control.num_colors * ayab_control.pat_row + color
+        row_index = control.num_colors * control.pat_row + color
 
         blank_line = not first_col and not last_col and odd(line_number)
 
-        last_line = (ayab_control.pat_row
-                     == ayab_control.pat_height - 1) and last_col
+        last_line = (control.pat_row
+                     == control.pat_height - 1) and last_col
 
         return color, row_index, blank_line, last_line
 
     # doublebed, multicolor <3 of pluto
     # rotates middle colors
-    def _heartofpluto_ribber(ayab_control, line_number):
+    def _heartofpluto_ribber(control, line_number):
 
         # doublebed <3 of pluto multicolor
         # 0000 1111 2222 3333 4444 5555 .. (pat_row)
@@ -224,32 +224,32 @@ class ModeFunc(object):
         #
         # CB-A AC-B BA-C CB-A AC-B BA-C .. (color)
 
-        line_number += ayab_control.passes_per_row * ayab_control.start_row
+        line_number += control.passes_per_row * control.start_row
 
-        ayab_control.pat_row, r = divmod(line_number,
-                                         ayab_control.passes_per_row)
+        control.pat_row, r = divmod(line_number,
+                                         control.passes_per_row)
 
-        if ayab_control.inf_repeat:
-            ayab_control.pat_row %= ayab_control.pat_height
+        if control.inf_repeat:
+            control.pat_row %= control.pat_height
 
         first_col = (r == 0)
-        last_col = (r == ayab_control.passes_per_row - 1)
+        last_col = (r == control.passes_per_row - 1)
 
-        color = ayab_control.num_colors - 1 - (
-            (line_number + 1) % (2 * ayab_control.num_colors)) // 2
+        color = control.num_colors - 1 - (
+            (line_number + 1) % (2 * control.num_colors)) // 2
 
-        row_index = ayab_control.num_colors * ayab_control.pat_row + color
+        row_index = control.num_colors * control.pat_row + color
 
         blank_line = not first_col and not last_col and even(line_number)
 
-        last_line = (ayab_control.pat_row
-                     == ayab_control.pat_height - 1) and last_col
+        last_line = (control.pat_row
+                     == control.pat_height - 1) and last_col
 
         return color, row_index, blank_line, last_line
 
     # Ribber, Circular
     # not restricted to 2 colors
-    def _circular_ribber(ayab_control, line_number):
+    def _circular_ribber(control, line_number):
 
         # A B  A B  A B  .. (color)
         # 0-0- 1-1- 2-2- .. (pat_row)
@@ -261,16 +261,16 @@ class ModeFunc(object):
         blank_line = odd(line_number)
         h = line_number // 2
 
-        h += ayab_control.num_colors * ayab_control.start_row
+        h += control.num_colors * control.start_row
 
-        if ayab_control.inf_repeat:
-            h %= ayab_control.len_pat_expanded
+        if control.inf_repeat:
+            h %= control.len_pat_expanded
 
-        ayab_control.pat_row, color = divmod(h, ayab_control.num_colors)
+        control.pat_row, color = divmod(h, control.num_colors)
 
         row_index = h
 
         last_line = (row_index
-                     == ayab_control.len_pat_expanded - 1) and blank_line
+                     == control.len_pat_expanded - 1) and blank_line
 
         return color, row_index, blank_line, last_line

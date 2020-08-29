@@ -61,7 +61,7 @@ class Preferences(Observable):
         'default_knitting_mode': Mode,
         'default_infinite_repeat': bool,
         'default_alignment': Alignment,
-        'default_mirroring': bool,
+        'default_auto_mirror': bool,
         # 'default_continuous_reporting': bool,
         'quiet_mode': bool,
         'language': Language,

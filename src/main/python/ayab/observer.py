@@ -37,7 +37,7 @@ class Observer(QObject):
     # over-ridden by instance attributes with the same name
     start_row_updater = pyqtSignal(int)
     progress_bar_updater = pyqtSignal(int, int, int, 'QString')
-    knit_progress_updater = pyqtSignal(Status, int)
+    knit_progress_updater = pyqtSignal(Status, int, int, bool)
     notifier = pyqtSignal('QString', bool)
     # statusbar_updater = pyqtSignal('QString', bool)
     popup_displayer = pyqtSignal('QString', 'QString')
