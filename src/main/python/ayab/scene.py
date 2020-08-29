@@ -48,7 +48,7 @@ class Scene(QGraphicsView):
         self.__alignment = Alignment(default)
         machine_width = Machine(self.__prefs.value("machine")).width
         self.__start_needle = (machine_width // 2) - 20
-        self.__stop_needle = (machine_width // 2 - 1) + 20
+        self.__stop_needle = (machine_width - 1) // 2 + 20
         self.__row_progress = 0
 
         # zoom behavior
@@ -80,12 +80,12 @@ class Scene(QGraphicsView):
 
         # draw "machine"
         rect_orange = QGraphicsRectItem(
-            -machine_width / 2.0 - self.LIMIT_BAR_WIDTH, -self.BAR_HEIGHT,
-            machine_width / 2.0 + self.LIMIT_BAR_WIDTH, self.BAR_HEIGHT)
+            -machine_width / 2 - self.LIMIT_BAR_WIDTH, -self.BAR_HEIGHT,
+            machine_width / 2 + self.LIMIT_BAR_WIDTH, self.BAR_HEIGHT)
         rect_orange.setBrush(QBrush(QColor("orange")))
         rect_green = QGraphicsRectItem(
-            0.0, -self.BAR_HEIGHT,
-            machine_width / 2.0 + self.LIMIT_BAR_WIDTH, self.BAR_HEIGHT)
+            0, -self.BAR_HEIGHT,
+            machine_width / 2 + self.LIMIT_BAR_WIDTH, self.BAR_HEIGHT)
         rect_green.setBrush(QBrush(QColor("green")))
 
         qscene.addItem(rect_orange)

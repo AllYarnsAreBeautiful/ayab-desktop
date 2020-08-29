@@ -89,7 +89,7 @@ class OptionsTab(Observable, QWidget):
     def __update_machine(self):
         self.machine = Machine(self.prefs.value("machine"))
         self.ui.start_needle_edit.setMaximum(self.machine.width // 2)
-        self.ui.stop_needle_edit.setMaximum(self.machine.width // 2)
+        self.ui.stop_needle_edit.setMaximum((self.machine.width - 1) // 2)
 
     def __reset(self):
         """Reset configuration options to default settings."""
@@ -101,7 +101,7 @@ class OptionsTab(Observable, QWidget):
         self.start_needle = 0
         self.stop_needle = self.machine.width
         self.alignment = Alignment(self.prefs.value("default_alignment"))
-        self.auto_mirror = self.prefs.value("default_mirroring")
+        self.auto_mirror = self.prefs.value("default_auto_mirror")
         self.continuous_reporting = False
 
     def refresh(self):
@@ -167,7 +167,7 @@ class OptionsTab(Observable, QWidget):
         """
         left_side = width // 2
         self.ui.start_needle_edit.setValue(left_side)
-        self.ui.stop_needle_edit.setValue(width - left_side)
+        self.ui.stop_needle_edit.setValue(width - left_side - 1)
         self.ui.start_row_edit.setMaximum(height)
 
     def validate(self):
@@ -217,7 +217,7 @@ class NeedleColor(Enum):
         if self == NeedleColor.ORANGE:
             return machine.width // 2 - int(needle)
         elif self == NeedleColor.GREEN:
-            return machine.width // 2 - 1 + int(needle)
+            return machine.width // 2 + int(needle)
 
     def read_start_needle(ui, machine):
         '''Read the start needle prefs from UI and normalize'''

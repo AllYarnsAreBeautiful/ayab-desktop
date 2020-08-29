@@ -30,7 +30,7 @@ from .options import Alignment
 from .mode import Mode, ModeFunc
 from .state import State, StateMachine, Operation
 from .output import Output
-from ..machine import Machine
+#from ..machine import Machine
 
 
 class Control(Observable):
@@ -48,6 +48,7 @@ class Control(Observable):
         self.status = engine.status
 
     def start(self, pattern, options, operation):
+        self.machine = options.machine
         if operation == Operation.KNIT:
             self.former_request = 0
             self.line_block = 0
@@ -61,9 +62,18 @@ class Control(Observable):
             self.continuous_reporting = options.continuous_reporting
             self.len_pat_expanded = self.pat_height * self.num_colors
             self.passes_per_row = self.mode.row_multiplier(self.num_colors)
+            self.start_needle = max(0, self.pattern.pat_start_needle)
+            self.end_needle = min(
+                self.pattern.pat_width + self.pattern.pat_start_needle,
+                self.machine.width)
+            self.start_pixel = self.start_needle - self.pattern.pat_start_needle
+            self.end_pixel = self.end_needle - self.pattern.pat_start_needle
+            if self.FLANKING_NEEDLES:
+                self.midline = self.pattern.knit_end_needle - self.machine.width // 2
+            else:
+                self.midline = self.end_needle - self.machine.width // 2
             self.reset_status()
         self.portname = options.portname
-        self.machine = options.machine
         self.state = State.SETUP
 
     def stop(self):
@@ -100,7 +110,6 @@ class Control(Observable):
             self.status.color_symbol = ""  # "A/B"
         else:
             self.status.alt_color = None
-        self.status.total_rows = self.pattern.pat_height
 
     def check_serial_API6(self):
         msg, token, param = self.com.update_API6()
@@ -177,33 +186,24 @@ class Control(Observable):
             self.status.color_symbol = self.COLOR_SYMBOLS[color]
         self.status.color = self.pattern.palette[color]
         if self.FLANKING_NEEDLES:
-            self.status.bits = bits[self.pattern.knit_start_needle:self.
-                                    pattern.knit_stop_needle + 1]
+            self.status.bits = bits[self.pattern.knit_start_needle:self.pattern.knit_end_needle]
         else:
-            self.status.bits = bits[self.__first_needle:self.__last_needle]
+            self.status.bits = bits[self.start_needle:self.end_needle]
 
     def select_needles_API6(self, color, row_index, blank_line):
         bits = bitarray([False] * self.machine.width, endian="little")
-        first_needle = max(0, self.pattern.pat_start_needle)
-        last_needle = min(
-            self.pattern.pat_width + self.pattern.pat_start_needle,
-            self.machine.width)
 
         # select needles flanking the pattern
         # if necessary to knit the background color
         if self.mode.flanking_needles(color, self.num_colors):
-            bits[0:first_needle] = True
-            bits[last_needle:self.machine.width] = True
+            bits[0:self.start_needle] = True
+            bits[self.end_needle:self.machine.width] = True
 
         if not blank_line:
-            first_pixel = first_needle - self.pattern.pat_start_needle
-            last_pixel = last_needle - self.pattern.pat_start_needle
-            bits[first_needle:last_needle] = (
+            bits[self.start_needle:self.end_needle] = (
                 self.pattern.pattern_expanded
-            )[row_index][first_pixel:last_pixel]
+            )[row_index][self.start_pixel:self.end_pixel]
 
-        self.__first_needle = first_needle
-        self.__last_needle = last_needle
         return bits
 
     def operate(self, operation, API_version=6):

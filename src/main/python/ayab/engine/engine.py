@@ -81,12 +81,6 @@ class Engine(Observable, QDockWidget):
         # activate UI elements
         self.__activate_ui()
 
-
-#  def __activate_status_tab(self):
-#      self.ui.tab_widget.setTabEnabled(1, True)
-#      self.ui.tab_widget.setCurrentIndex(1)
-#      self.status.active = True
-
     def __disable_status_tab(self):
         self.ui.tab_widget.setTabEnabled(1, False)
         self.status.ui.label_progress.setText("")
@@ -108,10 +102,6 @@ class Engine(Observable, QDockWidget):
         # Add Simulation item to indicate operation without machine
         combo_box.addItem(
             QCoreApplication.translate("KnitEngine", "Simulation"))
-
-    # def refresh(self, image):
-    #     self.portname = ""
-    #     self.config.refresh()
 
     def __read_portname(self):
         return self.ui.serial_port_dropdown.currentText()
@@ -143,8 +133,7 @@ class Engine(Observable, QDockWidget):
             self.emit_bad_config_flag()
 
         # update pattern
-        if self.config.start_needle and self.config.stop_needle:
-            self.pattern.set_knit_needles(self.config.start_needle,
+        self.pattern.set_knit_needles(self.config.start_needle,
                                           self.config.stop_needle,
                                           self.config.machine)
         self.pattern.alignment = self.config.alignment
@@ -179,7 +168,7 @@ class Engine(Observable, QDockWidget):
             output = self.control.operate(operation)
             self.__feedback.handle(output)
             if operation == Operation.KNIT:
-                self.__status_handler()
+                self.__handle_status()
             if self.__canceled or self.control.state == State.FINISHED:
                 break
 
@@ -206,20 +195,18 @@ class Engine(Observable, QDockWidget):
         # "finish.wav" sound only plays if knitting was not canceled
         self.emit_operation_finisher(operation, not self.__canceled)
 
-    def __status_handler(self):
+    def __handle_status(self):
         if self.status.active:
             self.status.refresh()
-        # if we do not make a copy of status object to emit to the UI thread
+        # If we do not make a copy of status object to emit to the UI thread
         # then the signal knit_progress_updater must use a blocking connection
         # that holds up this thread until the knit progress window has finished
-        # updating, otherwise if the knit progress window lags the status
+        # updating, Otherwise if the knit progress window lags the status
         # will change before the information is written to the UI.
         data = Status()
-        data.copy(self.control.status)
-        row_multiplier = self.control.mode.row_multiplier(
-            self.control.num_colors)
-        self.emit_knit_progress_updater(data, row_multiplier)
-        self.emit_progress_bar_updater(data.current_row, data.total_rows,
+        data.copy(self.status)
+        self.emit_knit_progress_updater(data, self.control.passes_per_row, self.control.midline, self.config.auto_mirror)
+        self.emit_progress_bar_updater(data.current_row, self.pattern.pat_height,
                                        data.repeats, data.color_symbol)
 
     def cancel(self):

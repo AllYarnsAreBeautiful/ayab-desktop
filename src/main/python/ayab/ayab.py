@@ -124,7 +124,7 @@ class GuiMain(QMainWindow):
         """Start the knitting process."""
         self.start_operation()
         # reset knit progress window
-        self.knitprog.reset()
+        self.knitprog.start()
         # start thread for knit engine
         self.knit_thread.start()
 
@@ -151,6 +151,7 @@ class GuiMain(QMainWindow):
     def set_image_dimensions(self):
         """Set dimensions of image."""
         width, height = self.scene.ayabimage.image.size
+        self.engine.config.update_needles()  # in case machine width changed
         self.engine.config.set_image_dimensions(width, height)
         self.progbar.row = self.scene.row_progress + 1
         self.progbar.total = height
@@ -158,7 +159,6 @@ class GuiMain(QMainWindow):
         self.notify(
             QCoreApplication.translate("Scene", "Image dimensions") +
             ": {} x {}".format(width, height), False)
-        self.engine.config.update_needles()  # in case machine width changed
         self.scene.refresh()
 
     def update_start_row(self, start_row):
