@@ -101,7 +101,7 @@ class OptionsTab(Observable, QWidget):
         self.start_needle = 0
         self.stop_needle = self.machine.width
         self.alignment = Alignment(self.prefs.value("default_alignment"))
-        self.auto_mirror = self.prefs.value("default_auto_mirror")
+        self.auto_mirror = self.prefs.value("default_knit_side_image")
         self.continuous_reporting = False
 
     def refresh(self):
