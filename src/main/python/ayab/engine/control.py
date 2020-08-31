@@ -30,6 +30,7 @@ from .options import Alignment
 from .mode import Mode, ModeFunc
 from .state import State, StateMachine, Operation
 from .output import Output
+from .status import Carriage, Direction
 #from ..machine import Machine
 
 
@@ -72,6 +73,9 @@ class Control(Observable):
                 self.midline = self.pattern.knit_end_needle - self.machine.width // 2
             else:
                 self.midline = self.end_needle - self.machine.width // 2
+            self.initial_carriage = Carriage.Unknown
+            self.initial_position = -1
+            self.initial_direction = Direction.Unknown
             self.reset_status()
         self.portname = options.portname
         self.state = State.SETUP
@@ -186,9 +190,15 @@ class Control(Observable):
             self.status.color_symbol = self.COLOR_SYMBOLS[color]
         self.status.color = self.pattern.palette[color]
         if self.FLANKING_NEEDLES:
-            self.status.bits = bits[self.pattern.knit_start_needle:self.pattern.knit_end_needle]
+            self.status.bits = bits[self.pattern.knit_start_needle:self.
+                                    pattern.knit_end_needle]
         else:
             self.status.bits = bits[self.start_needle:self.end_needle]
+        self.status.carriage_type = self.initial_carriage
+        if line_number % 2 == 0:
+            self.status.carriage_direction = self.initial_direction
+        else:
+            self.status.carriage_direction = self.initial_direction.reverse()
 
     def select_needles_API6(self, color, row_index, blank_line):
         bits = bitarray([False] * self.machine.width, endian="little")

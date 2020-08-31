@@ -45,8 +45,8 @@ class KnitProgress(QTableWidget):
         self.verticalHeader().setDefaultSectionSize(16)
         self.blank = QTableWidgetItem()
         self.blank.setSizeHint(QSize(0, 0))
-        self.setColumnCount(6)
-        for r in range(6):
+        self.setColumnCount(5)
+        for r in range(5):
             self.setHorizontalHeaderItem(r, self.blank)
 
     def start(self):
@@ -64,7 +64,8 @@ class KnitProgress(QTableWidget):
         row, swipe = divmod(status.line_number, row_multiplier)
 
         # row
-        w0 = self.__item(tr_("KnitProgress", "Row") + " " + str(status.current_row))
+        w0 = self.__item(
+            tr_("KnitProgress", "Row") + " " + str(status.current_row))
 
         # pass
         w1 = self.__item(tr_("KnitProgress", "Pass") + " " + str(swipe + 1))
@@ -77,25 +78,19 @@ class KnitProgress(QTableWidget):
             coltext = tr_("KnitProgress", "Color") + " " + status.color_symbol
             w2 = self.__item(coltext)
 
-        # carriage and direction
-        try:
-            carriage = status.carriage[0] + status.carriage[2] + " "
-        except Exception:
-            carriage = ""
-        # direction = status.direction
-        if status.line_number % 2 == 0:
-            direction = Direction.LEFT_TO_RIGHT
-        else:
-            direction = Direction.RIGHT_TO_LEFT
-        w3 = self.__item(carriage + direction.symbol)
+        carriage = status.carriage_type
+        direction = status.carriage_direction
+        w3 = self.__item(carriage.symbol + " " + direction.symbol)
 
         # graph line of stitches
         status.bits.reverse()
         midline = len(status.bits) - midline
 
-        table_text = "<table style='cell-spacing: 1; cell-padding: 1; background-color: #{:06x};'><tr> ".format(self.orange)
+        table_text = "<table style='cell-spacing: 1; cell-padding: 1; background-color: #{:06x};'><tr> ".format(
+            self.orange)
         for c in range(0, midline):
-            table_text += self.__stitch(status.color, status.bits[c], status.alt_color)
+            table_text += self.__stitch(status.color, status.bits[c],
+                                        status.alt_color)
         table_text += "</tr></table>"
         # FIXME: align label right
         # w4 = QWidget()
@@ -106,9 +101,11 @@ class KnitProgress(QTableWidget):
         # w4.setLayout(w4a)
         w4 = QLabel(table_text)
 
-        table_text = "<table style='cell-spacing: 1; cell-padding: 1; background-color: #{:06x};'><tr> ".format(self.green)
+        table_text = "<table style='cell-spacing: 1; cell-padding: 1; background-color: #{:06x};'><tr> ".format(
+            self.green)
         for c in range(midline, len(status.bits)):
-            table_text += self.__stitch(status.color, status.bits[c], status.alt_color)
+            table_text += self.__stitch(status.color, status.bits[c],
+                                        status.alt_color)
         table_text += "</tr></table>"
         # FIXME: align label left
         # w5 = QWidget()
@@ -120,16 +117,13 @@ class KnitProgress(QTableWidget):
         w5 = QLabel(table_text)
 
         self.insertRow(0)
-        self.setItem(0, 0, w0)
-        self.setItem(0, 1, w1)
+        self.setVerticalHeaderItem(0, w0)
+        self.setItem(0, 0, w1)
         if self.color:
-            self.setItem(0, 2, w2)
-        self.setItem(0, 3, w3)
-        self.setCellWidget(0, 4, w4)
-        self.setCellWidget(0, 5, w5)
-        blank = QTableWidgetItem()
-        blank.setSizeHint(QSize(0, 0))
-        self.setVerticalHeaderItem(0, blank)
+            self.setItem(0, 1, w2)
+        self.setItem(0, 2, w3)
+        self.setCellWidget(0, 3, w4)
+        self.setCellWidget(0, 4, w5)
         self.resizeColumnsToContents()
         # self.ensureWidgetVisible(w0)
 
@@ -142,9 +136,11 @@ class KnitProgress(QTableWidget):
         # FIXME: borders are not visible
         text = "<td width='12' style='"
         if bit:
-            text += "border: 1 solid black; background-color: #{:06x};".format(color)
+            text += "border: 1 solid black; background-color: #{:06x};".format(
+                color)
         elif alt_color is not None:
-            text += "border: 1 solid black; background-color: #{:06x};".format(alt_color)
+            text += "border: 1 solid black; background-color: #{:06x};".format(
+                alt_color)
         else:
             text += "border: 1 dotted black;"
         text += "'/>"

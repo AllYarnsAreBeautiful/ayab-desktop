@@ -58,8 +58,8 @@ class TestCommunicationMock(unittest.TestCase):
 
         # indState shall be sent automatically, also
         expected_result = (bytes(
-            [Token.indState.value, 0, 0xff, 0xff, 0xff, 0xff, 1,
-             0x7f]), Token.indState, 0)
+            [Token.indState.value, 0, 0xff, 0xff, 0xff, 0xff, 1, 0,
+             1]), Token.indState, 0)
         bytes_read = self.comm_dummy.update_API6()
         assert bytes_read == expected_result
 
