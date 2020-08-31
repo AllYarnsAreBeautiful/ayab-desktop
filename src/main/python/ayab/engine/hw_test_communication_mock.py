@@ -27,10 +27,12 @@ from .communication_mock import CommunicationMock
 
 class HardwareTestCommunicationMock(QObject, CommunicationMock):
     """Simulate device for hardware tests."""
-
     def __init__(self):
         super().__init__()
-        self.__tokens = [Token[key] for key in Token._member_map_.keys() if re.search("Cmd$", key)]
+        self.__tokens = [
+            Token[key] for key in Token._member_map_.keys()
+            if re.search("Cmd$", key)
+        ]
 
     def setup(self):
         self.reset()
@@ -48,7 +50,8 @@ class HardwareTestCommunicationMock(QObject, CommunicationMock):
             self.__handle_unrecognizedCmd()
         else:
             cmd = self.__tokens[i].name
-            self.__output(Token.testRes, "Called " + re.sub("CMD$", "", cmd.upper()) + "\n")
+            self.__output(Token.testRes,
+                          "Called " + re.sub("CMD$", "", cmd.upper()) + "\n")
             dispatch = getattr(self, "_handle_" + cmd)
             dispatch(msg)
 
@@ -59,13 +62,10 @@ class HardwareTestCommunicationMock(QObject, CommunicationMock):
         if len(self.rx_msg_list) == 0:
             return None
         # else
-        res = self.rx_msg_list.pop(0)  # FIFO
+        res = self.rx_msg_list.popleft()  # FIFO
         return res
 
     def __output(self, token: Token, msg: str) -> None:
-        if len(self.rx_msg_list) >= 100:
-            return
-        # else
         self.rx_msg_list.append(bytes([token.value]) + msg.encode())
 
     # command handlers
@@ -79,6 +79,7 @@ class HardwareTestCommunicationMock(QObject, CommunicationMock):
         self.__output(Token.testRes, "SEND a test message\n")
         self.__output(Token.testRes, "BEEP test buzzer\n")
         self.__output(Token.testRes, "HELP show commands\n")
+        self.__output(Token.testRes, "QUIT\n")
 
     def _handle_sendCmd(self, msg):
         self.__output(Token.testRes, "\x01\x02\x03\n")
@@ -125,7 +126,7 @@ class HardwareTestCommunicationMock(QObject, CommunicationMock):
 
     def __handle_unrecognizedCmd():
         pass
-        
+
     def __beep(self):
         pass
 

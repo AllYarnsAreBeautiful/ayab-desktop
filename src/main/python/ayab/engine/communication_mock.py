@@ -22,6 +22,7 @@ Mock Class of Communication for Test/Simulation purposes
 
 import logging
 from time import sleep
+from collections import deque
 
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QMessageBox
@@ -44,7 +45,7 @@ class CommunicationMock(Communication):
     def reset(self):
         self.__is_open = False
         self.__is_started = False
-        self.rx_msg_list = list()
+        self.rx_msg_list = deque([], maxlen=100)
         self.__line_count = 0
 
     def is_open(self) -> bool:
@@ -63,17 +64,17 @@ class CommunicationMock(Communication):
         cnfInfo = bytes([Token.cnfInfo.value, 6, 1, 0])  # APIv6, FWv1.0
         self.rx_msg_list.append(cnfInfo)
         indState = bytes(
-            [Token.indState.value, 0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0x1, 0x7F])
+            [Token.indState.value, 0, 0xFF, 0xFF, 0xFF, 0xFF, 1, 0x00, 1])
         self.rx_msg_list.append(indState)
 
     def req_test_API6(self, machine_val) -> None:
-        cnfTest = bytes([Token.cnfTest.value, 0x00])
+        cnfTest = bytes([Token.cnfTest.value, 0])
         self.rx_msg_list.append(cnfTest)
 
     def req_start_API6(self, machine_val, start_needle, stop_needle,
                        continuous_reporting) -> None:
         self.__is_started = True
-        cnfStart = bytes([Token.cnfStart.value, 0x00])
+        cnfStart = bytes([Token.cnfStart.value, 0])
         self.rx_msg_list.append(cnfStart)
 
     def cnf_line_API6(self, line_number, color, flags, line_data) -> bool:
@@ -99,6 +100,6 @@ class CommunicationMock(Communication):
                 while ret == None:
                     pass
         if len(self.rx_msg_list) > 0:
-            return self.parse_API6(self.rx_msg_list.pop(0))  # FIFO
+            return self.parse_API6(self.rx_msg_list.popleft())  # FIFO
         # else
         return self.parse_API6(None)

@@ -133,6 +133,13 @@ M
         token, param = control.check_serial_API6()
         if token == Token.indState:
             if param == 0:
+                # record initial position, direction, carriage
+                control.initial_carriage = control.status.carriage_type
+                control.initial_position = control.status.carriage_position
+                control.initial_direction = control.status.carriage_direction
+                # set status.active
+                control.status.active = control.continuous_reporting
+                # request start
                 control.com.req_start_API6(control.machine.value,
                                            control.pattern.knit_start_needle,
                                            control.pattern.knit_end_needle - 1,
@@ -140,7 +147,8 @@ M
                 control.state = State.CONFIRM_START
             else:
                 # any value of param other than 1 is some kind of error code
-                control.logger.debug("Knit init failed")
+                control.logger.debug("Knit init failed with error code " +
+                                     str(param))
                 # TODO: more output to describe error
         # fallthrough
         return Output.NONE
@@ -154,7 +162,9 @@ M
                 return Output.PLEASE_KNIT
             else:
                 # any value of param other than 1 is some kind of error code
-                control.logger.error("Device not ready")
+                control.logger.error(
+                    "Device not ready, returned `cnfStart` with error code " +
+                    str(param))
                 # TODO: more output to describe error
                 return Output.DEVICE_NOT_READY
         # fallthrough
@@ -198,7 +208,9 @@ M
                 return Output.NONE
             else:
                 # any value of param other than 1 is some kind of error code
-                control.logger.error("Device not ready")
+                control.logger.error(
+                    "Device not ready, returned `cnfTest` with error code " +
+                    str(param))
                 # TODO: more output to describe error
                 return Output.DEVICE_NOT_READY
         # fallthrough

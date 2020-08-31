@@ -17,7 +17,7 @@
 #    Copyright 2014 Sebastian Oliva, Christian Obersteiner, Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
-from enum import Enum, auto
+from enum import Enum
 from bitarray import bitarray
 
 from PyQt5.QtCore import QCoreApplication
@@ -27,29 +27,69 @@ from .status_gui import Ui_StatusTab
 
 
 class Direction(Enum):
-    UNKNOWN = auto()
-    LEFT_TO_RIGHT = auto()
-    RIGHT_TO_LEFT = auto()
+    Unknown = 0
+    Left = 1
+    Right = 2
+
+    def reverse(self):
+        if self == Direction.Left:
+            return Direction.Right
+        # else
+        if self == Direction.Right:
+            return Direction.Left
+        # else
+        return Direction.Unknown
 
     @property
     def symbol(self):
-        if self == Direction.LEFT_TO_RIGHT:
-            return "\u2192 "
+        if self == Direction.Left:
+            return "\u2190"
         # else
-        if self == Direction.RIGHT_TO_LEFT:
-            return "\u2190 "
+        if self == Direction.Right:
+            return "\u2192"
         # else
-        return "  "
+        return ""
 
     @property
     def text(self):
-        if self == Direction.LEFT_TO_RIGHT:
-            return "Left to Right"
+        if self == Direction.Left:
+            return "Left"
         # else
-        if self == Direction.RIGHT_TO_LEFT:
-            return "Right to Left"
+        if self == Direction.Right:
+            return "Right"
         # else
         return ""
+
+
+class Carriage(Enum):
+    Unknown = 0
+    Knit = 1
+    Lace = 2
+    Garter = 3
+
+    @property
+    def symbol(self):
+        if self == Carriage.Knit:
+            return "K"
+        elif self == Carriage.Lace:
+            return "L"
+        elif self == Carriage.Garter:
+            return "G"
+        else:
+            return ""
+
+    @property
+    def text(self):
+        if self == Carriage.Knit:
+            text = "Knit"
+        elif self == Carriage.Lace:
+            text = "Lace"
+        elif self == Carriage.Garter:
+            text = "Garter"
+        else:
+            return ""
+        text += " " + QCoreApplication.translate("Progress", "Carriage")
+        return text
 
 
 class Status(object):
@@ -64,7 +104,7 @@ class Status(object):
         self.reset()
 
     def reset(self):
-        self.active = False
+        self.active = True
         # data fields
         self.current_row = -1
         self.line_number = -1
@@ -78,9 +118,9 @@ class Status(object):
         # carriage info
         self.hall_l = 0
         self.hall_r = 0
-        self.carriage_type = ""
-        self.carriage_position = 0
-        self.direction = Direction.UNKNOWN
+        self.carriage_type = Carriage.Unknown
+        self.carriage_position = -1
+        self.carriage_direction = Direction.Unknown
 
     def copy(self, status):
         self.active = status.active
@@ -95,38 +135,41 @@ class Status(object):
         self.hall_r = status.hall_r
         self.carriage_type = status.carriage_type
         self.carriage_position = status.carriage_position
-        self.direction = status.direction
+        self.carriage_direction = status.carriage_direction
 
     def parse_device_state_API6(self, state, msg):
         if not (self.active):
             return
 
         # else
-        # TODO: if state != 1 report error and return
-
-        # else
         hall_l = int((msg[2] << 8) + msg[3])
         hall_r = int((msg[4] << 8) + msg[5])
 
         if msg[6] == 1:
-            carriage_type = "K "
+            carriage_type = Carriage.Knit
         elif msg[6] == 2:
-            carriage_type = "L "
+            carriage_type = Carriage.Lace
         elif msg[6] == 3:
-            carriage_type = "G "
+            carriage_type = Carriage.Garter
         else:
-            carriage_type = ""
-        if carriage_type != "":
-            carriage_type += QCoreApplication.translate("Progress", "Carriage")
+            carriage_type = Carriage.Unknown
 
         carriage_position = int(msg[7])
+
+        if msg[8] == 1:
+            carriage_direction = Direction.Left
+        elif msg[8] == 2:
+            carriage_direction = Direction.Right
+        else:
+            carriage_direction = Direction.Unknown
 
         self.hall_l = hall_l
         self.hall_r = hall_r
         self.carriage_type = carriage_type
         self.carriage_position = carriage_position
-
-        # TODO: get carriage direction
+        self.carriage_direction = carriage_direction
+        print(carriage_type)
+        print(carriage_direction)
 
 
 # FIXME translations for UI
@@ -155,5 +198,5 @@ class StatusTab(Status, QWidget):
         self.ui.progress_hall_r.setValue(status.hall_r)
         self.ui.label_hall_r.setText(str(status.hall_r))
         self.ui.slider_position.setValue(status.carriage_position)
-        self.ui.label_carriage.setText(status.carriage_type)
-        self.ui.label_direction.setText(status.direction.text)
+        self.ui.label_carriage.setText(status.carriage_type.text)
+        self.ui.label_direction.setText(status.carriage_direction.text)
