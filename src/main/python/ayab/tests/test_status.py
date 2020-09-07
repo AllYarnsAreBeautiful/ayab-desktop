@@ -21,7 +21,7 @@
 import pytest
 import unittest
 
-from ayab.engine.status import Status
+from ayab.engine.status import Status, Carriage, Direction
 
 
 class TestStatus(unittest.TestCase):
@@ -31,9 +31,10 @@ class TestStatus(unittest.TestCase):
     def test_parse_device_state_API6(self):
         p = Status()
         p.active = True
-        msg = [0, 1, 2, 3, 4, 5, 1, 7.9]
+        msg = [0, 1, 2, 3, 4, 5, 1, 7.9, 2]
         p.parse_device_state_API6(1, msg)
         assert p.hall_l == 0x203
         assert p.hall_r == 0x405
-        assert p.carriage_type == "K Carriage"
+        assert p.carriage_type == Carriage.Knit
         assert p.carriage_position == 7
+        assert p.carriage_direction == Direction.Right

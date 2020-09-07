@@ -43,7 +43,7 @@ class TestCommunicationMock(unittest.TestCase):
 
     def test_req_start_API6(self):
         machine_val, start_val, end_val, continuous_reporting, crc8 = 0, 0, 10, True, 0xb9
-        expected_result = (bytes([Token.cnfStart.value, 1]), Token.cnfStart, 1)
+        expected_result = (bytes([Token.cnfStart.value, 0]), Token.cnfStart, 0)
         self.comm_dummy.req_start_API6(machine_val, start_val, end_val,
                                        continuous_reporting)
         bytes_read = self.comm_dummy.update_API6()
@@ -58,13 +58,13 @@ class TestCommunicationMock(unittest.TestCase):
 
         # indState shall be sent automatically, also
         expected_result = (bytes(
-            [Token.indState.value, 1, 0xff, 0xff, 0xff, 0xff, 1,
-             0x7f]), Token.indState, 1)
+            [Token.indState.value, 0, 0xff, 0xff, 0xff, 0xff, 1, 0,
+             1]), Token.indState, 0)
         bytes_read = self.comm_dummy.update_API6()
         assert bytes_read == expected_result
 
     def test_req_test_API6(self):
-        expected_result = (bytes([Token.cnfTest.value, 1]), Token.cnfTest, 1)
+        expected_result = (bytes([Token.cnfTest.value, 0]), Token.cnfTest, 0)
         self.comm_dummy.req_test_API6(Machine.KH910_KH950)
         bytes_read = self.comm_dummy.update_API6()
         assert bytes_read == expected_result

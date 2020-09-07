@@ -22,6 +22,7 @@
     <string>Tools</string>
    </property>
    <addaction name="action_load_AYAB_firmware"/>
+   <addaction name="action_test_AYAB_device"/>
   </widget>
   <widget class="QMenu" name="menu_preferences">
    <property name="title">
@@ -50,6 +51,11 @@
   <action name="action_load_AYAB_firmware">
    <property name="text">
     <string>Load AYAB Firmware</string>
+   </property>
+  </action>
+  <action name="action_test_AYAB_device">
+   <property name="text">
+    <string>Test AYAB Device</string>
    </property>
   </action>
   <action name="action_quit">

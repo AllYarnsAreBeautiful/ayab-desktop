@@ -251,36 +251,17 @@ class TestControl(unittest.TestCase):
         pattern = Pattern(im, Machine(0), 2)
         pattern.alignment = Alignment.LEFT
         control.pattern = pattern
-        assert pattern.pat_start_needle == 0
-        assert pattern.pat_stop_needle == 39
+        assert pattern.pat_start_needle == 160
+        assert pattern.pat_end_needle == 200
+        control.start_needle = 160
+        control.end_needle = 200
+        control.start_pixel = 0
+        control.end_pixel = 40
         bits0 = bitarray()
         bits0.frombytes(
-            b'\x00\x00\x00\x00\x00\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff'
+            b'\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\x00\x00\x00\x00\x00'
         )
         assert control.select_needles_API6(0, 0, False) == bits0
-
-        # 40 pixel image set to the center
-        pattern.alignment = Alignment.CENTER
-        control.pattern = pattern
-        bits1 = bitarray()
-        bits1.frombytes(
-            b'\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\x00\x00\x00\x00\x00\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff'
-        )
-        assert control.select_needles_API6(0, 0, False) == bits1
-
-        # 40 pixel image set in the center
-        # blank line so central 40 pixels unset
-        # flanking pixels set (2 different options)
-        control.mode = Mode.CLASSIC_RIBBER
-        assert control.select_needles_API6(2, 1, False) == ~bits1
-        control.mode = Mode.MIDDLECOLORSTWICE_RIBBER
-        assert control.select_needles_API6(2, 1, False) == ~bits1
-
-        # image is wider than machine width
-        # all pixels set
-        control.pattern = Pattern(Image.new('P', (202, 1)), Machine(0), 2)
-        assert control.select_needles_API6(0, 0, False) == bitarray(
-            [True] * Machine(0).width)
 
     def test_row_multiplier(self):
         assert Mode.SINGLEBED.row_multiplier(2) == 1

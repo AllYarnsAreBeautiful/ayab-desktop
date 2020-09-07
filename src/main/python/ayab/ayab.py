@@ -102,6 +102,8 @@ class GuiMain(QMainWindow):
         self.ui.filename_lineedit.returnPressed.connect(
             self.scene.ayabimage.select_file)
         self.ui.cancel_button.clicked.connect(self.engine.cancel)
+        self.hw_test.finished.connect(
+            lambda: self.finish_operation(Operation.TEST, False))
 
     def __activate_menu(self):
         self.menu.ui.action_quit.triggered.connect(
@@ -122,7 +124,7 @@ class GuiMain(QMainWindow):
         """Start the knitting process."""
         self.start_operation()
         # reset knit progress window
-        self.knitprog.reset()
+        self.knitprog.start()
         # start thread for knit engine
         self.knit_thread.start()
 
@@ -137,20 +139,19 @@ class GuiMain(QMainWindow):
         self.menu.depopulate()
         self.ui.filename_lineedit.setEnabled(False)
         self.ui.load_file_button.setEnabled(False)
-        self.ui.test_button.setEnabled(False)
 
     def finish_operation(self, operation: Operation, beep: bool):
         """(Re-)enable UI elements after operation finishes."""
         self.menu.repopulate()
         self.ui.filename_lineedit.setEnabled(True)
         self.ui.load_file_button.setEnabled(True)
-        self.ui.test_button.setEnabled(True)
         if operation == Operation.KNIT and beep:
             self.audio.play("finish")
 
     def set_image_dimensions(self):
         """Set dimensions of image."""
         width, height = self.scene.ayabimage.image.size
+        self.engine.config.update_needles()  # in case machine width changed
         self.engine.config.set_image_dimensions(width, height)
         self.progbar.row = self.scene.row_progress + 1
         self.progbar.total = height
@@ -158,7 +159,6 @@ class GuiMain(QMainWindow):
         self.notify(
             QCoreApplication.translate("Scene", "Image dimensions") +
             ": {} x {}".format(width, height), False)
-        self.engine.config.update_needles()  # in case machine width changed
         self.scene.refresh()
 
     def update_start_row(self, start_row):

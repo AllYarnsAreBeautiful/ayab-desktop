@@ -31,16 +31,16 @@ class Pattern(object):
         self.__num_colors = num_colors
         self.__alignment = Alignment.CENTER
         self.__pat_start_needle = -1
-        self.__pat_stop_needle = -1
+        self.__pat_end_needle = -1
         self.__knit_start_needle = 0
-        self.__knit_stop_needle = machine.width - 1
+        self.__knit_end_needle = machine.width
         self.__update_pattern_data()
 
     def __update_pattern_data(self):
         self.__pat_width = self.__pattern.width
         self.__pat_height = self.__pattern.height
         self.__convert()
-        self.__calc_pat_start_stop_needles()
+        self.__calc_pat_start_end_needles()
 
     def __convert(self):
         num_colors = self.__num_colors
@@ -52,7 +52,7 @@ class Pattern(object):
                 for j in range(self.__pat_height)]
         self.__pattern_colors = \
             [[0 for i in range(self.__num_colors)]
-                for j in range(self.__pat_height)]  # unused?
+                for j in range(self.__pat_height)]  # unused
         self.__pattern_expanded = \
             [bitarray([False] * self.__pat_width)
                 for j in range(self.__num_colors * self.__pat_height)]
@@ -97,19 +97,20 @@ class Pattern(object):
                         self.__pattern_expanded[(self.__num_colors * row) +
                                                 color][col] = True
 
-    def __calc_pat_start_stop_needles(self):
+    def __calc_pat_start_end_needles(self):
+        # the sequence of needles is printed in right to left by default
+        # so the needle count starts at 0 on the right hand side
         if self.__alignment == Alignment.CENTER:
-            needle_width = self.__knit_stop_needle - self.__knit_start_needle + 1
+            needle_width = self.__knit_end_needle - self.__knit_start_needle
             self.__pat_start_needle = \
-                int((self.__knit_start_needle + needle_width / 2) - \
-                    self.pat_width / 2)
-            self.__pat_stop_needle = self.__pat_start_needle + self.__pat_width - 1
-        elif self.__alignment == Alignment.LEFT:
-            self.__pat_start_needle = self.__knit_start_needle
-            self.__pat_stop_needle = self.__pat_start_needle + self.__pat_width - 1
+                self.__knit_start_needle + (needle_width - self.pat_width + 1) // 2
+            self.__pat_end_needle = self.__pat_start_needle + self.__pat_width
         elif self.__alignment == Alignment.RIGHT:
-            self.__pat_stop_needle = self.__knit_stop_needle
-            self.__pat_start_needle = self.__pat_stop_needle - self.__pat_width + 1
+            self.__pat_start_needle = self.__knit_start_needle
+            self.__pat_end_needle = self.__pat_start_needle + self.__pat_width
+        elif self.__alignment == Alignment.LEFT:
+            self.__pat_end_needle = self.__knit_end_needle
+            self.__pat_start_needle = self.__pat_end_needle - self.__pat_width
         else:
             return False
         return True
@@ -118,10 +119,9 @@ class Pattern(object):
         """
         set the start and stop needle
         """
-        if (knit_start <
-                knit_stop) and knit_start >= 0 and knit_stop < machine.width:
+        if knit_start < knit_stop and knit_start >= 0 and knit_stop < machine.width:
             self.__knit_start_needle = knit_start
-            self.__knit_stop_needle = knit_stop
+            self.__knit_end_needle = knit_stop + 1
         self.__update_pattern_data()
 
     @property
@@ -155,16 +155,16 @@ class Pattern(object):
         return self.__pat_start_needle
 
     @property
-    def pat_stop_needle(self):
-        return self.__pat_stop_needle
+    def pat_end_needle(self):
+        return self.__pat_end_needle
 
     @property
     def knit_start_needle(self):
         return self.__knit_start_needle
 
     @property
-    def knit_stop_needle(self):
-        return self.__knit_stop_needle
+    def knit_end_needle(self):
+        return self.__knit_end_needle
 
     @property
     def pat_height(self):
