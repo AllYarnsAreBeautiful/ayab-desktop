@@ -47,6 +47,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * #145 GUI: Add feedback while flashing firmware
 * #131,#261 GUI: Add stretch and reflect to image actions submenu
 * #155 GUI: Fix scrolling of pattern when scrolling the sidebar
+* Devops: Migrate from Ubuntu 16.04 to Ubuntu 20.04 for github workflows
 
 ## 0.95 / 2019-01-28
 

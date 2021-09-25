@@ -10,9 +10,8 @@ For information on how to install the release version of the software, see
 The AYAB desktop software runs using Python 3.6. This is not the current
 version of Python, so it is recommended to install the software to a
 virtual environment. Miniconda provides a virtual environment that is
-platform-independent and easy to use: download the lastest version from
-https://docs.conda.io/en/latest/miniconda.html and follow the instructions
-for installation.
+platform-independent and easy to use. Install the latest version by navigating to
+https://docs.conda.io/en/latest/miniconda.html and following the instructions.
 
 The Python module dependencies can be found in *requirements.txt*.
 
@@ -48,12 +47,17 @@ To install the development version you can checkout the git repository.
 
     git clone https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
-Create a virtual enviroment in the cloned repository:
+Create a virtual environment in the cloned repository:
 
     cd ayab-desktop
     conda create --name venv -c conda-forge python=3.6.* pip
-    source activate venv
-    pip3 install -r requirements.txt
+    conda activate venv
+
+Then install the remaining prerequisites with:
+
+    pip3 install --upgrade pip
+    pip3 install --upgrade setuptools
+    python3 -m pip install -r requirements.txt
     ./setup-environment.sh
 
 Now start ayab with
@@ -68,7 +72,7 @@ Now you can download the git repository from the Anaconda prompt with:
 
     git clone https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
-Create a virtual enviroment in the cloned repository:
+Create a virtual environment in the cloned repository:
 
     cd ayab-desktop
     conda create --name venv -c conda-forge python=3.6.* pip
@@ -76,8 +80,10 @@ Create a virtual enviroment in the cloned repository:
 
 Then install the remaining prerequisites with:
 
-    pip install -r requirements.txt
-    ./setup-environment.sh
+    pip3 install --upgrade pip
+    pip3 install --upgrade setuptools
+    pip3 install -r requirements.txt
+    setup-environment.sh
 
 Now start ayab with
 
@@ -101,11 +107,13 @@ Create a virtual enviroment in the cloned repository.
 
     cd ayab-desktop
     conda create --name venv -c conda-forge python=3.6.* pip
-    source activate venv
+    conda activate venv
 
 Then install the remaining prerequisites with:
 
-    pip3 install -r requirements.txt
+    pip3 install --upgrade pip
+    pip3 install --upgrade setuptools
+    python3 -m pip install -r requirements.txt
 
 To solve pip3 SSL:TLSV1_ALERT_PROTOCOL_VERSION problem:
 
