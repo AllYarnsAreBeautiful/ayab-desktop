@@ -1,6 +1,6 @@
 {
     "controller": {
-        "uno":[
+        "uno/metro":[
             {
                 "url":"/",
                 "version":"1.0.0 (prototype)",
