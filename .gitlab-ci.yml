@@ -37,7 +37,7 @@ build:osx:
     - tags
 
 build:linux:
-  image: python:3.5
+  image: python:3.6
   tags:
     - linux
     - docker

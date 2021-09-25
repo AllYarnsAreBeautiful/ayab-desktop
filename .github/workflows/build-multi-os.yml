@@ -22,7 +22,7 @@ on:
 jobs:
   create-release:
     name: Create release and upload Ubuntu asset
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-20.04
     strategy:
       matrix:
         python-version: [3.6]
@@ -221,7 +221,7 @@ jobs:
   # see https://github.com/AppImage/AppImageKit/wiki/Bundling-Python-apps
   build-appimage:
     name: Upload AppImage release asset
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-20.04
     strategy:
       matrix:
         python-version: [3.6]
@@ -239,7 +239,7 @@ jobs:
         echo "::set-output name=sha-short::$(git rev-parse --short HEAD)"
         echo "::set-output name=tag::$(git describe --tags)"
         echo "::set-output name=python::python${{matrix.python-version}}"
-        echo "::set-output name=python-appimage::python${{matrix.python-version}}.11-cp36-cp36m-manylinux2014_x86_64.AppImage"
+        echo "::set-output name=python-appimage::python${{matrix.python-version}}.15-cp36-cp36m-manylinux2014_x86_64.AppImage"
     - name: Set PACKAGE_VERSION
       run: |
         cd git
@@ -269,8 +269,8 @@ jobs:
         ./AppRun -m pip install -r requirements.txt
     - name: Add AppDir subdirectories to PATH
       run: |
-        echo "::add-path::usr/bin"
-        echo "::add-path::opt/${{steps.vars.outputs.python}}/bin"
+        echo "usr/bin" >> $GITHUB_PATH
+        echo "opt/${{steps.vars.outputs.python}}/bin" >> $GITHUB_PATH
     - name: Convert UI and translation files
       run: |
         cd squashfs-root
@@ -296,8 +296,8 @@ jobs:
         rm -f python*.desktop
         mkdir -p usr/share/applications/
         rm -f usr/share/applications/*.desktop
-        cp linux-build/appimage/ayab.desktop ayab.desktop 
-        cp ayab.desktop usr/share/applications/ayab.desktop 
+        cp linux-build/appimage/com.ayab_knitting.ayab.desktop com.ayab_knitting.ayab.desktop 
+        cp com.ayab_knitting.ayab.desktop usr/share/applications/com.ayab_knitting.ayab.desktop 
     - name: Add metadata
       run: |
         cd squashfs-root
