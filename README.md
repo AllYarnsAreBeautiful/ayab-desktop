@@ -30,6 +30,10 @@ needed also.
 
     sudo apt-get install python3-pip python3-dev python3-virtualenv python3-gi
     sudo apt-get install libasound2-dev avrdude qttools5-dev-tools
+    sudo add-apt-repository ppa:deadsnakes/ppa
+    sudo apt-get install python3.6 python3.6-dev
+
+It may be necessary 
 
 #### For openSUSE
 
@@ -51,8 +55,17 @@ To install the development version you can checkout the git repository.
 Create a virtual enviroment in the cloned repository:
 
     cd ayab-desktop
+<<<<<<< HEAD
     conda create --name venv -c conda-forge python=3.6.* pip
     source activate venv
+=======
+    virtualenv --python=/usr/bin/python3.6 --system-site-packages venv/
+    source venv/bin/activate
+    python3 -m pip install --upgrade pip
+<<<<<<< HEAD
+>>>>>>> b9abee6... Updated instructions for Ubuntu in README.md
+=======
+>>>>>>> b9abee6... Updated instructions for Ubuntu in README.md
     pip3 install -r requirements.txt
     ./setup-environment.sh
 

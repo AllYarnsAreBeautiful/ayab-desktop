@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
-  <id>ayab.desktop</id>
+  <id>com.ayab_knitting.ayab</id>
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>GPL-3.0</project_license>
   <name>AYAB</name>
@@ -8,9 +8,9 @@
   <description>
     <p>The goal of the AYAB project is to provide an alternative way to control the Brother KH-9xx range of knitting machines using a computer.</p>
   </description>
-  <x-launchable type="desktop-id">ayab.desktop</x-launchable>
+  <x-launchable type="desktop-id">com.ayab_knitting.ayab.desktop</x-launchable>
   <url type="homepage">https://ayab-knitting.com/</url>
   <provides>
-    <id>ayab.desktop</id>
+    <id>ayab</id>
   </provides>
 </component>
