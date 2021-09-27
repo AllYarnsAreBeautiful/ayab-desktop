@@ -52,7 +52,7 @@ To install the development version you can checkout the git repository.
 
     git clone https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
-Create a virtual enviroment in the cloned repository:
+Create a virtual environment in the cloned repository:
 
     cd ayab-desktop
 <<<<<<< HEAD
