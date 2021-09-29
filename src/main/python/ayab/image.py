@@ -22,7 +22,6 @@ import logging
 from math import ceil
 
 from PIL import Image
-from DAKimport import DAKimport
 from PyQt5.QtCore import QCoreApplication
 from PyQt5.QtWidgets import QInputDialog, QDialog, QFileDialog
 
@@ -30,6 +29,7 @@ from .transforms import Transform, Mirrors
 from .observable import Observable
 from .utils import display_blocking_popup
 from .machine import Machine
+from .pattern_import import PatPatternConverter, StpPatternConverter, CutPatternConverter
 
 
 class AyabImage(Observable):
@@ -55,7 +55,7 @@ class AyabImage(Observable):
             filepath = filename
         selected_file, _ = QFileDialog.getOpenFileName(
             self.__parent, "Open file", filepath,
-            'Images (*.png *.PNG *.jpg *.JPG *.jpeg *.JPEG *.bmp *.BMP *.gif *.GIF *.tiff *.TIFF *.tif *.TIF *.Pat *.pat *.PAT *.Stp *.stp *.STP)'
+            'Images (*.png *.PNG *.jpg *.JPG *.jpeg *.JPEG *.bmp *.BMP *.gif *.GIF *.tiff *.TIFF *.tif *.TIF *.Pat *.pat *.PAT *.Stp *.stp *.STP *.Cut *.cut *.CUT)'
         )
         if selected_file:
             self.filename = selected_file
@@ -69,12 +69,12 @@ class AyabImage(Observable):
             self.__open(filename)
         except (OSError, FileNotFoundError):
             display_blocking_popup(
-                QCoreApplication.translate("Unable to load image file"),
+                QCoreApplication.translate("Image", "Unable to load image file"),
                 "error")  # FIXME translate
             logging.error("Unable to load " + str(filename))
         except Exception as e:
             display_blocking_popup(
-                QCoreApplication.translate("Error loading image file"),
+                QCoreApplication.translate("Image", "Error loading image file"),
                 "error")  # FIXME translate
             logging.error("Error loading image: " + str(e))
             raise
@@ -83,17 +83,14 @@ class AyabImage(Observable):
             pass
 
     def __open(self, filename):
-        # check for DAK files
+        # check for files that need conversion
         suffix = filename[-4:].lower()
-        if (suffix == ".pat" or suffix == ".stp"):
-            # convert DAK file
-            dakfile_processor = DAKimport.Importer()
-            if (suffix == ".pat"):
-                self.image = dakfile_processor.pat2im(filename)
-            elif (suffix == ".stp"):
-                self.image = dakfile_processor.stp2im(filename)
-            else:
-                raise RuntimeError("Unrecognized file suffix.")
+        if (suffix == ".pat"):
+            self.image = PatPatternConverter().pattern2im(filename)
+        elif (suffix == ".stp"):
+            self.image = StpPatternConverter().pattern2im(filename)
+        elif (suffix == ".cut"):
+            self.image = CutPatternConverter().pattern2im(filename)
         else:
             self.image = Image.open(filename)
         self.image = self.image.convert("RGBA")
@@ -154,7 +151,7 @@ class AyabImage(Observable):
         """Executes an image transform specified by function and args."""
         self.image = transform(self.image, args)
         try:
-            pass  #self.image = transform(self.image, args)
+            pass #self.image = transform(self.image, args)
         except:
             logging.error("Error while executing image transform.")
 
