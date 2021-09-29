@@ -6,9 +6,9 @@ pyserial==3.4
 sliplib==0.4.0
 pytest==5.4.1
 mock==3.0.5
-DAKimport==0.0.4
 bitarray-hardbyte==1.1.0
 simpleaudio==1.0.4
 wave==0.0.2
+numpy
 requests
 pre-commit
