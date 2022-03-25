@@ -145,20 +145,20 @@ class Status(object):
         hall_l = int((msg[2] << 8) + msg[3])
         hall_r = int((msg[4] << 8) + msg[5])
 
-        if msg[6] == 1:
+        if msg[6] == 0:
             carriage_type = Carriage.Knit
-        elif msg[6] == 2:
+        elif msg[6] == 1:
             carriage_type = Carriage.Lace
-        elif msg[6] == 3:
+        elif msg[6] == 2:
             carriage_type = Carriage.Garter
         else:
             carriage_type = Carriage.Unknown
 
         carriage_position = int(msg[7])
 
-        if msg[8] == 1:
+        if msg[8] == 0:
             carriage_direction = Direction.Left
-        elif msg[8] == 2:
+        elif msg[8] == 1:
             carriage_direction = Direction.Right
         else:
             carriage_direction = Direction.Unknown
