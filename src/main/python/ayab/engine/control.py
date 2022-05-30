@@ -110,7 +110,7 @@ class Control(Observable):
     def reset_status(self):
         self.status.reset()
         if self.mode == Mode.SINGLEBED:
-            self.status.alt_color = self.pattern.palette[1]
+            self.status.alt_color = self.pattern.palette[0]
             self.status.color_symbol = ""  # "A/B"
         else:
             self.status.alt_color = None
