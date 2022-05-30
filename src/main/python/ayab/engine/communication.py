@@ -169,7 +169,7 @@ class Communication(object):
         # fallthrough
         self.__logger.debug("unknown message: ")  # drop crlf
         pp = pprint.PrettyPrinter(indent=4)
-        pp.pprint(msg.decode())
+        pp.pprint(msg[1: -1].decode())
         return msg, Token.unknown, 0
 
     def read_API6(self):

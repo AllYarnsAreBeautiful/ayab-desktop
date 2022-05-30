@@ -48,6 +48,7 @@ class KnitProgress(QTableWidget):
         self.setColumnCount(5)
         for r in range(5):
             self.setHorizontalHeaderItem(r, self.blank)
+        self.previousStatus = None
 
     def start(self):
         self.clearContents()
@@ -56,31 +57,55 @@ class KnitProgress(QTableWidget):
         self.row = -1
         self.color = True
 
+    def uiStateChanged(self, status):
+        if not self.previousStatus:
+            return True
+
+        if status == self.previousStatus:
+            return False
+
+        if (status.line_number != self.previousStatus.line_number or
+            status.current_row != self.previousStatus.current_row or
+            status.color_symbol != self.previousStatus.color_symbol or
+            status.carriage_type != self.previousStatus.carriage_type or
+            status.carriage_direction != self.previousStatus.carriage_direction or
+            status.bits != self.previousStatus.bits or
+            status.alt_color != self.previousStatus.alt_color):
+            return True
+
+        return False
+
+
     def update(self, status, row_multiplier, midline, auto_mirror):
+        if not self.uiStateChanged(status):
+            return 
+
         if status.current_row < 0:
             return
         # else
         tr_ = QCoreApplication.translate
         row, swipe = divmod(status.line_number, row_multiplier)
 
+        columns = []
+
         # row
-        w0 = self.__item(
+        header = self.__item(
             tr_("KnitProgress", "Row") + " " + str(status.current_row))
 
         # pass
-        w1 = self.__item(tr_("KnitProgress", "Pass") + " " + str(swipe + 1))
+        columns.append(tr_("KnitProgress", "Pass") + " " + str(swipe + 1))
 
         # color
         if status.color_symbol == "":
             self.color = False
-            self.setColumnHidden(2, True)
         else:
+            self.color = True
             coltext = tr_("KnitProgress", "Color") + " " + status.color_symbol
-            w2 = self.__item(coltext)
+            columns.append(coltext)
 
         carriage = status.carriage_type
         direction = status.carriage_direction
-        w3 = self.__item(carriage.symbol + " " + direction.symbol)
+        columns.append(carriage.symbol + " " + direction.symbol)
 
         # graph line of stitches
         status.bits.reverse()
@@ -99,7 +124,7 @@ class KnitProgress(QTableWidget):
         # w4a.setAlignment(Qt.AlignRight)
         # w4a.addWidget(w4b)
         # w4.setLayout(w4a)
-        w4 = QLabel(table_text)
+        left = QLabel(table_text)
 
         table_text = "<table style='cell-spacing: 1; cell-padding: 1; background-color: #{:06x};'><tr> ".format(
             self.green)
@@ -114,18 +139,18 @@ class KnitProgress(QTableWidget):
         # w5a.setAlignment(Qt.AlignLeft)
         # w5a.addWidget(w5b)
         # w5.setLayout(w5a)
-        w5 = QLabel(table_text)
+        right = QLabel(table_text)
 
         self.insertRow(0)
-        self.setVerticalHeaderItem(0, w0)
-        self.setItem(0, 0, w1)
-        if self.color:
-            self.setItem(0, 1, w2)
-        self.setItem(0, 2, w3)
-        self.setCellWidget(0, 3, w4)
-        self.setCellWidget(0, 4, w5)
+        self.setVerticalHeaderItem(0, header)
+        for i, col in enumerate(columns):
+            self.setItem(0, i, self.__item(col))
+        self.setCellWidget(0, len(columns) + 1, left)
+        self.setCellWidget(0, len(columns) + 2, right)
         self.resizeColumnsToContents()
         # self.ensureWidgetVisible(w0)
+
+        self.previousStatus = status
 
     def __item(self, text):
         table = "<table><tr><td>" + text + "</td></tr></table>"
