@@ -123,7 +123,7 @@ class Status(object):
         self.carriage_direction = Direction.Unknown
 
     def copy(self, status):
-        self.active = True
+        self.active = status.active
         self.current_row = status.current_row
         self.line_number = status.line_number
         self.repeats = status.repeats
@@ -138,8 +138,8 @@ class Status(object):
         self.carriage_direction = status.carriage_direction
 
     def parse_device_state_API6(self, state, msg):
-        #if not (self.active):
-        #    return
+        if not (self.active):
+            return
 
         # else
         hall_l = int((msg[2] << 8) + msg[3])
@@ -170,7 +170,6 @@ class Status(object):
         self.carriage_direction = carriage_direction
         print(carriage_type)
         print(carriage_direction)
-        print(carriage_position)
 
 
 # FIXME translations for UI

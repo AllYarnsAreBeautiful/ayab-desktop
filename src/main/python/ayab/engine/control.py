@@ -117,11 +117,9 @@ class Control(Observable):
 
     def check_serial_API6(self):
         msg, token, param = self.com.update_API6()
-        print("check_serial "+str(token))
         if token == Token.cnfInfo:
             self.__log_cnfInfo(msg)
         elif token == Token.indState:
-            print("indState")
             self.status.parse_device_state_API6(param, msg)
         elif token == Token.testRes:
             if len(msg) > 0:
@@ -159,7 +157,6 @@ class Control(Observable):
 
         # send line to machine
         flag = last_line and not self.inf_repeat
-        print("bits "+str(bits))
         self.com.cnf_line_API6(requested_line, color, flag, bits.tobytes())
 
         # screen output

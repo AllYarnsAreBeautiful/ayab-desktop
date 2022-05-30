@@ -174,7 +174,6 @@ M
         control.logger.debug("State RUN_KNIT")
         token, param = control.check_serial_API6()
         if token == Token.reqLine:
-            print("reqLine in run_knit")
             pattern_finished = control.cnf_line_API6(param)
             if pattern_finished:
                 control.state = State.FINISHED
