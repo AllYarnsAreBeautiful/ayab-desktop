@@ -160,7 +160,6 @@ class KnitProgress(QTableWidget):
     def __stitch(self, color, bit, alt_color=None):
         # FIXME: borders are not visible
         text = "<td width='12' style='"
-        print("stitch "+str(bit)+" alt color "+str(alt_color))
         if bit:
             text += "border: 1 solid black; background-color: #{:06x};".format(
                 color)
