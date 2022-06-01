@@ -64,8 +64,10 @@ class Mode(Enum):
     # FIXME this function is supposed to select needles
     # to knit the background color alongside the pattern
     def flanking_needles(self, color, ncolors):
+        # The background color is color 0 in singlebed mode 
+        # so we never need flanking needles.
         if self.name == "SINGLEBED":
-            return 0
+            return False
 
         # return (color == 0 and self.name == "CLASSIC_RIBBER") \
         #     or (color == ncolors - 1

@@ -55,14 +55,14 @@ class TestControl(unittest.TestCase):
         control.inf_repeat = False
         control.pat_height = control.pattern.pat_height
         control.func = getattr(ModeFunc, "_singlebed")
-        assert control.func(control, 0) == (0, 0, False, False)
-        assert control.func(control, 1) == (0, 2, False, False)
-        assert control.func(control, 2) == (0, 4, False, True)
+        assert control.func(control, 0) == (1, 1, False, False)
+        assert control.func(control, 1) == (1, 3, False, False)
+        assert control.func(control, 2) == (1, 5, False, True)
         control.inf_repeat = True
-        assert control.func(control, 3) == (0, 0, False, False)
-        assert control.func(control, 4) == (0, 2, False, False)
+        assert control.func(control, 3) == (1, 1, False, False)
+        assert control.func(control, 4) == (1, 3, False, False)
         control.start_row = 1
-        assert control.func(control, 2) == (0, 0, False, False)
+        assert control.func(control, 2) == (1, 1, False, False)
 
     def test__classic_ribber_2col(self):
         control = Control(self.parent, self.parent.engine)
@@ -259,7 +259,7 @@ class TestControl(unittest.TestCase):
         control.end_pixel = 40
         bits0 = bitarray()
         bits0.frombytes(
-            b'\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\x00\x00\x00\x00\x00'
+            b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
         )
         assert control.select_needles_API6(0, 0, False) == bits0
 
@@ -293,7 +293,7 @@ class TestControl(unittest.TestCase):
         assert Mode.CIRCULAR_RIBBER.knit_func(2) == "_circular_ribber"
 
     def test_flanking_needles(self):
-        assert Mode.SINGLEBED.flanking_needles(0, 2)
+        assert not Mode.SINGLEBED.flanking_needles(0, 2)
         assert not Mode.SINGLEBED.flanking_needles(1, 2)
         assert Mode.CLASSIC_RIBBER.flanking_needles(0, 2)
         assert not Mode.CLASSIC_RIBBER.flanking_needles(1, 2)
