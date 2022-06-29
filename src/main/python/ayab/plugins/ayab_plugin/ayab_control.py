@@ -18,6 +18,8 @@
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
 from .ayab_communication import AyabCommunication
+from .ayab_ip import AyabIP
+from .udp_thread import UDPThread
 from . import ayab_image
 import math
 import logging
@@ -231,7 +233,7 @@ class AyabPluginControl(KnittingPlugin):
     app = QtCore.QCoreApplication.instance()
     app.removeTranslator(self.translator)
 
-  def populate_ports(self, combo_box=None, port_list=None):
+  def populate_ports(self, combo_box=None, port_list=None, ipportlist=None):
     if not combo_box:
         combo_box = self.__parent_ui.findChild(QtWidgets.QComboBox,
                                                "serial_port_dropdown")
@@ -246,6 +248,14 @@ class AyabPluginControl(KnittingPlugin):
           combo_box.addItem(item[0])
     populate(combo_box, port_list)
 
+    if not ipportlist:
+        #self.__ayabCom.broadcast()
+        ipportlist = test.getIPlist()
+               
+    def populate(combo_box, ipportlist):
+        for item in ipportlist:
+            combo_box.addItem(item)
+    populate(combo_box, ipportlist)
 
   def setup_behaviour_ui(self):
     """Connects methods to UI elements."""
@@ -364,13 +374,18 @@ class AyabPluginControl(KnittingPlugin):
 
     #Copying from ayab_control
     self.__API_VERSION = 0x05
-    self.__ayabCom = AyabCommunication()
+    self.__ayabCom = AyabIP()
 
     self.__formerRequest = 0
     self.__lineBlock = 0
+    
+    global test    
+    test = UDPThread()
+    test.start()
 
-  def __del__(self):
+  def __del__(self):    
     self.__close_serial()
+    test.stop()
 
 ###Copied from ayab_control
 #####################################
@@ -695,6 +710,7 @@ class AyabPluginControl(KnittingPlugin):
               self.__ayabCom.cnf_line(reqestedLine, bytes, 0, crc8)
             else:
               self.__ayabCom.cnf_line(reqestedLine, bytes, lastLine, crc8)
+                    
 
             # screen output
             colorNames = "A", "B", "C", "D"
@@ -760,6 +776,7 @@ class AyabPluginControl(KnittingPlugin):
           # TODO: port to state machine or similar.
           rcvMsg, rcvParam = self.__checkSerial()
           if curState == 's_init':
+              self.__logger.info("s_init")
               if rcvMsg == 'cnfInfo':
                   if rcvParam == API_VERSION:
                       curState = 's_waitForInit'
@@ -778,6 +795,7 @@ class AyabPluginControl(KnittingPlugin):
                   self.__ayabCom.req_info()
 
           if curState == 's_waitForInit':
+              self.__logger.info("s_waitForInit")
               if rcvMsg == "indState":
                 if rcvParam == 1:
                     curState = 's_start'
@@ -785,6 +803,7 @@ class AyabPluginControl(KnittingPlugin):
                     self.__logger.debug("init failed")
 
           if curState == 's_start':
+              self.__logger.info("s_start")
               if oldState != curState:
                     self.__ayabCom.req_start(self.__image.knitStartNeedle(),
                                              self.__image.knitStopNeedle(),

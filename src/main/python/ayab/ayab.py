@@ -167,6 +167,11 @@ class GuiMain(QMainWindow):
     def slotUpdateButtonKnitEnabled(self, enabled):
         self.ui.knit_button.setEnabled(enabled)
 
+    def closeEvent(self, event):        
+        self.enabled_plugin.__del__()
+        return QMainWindow.closeEvent(self, event)
+
+
     def wheelEvent(self, event):
         '''Using mouse wheel events to zoom the pattern view'''
         if self.pil_image is not None:
