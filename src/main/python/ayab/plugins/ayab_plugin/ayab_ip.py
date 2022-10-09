@@ -34,22 +34,22 @@ remotePort = 12346
 
 
 class AyabIP(AyabCommunication):
-               
+
     def __init__(self, serial=None):
         super().__init__(serial=serial)
         logging.basicConfig(level=logging.DEBUG)
-        self.__logger  = logging.getLogger(type(self).__name__)
+        self.__logger = logging.getLogger(type(self).__name__)
         self.__rxMsgList = list()
         self.__tarAddressPort = ("255.255.255.255", 12345)
         self.__sockTCP = None
         self.__isIP = False
-        
+
     def __del__(self):
         self.close_socket()
         return super().__del__()
 
     def open_serial(self, pPortname=None):
-        try:            
+        try:
             ip = ipaddress.IPv4Address(ipaddress.ip_address(pPortname))
             return self.open_tcp(pPortname=pPortname)
         except:
@@ -57,18 +57,19 @@ class AyabIP(AyabCommunication):
 
     def close_serial(self):
         return super().close_serial()
-    
-    def open_tcp(self, pPortname=None):      
+
+    def open_tcp(self, pPortname=None):
         try:
             self.__portname = pPortname
             self.__tarAddressPort = (self.__portname, remotePort)
-            self.__sockTCP = socket.socket(family=socket.AF_INET, type=socket.SOCK_STREAM)            
-            self.__sockTCP.settimeout(10)
+            self.__sockTCP = socket.socket(
+                family=socket.AF_INET, type=socket.SOCK_STREAM)
+            self.__sockTCP.settimeout(10.0)
             self.__sockTCP.connect(self.__tarAddressPort)
-            self.__sockTCP.settimeout(0.050)
+            self.__sockTCP.settimeout(0.0)
             self.__sockTCP.setblocking(False)
             self.__isIP = True
-            self.__logger.info("Open TCP Socket successful")        
+            self.__logger.info("Open TCP Socket successful")
             return True
         except:
             self.__logger.info("Open TCP Socket faild")
@@ -76,57 +77,56 @@ class AyabIP(AyabCommunication):
 
     def close_socket(self):
         if self.__sockTCP is not None:
-            try:            
+            try:
                 self.__sockTCP.close()
                 del(self.__sockTCP)
                 self.__sockTCP = None
                 self.__logger.info("Closing TCP Socket successful.")
             except:
-                self.__logger.warning("Closing TCP Socket failed. Was it ever open?")
-                       
+                self.__logger.warning(
+                    "Closing TCP Socket failed. Was it ever open?")
 
     def update(self):
         """Reads data from serial and tries to parse as SLIP packet."""
-        
+
         if self.__isIP:
             if self.__sockTCP:
-                
+
                 try:
                     data = self.__sockTCP.recv(1024)
                 except:
                     data = bytes()
-                    # sleep(0.001)                        
+                    # sleep(0.001)
 
                 if len(data) > 0:
                     self.__rxMsgList.append(data)
 
                 if len(self.__rxMsgList) > 0:
                     return self.__rxMsgList.pop(0)
-                
+
             return None
         else:
             return super().update()
-    
-    def req_start(self, startNeedle, stopNeedle, continuousReporting):
-      if self.__isIP:
-        data = bytearray()
-        data.append(0x01)
-        data.append(startNeedle)
-        data.append(stopNeedle)
-        data.append(continuousReporting)
-        self.__sockTCP.send(bytes(data))
-      else:
-        return super().req_start(startNeedle, stopNeedle, continuousReporting)
 
-    def req_info(self):        
+    def req_start(self, startNeedle, stopNeedle, continuousReporting):
+        if self.__isIP:
+            data = bytearray()
+            data.append(0x01)
+            data.append(startNeedle)
+            data.append(stopNeedle)
+            data.append(continuousReporting)
+            self.__sockTCP.send(bytes(data))
+        else:
+            return super().req_start(startNeedle, stopNeedle, continuousReporting)
+
+    def req_info(self):
         if self.__isIP:
             self.__sockTCP.send(b'\x03')
             self.__logger.info("SEND b'\x03'")
             sleep(0.05)
         else:
             return super().req_info()
-        
-        
+
     def req_test(self):
         if self.__isIP:
             self.__sockTCP.send(b'\x04')
@@ -147,6 +147,7 @@ class AyabIP(AyabCommunication):
             crc8 (bytes, optional): The CRC-8 checksum for transmission.
 
         """
+        dateSend = 0
         if self.__isIP:
             data = bytearray()
             data.append(0x42)
@@ -154,9 +155,20 @@ class AyabIP(AyabCommunication):
             data.extend(lineData)
             data.append(flags)
             data.append(crc8)
-            self.__sockTCP.send(bytes(data))
+            try:
+                dateSend = self.__sockTCP.send(bytes(data))
+            except:
+                return 0
         else:
-            return super().cnf_line(lineNumber, lineData, flags, crc8)
+            try:
+                super().cnf_line(lineNumber, lineData, flags, crc8)
+                dateSend = len(lineData) + 4
+            except:
+                return 0
+            return
+
+        return dateSend
+
 
 class IPException(Exception):
-  pass
+    pass
