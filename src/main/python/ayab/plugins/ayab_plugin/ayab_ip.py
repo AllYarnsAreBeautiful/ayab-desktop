@@ -48,6 +48,9 @@ class AyabIP(AyabCommunication):
         self.close_socket()
         return super().__del__()
 
+    def isOpen(self):
+        return (not self.__isIP) or self.__sockTCP
+
     def open_serial(self, pPortname=None):
         try:
             ip = ipaddress.IPv4Address(ipaddress.ip_address(pPortname))
@@ -94,12 +97,18 @@ class AyabIP(AyabCommunication):
 
                 try:
                     data = self.__sockTCP.recv(1024)
-                except:
+                except BlockingIOError:
                     data = bytes()
+                except Exception as e:
+                    if hasattr(e, 'message'):
+                        self.__logger.exception(e.message)
+                    else:
+                        self.__logger.exception("Connection...Error")
+                    self.close_socket()
                     # sleep(0.001)
-
-                if len(data) > 0:
-                    self.__rxMsgList.append(data)
+                else:
+                    if len(data) > 0:
+                        self.__rxMsgList.append(data)
 
                 if len(self.__rxMsgList) > 0:
                     return self.__rxMsgList.pop(0)
@@ -110,26 +119,51 @@ class AyabIP(AyabCommunication):
 
     def req_start(self, startNeedle, stopNeedle, continuousReporting):
         if self.__isIP:
-            data = bytearray()
-            data.append(0x01)
-            data.append(startNeedle)
-            data.append(stopNeedle)
-            data.append(continuousReporting)
-            self.__sockTCP.send(bytes(data))
+            if self.__sockTCP:
+                data = bytearray()
+                data.append(0x01)
+                data.append(startNeedle)
+                data.append(stopNeedle)
+                data.append(continuousReporting)
+                try:
+                    self.__sockTCP.send(bytes(data))
+                except Exception as e:
+                    if hasattr(e, 'message'):
+                        self.__logger.exception(e.message)
+                    else:
+                        self.__logger.exception("Connection...Error")
+                    self.close_socket()
         else:
             return super().req_start(startNeedle, stopNeedle, continuousReporting)
 
     def req_info(self):
         if self.__isIP:
-            self.__sockTCP.send(b'\x03')
-            self.__logger.info("SEND b'\x03'")
-            sleep(0.05)
+            if self.__sockTCP:
+                try:
+                    self.__sockTCP.send(b'\x03')
+                    self.__logger.info("SEND b'\x03'")
+                    sleep(0.5)
+                except Exception as e:
+                    if hasattr(e, 'message'):
+                        self.__logger.exception(e.message)
+                    else:
+                        self.__logger.exception("Connection...Error")
+                    self.close_socket()
+
         else:
             return super().req_info()
 
     def req_test(self):
         if self.__isIP:
-            self.__sockTCP.send(b'\x04')
+            if self.__sockTCP:
+                try:
+                    self.__sockTCP.send(b'\x04')
+                except Exception as e:
+                    if hasattr(e, 'message'):
+                        self.__logger.exception(e.message)
+                    else:
+                        self.__logger.exception("Connection...Error")
+                    self.close_socket()
         else:
             return super().req_test()
 
@@ -149,12 +183,13 @@ class AyabIP(AyabCommunication):
         """
         dateSend = 0
         if self.__isIP:
-            data = bytearray()
-            data.append(0x42)
-            data.append(lineNumber)
-            data.extend(lineData)
-            data.append(flags)
-            data.append(crc8)
+            if self.__sockTCP:
+                data = bytearray()
+                data.append(0x42)
+                data.append(lineNumber)
+                data.extend(lineData)
+                data.append(flags)
+                data.append(crc8)
             try:
                 dateSend = self.__sockTCP.send(bytes(data))
             except:

@@ -774,6 +774,10 @@ class AyabPluginControl(KnittingPlugin):
       while self._knitImage:
           # TODO catch keyboard interrupts to abort knitting
           # TODO: port to state machine or similar.
+          if (not self.__ayabCom.isOpen()):
+            self.__updateNotification("Connection Close")
+            break
+
           rcvMsg, rcvParam = self.__checkSerial()
           if curState == 's_init':
               self.__logger.info("s_init")
