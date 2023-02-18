@@ -42,6 +42,11 @@ class Engine(object):
     def __init__(self):
         self.status = Status()
 
+class Config(object):
+    def __init__(self, machine, mode=Mode.SINGLEBED):
+        self.machine = machine
+        self.mode = mode
+
 
 class TestControl(unittest.TestCase):
     def setUp(self):
@@ -49,7 +54,7 @@ class TestControl(unittest.TestCase):
 
     def test__singlebed(self):
         control = Control(self.parent, self.parent.engine)
-        control.pattern = Pattern(Image.new('P', (1, 3)), Machine(0), 2)
+        control.pattern = Pattern(Image.new('P', (1, 3)), Config(Machine(0)), 2)
         control.num_colors = 2
         control.start_row = 0
         control.inf_repeat = False
@@ -66,7 +71,7 @@ class TestControl(unittest.TestCase):
 
     def test__classic_ribber_2col(self):
         control = Control(self.parent, self.parent.engine)
-        control.pattern = Pattern(Image.new('P', (1, 5)), Machine(0), 2)
+        control.pattern = Pattern(Image.new('P', (1, 5)), Config(Machine(0), Mode.CLASSIC_RIBBER), 2)
         control.num_colors = 2
         control.start_row = 0
         control.inf_repeat = False
@@ -93,7 +98,7 @@ class TestControl(unittest.TestCase):
 
     def test__classic_ribber_multicol(self):
         control = Control(self.parent, self.parent.engine)
-        control.pattern = Pattern(Image.new('P', (1, 3)), Machine(0), 3)
+        control.pattern = Pattern(Image.new('P', (1, 3)), Config(Machine(0), Mode.CLASSIC_RIBBER), 3)
         control.num_colors = 3
         control.start_row = 0
         control.inf_repeat = False
@@ -125,7 +130,7 @@ class TestControl(unittest.TestCase):
 
     def test__middlecolorstwice_ribber(self):
         control = Control(self.parent, self.parent.engine)
-        control.pattern = Pattern(Image.new('P', (1, 5)), Machine(0), 3)
+        control.pattern = Pattern(Image.new('P', (1, 5)), Config(Machine(0), Mode.MIDDLECOLORSTWICE_RIBBER), 3)
         control.mode = Mode.MIDDLECOLORSTWICE_RIBBER
         control.num_colors = 3
         control.start_row = 0
@@ -166,7 +171,7 @@ class TestControl(unittest.TestCase):
 
     def test__heartofpluto_ribber(self):
         control = Control(self.parent, self.parent.engine)
-        control.pattern = Pattern(Image.new('P', (1, 5)), Machine(0), 3)
+        control.pattern = Pattern(Image.new('P', (1, 5)), Config(Machine(0), Mode.HEARTOFPLUTO_RIBBER), 3)
         control.mode = Mode.HEARTOFPLUTO_RIBBER
         control.num_colors = 3
         control.start_row = 0
@@ -207,7 +212,7 @@ class TestControl(unittest.TestCase):
 
     def test__circular_ribber(self):
         control = Control(self.parent, self.parent.engine)
-        control.pattern = Pattern(Image.new('P', (1, 3)), Machine(0), 3)
+        control.pattern = Pattern(Image.new('P', (1, 3)), Config(Machine(0), Mode.CIRCULAR_RIBBER), 3)
         control.num_colors = 3
         control.start_row = 0
         control.inf_repeat = False
@@ -248,7 +253,7 @@ class TestControl(unittest.TestCase):
         im = Image.new('P', (40, 3), 0)
         im1 = Image.new('P', (40, 1), 1)
         im.paste(im1, (0, 0))
-        pattern = Pattern(im, Machine(0), 2)
+        pattern = Pattern(im, Config(Machine(0), Mode.SINGLEBED), 2)
         pattern.alignment = Alignment.LEFT
         control.pattern = pattern
         assert pattern.pat_start_needle == 160
@@ -259,7 +264,7 @@ class TestControl(unittest.TestCase):
         control.end_pixel = 40
         bits0 = bitarray()
         bits0.frombytes(
-            b'\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\x00\x00\x00\x00\x00'
+            b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
         )
         assert control.select_needles_API6(0, 0, False) == bits0
 

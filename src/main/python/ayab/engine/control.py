@@ -69,7 +69,7 @@ class Control(Observable):
                 self.machine.width)
             self.start_pixel = self.start_needle - self.pattern.pat_start_needle
             self.end_pixel = self.end_needle - self.pattern.pat_start_needle
-            if self.FLANKING_NEEDLES:
+            if self.FLANKING_NEEDLES and self.mode != Mode.SINGLEBED:
                 self.midline = self.pattern.knit_end_needle - self.machine.width // 2
             else:
                 self.midline = self.end_needle - self.machine.width // 2
@@ -189,7 +189,7 @@ class Control(Observable):
         if self.mode != Mode.SINGLEBED:
             self.status.color_symbol = self.COLOR_SYMBOLS[color]
         self.status.color = self.pattern.palette[color]
-        if self.FLANKING_NEEDLES:
+        if self.FLANKING_NEEDLES and self.mode != Mode.SINGLEBED:
             self.status.bits = bits[self.pattern.knit_start_needle:self.
                                     pattern.knit_end_needle]
         else:
@@ -205,7 +205,7 @@ class Control(Observable):
 
         # select needles flanking the pattern
         # if necessary to knit the background color
-        if self.mode.flanking_needles(color, self.num_colors):
+        if self.mode.flanking_needles(color, self.num_colors) and self.mode != Mode.SINGLEBED:
             bits[0:self.start_needle] = True
             bits[self.end_needle:self.machine.width] = True
 
