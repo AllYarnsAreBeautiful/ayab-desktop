@@ -22,18 +22,20 @@ from bitarray import bitarray
 import numpy as np
 
 from .options import Alignment
+from .mode import Mode
 from ayab.machine import Machine
 
 
 class Pattern(object):
-    def __init__(self, image, machine, num_colors=2):
+    def __init__(self, image, config, num_colors=2):
         self.__pattern = image
         self.__num_colors = num_colors
         self.__alignment = Alignment.CENTER
         self.__pat_start_needle = -1
         self.__pat_end_needle = -1
         self.__knit_start_needle = 0
-        self.__knit_end_needle = machine.width
+        self.__mode = config.mode
+        self.__knit_end_needle = config.machine.width
         self.__update_pattern_data()
 
     def __update_pattern_data(self):
@@ -64,7 +66,15 @@ class Pattern(object):
         # Order colors most-frequent first
         # NB previously they were ordered lightest-first
         histogram = self.__pattern.histogram()
-        dest_map = list(np.argsort(histogram[0:self.__num_colors]))
+        if self.__mode != Mode.SINGLEBED:
+            dest_map = list(np.argsort(histogram[0:self.__num_colors]))
+        else:
+            # For single bed, leave the colors as is but map them down to [0:__num_colors]
+            # https://pillow.readthedocs.io/en/stable/reference/Image.html#PIL.Image.Image.remap_palette
+            # `list(range(256))` is the identity tranform
+            dest_map = list(range(self.__num_colors))
+            
+        # reverse it to get to zero as the first color
         dest_map.reverse()
         self.__pattern = self.__pattern.remap_palette(dest_map)
 
