@@ -78,7 +78,7 @@ class Control(Observable):
             self.initial_direction = Direction.Unknown
             self.reset_status()
         self.portname = options.portname
-        self.state = State.SETUP
+        self.state = State.CONNECT
 
     def stop(self):
         try:
@@ -124,6 +124,10 @@ class Control(Observable):
         elif token == Token.testRes:
             if len(msg) > 0:
                 self.emit_hw_test_writer(msg[1:].decode())
+        elif token == Token.debug:
+            self.logger.debug("debug message: ")
+            pp = pprint.PrettyPrinter(indent=4)
+            pp.pprint(msg[1: -1].decode())
         return token, param
 
     def __log_cnfInfo(self, msg):
