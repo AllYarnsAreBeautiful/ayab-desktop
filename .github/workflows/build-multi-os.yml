@@ -34,9 +34,9 @@ jobs:
     - name: Set variables
       id: vars
       run: |
-        echo "::set-output name=sha-short::$(git rev-parse --short HEAD)"
-        echo "::set-output name=tag::$(git describe --tags)"
-        echo "::set-output name=draft::$(git describe --tags | sed -e 's/^test.*/true/;s/^v.*/false/')"
+        echo "sha-short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+        echo "tag=$(git describe --tags)" >> $GITHUB_OUTPUT
+        echo "draft=$(git describe --tags | sed -e 's/^test.*/true/;s/^v.*/false/')" >> $GITHUB_OUTPUT
     - name: Set PACKAGE_VERSION
       run: |
         echo ${{steps.vars.outputs.tag}} > src/main/resources/base/ayab/package_version
@@ -55,7 +55,7 @@ jobs:
         prerelease: false
         allowUpdates: true
         replacesArtifacts: false
-    # Ubuntu package    
+    # Ubuntu package
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
@@ -114,8 +114,8 @@ jobs:
     - name: Set variables
       id: vars
       run: |
-        echo "::set-output name=sha-short::$(git rev-parse --short HEAD)"
-        echo "::set-output name=tag::$(git describe --tags)"
+        echo "sha-short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+        echo "tag=$(git describe --tags)" >> $GITHUB_OUTPUT
     - name: Set PACKAGE_VERSION
       run: |
         echo ${{steps.vars.outputs.tag}} > src/main/resources/base/ayab/package_version
@@ -172,8 +172,8 @@ jobs:
     - name: Set variables
       id: vars
       run: |
-        echo "::set-output name=sha-short::$(git rev-parse --short HEAD)"
-        echo "::set-output name=tag::$(git describe --tags)"
+        echo "sha-short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+        echo "tag=$(git describe --tags)" >> $GITHUB_OUTPUT
     - name: Set PACKAGE_VERSION
       run: |
         echo ${{steps.vars.outputs.tag}} > src/main/resources/base/ayab/package_version
@@ -236,10 +236,10 @@ jobs:
       id: vars
       run: |
         cd git
-        echo "::set-output name=sha-short::$(git rev-parse --short HEAD)"
-        echo "::set-output name=tag::$(git describe --tags)"
-        echo "::set-output name=python::python${{matrix.python-version}}"
-        echo "::set-output name=python-appimage::python${{matrix.python-version}}.15-cp36-cp36m-manylinux2014_x86_64.AppImage"
+        echo "sha-short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+        echo "tag=$(git describe --tags)" >> $GITHUB_OUTPUT
+        echo "python=python${{matrix.python-version}}" >> $GITHUB_OUTPUT
+        echo "python-appimage=python${{matrix.python-version}}.15-cp36-cp36m-manylinux2014_x86_64.AppImage" >> $GITHUB_OUTPUT
     - name: Set PACKAGE_VERSION
       run: |
         cd git
@@ -296,13 +296,13 @@ jobs:
         rm -f python*.desktop
         mkdir -p usr/share/applications/
         rm -f usr/share/applications/*.desktop
-        cp linux-build/appimage/com.ayab_knitting.ayab.desktop com.ayab_knitting.ayab.desktop 
-        cp com.ayab_knitting.ayab.desktop usr/share/applications/com.ayab_knitting.ayab.desktop 
+        cp linux-build/appimage/com.ayab_knitting.ayab.desktop com.ayab_knitting.ayab.desktop
+        cp com.ayab_knitting.ayab.desktop usr/share/applications/com.ayab_knitting.ayab.desktop
     - name: Add metadata
       run: |
         cd squashfs-root
         mkdir -p usr/share/metainfo/
-        rm -f usr/share/metainfo/*.appdata.xml 
+        rm -f usr/share/metainfo/*.appdata.xml
         cp linux-build/appimage/ayab.appdata.xml usr/share/metainfo/
     - name: Convert to AppImage
       run: |
