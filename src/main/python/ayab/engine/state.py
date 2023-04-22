@@ -36,7 +36,8 @@ class Operation(Enum):
 
 
 class State(Enum):
-    SETUP = auto()
+    CONNECT = auto()
+    VERSION_CHECK = auto()
     INIT = auto()
     REQUEST_START = auto()
     CONFIRM_START = auto()
@@ -81,10 +82,10 @@ M
         """Define transitions between states for Finite State Machine"""
 
         # Events that trigger state changes
-        self.SETUP.addTransition(parent.port_opener, self.INIT)
+        self.CONNECT.addTransition(parent.port_opener, self.VERSION_CHECK)
 
-    def _API6_setup(control, operation):
-        control.logger.debug("State SETUP")
+    def _API6_connect(control, operation):
+        control.logger.debug("State CONNECT")
         if operation == Operation.KNIT:
             if not control.func_selector():
                 return Output.ERROR_INVALID_SETTINGS
@@ -103,11 +104,11 @@ M
             return Output.ERROR_SERIAL_PORT
         # else
         # setup complete
-        control.state = State.INIT
+        control.state = State.VERSION_CHECK
         return Output.NONE
 
-    def _API6_init(control, operation):
-        control.logger.debug("State INIT")
+    def _API6_version_check(control, operation):
+        control.logger.debug("State VERSION_CHECK")
         token, param = control.check_serial_API6()
         if token == Token.cnfInfo:
             if param >= control.FIRST_SUPPORTED_API_VERSION:
@@ -117,7 +118,7 @@ M
                     # TODO: need more informative messages for HW test
                     return Output.NONE
                 else:
-                    control.state = State.REQUEST_START
+                    control.state = State.INIT
                     return Output.WAIT_FOR_INIT
             else:
                 control.logger.error("Wrong API version: " + str(param) +
@@ -127,6 +128,21 @@ M
         # else
         control.com.req_info()
         return Output.CONNECTING_TO_MACHINE
+
+    def _API6_init(control, operation):
+        control.logger.debug("State INIT")
+        token, param = control.check_serial_API6()
+        if token == Token.cnfInit:
+            # no errors? Move on
+            if param == 0:
+                control.state = State.REQUEST_START
+                return Output.NONE
+            else:
+                control.logger.error("Error initializing firmware: " + str(param))
+                return Output.ERROR_INITIALIZING_FIRMWARE
+        # else
+        control.com.req_init_API6(control.machine.value)
+        return Output.INITIALIZING_FIRMWARE
 
     def _API6_request_start(control, operation):
         control.logger.debug("State REQUEST_START")
@@ -227,5 +243,5 @@ M
             control.timer.stop()
         except Exception:
             pass
-        control.state = State.SETUP
+        control.state = State.CONNECT
         return Output.NONE

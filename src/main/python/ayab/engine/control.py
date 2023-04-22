@@ -78,7 +78,7 @@ class Control(Observable):
             self.initial_direction = Direction.Unknown
             self.reset_status()
         self.portname = options.portname
-        self.state = State.SETUP
+        self.state = State.CONNECT
 
     def stop(self):
         try:

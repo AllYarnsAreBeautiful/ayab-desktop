@@ -28,8 +28,10 @@ class Output(Enum):
     ERROR_INVALID_SETTINGS = auto()
     ERROR_SERIAL_PORT = auto()
     CONNECTING_TO_MACHINE = auto()
+    INITIALIZING_FIRMWARE = auto()
     WAIT_FOR_INIT = auto()
     ERROR_WRONG_API = auto()
+    ERROR_INITIALIZING_FIRMWARE = auto()
     PLEASE_KNIT = auto()
     DEVICE_NOT_READY = auto()
     NEXT_LINE = auto()
@@ -56,6 +58,12 @@ class FeedbackHandler(Observable):
 
     def _connecting_to_machine(self):
         self.emit_notification("Connecting to machine...", False)
+
+    def _initializing_firmware(self):
+        self.emit_notification("Initializing firmware")
+
+    def _error_initializing_firmware(self):
+        self.emit_notification("Error initializing firmware")
 
     def _wait_for_init(self):
         self.emit_notification(

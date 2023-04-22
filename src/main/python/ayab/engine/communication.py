@@ -51,6 +51,8 @@ class Token(Enum):
     autoCmd = 0x2a
     testCmd = 0x2b
     quitCmd = 0x2c
+    reqInit = 0x30
+    cnfInit = 0x31
     setCmd = 0x2d
     testRes = 0xee
     debug = 0x9f
@@ -124,6 +126,17 @@ class Communication(object):
         data.append(start_needle)
         data.append(stop_needle)
         data.append(continuous_reporting)
+        hash = 0
+        hash = add_crc(hash, data)
+        data.append(hash)
+        data = self.__driver.send(bytes(data))
+        self.__ser.write(data)
+
+    def req_init_API6(self, machine_val):
+        """Send a start message to the device."""
+        data = bytearray()
+        data.append(Token.reqInit.value)
+        data.append(machine_val)
         hash = 0
         hash = add_crc(hash, data)
         data.append(hash)
