@@ -28,15 +28,15 @@ jobs:
         python-version: [3.6]
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         submodules: recursive
     - name: Set variables
       id: vars
       run: |
-        echo "::set-output name=sha-short::$(git rev-parse --short HEAD)"
-        echo "::set-output name=tag::$(git describe --tags)"
-        echo "::set-output name=draft::$(git describe --tags | sed -e 's/^test.*/true/;s/^v.*/false/')"
+        echo "sha-short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+        echo "tag=$(git describe --tags)" >> $GITHUB_OUTPUT
+        echo "draft=$(git describe --tags | sed -e 's/^test.*/true/;s/^v.*/false/')" >> $GITHUB_OUTPUT
     - name: Set PACKAGE_VERSION
       run: |
         echo ${{steps.vars.outputs.tag}} > src/main/resources/base/ayab/package_version
@@ -55,9 +55,9 @@ jobs:
         prerelease: false
         allowUpdates: true
         replacesArtifacts: false
-    # Ubuntu package    
+    # Ubuntu package
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
@@ -95,7 +95,7 @@ jobs:
         artifacts: target/AYAB-${{ steps.vars.outputs.tag }}.deb
         artifactContentType: application/deb
         replacesArtifacts: true
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v3
       with:
         name: AYAB-${{ steps.vars.outputs.tag }}.deb
         path: target/AYAB-${{ steps.vars.outputs.tag }}.deb
@@ -108,25 +108,29 @@ jobs:
         python-version: [3.6]
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         submodules: recursive
     - name: Set variables
       id: vars
+      shell: bash
       run: |
-        echo "::set-output name=sha-short::$(git rev-parse --short HEAD)"
-        echo "::set-output name=tag::$(git describe --tags)"
+        echo "sha-short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+        echo "tag=$(git describe --tags)" >> $GITHUB_OUTPUT
+        echo "draft=$(git describe --tags | sed -e 's/^test.*/true/;s/^v.*/false/')" >> $GITHUB_OUTPUT
     - name: Set PACKAGE_VERSION
+      shell: bash
       run: |
         echo ${{steps.vars.outputs.tag}} > src/main/resources/base/ayab/package_version
         sed -i 's/PACKAGE_VERSION/${{steps.vars.outputs.tag}}/' src/build/settings/base.json
         cat src/main/resources/base/ayab/package_version
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
+        choco install vcredist-all # fixes dependency on msvcr100.dll
         python -m pip install --upgrade pip
         python -m pip install --upgrade setuptools
         python -m pip install -r requirements.txt
@@ -153,7 +157,7 @@ jobs:
         artifacts: target/AYAB-${{ steps.vars.outputs.tag }}.exe
         artifactContentType: application/exe
         replacesArtifacts: true
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v3
       with:
         name: AYAB-${{ steps.vars.outputs.tag }}.exe
         path: target/AYAB-${{ steps.vars.outputs.tag }}.exe
@@ -166,21 +170,21 @@ jobs:
         python-version: [3.6]
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         submodules: recursive
     - name: Set variables
       id: vars
       run: |
-        echo "::set-output name=sha-short::$(git rev-parse --short HEAD)"
-        echo "::set-output name=tag::$(git describe --tags)"
+        echo "sha-short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+        echo "tag=$(git describe --tags)" >> $GITHUB_OUTPUT
     - name: Set PACKAGE_VERSION
       run: |
         echo ${{steps.vars.outputs.tag}} > src/main/resources/base/ayab/package_version
         sed -i'' -e 's/PACKAGE_VERSION/${{steps.vars.outputs.tag}}/' src/build/settings/base.json
         cat src/main/resources/base/ayab/package_version
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
@@ -213,7 +217,7 @@ jobs:
         artifacts: target/AYAB-${{ steps.vars.outputs.tag }}.dmg
         artifactContentType: application/dmg
         replacesArtifacts: true
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v3
       with:
         name: AYAB-${{ steps.vars.outputs.tag }}.dmg
         path: target/AYAB-${{ steps.vars.outputs.tag }}.dmg
@@ -227,7 +231,7 @@ jobs:
         python-version: [3.6]
     steps:
     - name: Checkout repo into AppDir
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         path: git
         submodules: recursive
@@ -236,10 +240,10 @@ jobs:
       id: vars
       run: |
         cd git
-        echo "::set-output name=sha-short::$(git rev-parse --short HEAD)"
-        echo "::set-output name=tag::$(git describe --tags)"
-        echo "::set-output name=python::python${{matrix.python-version}}"
-        echo "::set-output name=python-appimage::python${{matrix.python-version}}.15-cp36-cp36m-manylinux2014_x86_64.AppImage"
+        echo "sha-short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+        echo "tag=$(git describe --tags)" >> $GITHUB_OUTPUT
+        echo "python=python${{matrix.python-version}}" >> $GITHUB_OUTPUT
+        echo "python-appimage=python${{matrix.python-version}}.15-cp36-cp36m-manylinux2014_x86_64.AppImage" >> $GITHUB_OUTPUT
     - name: Set PACKAGE_VERSION
       run: |
         cd git
@@ -247,7 +251,7 @@ jobs:
         sed -i 's/PACKAGE_VERSION/${{steps.vars.outputs.tag}}/' src/build/settings/base.json
         cat src/main/resources/base/ayab/package_version
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
     - name: Download AppImage of Python designed for manylinux
@@ -296,18 +300,19 @@ jobs:
         rm -f python*.desktop
         mkdir -p usr/share/applications/
         rm -f usr/share/applications/*.desktop
-        cp linux-build/appimage/com.ayab_knitting.ayab.desktop com.ayab_knitting.ayab.desktop 
-        cp com.ayab_knitting.ayab.desktop usr/share/applications/com.ayab_knitting.ayab.desktop 
+        cp linux-build/appimage/com.ayab_knitting.ayab.desktop com.ayab_knitting.ayab.desktop
+        cp com.ayab_knitting.ayab.desktop usr/share/applications/com.ayab_knitting.ayab.desktop
     - name: Add metadata
       run: |
         cd squashfs-root
         mkdir -p usr/share/metainfo/
-        rm -f usr/share/metainfo/*.appdata.xml 
+        rm -f usr/share/metainfo/*.appdata.xml
         cp linux-build/appimage/ayab.appdata.xml usr/share/metainfo/
     - name: Convert to AppImage
       run: |
-        wget -c https://github.com/$(wget -q https://github.com/probonopd/go-appimage/releases -O - | grep "appimagetool-.*-x86_64.AppImage" | head -n 1 | cut -d '"' -f 2)
-        chmod +x appimagetool-*.AppImage
+        wget -c https://github.com/$(wget -q https://github.com/probonopd/go-appimage/releases/expanded_assets/continuous -O - | grep appimagetool-.*-x86_64.AppImage | head -n 1 | cut -d '"' -f 2)
+        chmod +x appimagetool-*-x86_64.AppImage
+        chmod 755 squashfs-root
         sudo apt install appstream
         VERSION=${{steps.vars.outputs.tag}} ./appimagetool-*-x86_64.AppImage squashfs-root/
         sudo apt remove appstream
@@ -326,7 +331,7 @@ jobs:
         artifacts: AYAB-${{ steps.vars.outputs.tag }}-x86_64.AppImage
         artifactContentType: application/AppImage
         replacesArtifacts: true
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v3
       with:
         name: AYAB-${{ steps.vars.outputs.tag }}-x86_64.AppImage
         path: AYAB-${{ steps.vars.outputs.tag }}-x86_64.AppImage
