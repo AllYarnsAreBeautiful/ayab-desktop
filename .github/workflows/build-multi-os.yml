@@ -1,4 +1,4 @@
-# This workflow builds the AYAB release packages
+
 # for Windows, Mac OSX, and Ubuntu/Debian Linux.
 #
 # The build starts when a version tag is pushed.
@@ -20,8 +20,8 @@ on:
     - 'test*'
 
 jobs:
-  create-release:
-    name: Create release and upload Ubuntu asset
+  setup:
+    name: Create cache
     runs-on: ubuntu-20.04
     strategy:
       matrix:
@@ -33,6 +33,96 @@ jobs:
         submodules: recursive
     - name: Set variables
       id: vars
+      run: |
+        echo "sha-short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+        echo "tag=$(git describe --tags)" >> $GITHUB_OUTPUT
+        echo "draft=$(git describe --tags | sed -e 's/^test.*/true/;s/^v.*/false/')" >> $GITHUB_OUTPUT
+    - name: Set PACKAGE_VERSION
+      run: |
+        echo ${{steps.vars.outputs.tag}} > src/main/resources/base/ayab/package_version
+        sed -i 's/PACKAGE_VERSION/${{steps.vars.outputs.tag}}/' src/build/settings/base.json
+        cat src/main/resources/base/ayab/package_version
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        sudo apt-get install -y avrdude libasound2-dev
+    - name: Restore pip cache
+      id:   pip-cache
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+    - name: Install Python modules
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install --upgrade setuptools
+        python -m pip install -r requirements.txt
+    - name: Cache Python modules
+      if:   steps.pip-cache.outputs.cache-hit != 'true'
+      uses: actions/cache/save@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+    - name: Used cached gui files
+      id:   gui-cache
+      uses: actions/cache@v3
+      with:
+        path: src/main/python/ayab/*_gui.py
+        key:  gui-${{ hashFiles('src/main/python/ayab/*_gui.ui') }}
+    - name: Used cached logo
+      id:   logo-cache
+      uses: actions/cache@v3
+      with:
+        path: src/main/python/ayab/ayab_logo_rc.py
+        key:  logo-${{ hashFiles('src/main/python/ayab/ayab_logo_rc.qrc') }}
+    - name: Used cached translation files
+      id:   qm-cache
+      uses: actions/cache@v3
+      with:
+        path: src/main/resources/base/ayab/translations/*.qm
+        key:  qm-${{ hashFiles('src/main/resources/base/ayab/translations/ayab-translation-master.tsv') }}
+    - name: Convert UI and translation files
+      if:   ${{ (steps.gui-cache.outputs.cache-hit != 'true') && (steps.logo-cache.outputs.cache-hit != 'true') && (steps.qm-cache.outputs.cache-hit != 'true') }}
+      run: |
+        sudo apt install -y qt5-default qttools5-dev-tools
+        ./setup-environment.sh
+    - name: Cache gui files
+      if:   ${{ (steps.gui-cache.outputs.cache-hit != 'true') && (steps.logo-cache.outputs.cache-hit != 'true') && (steps.qm-cache.outputs.cache-hit != 'true') }}
+      uses: actions/cache/save@v3
+      with:
+        path: src/main/python/ayab/*_gui.py
+        key:  ${{ runner.os }}-gui-${{ hashFiles('src/main/python/ayab/*_gui.ui') }}
+    - name: Cache logo
+      if:   ${{ (steps.gui-cache.outputs.cache-hit != 'true') && (steps.logo-cache.outputs.cache-hit != 'true') && (steps.qm-cache.outputs.cache-hit != 'true') }}
+      uses: actions/cache/save@v3
+      with:
+        path: src/main/python/ayab/ayab_logo_rc.py
+        key:  ${{ runner.os }}-logo-${{ hashFiles('src/main/python/ayab/ayab_logo_rc.qrc') }}
+    - name: Cache translation files
+      if:   ${{ (steps.gui-cache.outputs.cache-hit != 'true') && (steps.logo-cache.outputs.cache-hit != 'true') && (steps.qm-cache.outputs.cache-hit != 'true') }}
+      uses: actions/cache/save@v3
+      with:
+        path: src/main/resources/base/ayab/translations/*.qm
+        key:  ${{ runner.os }}-qm-${{ hashFiles('src/main/resources/base/ayab/translations/ayab-translation-master.tsv') }}
+
+  build-deb:
+    name: Create and upload Ubuntu release
+    needs: setup
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        python-version: [3.6]
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      with:
+        submodules: recursive
+    - name: Set variables
+      id: vars
+      shell: bash
       run: |
         echo "sha-short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
         echo "tag=$(git describe --tags)" >> $GITHUB_OUTPUT
@@ -55,7 +145,6 @@ jobs:
         prerelease: false
         allowUpdates: true
         replacesArtifacts: false
-    # Ubuntu package
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4
       with:
@@ -63,14 +152,43 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get install -y avrdude libasound2-dev
+    - name: Restore pip cache
+      uses: actions/cache/restore@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+    - name: Install Python modules
+      run: |
         python -m pip install --upgrade pip
         python -m pip install --upgrade setuptools
         python -m pip install -r requirements.txt
-    - name: Convert UI and translation files
+    - name: Restore cached gui files
+      uses: actions/cache/restore@v3
+      with:
+        path: src/main/python/ayab/*_gui.py
+        key:  gui-${{ hashFiles('src/main/python/ayab/*_gui.ui') }}
+        fail-on-cache-miss: true
+    - name: Restore cached logo
+      uses: actions/cache/restore@v3
+      with:
+        path: src/main/python/ayab/ayab_logo_rc.py
+        key:  logo-${{ hashFiles('src/main/python/ayab/ayab_logo_rc.qrc') }}
+        fail-on-cache-miss: true
+    - name: Restore cached translation files
+      uses: actions/cache/restore@v3
+      with:
+        path: src/main/resources/base/ayab/translations/*.qm
+        key:  qm-${{ hashFiles('src/main/resources/base/ayab/translations/ayab-translation-master.tsv') }}
+        fail-on-cache-miss: true
+    - name: Remove unneeded files
       run: |
-        sudo apt install -y qt5-default qttools5-dev-tools
-        ./setup-environment.sh
-        sudo apt remove qt5-default qttools5-dev-tools
+        rm src/main/python/ayab/*_gui.ui
+        rm src/main/python/ayab/ayab_logo_rc.qrc
+    - name: Check cached files
+      run: |
+        pwd
+        ls -l src/main/python/ayab/
+        ls -l src/main/resources/base/ayab/translations/
     - name: Build app
       run: python -m fbs freeze --debug
     - name: Install fpm
@@ -101,7 +219,8 @@ jobs:
         path: target/AYAB-${{ steps.vars.outputs.tag }}.deb
 
   build-windows:
-    name: Upload release asset for Windows
+    name: Create and upload Windows release
+    #needs: setup
     runs-on: windows-latest
     strategy:
       matrix:
@@ -136,7 +255,19 @@ jobs:
         python -m pip install -r requirements.txt
         python -m pip install -r windows-build\windows_build_requirements.txt
     - name: Convert UI and translation files
+            # do not use cached environment files
+            # the problem is that the Windows source files have different line endings
+            # so the hash checksum is not equal to those of the Ubuntu source files
       run: ./setup-environment.sh
+    - name: Remove unneeded files
+      run: |
+        rm src/main/python/ayab/*_gui.ui
+        rm src/main/python/ayab/ayab_logo_rc.qrc
+    - name: Check cached files
+      run: |
+        pwd
+        ls -l src/main/python/ayab/
+        ls -l src/main/resources/base/ayab/translations/
     - name: Build app
       run: python -m fbs freeze --debug
     - name: Create installer
@@ -163,7 +294,8 @@ jobs:
         path: target/AYAB-${{ steps.vars.outputs.tag }}.exe
 
   build-macos:
-    name: Upload release asset for Mac OSX
+    name: Create and upload Mac OSX release
+    needs: setup
     runs-on: macos-latest
     strategy:
       matrix:
@@ -193,10 +325,33 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install --upgrade setuptools
         python -m pip install -r requirements.txt
-    - name: Convert UI and translation files
+    - name: Restore cached gui files
+      uses: actions/cache/restore@v3
+      with:
+        path: src/main/python/ayab/*_gui.py
+        key:  gui-${{ hashFiles('src/main/python/ayab/*_gui.ui') }}
+        fail-on-cache-miss: true
+    - name: Restore cached logo
+      uses: actions/cache/restore@v3
+      with:
+        path: src/main/python/ayab/ayab_logo_rc.py
+        key:  logo-${{ hashFiles('src/main/python/ayab/ayab_logo_rc.qrc') }}
+        fail-on-cache-miss: true
+    - name: Restore cached translation files
+      uses: actions/cache/restore@v3
+      with:
+        path: src/main/resources/base/ayab/translations/*.qm
+        key:  qm-${{ hashFiles('src/main/resources/base/ayab/translations/ayab-translation-master.tsv') }}
+        fail-on-cache-miss: true
+    - name: Remove unneeded files
       run: |
-        # brew install qt5
-        ./setup-environment.sh
+        rm src/main/python/ayab/*_gui.ui
+        rm src/main/python/ayab/ayab_logo_rc.qrc
+    - name: Check cached files
+      run: |
+        pwd
+        ls -l src/main/python/ayab/
+        ls -l src/main/resources/base/ayab/translations/
     - name: Build app
       run: python -m fbs freeze --debug
     - name: Create installer
@@ -224,7 +379,8 @@ jobs:
 
   # see https://github.com/AppImage/AppImageKit/wiki/Bundling-Python-apps
   build-appimage:
-    name: Upload AppImage release asset
+    name: Create and upload Linux AppImage release
+    needs: setup
     runs-on: ubuntu-20.04
     strategy:
       matrix:
@@ -275,12 +431,37 @@ jobs:
       run: |
         echo "usr/bin" >> $GITHUB_PATH
         echo "opt/${{steps.vars.outputs.python}}/bin" >> $GITHUB_PATH
-    - name: Convert UI and translation files
+    - name: Restore cached gui files
+      uses: actions/cache/restore@v3
+      with:
+        path: src/main/python/ayab/*_gui.py
+        key:  gui-${{ hashFiles('src/main/python/ayab/*_gui.ui') }}
+        fail-on-cache-miss: true
+    - name: Restore cached logo
+      uses: actions/cache/restore@v3
+      with:
+        path: src/main/python/ayab/ayab_logo_rc.py
+        key:  logo-${{ hashFiles('src/main/python/ayab/ayab_logo_rc.qrc') }}
+        fail-on-cache-miss: true
+    - name: Restore cached translation files
+      uses: actions/cache/restore@v3
+      with:
+        path: src/main/resources/base/ayab/translations/*.qm
+        key:  qm-${{ hashFiles('src/main/resources/base/ayab/translations/ayab-translation-master.tsv') }}
+        fail-on-cache-miss: true
+    - name: Move cached files
       run: |
-        cd squashfs-root
-        sudo apt install -y qt5-default qttools5-dev-tools
-        ./setup-environment.sh
-        sudo apt remove qt5-default qttools5-dev-tools
+        mv src/main/python/ayab/* squashfs-root/src/main/python/ayab/
+        mv src/main/resources/base/ayab/translations/* squashfs-root/src/main/resources/base/ayab/translations/
+    - name: Remove unneeded files
+      run: |
+        rm squashfs-root/src/main/python/ayab/*_gui.ui
+        rm squashfs-root/src/main/python/ayab/ayab_logo_rc.qrc
+    - name: Check cached files
+      run: |
+        pwd
+        ls -l squashfs-root/src/main/python/ayab/
+        ls -l squashfs-root/src/main/resources/base/ayab/translations/
     - name: Replace AppRun
       run: |
         cd squashfs-root
