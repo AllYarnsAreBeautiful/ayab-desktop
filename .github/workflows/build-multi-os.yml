@@ -220,7 +220,7 @@ jobs:
 
   build-windows:
     name: Create and upload Windows release
-    #needs: setup
+    needs: setup
     runs-on: windows-latest
     strategy:
       matrix:
@@ -248,22 +248,38 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
+      shell: pwsh
       run: |
         choco install vcredist-all # fixes dependency on msvcr100.dll
         python -m pip install --upgrade pip
         python -m pip install --upgrade setuptools
         python -m pip install -r requirements.txt
         python -m pip install -r windows-build\windows_build_requirements.txt
-    - name: Convert UI and translation files
-            # do not use cached environment files
-            # the problem is that the Windows source files have different line endings
-            # so the hash checksum is not equal to those of the Ubuntu source files
-      run: ./setup-environment.sh
+    - name: Restore cached gui files
+      uses: actions/cache/restore@v3
+      with:
+        path: src/main/python/ayab/*_gui.py
+        key:  gui-${{ hashFiles('src/main/python/ayab/*_gui.ui') }}
+        fail-on-cache-miss: true
+    - name: Restore cached logo
+      uses: actions/cache/restore@v3
+      with:
+        path: src/main/python/ayab/ayab_logo_rc.py
+        key:  logo-${{ hashFiles('src/main/python/ayab/ayab_logo_rc.qrc') }}
+        fail-on-cache-miss: true
+    - name: Restore cached translation files
+      uses: actions/cache/restore@v3
+      with:
+        path: src/main/resources/base/ayab/translations/*.qm
+        key:  qm-${{ hashFiles('src/main/resources/base/ayab/translations/ayab-translation-master.tsv') }}
+        fail-on-cache-miss: true
     - name: Remove unneeded files
+      shell: bash
       run: |
         rm src/main/python/ayab/*_gui.ui
         rm src/main/python/ayab/ayab_logo_rc.qrc
     - name: Check cached files
+      shell: bash
       run: |
         pwd
         ls -l src/main/python/ayab/
@@ -271,6 +287,7 @@ jobs:
     - name: Build app
       run: python -m fbs freeze --debug
     - name: Create installer
+      shell: bash
       run: |
         python -m fbs installer
         mv target/AYABSetup.exe target/AYAB-${{ steps.vars.outputs.tag }}.exe
