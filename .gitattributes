@@ -11,7 +11,10 @@
 *.txt text
 
 # Declare files that will always have LF line endings on checkout.
-*.ui text eol=lf
+# This is to ensure that the Windows versions of these files
+# will have the same checksum as the Linux versions, for the purpose
+# of recovery of cached files generated from them
+*.ui  text eol=lf
 *.tsv text eol=lf
 *.qrc text eol=lf
 
