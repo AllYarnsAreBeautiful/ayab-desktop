@@ -272,6 +272,11 @@ jobs:
       uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
+    - name: Patch requirements.txt to use patched version of fbs
+      shell: bash
+      run: |
+        cat requirements.txt | sed 's/fbs==0.8.6/-e git+https:\/\/github.com\/t0mpr1c3\/fbs.git@fbe63505acdf5475e914930ea9de958384a5128c#egg=fbs/' > patched-requirements.txt
+        mv patched-requirements.txt requirements.txt
     - name: Install dependencies
       shell: pwsh
       run: |
@@ -324,6 +329,10 @@ jobs:
         do
           unix2dos $f
         done
+        for f in $(ls /main/python/ayab/engine/*_gui.py)
+        do
+          unix2dos $f
+        done
     - name: Check cached files
       shell: bash
       run: |
@@ -331,12 +340,13 @@ jobs:
         ls -l src/main/python/ayab/
         ls -l src/main/resources/base/ayab/translations/
     - name: Build app
+      shell: pwsh
       run: python -m fbs freeze --debug
     - name: Create installer
-      shell: bash
+      shell: pwsh
       run: |
         python -m fbs installer
-        mv target/AYABSetup.exe target/AYAB-${{ steps.vars.outputs.tag }}.exe
+        Move-Item -Path target\AYABSetup.exe -Destination target\AYAB-${{ steps.vars.outputs.tag }}.exe
     - name: Upload asset
       uses: ncipollo/release-action@v1
       with:
