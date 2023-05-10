@@ -272,11 +272,6 @@ jobs:
       uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Patch requirements.txt to use patched version of fbs
-      shell: bash
-      run: |
-        cat requirements.txt | sed 's/fbs==0.8.6/-e git+https:\/\/github.com\/t0mpr1c3\/fbs.git@fbe63505acdf5475e914930ea9de958384a5128c#egg=fbs/' > patched-requirements.txt
-        mv patched-requirements.txt requirements.txt
     - name: Install dependencies
       shell: pwsh
       run: |

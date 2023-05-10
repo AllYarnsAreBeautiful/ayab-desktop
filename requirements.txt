@@ -1,4 +1,4 @@
-fbs==0.8.6
+-e git+https://github.com/t0mpr1c3/fbs.git@fbe63505acdf5475e914930ea9de958384a5128c#egg=fbs
 PyInstaller==3.4
 pyqt5==5.9.2
 Pillow==7.1.2
