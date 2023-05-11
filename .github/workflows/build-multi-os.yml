@@ -399,6 +399,7 @@ jobs:
         sed -i 's/PACKAGE_VERSION/${{steps.vars.outputs.tag}}/' src/build/settings/base.json
         cat src/main/resources/base/ayab/package_version
     - name: Set up Python ${{ matrix.python-version }}
+      id: py
       uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
@@ -471,6 +472,9 @@ jobs:
         pwd
         ls -l src/main/python/ayab/
         ls -l src/main/resources/base/ayab/translations/
+    - name: Patch fbs package
+      shell: bash
+      run:   patch -u -i windows-build/patch-fbs.txt ${{ steps.py.outputs.python-path }}/fbs/_defaults/src/installer/windows/Installer.nsi
     - name: Build app
       shell: pwsh
       run: python -m fbs freeze --debug

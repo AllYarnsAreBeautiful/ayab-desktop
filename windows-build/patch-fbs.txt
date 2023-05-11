@@ -1,0 +1,24 @@
+--- /home/tom/anaconda3/envs/ayab/lib/python3.6/site-packages/fbs/_defaults/src/installer/windows/Installer.nsi	2023-05-11 16:59:25.835348600 -0400
++++ /mnt/c/Users/Tom/Documents/hack/fbs/fbs/_defaults/src/installer/windows/Installer.nsi	2023-05-09 18:48:29.519223100 -0400
+@@ -49,7 +49,7 @@
+     !define MUI_FINISHPAGE_RUN
+     !define MUI_FINISHPAGE_RUN_CHECKED
+     !define MUI_FINISHPAGE_RUN_TEXT "Run ${app_name}"
+-    !define MUI_FINISHPAGE_RUN_FUNCTION "LaunchLink"
++    !define MUI_FINISHPAGE_RUN_FUNCTION "LaunchAsNonAdmin"
+   !insertmacro MUI_PAGE_FINISH
+ 
+   !insertmacro MUI_UNPAGE_CONFIRM
+@@ -95,7 +95,7 @@
+ 
+ SectionEnd
+ 
+-Function LaunchLink
+-  !addplugindir "."
+-  ShellExecAsUser::ShellExecAsUser "open" "$SMPROGRAMS\${app_name}.lnk"
+-FunctionEnd
+\ No newline at end of file
++Function LaunchAsNonAdmin
++  Exec '"$WINDIR\explorer.exe" "$InstDir\${app_name}.exe"'
++FunctionEnd
++
