@@ -40,7 +40,7 @@ jobs:
     - name: Get firmware version matching manifest
       run: |
         manifest=$(cat src/main/resources/base/ayab/firmware/manifest.txt)"
-        available=$(curl -s https://github.com/AllYarnsAreBeautiful/ayab-firmware/releases | grep 'releases/tag/v' | sed 's/.*releases\/tag\/v//;s/\".*//')"
+        available=$(curl -s https://github.com/AllYarnsAreBeautiful/ayab-firmware/releases | grep -e 'releases/tag/v' -e 'releases/tag/test' | sed 's/.*releases\/tag\///;s/\".*//')"
         match=$(for x in $available; do echo $x; done | grep ^$manifest | sort -r | head -1)
         if [[ $match ]]
         then
