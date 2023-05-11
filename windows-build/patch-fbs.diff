@@ -1,6 +1,10 @@
---- /home/tom/anaconda3/envs/ayab/lib/python3.6/site-packages/fbs/_defaults/src/installer/windows/Installer.nsi	2023-05-11 16:59:25.835348600 -0400
-+++ /mnt/c/Users/Tom/Documents/hack/fbs/fbs/_defaults/src/installer/windows/Installer.nsi	2023-05-09 18:48:29.519223100 -0400
-@@ -49,7 +49,7 @@
+diff --git a/fbs/_defaults/src/installer/windows/Installer.nsi b/fbs/_defaults/src/installer/windows/Installer.nsi
+old mode 100644
+new mode 100755
+index 47dfb0f..a18ea8c
+--- a/fbs/_defaults/src/installer/windows/Installer.nsi
++++ b/fbs/_defaults/src/installer/windows/Installer.nsi
+@@ -49,7 +49,7 @@ FunctionEnd
      !define MUI_FINISHPAGE_RUN
      !define MUI_FINISHPAGE_RUN_CHECKED
      !define MUI_FINISHPAGE_RUN_TEXT "Run ${app_name}"
@@ -9,7 +13,7 @@
    !insertmacro MUI_PAGE_FINISH
  
    !insertmacro MUI_UNPAGE_CONFIRM
-@@ -95,7 +95,7 @@
+@@ -95,7 +95,7 @@ Section "Uninstall"
  
  SectionEnd
  
