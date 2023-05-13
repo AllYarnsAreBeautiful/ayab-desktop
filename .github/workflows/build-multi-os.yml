@@ -118,7 +118,7 @@ jobs:
                 (steps.qm-cache.outputs.cache-hit   != 'true') }}
       run: |
         sudo apt install -y qt5-default qttools5-dev-tools
-        ./setup-environment.sh
+        bash setup-environment.sh
     - name: Cache gui files (1)
       if:   ${{ (steps.gui1-cache.outputs.cache-hit != 'true') }}
       uses: actions/cache/save@v3

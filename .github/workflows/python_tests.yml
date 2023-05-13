@@ -17,14 +17,26 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
+    - name: Restore pip cache
+      id:   pip-cache
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
     - name: Install dependencies
       run: |
-        sudo apt-get update -y
-        sudo apt-get install -y libasound2-dev qt5-default qttools5-dev-tools
+        sudo apt install -y libasound2-dev qt5-default qttools5-dev-tools
         pip install --upgrade pip
+        pip install --upgrade setuptools
         pip install flake8 pytest
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-        ./setup-environment.sh
+        pip install -r requirements.txt
+        bash setup-environment.sh
+    - name: Cache Python modules
+      if:   steps.pip-cache.outputs.cache-hit != 'true'
+      uses: actions/cache/save@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
