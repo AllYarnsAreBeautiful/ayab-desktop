@@ -4,14 +4,7 @@
             {
                 "url":"/",
                 "version":"1.0.0 (prototype)",
-                "file":"uno_0-95.hex"
-            }
-        ],
-        "mega2560":[
-            {
-                "url":"/",
-                "version":"1.0.0 (prototype)",
-                "file":"mega_1-0-0.hex"
+                "file":"ayab_monolithic_uno.hex"
             }
         ]
     }
