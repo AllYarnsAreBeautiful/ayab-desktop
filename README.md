@@ -51,7 +51,7 @@ To install the development version you can checkout the git repository.
 
 Create a virtual environment for AYAB:
 
-    conda create --name ayab -c conda-forge python=3.6.* pip
+    conda create --name ayab -c conda-forge python=3.6 pip
 
 Now activate the virtual environment. The command prompt should now display
 `(ayab)` at the beginning of each line.
@@ -82,7 +82,7 @@ Now you can download the git repository with:
 
 Next, create a virtual environment for AYAB:
 
-    conda create --name ayab -c conda-forge python=3.6.* pip
+    conda create --name ayab -c conda-forge python=3.6 pip
 
 Activate the virtual environment. The command prompt should now display
 `(ayab)` at the beginning of each line.
@@ -134,7 +134,7 @@ Next download the git repository:
 
 Create a virtual environment for AYAB:
 
-    conda create --name ayab -c conda-forge python=3.6.* pip
+    conda create --name ayab -c conda-forge python=3.6 pip
 
 Now activate the virtual environment. The command prompt should now display
 `(ayab)` at the beginning of each line.
