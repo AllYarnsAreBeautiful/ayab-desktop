@@ -35,7 +35,7 @@ class CommunicationMock(Communication):
     def __init__(self, delay=True, step=False) -> None:
         """Initialize communication."""
         logging.basicConfig(level=logging.DEBUG)
-        self.__logger = logging.getLogger(type(self).__name__)
+        self.logger = logging.getLogger(type(self).__name__)
         self.__delay = delay
         self.__step = step
         self.reset()
