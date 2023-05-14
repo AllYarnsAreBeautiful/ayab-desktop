@@ -69,9 +69,6 @@ class CommunicationMock(Communication):
         """Send a request for information."""
         cnfInfo = bytes([Token.cnfInfo.value, 6, 1, 0])  # APIv6, FWv1.0
         self.rx_msg_list.append(cnfInfo)
-        indState = bytes(
-            [Token.indState.value, 0, 0xFF, 0xFF, 0xFF, 0xFF, 1, 0x00, 1])
-        self.rx_msg_list.append(indState)
 
     def req_test_API6(self, machine_val) -> None:
         """Send a request for testing."""
@@ -82,7 +79,10 @@ class CommunicationMock(Communication):
         """Send a start message."""
         cnfInit = bytes([Token.cnfInit.value, 0])
         self.rx_msg_list.append(cnfInit)
-        
+        indState = bytes(
+            [Token.indState.value, 0, 0xFF, 0xFF, 0xFF, 0xFF, 1, 0x00, 1])
+        self.rx_msg_list.append(indState)
+ 
     def req_start_API6(self, machine_val, start_needle, stop_needle,
                        continuous_reporting) -> None:
         """Send a start message."""
