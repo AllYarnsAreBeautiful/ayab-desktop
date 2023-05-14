@@ -67,7 +67,7 @@ Install the remaining prerequisites.
 
 Now start AYAB with
 
-    python -m fbs run
+    fbs run
 
 ### Windows
 
@@ -115,7 +115,7 @@ Finally, the `fbs` module needs a small patch.
 
 Now start AYAB with:
 
-    python -m fbs run
+    fbs run
 
 ### macOS
 
@@ -161,5 +161,5 @@ Finally, convert the PyQt5 `.ui` files and generate the translation files:
 
 Now start AYAB with
 
-    python -m fbs run
+    fbs run
 
