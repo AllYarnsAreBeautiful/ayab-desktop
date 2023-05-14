@@ -10,8 +10,9 @@ For information on how to install the release version of the software, see
 The AYAB desktop software runs using Python 3.6. This is not the current
 version of Python, so it is recommended to install the software to a
 virtual environment. Miniconda provides a virtual environment that is
-platform-independent and easy to use. Install the latest version by navigating to
-https://docs.conda.io/en/latest/miniconda.html and following the instructions.
+platform-independent and easy to use: download the lastest version from
+https://docs.conda.io/en/latest/miniconda.html and follow the installation
+instructions for your operating system.
 
 The Python module dependencies can be found in *requirements.txt*.
 
@@ -46,46 +47,73 @@ rights for USB communication by adding your user to some groups.
 To install the development version you can checkout the git repository.
 
     git clone https://github.com/AllYarnsAreBeautiful/ayab-desktop
-
-Create a virtual environment in the cloned repository:
-
     cd ayab-desktop
-    conda create --name venv -c conda-forge python=3.6.* pip
-    conda activate venv
 
-Then install the remaining prerequisites with:
+Create a virtual environment for AYAB:
 
-    pip3 install --upgrade pip
-    pip3 install --upgrade setuptools
-    python3 -m pip install -r requirements.txt
-    ./setup-environment.sh
+    conda create --name ayab -c conda-forge python=3.6.* pip
 
-Now start ayab with
+Now activate the virtual environment. The command prompt should now display
+`(ayab)` at the beginning of each line.
 
-    python3 -m fbs run
+    conda activate ayab
+
+Install the remaining prerequisites.
+
+    python -m pip install --upgrade pip
+    pip install --upgrade setuptools
+    pip install --ignore-installed -r requirements.txt
+    bash setup-environment.sh
+
+Now start AYAB with
+
+    python -m fbs run
 
 ### Windows
 
-Download and run the Git for Windows installer from https://git-scm.com/download/win
- 
-Now you can download the git repository from the Anaconda prompt with:
+Run Anaconda Powershell as administrator and install git.
+
+    conda install git
+
+Now you can download the git repository with:
 
     git clone https://github.com/AllYarnsAreBeautiful/ayab-desktop
-
-Create a virtual environment in the cloned repository:
-
     cd ayab-desktop
-    conda create --name venv -c conda-forge python=3.6.* pip
-    conda activate venv
 
-Then install the remaining prerequisites with:
+Next, create a virtual environment for AYAB:
 
-    pip3 install --upgrade pip
-    pip3 install --upgrade setuptools
-    pip3 install -r requirements.txt
-    setup-environment.sh
+    conda create --name ayab -c conda-forge python=3.6.* pip
 
-Now start ayab with
+Activate the virtual environment. The command prompt should now display
+`(ayab)` at the beginning of each line.
+
+    conda activate ayab
+
+Install the prerequisite Python modules.
+
+    python -m pip install --upgrade pip
+    pip install --upgrade setuptools
+    pip install --ignore-installed -r requirements.txt
+
+To be able to work on GUI elements and translation files, the Qt Dev tools are needed:
+
+    https://download.qt.io/archive/qt/5.12/5.12.12/qt-opensource-windows-x86-5.12.12.exe
+
+Convert the PyQt5 `.ui` files and generate the translation files:
+
+    pwsh setup-environment.sh
+
+Download and install Qt5 from (this link)[https://download.qt.io/archive/qt/5.12/5.12.12/qt-opensource-windows-x86-5.12.12.exe]
+and create the remaining files:
+
+Finally, the `fbs` module needs a small patch.
+
+    conda install -c free patch
+    $dir = $(pwd).Path
+    cd $Env:CONDA_PREFIX\Lib\site-packages\fbs\
+    patch -u -i $dir\windows-build\patch-fbs.diff _defaults\src\installer\windows\Installer.nsi
+
+Now start AYAB with:
 
     python -m fbs run
 
@@ -102,31 +130,36 @@ You will also need the Xcode command line tools:
 Next download the git repository:
 
     git clone https://github.com/AllYarnsAreBeautiful/ayab-desktop
-
-Create a virtual enviroment in the cloned repository.
-
     cd ayab-desktop
-    conda create --name venv -c conda-forge python=3.6.* pip
-    conda activate venv
+
+Create a virtual environment for AYAB:
+
+    conda create --name ayab -c conda-forge python=3.6.* pip
+
+Now activate the virtual environment. The command prompt should now display
+`(ayab)` at the beginning of each line.
+
+    conda activate ayab
 
 Then install the remaining prerequisites with:
 
-    pip3 install --upgrade pip
-    pip3 install --upgrade setuptools
-    python3 -m pip install -r requirements.txt
+    python -m pip install --upgrade pip
+    pip install --upgrade setuptools
+    pip install -r requirements.txt
 
-To solve pip3 SSL:TLSV1_ALERT_PROTOCOL_VERSION problem:
+To solve pip SSL:TLSV1_ALERT_PROTOCOL_VERSION problem:
 
-    curl https://bootstrap.pypa.io/get-pip.py | python3
+    curl https://bootstrap.pypa.io/get-pip.py | python
 
 To be able to work on GUI elements and translation files, the Qt Dev tools are needed also:
 
-    http://download.qt.io/official_releases/online_installers/qt-unified-mac-x64-online.dmg
+    https://download.qt.io/archive/qt/5.12/5.12.12/qt-opensource-mac-x64-5.12.12.dmg
 
 Finally, convert the PyQt5 `.ui` files and generate the translation files:
 
-    ./setup-environment.sh
+    bash setup-environment.sh
 
-Now start ayab with
+Now start AYAB with
 
-    python3 -m fbs run
+    python -m fbs run
+

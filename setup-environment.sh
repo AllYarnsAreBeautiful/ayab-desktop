@@ -1,4 +1,4 @@
-#!/bin/sh
+# shell/powershell script
 
 # run this script from root directory of repo
 # after setting up the Python virtual environment
@@ -22,4 +22,5 @@ pyrcc5 src/main/python/ayab/ayab_logo_rc.qrc -o src/main/python/ayab/ayab_logo_r
 
 # generate translation files
 cd src/main/resources/base/ayab/translations/
-./ayab_trans.pl
+perl ayab_trans.pl
+cd ../../../../../../

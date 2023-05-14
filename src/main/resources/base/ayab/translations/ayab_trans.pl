@@ -3,9 +3,9 @@
 # creates .ts files from master translation file
 #
 # usage:
-# run this executable from the root directory of the repo
-# it requires a tab-delimited datafile in Unix format
-# src/main/resources/base/ayab/translations/ayab-translation-master.tsv
+# run this executable the same directory of the repo
+# as a tab-delimited datafile in Unix format called
+# ayab-translation-master.tsv
 #
 # @author Tom Price
 # @date   June 2020
@@ -16,8 +16,6 @@ use List::Util qw(first);
 use File::Spec::Functions;
 
 my $master = "ayab-translation-master.tsv";
-my $folder = catfile("src", "main", "resources", "base", "ayab", "translations");
-chdir($folder);
 open(FILE, "<", $master);
 chomp(my $line = <FILE>);
 my @headers = split(/\t/, $line);
@@ -76,6 +74,5 @@ HEADER
 # now that the `.ts` files have been generated
 # run `lrelease *.ts` to create binary `.qm` files
 open(FILE, "<", $master);
-chdir(catfile("..", "..", "..", "..", "..", ".."));
-system("lrelease " . catfile($folder, "*.ts"));
-system("rm -f " . catfile($folder, "*.ts"));
+system("lrelease *.ts");
+system("rm -f *.ts");
