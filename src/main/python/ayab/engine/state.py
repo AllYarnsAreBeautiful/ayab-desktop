@@ -57,26 +57,6 @@ class StateMachine(object):
     @date   June 2020
     """
 
-    #     def __init__():
-    #         """Define Finite State Machine"""
-    #
-    #         # Finite State Machine
-    #         self.machine = QStateMachine()
-    #
-    #         # Machine states
-    #         self.SETUP = QState(self.machine)
-    #         self.INIT = QState(self.machine)
-    #         self.REQUEST_START = QState(self.machine)
-    #         self.CONFIRM_START = QState(self.machine)
-    #         self.RUN_KNIT = QState(self.machine)
-    #         self.REQUEST_TEST = QState(self.machine)
-    #         self.CONFIRM_TEST = QState(self.machine)
-    #         self.RUN_TEST = QState(self.machine)
-    #         self.FINISHED = QState(self.machine)
-    #
-    #         # Set machine state
-    #         self.machine.setInitialState(self.SETUP)
-
     def set_transitions(self, parent):
         """Define transitions between states for Finite State Machine"""
 
