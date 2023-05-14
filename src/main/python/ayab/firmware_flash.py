@@ -37,13 +37,11 @@ from . import utils
 class FirmwareFlash(QFrame):
     # Arduino devices and their `avrdude` names
     device_dict = {
-        "mega2560": "m2560",
         "uno": "atmega328p",
     }
     # Arduino programmers and their `avrdude` names
     programmer_dict = {
         "uno": "arduino",
-        "mega2560": "wiring",
     }
 
     def __init__(self, parent):
@@ -188,8 +186,7 @@ class FirmwareFlash(QFrame):
                 "ayab/firmware/avrdude_mac")
 
         binary_file = os.path.join(
-            self.__app_context.get_resource("ayab/firmware"), controller_name,
-            firmware_name)
+            self.__app_context.get_resource("ayab/firmware"), firmware_name)
         device = self.device_dict.get(controller_name)
         programmer = self.programmer_dict.get(controller_name, "wiring")
 
