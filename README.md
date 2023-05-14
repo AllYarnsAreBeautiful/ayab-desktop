@@ -67,7 +67,7 @@ Install the remaining prerequisites.
 
 Now start AYAB with
 
-    python -m fbs run
+    fbs run
 
 ### Windows
 
@@ -103,7 +103,7 @@ Convert the PyQt5 `.ui` files and generate the translation files:
 
     pwsh setup-environment.sh
 
-Download and install Qt5 from (this link)[https://download.qt.io/archive/qt/5.12/5.12.12/qt-opensource-windows-x86-5.12.12.exe]
+Download and install Qt5 from [this link](https://download.qt.io/archive/qt/5.12/5.12.12/qt-opensource-windows-x86-5.12.12.exe)
 and create the remaining files:
 
 Finally, the `fbs` module needs a small patch.
@@ -115,7 +115,7 @@ Finally, the `fbs` module needs a small patch.
 
 Now start AYAB with:
 
-    python -m fbs run
+    fbs run
 
 ### macOS
 
@@ -161,5 +161,5 @@ Finally, convert the PyQt5 `.ui` files and generate the translation files:
 
 Now start AYAB with
 
-    python -m fbs run
+    fbs run
 
