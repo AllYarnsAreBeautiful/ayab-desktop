@@ -106,6 +106,11 @@ class HardwareTestDialog(QDialog):
         self.accept()
 
     def reject(self):
+        # send quitCmd
+        payload = bytearray()
+        token = getattr(Token, "quitCmd").value
+        payload.append(token)
+        self.__control.com.write_API6(payload)
         # reset dialog
         self._auto_button.setChecked(False)
         self._test_button.setChecked(False)
@@ -114,18 +119,19 @@ class HardwareTestDialog(QDialog):
         self.hide()
 
     def __button_pushed(self, widget: QPushButton, button: str) -> None:
-        payload = bytearray()
-        token = getattr(Token, button + "Cmd").value
-        payload.append(token)
-        if button in ["auto", "test"]:
-            val = widget.isChecked()
-            payload.append(val)
-            self.output("\n> " + button + " " + str(int(val)) + "\n")
-        else:
-            self.output("\n> " + button + "\n")
         if button == "quit":
             self.reject()
-        self.__control.com.write_API6(payload)
+        else:
+            payload = bytearray()
+            token = getattr(Token, button + "Cmd").value
+            payload.append(token)
+            if button in ["auto", "test"]:
+                val = widget.isChecked()
+                payload.append(val)
+                self.output("\n> " + button + " " + str(int(val)) + "\n")
+            else:
+                self.output("\n> " + button + "\n")
+            self.__control.com.write_API6(payload)
 
     def __set_solenoid(self, idx: int) -> None:
         val = self.__solenoid[idx].isChecked()
