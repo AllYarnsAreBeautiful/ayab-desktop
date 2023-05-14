@@ -605,6 +605,7 @@ jobs:
         fail-on-cache-miss: true
     - name: Move cached files
       run: |
+        mv src/main/resources/base/ayab/firmware/*.hex squashfs-root/src/main/resources/base/ayab/firmware/
         mv src/main/python/ayab/*_gui.py squashfs-root/src/main/python/ayab/
         mv src/main/python/ayab/engine/*_gui.py squashfs-root/src/main/python/ayab/engine/
         mv src/main/python/ayab/ayab_logo_rc.py squashfs-root/src/main/python/ayab/
