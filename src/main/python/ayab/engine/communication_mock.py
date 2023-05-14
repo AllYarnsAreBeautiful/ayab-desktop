@@ -34,7 +34,7 @@ class CommunicationMock(Communication):
     """Class Handling the serial communication protocol."""
     def __init__(self, delay=True, step=False) -> None:
         logging.basicConfig(level=logging.DEBUG)
-        self.__logger = logging.getLogger(type(self).__name__)
+        self.logger = logging.getLogger(type(self).__name__)
         self.__delay = delay
         self.__step = step
         self.reset()

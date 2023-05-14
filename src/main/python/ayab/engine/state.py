@@ -51,7 +51,6 @@ class State(Enum):
 class StateMachine(object):
     """
     Each method is a step in the finite state machine that governs serial
-M
     communication with the device and is called only by `Control.operate()`
 
     @author Tom Price
@@ -89,7 +88,6 @@ M
         if operation == Operation.KNIT:
             if not control.func_selector():
                 return Output.ERROR_INVALID_SETTINGS
-        # else
         control.logger.debug("Port name: " + control.portname)
         if control.portname == QCoreApplication.translate(
                 "KnitEngine", "Simulation"):
@@ -125,7 +123,6 @@ M
                                      ", expected >= " +
                                      str(control.FIRST_SUPPORTED_API_VERSION))
                 return Output.ERROR_WRONG_API
-        # else
         control.com.req_info()
         return Output.CONNECTING_TO_MACHINE
 

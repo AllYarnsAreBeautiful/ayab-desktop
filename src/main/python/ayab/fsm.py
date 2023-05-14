@@ -52,26 +52,17 @@ class FSM(object):
         """Define transitions between states for Finite State Machine"""
 
         # Events that trigger state changes
-        self.NO_IMAGE.addTransition(parent.seer.got_image_flag,
-                                    self.CONFIGURING)
+        self.NO_IMAGE.addTransition(parent.seer.got_image_flag, self.CONFIGURING)
         self.NO_IMAGE.addTransition(parent.menu.ui.action_test_AYAB_device.triggered, self.TESTING_NO_IMAGE)
-        self.TESTING_NO_IMAGE.addTransition(parent.test_thread.finished,
-                                            self.NO_IMAGE)
-        self.CONFIGURING.addTransition(parent.ui.knit_button.clicked,
-                                       self.CHECKING)
+        self.TESTING_NO_IMAGE.addTransition(parent.test_thread.finished, self.NO_IMAGE)
+        self.CONFIGURING.addTransition(parent.ui.knit_button.clicked, self.CHECKING)
         self.CONFIGURING.addTransition(parent.menu.ui.action_test_AYAB_device.triggered, self.TESTING)
-        self.CHECKING.addTransition(parent.seer.got_image_flag,
-                                    self.CONFIGURING)
-        self.CHECKING.addTransition(parent.seer.new_image_flag,
-                                    self.CONFIGURING)
-        self.CHECKING.addTransition(parent.seer.bad_config_flag,
-                                    self.CONFIGURING)
-        self.CHECKING.addTransition(parent.seer.knitting_starter,
-                                    self.KNITTING)
-        self.KNITTING.addTransition(parent.knit_thread.finished,
-                                    self.CONFIGURING)
-        self.TESTING.addTransition(parent.test_thread.finished,
-                                   self.CONFIGURING)
+        self.CHECKING.addTransition(parent.seer.got_image_flag, self.CONFIGURING)
+        self.CHECKING.addTransition(parent.seer.new_image_flag, self.CONFIGURING)
+        self.CHECKING.addTransition(parent.seer.bad_config_flag, self.CONFIGURING)
+        self.CHECKING.addTransition(parent.seer.knitting_starter, self.KNITTING)
+        self.KNITTING.addTransition(parent.knit_thread.finished, self.CONFIGURING)
+        self.TESTING.addTransition(parent.test_thread.finished, self.CONFIGURING)
 
         # Actions triggered by state changes
         self.NO_IMAGE.entered.connect(
@@ -95,7 +86,6 @@ class FSM(object):
             lambda: parent.engine.knit_config(parent.scene.ayabimage.image))
         self.KNITTING.entered.connect(parent.start_knitting)
         self.TESTING.entered.connect(parent.start_testing)
-        self.TESTING_NO_IMAGE.entered.connect(parent.start_testing)
 
     def set_properties(self, parent):
         """
@@ -115,17 +105,12 @@ class FSM(object):
 
         # Knit button
         self.NO_IMAGE.assignProperty(parent.ui.knit_button, "enabled", "False")
-        self.CONFIGURING.assignProperty(parent.ui.knit_button, "enabled",
-                                        "True")
+        self.CONFIGURING.assignProperty(parent.ui.knit_button, "enabled", "True")
         self.KNITTING.assignProperty(parent.ui.knit_button, "enabled", "False")
         self.TESTING.assignProperty(parent.ui.knit_button, "enabled", "False")
 
         # Cancel button
-        self.NO_IMAGE.assignProperty(parent.ui.cancel_button, "enabled",
-                                     "False")
-        self.CONFIGURING.assignProperty(parent.ui.cancel_button, "enabled",
-                                        "False")
-        self.KNITTING.assignProperty(parent.ui.cancel_button, "enabled",
-                                     "True")
-        self.TESTING.assignProperty(parent.ui.cancel_button, "enabled",
-                                    "False")
+        self.NO_IMAGE.assignProperty(parent.ui.cancel_button, "enabled", "False")
+        self.CONFIGURING.assignProperty(parent.ui.cancel_button, "enabled", "False")
+        self.KNITTING.assignProperty(parent.ui.cancel_button, "enabled", "True")
+        self.TESTING.assignProperty(parent.ui.cancel_button, "enabled", "False")
