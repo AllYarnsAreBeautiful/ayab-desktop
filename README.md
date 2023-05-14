@@ -103,7 +103,7 @@ Convert the PyQt5 `.ui` files and generate the translation files:
 
     pwsh setup-environment.sh
 
-Download and install Qt5 from (this link)[https://download.qt.io/archive/qt/5.12/5.12.12/qt-opensource-windows-x86-5.12.12.exe]
+Download and install Qt5 from [this link](https://download.qt.io/archive/qt/5.12/5.12.12/qt-opensource-windows-x86-5.12.12.exe)
 and create the remaining files:
 
 Finally, the `fbs` module needs a small patch.
