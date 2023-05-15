@@ -31,8 +31,9 @@ from .communication import Communication, Token
 
 
 class CommunicationMock(Communication):
-    """Class Handling the serial communication protocol."""
+    """Class Handling the mock communication protocol."""
     def __init__(self, delay=True, step=False) -> None:
+        """Initialize communication."""
         logging.basicConfig(level=logging.DEBUG)
         self.__logger = logging.getLogger(type(self).__name__)
         self.__delay = delay
@@ -40,6 +41,7 @@ class CommunicationMock(Communication):
         self.reset()
 
     def __del__(self) -> None:
+        """Handle behaviour on deletion."""
         pass
 
     def reset(self):
@@ -49,38 +51,51 @@ class CommunicationMock(Communication):
         self.__line_count = 0
 
     def is_open(self) -> bool:
+        """Return status of the interface."""
         return self.__is_open
 
     def close_serial(self) -> None:
+        """Close communication."""
         self.reset()
 
     def open_serial(self, portname=None) -> bool:
+        """Open communication."""
         self.__is_open = True
         # if self.__delay:
         #     sleep(2) # wait for knitting progress dialog
         return True
 
     def req_info(self) -> None:
+        """Send a request for information."""
         cnfInfo = bytes([Token.cnfInfo.value, 6, 1, 0])  # APIv6, FWv1.0
         self.rx_msg_list.append(cnfInfo)
-        indState = bytes(
-            [Token.indState.value, 0, 0xFF, 0xFF, 0xFF, 0xFF, 1, 0x00, 1])
-        self.rx_msg_list.append(indState)
 
     def req_test_API6(self, machine_val) -> None:
+        """Send a request for testing."""
         cnfTest = bytes([Token.cnfTest.value, 0])
         self.rx_msg_list.append(cnfTest)
 
+    def req_init_API6(self, machine_val):
+        """Send a start message."""
+        cnfInit = bytes([Token.cnfInit.value, 0])
+        self.rx_msg_list.append(cnfInit)
+        indState = bytes(
+            [Token.indState.value, 0, 0xFF, 0xFF, 0xFF, 0xFF, 1, 0x00, 1])
+        self.rx_msg_list.append(indState)
+ 
     def req_start_API6(self, machine_val, start_needle, stop_needle,
                        continuous_reporting) -> None:
+        """Send a start message."""
         self.__is_started = True
         cnfStart = bytes([Token.cnfStart.value, 0])
         self.rx_msg_list.append(cnfStart)
 
     def cnf_line_API6(self, line_number, color, flags, line_data) -> bool:
+        """Send a line of data."""
         return True
 
     def update_API6(self) -> tuple:
+        """Read and parse data packet."""
         if self.__is_open and self.__is_started:
             reqLine = bytes([Token.reqLine.value, self.__line_count])
             self.__line_count += 1
