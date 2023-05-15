@@ -105,24 +105,33 @@ class HardwareTestDialog(QDialog):
         self.__control.state == State.FINISHED
         self.accept()
 
-    def __button_pushed(self, widget: QPushButton, button: str) -> None:
+    def reject(self):
+        # send quitCmd
         payload = bytearray()
-        token = getattr(Token, button + "Cmd").value
+        token = getattr(Token, "quitCmd").value
         payload.append(token)
-        if button in ["auto", "test"]:
-            val = widget.isChecked()
-            payload.append(val)
-            self.output("\n> " + button + " " + str(int(val)) + "\n")
-        else:
-            self.output("\n> " + button + "\n")
-        if button == "quit":
-            # reset dialog
-            self._auto_button.setChecked(False)
-            self._test_button.setChecked(False)
-            for s in range(16):
-                self.__solenoid[s].setChecked(False)
-            self.hide()
         self.__control.com.write_API6(payload)
+        # reset dialog
+        self._auto_button.setChecked(False)
+        self._test_button.setChecked(False)
+        for s in range(16):
+            self.__solenoid[s].setChecked(False)
+        self.hide()
+
+    def __button_pushed(self, widget: QPushButton, button: str) -> None:
+        if button == "quit":
+            self.reject()
+        else:
+            payload = bytearray()
+            token = getattr(Token, button + "Cmd").value
+            payload.append(token)
+            if button in ["auto", "test"]:
+                val = widget.isChecked()
+                payload.append(val)
+                self.output("\n> " + button + " " + str(int(val)) + "\n")
+            else:
+                self.output("\n> " + button + "\n")
+            self.__control.com.write_API6(payload)
 
     def __set_solenoid(self, idx: int) -> None:
         val = self.__solenoid[idx].isChecked()
