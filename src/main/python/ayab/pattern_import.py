@@ -52,9 +52,9 @@ class Color:
     def string(self):
         return ("{0}, {1}, '{2}', '{3}', {4}") \
         .format(
-            hex(self.code), 
-            str(self.n), 
-            chr(self.symbol), 
+            hex(self.code),
+            str(self.n),
+            chr(self.symbol),
             self.name,
             hex(int.from_bytes(self.rgb, 'big')))
 
@@ -130,7 +130,7 @@ class PatternConverter:
 
 
 # class DAKStitch:
-# 
+#
     # def __init__(self, i, j, k, a, b, c, d, e):
         # self.i = i
         # self.j = j
@@ -140,12 +140,12 @@ class PatternConverter:
         # self.c = c
         # self.d = d
         # self.e = e
-# 
+#
     # def string(self):
         # return ("{0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}") \
         # .format(hex(self.i), hex(self.j), hex(self.k), hex(self.a), hex(self.b),
             # hex(self.c), hex(self.d), hex(self.e))
-# 
+#
 ## end of DAKStitch class definition
 
 
@@ -332,7 +332,7 @@ class PatPatternConverter(DAKPatternConverter):
 class StpPatternConverter(DAKPatternConverter):
 
     ## read DAK .stp file and return a PIL.Image object
-    def pattern2im(self, filename):        
+    def pattern2im(self, filename):
 
         def __calc_key(data):
 
@@ -341,7 +341,7 @@ class StpPatternConverter(DAKPatternConverter):
 
             key1 = (getDWordAt(data, 0x35) >> 1)
             key1 += (getWordAt(data, 0x3F) << 2)
-            key1 += getDWordAt(data, 0x39) 
+            key1 += getDWordAt(data, 0x39)
             key1 += getWordAt(data, 0x3D)
             key1 += getByteAt(data, 0x20);
             if self.debug:
@@ -350,14 +350,14 @@ class StpPatternConverter(DAKPatternConverter):
             salt2 = int((getDWordAt(data, 0x35) & 0xFFFF) > 0)
             keystring = getStringAt(data, 0x60)
             keystring = __appendKeystring(getStringAt(data, 0x41),    0x6E)
-            keystring = __appendKeystring(str(getWordAt(data, 0x3D)), 0x7D) 
-            keystring = __appendKeystring(str(getByteAt(data, 0x20)), 0x8C) 
-            keystring = __appendKeystring(getStringAt(data, 0x41),    0xAA) 
-            keystring = __appendKeystring(str(getByteAt(data, 0x20)), 0xB9) 
+            keystring = __appendKeystring(str(getWordAt(data, 0x3D)), 0x7D)
+            keystring = __appendKeystring(str(getByteAt(data, 0x20)), 0x8C)
+            keystring = __appendKeystring(getStringAt(data, 0x41),    0xAA)
+            keystring = __appendKeystring(str(getByteAt(data, 0x20)), 0xB9)
             keystring = __appendKeystring(str(getWordAt(data, 0x3D)), 0xC8)
             if self.debug:
                 print("first key string '{}'".format(keystring))
-            key2 = key1 
+            key2 = key1
             for i in range(len(keystring)):
                 b = ord(keystring[i]) // 2
                 switch = (i + 1) % 3
