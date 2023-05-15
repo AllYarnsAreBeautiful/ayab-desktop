@@ -82,7 +82,7 @@ class HardwareTestCommunicationMock(QObject, CommunicationMock):
         self.__output(Token.testRes, "QUIT\n")
 
     def _handle_sendCmd(self, msg):
-        self.__output(Token.testRes, "\x01\x02\x03\n")
+        self.__output(Token.testRes, "\x31\x32\x33\n")
 
     def _handle_beepCmd(self, msg):
         self.__beep()
