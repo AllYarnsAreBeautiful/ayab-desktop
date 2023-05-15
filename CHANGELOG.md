@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## 1.0.0 / Unreleased
 
-* #467 Devops: Drop support for Ardiuno Mega
+* #467 Devops: Drop support for Arduino Mega
 * #466 Devops: Bundle firmware for desktop application based on a manifest file
 * #464 Devops: Patch python module fbs to fix Windows installer bug 
 * #447 Engine: Pass machine type to firmware before attempting to knit
