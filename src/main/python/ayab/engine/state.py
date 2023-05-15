@@ -162,7 +162,7 @@ M
                                            control.continuous_reporting)
                 control.state = State.CONFIRM_START
             else:
-                # any value of param other than 1 is some kind of error code
+                # any value of param other than 0 is some kind of error code
                 control.logger.debug("Knit init failed with error code " +
                                      str(param))
                 # TODO: more output to describe error
@@ -177,7 +177,7 @@ M
                 control.state = State.RUN_KNIT
                 return Output.PLEASE_KNIT
             else:
-                # any value of param other than 1 is some kind of error code
+                # any value of param other than 0 is some kind of error code
                 control.logger.error(
                     "Device not ready, returned `cnfStart` with error code " +
                     str(param))
@@ -207,7 +207,7 @@ M
                 control.com.req_test_API6(control.machine.value)
                 control.state = State.CONFIRM_TEST
             else:
-                # any value of param other than 1 is some kind of error code
+                # any value of param other than 0 is some kind of error code
                 control.logger.debug("Test init failed")
                 # TODO: more output to describe error
         # fallthrough
@@ -223,7 +223,7 @@ M
                 # TODO: need more informative messages for HW test
                 return Output.NONE
             else:
-                # any value of param other than 1 is some kind of error code
+                # any value of param other than 0 is some kind of error code
                 control.logger.error(
                     "Device not ready, returned `cnfTest` with error code " +
                     str(param))
