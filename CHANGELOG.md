@@ -8,9 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## 1.0.0 / Unreleased
 
+* #467 Devops: Drop support for Ardiuno Mega
+* #466 Devops: Bundle firmware for desktop application based on a manifest file
+* #464 Devops: Patch python module fbs to fix Windows installer bug 
+* #447 Engine: Pass machine type to firmware before attempting to knit
+* #443 Engine: Fix flanking needle color for singlebed mode
+* #452 Devops: Drop build of .deb package 
+* #411,#420 Engine: Migrate to API v6
 * #419 Devops: Change README with instructions to use Miniconda on all platforms
 * #413 Engine: Add run-time test methods and change required API version to 6 
-* GUI: Fix image alignment and placement of limit lines in graphical scene
+* #404 GUI: Fix image alignment and placement of limit lines in graphical scene
 * #395 GUI: Check for new release on startup
 * #393 Documentation: Add forthcoming features to CHANGELOG
 * #389 GUI: Rollback to Python3.6, PyQt5==5.9.2
