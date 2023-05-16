@@ -142,6 +142,10 @@ class GuiMain(QMainWindow):
 
     def finish_operation(self, operation: Operation, beep: bool):
         """(Re-)enable UI elements after operation finishes."""
+        if operation == Operation.KNIT:
+            self.knit_thread.terminate()
+        else:
+            self.test_thread.terminate()
         self.menu.repopulate()
         self.ui.filename_lineedit.setEnabled(True)
         self.ui.load_file_button.setEnabled(True)
