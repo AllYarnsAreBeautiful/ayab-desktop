@@ -68,11 +68,11 @@ class TestCommunication(unittest.TestCase):
         assert result == expected_result
 
     def test_req_start_API6(self):
-        machine_val, start_val, end_val, continuous_reporting, crc8 = 0, 0, 10, True, 0x74
-        self.comm_dummy.req_start_API6(machine_val, start_val, end_val,
+        start_val, end_val, continuous_reporting, crc8 = 0, 10, True, 0x36
+        self.comm_dummy.req_start_API6(start_val, end_val,
                                        continuous_reporting)
         byte_array = bytearray([
-            Token.slipFrameEnd.value, Token.reqStart.value, machine_val,
+            Token.slipFrameEnd.value, Token.reqStart.value,
             start_val, end_val, continuous_reporting, crc8,
             Token.slipFrameEnd.value
         ])
