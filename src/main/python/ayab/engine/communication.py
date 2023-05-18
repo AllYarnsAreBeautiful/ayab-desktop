@@ -64,7 +64,7 @@ class Communication(object):
         """Create an AyabCommunication object,
         with an optional serial communication object."""
         logging.basicConfig(level=logging.DEBUG)
-        self.__logger = logging.getLogger(type(self).__name__)
+        self.logger = logging.getLogger(type(self).__name__)
         self.__ser = serial
         self.__driver = sliplib.Driver()
         self.rx_msg_list = list()
@@ -89,7 +89,7 @@ class Communication(object):
                                            115200,
                                            timeout=0.1)
             except:
-                self.__logger.error("could not open serial port " +
+                self.logger.error("could not open serial port " +
                                     self.__portname)
                 raise CommunicationException()
             return True
@@ -101,9 +101,9 @@ class Communication(object):
                 self.__ser.close()
                 del (self.__ser)
                 self.__ser = None
-                self.__logger.info("Closing serial port successful.")
+                self.logger.info("Closing serial port successful.")
             except:
-                self.__logger.warning("Closing serial port failed. \
+                self.logger.warning("Closing serial port failed. \
                                       Was it ever open?")
 
     # NB this method must be the same for all API versions
@@ -179,7 +179,7 @@ class Communication(object):
             if msg[0] == t.value:
                 return msg, t, msg[1]
         # fallthrough
-        self.__logger.debug("unknown message: ")  # drop crlf
+        self.logger.debug("unknown message: ")  # drop crlf
         pp = pprint.PrettyPrinter(indent=4)
         pp.pprint(msg[1: -1].decode())
         return msg, Token.unknown, 0
