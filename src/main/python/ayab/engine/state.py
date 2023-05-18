@@ -132,8 +132,8 @@ M
     def _API6_init(control, operation):
         control.logger.debug("State INIT")
         token, param = control.check_serial_API6()
-
         if token == Token.cnfInit:
+            # no errors? Move on
             if param == 0:
                 control.state = State.REQUEST_START
                 return Output.NONE
@@ -158,7 +158,7 @@ M
                 # request start
                 control.com.req_start_API6(control.pattern.knit_start_needle,
                                            control.pattern.knit_end_needle - 1,
-                                           control.continuous_reporting and False)
+                                           control.continuous_reporting)
                 control.state = State.CONFIRM_START
             else:
                 # any value of param other than 1 is some kind of error code
