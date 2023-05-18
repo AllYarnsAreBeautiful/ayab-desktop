@@ -83,7 +83,7 @@ class CommunicationMock(Communication):
             [Token.indState.value, 0, 0xFF, 0xFF, 0xFF, 0xFF, 1, 0x00, 1])
         self.rx_msg_list.append(indState)
  
-    def req_start_API6(self, machine_val, start_needle, stop_needle,
+    def req_start_API6(self, start_needle, stop_needle,
                        continuous_reporting) -> None:
         """Send a start message."""
         self.__is_started = True
