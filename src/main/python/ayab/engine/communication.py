@@ -117,12 +117,11 @@ class Communication(object):
         data = self.__driver.send(bytes([Token.reqTest.value, machine_val]))
         self.__ser.write(data)
 
-    def req_start_API6(self, machine_val, start_needle, stop_needle,
+    def req_start_API6(self, start_needle, stop_needle,
                        continuous_reporting):
         """Send a start message to the device."""
         data = bytearray()
         data.append(Token.reqStart.value)
-        data.append(machine_val)
         data.append(start_needle)
         data.append(stop_needle)
         data.append(continuous_reporting)

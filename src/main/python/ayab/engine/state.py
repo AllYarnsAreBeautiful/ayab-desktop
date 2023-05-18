@@ -133,13 +133,12 @@ M
         control.logger.debug("State INIT")
         token, param = control.check_serial_API6()
 
-        control.logger.debug("token "+str(token)+" param "+str(param))
         if token == Token.cnfInit:
             if param == 0:
                 control.state = State.REQUEST_START
                 return Output.NONE
             else:
-                control.logger.error("Error starting knitting: " + str(param))
+                control.logger.error("Error initializing firmware: " + str(param))
                 return Output.ERROR_INITIALIZING_FIRMWARE
         # else
         control.com.req_init_API6(control.machine.value)
@@ -148,20 +147,18 @@ M
     def _API6_request_start(control, operation):
         control.logger.debug("State REQUEST_START")
         token, param = control.check_serial_API6()
-        control.logger.debug("token "+str(token)+" param "+str(param))
         if token == Token.indState:
             if param == 0:
                 # record initial position, direction, carriage
                 control.initial_carriage = control.status.carriage_type
                 control.initial_position = control.status.carriage_position
                 control.initial_direction = control.status.carriage_direction
+                # set status.active
+                control.status.active = control.continuous_reporting
                 # request start
-                control.com.req_start_API6(control.machine.value,
-                                           control.pattern.knit_start_needle,
+                control.com.req_start_API6(control.pattern.knit_start_needle,
                                            control.pattern.knit_end_needle - 1,
-                                           # Disable continuous reporting,
-                                           # it only causes problems
-                                           False)
+                                           control.continuous_reporting and False)
                 control.state = State.CONFIRM_START
             else:
                 # any value of param other than 1 is some kind of error code
@@ -191,9 +188,6 @@ M
     def _API6_run_knit(control, operation):
         control.logger.debug("State RUN_KNIT")
         token, param = control.check_serial_API6()
-        control.logger.debug("token "+str(token)+" param "+str(param))
-        if token == Token.indState:
-            control.logger.debug("indState "+str(control.status.carriage_position) +" "+str(control.status.line_number))
         if token == Token.reqLine:
             pattern_finished = control.cnf_line_API6(param)
             if pattern_finished:
