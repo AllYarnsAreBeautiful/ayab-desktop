@@ -163,3 +163,20 @@ Now start AYAB with
 
     fbs run
 
+## CI/CD on GitHub
+
+### Triggering a new build
+
+A new build is triggered when a new tag is created, either starting with
+
+* v (i.e. v1.0.0), or
+* test (i.e. test230517)
+
+Convention for the test-tag is to suffix the current date in the YYMMdd format. If there is already an existing test build for a single day, attach a letter.
+The test tags and releases will be manually removed from time for a better overview.
+
+The tag can be pushed from your local environment, or via the ["Draft a new Release"](https://github.com/AllYarnsAreBeautiful/ayab-desktop/releases/new) button on the GitHub website.
+
+### Choosing the firmware release to be bundled with the build
+
+The CI automatically downloads a given firmware release from the [ayab-firmware repo](https://github.com/AllYarnsAreBeautiful/ayab-firmware) and packs it into the Desktop release. The name of the firmware release is chosen in [this manifest file](https://github.com/AllYarnsAreBeautiful/ayab-desktop/blob/1.0.0-dev/src/main/resources/base/ayab/firmware/manifest.txt) in the ayab-desktop repo.
