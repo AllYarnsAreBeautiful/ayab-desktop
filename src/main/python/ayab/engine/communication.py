@@ -51,8 +51,8 @@ class Token(Enum):
     autoCmd = 0x2a
     testCmd = 0x2b
     quitCmd = 0x2c
-    reqInit = 0x30
-    cnfInit = 0x31
+    reqInit = 0x05
+    cnfInit = 0xC5
     setCmd = 0x2d
     testRes = 0xee
     debug = 0x9f
