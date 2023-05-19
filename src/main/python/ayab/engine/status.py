@@ -106,6 +106,7 @@ class Status(object):
     def reset(self):
         self.active = True
         # data fields
+        self.firmware_state = -1
         self.current_row = -1
         self.line_number = -1
         self.total_rows = -1
@@ -124,6 +125,7 @@ class Status(object):
 
     def copy(self, status):
         self.active = status.active
+        self.firmware_state = status.firmware_state
         self.current_row = status.current_row
         self.line_number = status.line_number
         self.repeats = status.repeats
@@ -142,7 +144,7 @@ class Status(object):
             return
 
         # else
-        fsm_state = msg[2] # ignored for now, but could be useful in debugging
+        firmware_state = msg[2]
 
         hall_l = int((msg[3] << 8) + msg[4])
         hall_r = int((msg[5] << 8) + msg[6])
