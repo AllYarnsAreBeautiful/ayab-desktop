@@ -93,13 +93,8 @@ M
         if token == Token.cnfInfo:
             if param >= control.FIRST_SUPPORTED_API_VERSION:
                 control.api_version = param
-                if operation == Operation.TEST:
-                    control.state = State.REQUEST_TEST
-                    # TODO: need more informative messages for HW test
-                    return Output.NONE
-                else:
-                    control.state = State.INIT
-                    return Output.WAIT_FOR_INIT
+                control.state = State.INIT
+                return Output.NONE
             else:
                 control.logger.error("Wrong API version: " + str(param) +
                                      ", expected >= " +
@@ -115,8 +110,13 @@ M
         if token == Token.cnfInit:
             # no errors? Move on
             if param == 0:
-                control.state = State.REQUEST_START
-                return Output.NONE
+                if operation == Operation.TEST:
+                    control.state = State.REQUEST_TEST
+                    return Output.NONE
+                else:
+                    # operation = Operation.KNIT:
+                    control.state = State.REQUEST_START
+                    return Output.WAIT_FOR_INIT
             else:
                 control.logger.error("Error initializing firmware: " + str(param))
                 return Output.ERROR_INITIALIZING_FIRMWARE

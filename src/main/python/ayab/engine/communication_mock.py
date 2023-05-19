@@ -66,32 +66,32 @@ class CommunicationMock(Communication):
         return True
 
     def req_info(self) -> None:
-        """Send a request for information."""
+        """Send a request for API version information."""
         cnfInfo = bytes([Token.cnfInfo.value, 6, 1, 0])  # APIv6, FWv1.0
         self.rx_msg_list.append(cnfInfo)
 
-    def req_test_API6(self, machine_val) -> None:
-        """Send a request for testing."""
-        cnfTest = bytes([Token.cnfTest.value, 0])
-        self.rx_msg_list.append(cnfTest)
-
     def req_init_API6(self, machine_val):
-        """Send a start message."""
+        """Send machine type."""
         cnfInit = bytes([Token.cnfInit.value, 0])
         self.rx_msg_list.append(cnfInit)
         indState = bytes(
             [Token.indState.value, 0, 1, 0xFF, 0xFF, 0xFF, 0xFF, 1, 0x00, 1])
         self.rx_msg_list.append(indState)
+ 
+    def req_test_API6(self, machine_val) -> None:
+        """Send a request for hardware testing."""
+        cnfTest = bytes([Token.cnfTest.value, 0])
+        self.rx_msg_list.append(cnfTest)
 
     def req_start_API6(self, start_needle, stop_needle,
                        continuous_reporting) -> None:
-        """Send a start message."""
+        """Send a request to start knitting."""
         self.__is_started = True
         cnfStart = bytes([Token.cnfStart.value, 0])
         self.rx_msg_list.append(cnfStart)
 
     def cnf_line_API6(self, line_number, color, flags, line_data) -> bool:
-        """Send a line of data."""
+        """Send a row of stitch data."""
         return True
 
     def update_API6(self) -> tuple:
