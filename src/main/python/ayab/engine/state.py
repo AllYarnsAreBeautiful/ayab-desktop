@@ -142,7 +142,7 @@ M
                 control.state = State.CONFIRM_START
             else:
                 # any value of param other than 0 is some kind of error code
-                control.logger.debug("Knit init failed with error code " +
+                control.logger.error("Knit init failed with error code " +
                                      str(param))
                 # TODO: more output to describe error
         # fallthrough
@@ -187,7 +187,7 @@ M
                 control.state = State.CONFIRM_TEST
             else:
                 # any value of param other than 0 is some kind of error code
-                control.logger.debug("Test init failed")
+                control.logger.error("Test init failed")
                 # TODO: more output to describe error
         # fallthrough
         return Output.NONE
