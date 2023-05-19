@@ -48,15 +48,15 @@ class Token(Enum):
     sendCmd = 0x27
     beepCmd = 0x28
     readCmd = 0x29
-    autoCmd = 0x2a
-    testCmd = 0x2b
-    quitCmd = 0x2c
+    autoCmd = 0x2A
+    testCmd = 0x2B
+    quitCmd = 0x2C
     reqInit = 0x05
     cnfInit = 0xC5
-    setCmd = 0x2d
-    testRes = 0xee
-    debug = 0x9f
-    slipFrameEnd = 0xc0
+    setCmd = 0x2D
+    testRes = 0xEE
+    debug = 0x9F
+    slipFrameEnd = 0xC0
 
 class Communication(object):
     """Class Handling the serial communication protocol."""

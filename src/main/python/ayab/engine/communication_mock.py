@@ -80,9 +80,9 @@ class CommunicationMock(Communication):
         cnfInit = bytes([Token.cnfInit.value, 0])
         self.rx_msg_list.append(cnfInit)
         indState = bytes(
-            [Token.indState.value, 0, 0xFF, 0xFF, 0xFF, 0xFF, 1, 0x00, 1])
+            [Token.indState.value, 0, 1, 0xFF, 0xFF, 0xFF, 0xFF, 1, 0x00, 1])
         self.rx_msg_list.append(indState)
- 
+
     def req_start_API6(self, start_needle, stop_needle,
                        continuous_reporting) -> None:
         """Send a start message."""
