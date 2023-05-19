@@ -40,13 +40,14 @@ class Control(Observable):
     """
     BLOCK_LENGTH = 256
     COLOR_SYMBOLS = "A", "B", "C", "D", "E", "F"
-    FIRST_SUPPORTED_API_VERSION = 0x06  # currently this is the only supported version
+    FIRST_SUPPORTED_API_VERSION = 6  # currently this is the only supported version
     FLANKING_NEEDLES = True
 
     def __init__(self, parent, engine):
         super().__init__(parent.seer)
         self.logger = logging.getLogger(type(self).__name__)
         self.status = engine.status
+        self.api_version = self.FIRST_SUPPORTED_API_VERSION
 
     def start(self, pattern, options, operation):
         self.machine = options.machine
@@ -216,9 +217,9 @@ class Control(Observable):
 
         return bits
 
-    def operate(self, operation, API_version=6):
+    def operate(self, operation):
         """Finite State Machine governing serial communication"""
-        method = "_API" + str(API_version) + "_" + self.state.name.lower()
+        method = "_API" + str(self.api_version) + "_" + self.state.name.lower()
         if not hasattr(StateMachine, method):
             return Output.NONE
         dispatch = getattr(StateMachine, method)
