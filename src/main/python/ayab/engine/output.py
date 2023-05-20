@@ -77,14 +77,14 @@ class FeedbackHandler(Observable):
 
     def _please_knit(self):
         self.emit_notification("Please knit.")
-        self.emit_audio_player("start")
+        ##self.emit_audio_player("start")
 
     def _device_not_ready(self):
         self.emit_notification("", False)
         self.emit_blocking_popup("Device not ready, try again.")
 
     def _next_line(self):
-        self.emit_audio_player("nextline")
+        ##self.emit_audio_player("nextline")
 
     def _knitting_finished(self):
         self.emit_notification(
