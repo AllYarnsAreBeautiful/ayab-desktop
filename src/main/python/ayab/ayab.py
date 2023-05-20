@@ -79,8 +79,8 @@ class GuiMain(QMainWindow):
         self.progbar = ProgressBar(self)
         self.flash = FirmwareFlash(self)
         self.audio = AudioPlayer(self)
-        self.knit_thread = GenericThread(self.engine.run, Operation.KNIT)
-        self.test_thread = GenericThread(self.engine.run, Operation.TEST)
+        self.engine_thread = GenericThread(self.engine.run)
+        self.engine_thread.start()
 
         # show UI
         self.showMaximized()
@@ -125,14 +125,12 @@ class GuiMain(QMainWindow):
         self.start_operation()
         # reset knit progress window
         self.knitprog.start()
-        # start thread for knit engine
-        self.knit_thread.start()
+        self.engine.run(Operation.KNIT)
 
     def start_testing(self):
         """Start the testing process."""
         self.start_operation()
-        # start thread for test engine
-        self.test_thread.start()
+        self.engine.run(Operation.TEST)
 
     def start_operation(self):
         """Disable UI elements at start of operation."""
@@ -141,11 +139,7 @@ class GuiMain(QMainWindow):
         self.ui.load_file_button.setEnabled(False)
 
     def finish_operation(self, operation: Operation, beep: bool):
-        """(Re-)enable UI elements after operation finishes."""
-        if operation == Operation.KNIT:
-            self.knit_thread.terminate()
-        else:
-            self.test_thread.terminate()
+        """Stop engine thread and (re-)enable UI elements after operation finishes."""
         self.menu.repopulate()
         self.ui.filename_lineedit.setEnabled(True)
         self.ui.load_file_button.setEnabled(True)

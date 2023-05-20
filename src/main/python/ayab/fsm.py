@@ -55,7 +55,7 @@ class FSM(object):
         self.NO_IMAGE.addTransition(parent.signal_receiver.got_image_flag,
                                     self.CONFIGURING)
         self.NO_IMAGE.addTransition(parent.menu.ui.action_test_AYAB_device.triggered, self.TESTING_NO_IMAGE)
-        self.TESTING_NO_IMAGE.addTransition(parent.test_thread.finished,
+        self.TESTING_NO_IMAGE.addTransition(parent.engine_thread.finished,
                                             self.NO_IMAGE)
         self.CONFIGURING.addTransition(parent.ui.knit_button.clicked,
                                        self.CHECKING)
@@ -68,10 +68,10 @@ class FSM(object):
                                     self.CONFIGURING)
         self.CHECKING.addTransition(parent.signal_receiver.knitting_starter,
                                     self.KNITTING)
-        self.KNITTING.addTransition(parent.knit_thread.finished,
+        self.KNITTING.addTransition(parent.engine_thread.finished,
                                     self.CONFIGURING)
-        self.TESTING.addTransition(parent.test_thread.finished,
-                                   self.CONFIGURING)
+        self.TESTING.addTransition(parent.engine_thread.finished,
+                                    self.CONFIGURING)
 
         # Actions triggered by state changes
         self.NO_IMAGE.entered.connect(

@@ -33,6 +33,7 @@ from .output import Output
 class Operation(Enum):
     KNIT = auto()
     TEST = auto()
+    WAIT = auto()
 
 
 class State(Enum):
@@ -66,16 +67,15 @@ M
 
     def _API6_connect(control, operation):
         control.logger.debug("State CONNECT")
-        if operation == Operation.KNIT:
-            if not control.func_selector():
-                return Output.ERROR_INVALID_SETTINGS
+        if operation == Operation.KNIT and not control.func_selector():
+            return Output.ERROR_INVALID_SETTINGS
         # else
         control.logger.debug("Port name: " + control.portname)
         if control.portname == QCoreApplication.translate(
                 "KnitEngine", "Simulation"):
             if operation == Operation.KNIT:
                 control.com = CommunicationMock()
-            else:
+            elif operation == Operation.TEST:
                 control.com = HardwareTestCommunicationMock()
         else:
             control.com = Communication()
@@ -113,8 +113,7 @@ M
                 if operation == Operation.TEST:
                     control.state = State.REQUEST_TEST
                     return Output.NONE
-                else:
-                    # operation = Operation.KNIT:
+                elif operation == Operation.KNIT:
                     control.state = State.REQUEST_START
                     return Output.WAIT_FOR_INIT
             else:

@@ -61,7 +61,6 @@ class Engine(SignalSender, QDockWidget):
         self.control = Control(parent, self)
         self.__feedback = FeedbackHandler(parent)
         self.__logger = logging.getLogger(type(self).__name__)
-        # self.fs =
 
     def __del__(self):
         self.control.stop()
@@ -155,7 +154,10 @@ class Engine(SignalSender, QDockWidget):
         # else
         return self.config.validate()
 
-    def run(self, operation):
+    def run(self, operation=Operation.WAIT):
+        if operation == Operation.WAIT:
+            return
+        #else
         self.__canceled = False
 
         # setup knitting controller
@@ -183,7 +185,7 @@ class Engine(SignalSender, QDockWidget):
             # small delay to finish printing to knit progress window
             # before "finish.wav" sound plays
             sleep(1)
-        else:
+        elif operation == Operation.TEST:
             # TODO: provide translations for these messages
             if self.__canceled:
                 self.emit_notification("Testing canceled.")
