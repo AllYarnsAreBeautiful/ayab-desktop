@@ -149,8 +149,8 @@ class GuiMain(QMainWindow):
         self.menu.repopulate()
         self.ui.filename_lineedit.setEnabled(True)
         self.ui.load_file_button.setEnabled(True)
-        if operation == Operation.KNIT and beep:
-            self.audio.play("finish")
+        ##if operation == Operation.KNIT and beep:
+        ##    self.audio.play("finish")
 
     def set_image_dimensions(self):
         """Set dimensions of image."""
