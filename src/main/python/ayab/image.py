@@ -26,16 +26,16 @@ from PyQt5.QtCore import QCoreApplication
 from PyQt5.QtWidgets import QInputDialog, QDialog, QFileDialog
 
 from .transforms import Transform, Mirrors
-from .signal_sender import Observable
+from .signal_sender import SignalSender
 from .utils import display_blocking_popup
 from .machine import Machine
 from .pattern_import import PatPatternConverter, StpPatternConverter, CutPatternConverter
 
 
-class AyabImage(Observable):
+class AyabImage(SignalSender):
     """
     Image object with public methods for performing image actions from menu.
-    Implemented as a subclass of Observable.
+    Implemented as a subclass of SignalSender.
 
     @author Tom Price
     @date   July 2020

@@ -23,7 +23,7 @@ import unittest
 from PIL import Image
 from bitarray import bitarray
 
-from ayab.signal_receiver import Observer
+from ayab.signal_receiver import SignalReceiver
 from ayab.engine.control import Control
 from ayab.engine.options import Alignment
 from ayab.engine.mode import Mode, ModeFunc
@@ -34,7 +34,7 @@ from ayab.machine import Machine
 
 class Parent(object):
     def __init__(self):
-        self.seer = Observer()
+        self.seer = SignalReceiver()
         self.engine = Engine()
 
 

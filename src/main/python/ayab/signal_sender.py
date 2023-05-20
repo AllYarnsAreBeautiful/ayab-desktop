@@ -21,9 +21,9 @@
 from PyQt5.QtCore import QCoreApplication
 
 
-class Observable(object):
+class SignalSender(object):
     """
-    Contains `emit` methods for all the signals in the `Observer` class.
+    Contains `emit` methods for all the signals in the `SignalReceiver` class.
 
     @author Tom Price
     @date   July 2020

@@ -20,7 +20,7 @@
 
 from enum import Enum, auto
 
-from ayab.signal_sender import Observable
+from ayab.signal_sender import SignalSender
 
 
 class Output(Enum):
@@ -38,7 +38,7 @@ class Output(Enum):
     KNITTING_FINISHED = auto()
 
 
-class FeedbackHandler(Observable):
+class FeedbackHandler(SignalSender):
     """Polymorphic dispatch of notification signals on KnitOutput.
 
     @author Tom Price

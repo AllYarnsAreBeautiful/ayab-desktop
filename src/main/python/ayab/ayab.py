@@ -28,7 +28,7 @@ from PyQt5.QtCore import Qt, QThread, QCoreApplication, QTimer
 
 from .main_gui import Ui_MainWindow
 from .fsm import FSM
-from .signal_receiver import Observer
+from .signal_receiver import SignalReceiver
 from .audio import AudioPlayer
 from .menu import Menu
 from .scene import Scene
@@ -59,7 +59,7 @@ class GuiMain(QMainWindow):
         self.app_context = app_context
 
         # get preferences
-        self.seer = Observer()
+        self.seer = SignalReceiver()
         self.prefs = Preferences(self)
 
         # create UI

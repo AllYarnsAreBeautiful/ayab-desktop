@@ -23,7 +23,7 @@ from bitarray import bitarray
 
 from PyQt5.QtCore import QCoreApplication
 
-from ..signal_sender import Observable
+from ..signal_sender import SignalSender
 from .communication import Communication, Token
 from .communication_mock import CommunicationMock
 from .options import Alignment
@@ -34,7 +34,7 @@ from .status import Carriage, Direction
 #from ..machine import Machine
 
 
-class Control(Observable):
+class Control(SignalSender):
     """
     Class governing information flow with the shield.
     """
