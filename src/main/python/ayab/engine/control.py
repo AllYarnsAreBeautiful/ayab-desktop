@@ -23,7 +23,7 @@ from bitarray import bitarray
 
 from PyQt5.QtCore import QCoreApplication
 
-from ..observable import Observable
+from ..signal_sender import Observable
 from .communication import Communication, Token
 from .communication_mock import CommunicationMock
 from .options import Alignment

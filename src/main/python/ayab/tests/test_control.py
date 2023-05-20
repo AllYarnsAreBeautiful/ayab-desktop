@@ -23,7 +23,7 @@ import unittest
 from PIL import Image
 from bitarray import bitarray
 
-from ayab.observer import Observer
+from ayab.signal_receiver import Observer
 from ayab.engine.control import Control
 from ayab.engine.options import Alignment
 from ayab.engine.mode import Mode, ModeFunc

@@ -23,7 +23,7 @@ from enum import Enum
 from PyQt5.QtCore import Qt, QCoreApplication, QSettings
 from PyQt5.QtWidgets import QWidget
 
-from ayab.observable import Observable
+from ayab.signal_sender import Observable
 from .options_gui import Ui_Options
 from .mode import Mode
 from ayab.machine import Machine

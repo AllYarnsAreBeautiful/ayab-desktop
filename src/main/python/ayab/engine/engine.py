@@ -26,7 +26,7 @@ from PyQt5.QtCore import QTranslator, QCoreApplication, QLocale, QObjectCleanupH
 from PyQt5.QtWidgets import QComboBox, QDockWidget, QWidget
 
 from .. import utils
-from ..observable import Observable
+from ..signal_sender import Observable
 from .control import Control
 from .state import Operation, State
 from .pattern import Pattern

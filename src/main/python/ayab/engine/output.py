@@ -20,7 +20,7 @@
 
 from enum import Enum, auto
 
-from ayab.observable import Observable
+from ayab.signal_sender import Observable
 
 
 class Output(Enum):

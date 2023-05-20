@@ -26,7 +26,7 @@ from PyQt5.QtCore import QCoreApplication
 from PyQt5.QtWidgets import QInputDialog, QDialog, QFileDialog
 
 from .transforms import Transform, Mirrors
-from .observable import Observable
+from .signal_sender import Observable
 from .utils import display_blocking_popup
 from .machine import Machine
 from .pattern_import import PatPatternConverter, StpPatternConverter, CutPatternConverter
