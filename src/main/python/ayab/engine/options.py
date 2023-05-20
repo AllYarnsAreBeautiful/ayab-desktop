@@ -39,7 +39,7 @@ class OptionsTab(SignalSender, QWidget):
     @date   June 2020
     """
     def __init__(self, parent):
-        super().__init__(parent.seer)
+        super().__init__(parent.signal_receiver)
         self.prefs = parent.prefs
         self.ui = Ui_Options()
         self.__setup_ui()

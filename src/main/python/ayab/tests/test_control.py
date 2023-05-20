@@ -34,7 +34,7 @@ from ayab.machine import Machine
 
 class Parent(object):
     def __init__(self):
-        self.seer = SignalReceiver()
+        self.signal_receiver = SignalReceiver()
         self.engine = Engine()
 
 

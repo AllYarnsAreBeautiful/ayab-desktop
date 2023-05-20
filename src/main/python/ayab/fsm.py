@@ -52,7 +52,7 @@ class FSM(object):
         """Define transitions between states for Finite State Machine"""
 
         # Events that trigger state changes
-        self.NO_IMAGE.addTransition(parent.seer.got_image_flag,
+        self.NO_IMAGE.addTransition(parent.signal_receiver.got_image_flag,
                                     self.CONFIGURING)
         self.NO_IMAGE.addTransition(parent.menu.ui.action_test_AYAB_device.triggered, self.TESTING_NO_IMAGE)
         self.TESTING_NO_IMAGE.addTransition(parent.test_thread.finished,
@@ -60,13 +60,13 @@ class FSM(object):
         self.CONFIGURING.addTransition(parent.ui.knit_button.clicked,
                                        self.CHECKING)
         self.CONFIGURING.addTransition(parent.menu.ui.action_test_AYAB_device.triggered, self.TESTING)
-        self.CHECKING.addTransition(parent.seer.got_image_flag,
+        self.CHECKING.addTransition(parent.signal_receiver.got_image_flag,
                                     self.CONFIGURING)
-        self.CHECKING.addTransition(parent.seer.new_image_flag,
+        self.CHECKING.addTransition(parent.signal_receiver.new_image_flag,
                                     self.CONFIGURING)
-        self.CHECKING.addTransition(parent.seer.bad_config_flag,
+        self.CHECKING.addTransition(parent.signal_receiver.bad_config_flag,
                                     self.CONFIGURING)
-        self.CHECKING.addTransition(parent.seer.knitting_starter,
+        self.CHECKING.addTransition(parent.signal_receiver.knitting_starter,
                                     self.KNITTING)
         self.KNITTING.addTransition(parent.knit_thread.finished,
                                     self.CONFIGURING)

@@ -59,7 +59,7 @@ class GuiMain(QMainWindow):
         self.app_context = app_context
 
         # get preferences
-        self.seer = SignalReceiver()
+        self.signal_receiver = SignalReceiver()
         self.prefs = Preferences(self)
 
         # create UI
@@ -86,7 +86,7 @@ class GuiMain(QMainWindow):
         self.showMaximized()
 
         # Activate signals and UI elements
-        self.seer.activate_signals(self)
+        self.signal_receiver.activate_signals(self)
         self.__activate_ui()
         self.__activate_menu()
 

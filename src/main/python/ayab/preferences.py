@@ -68,7 +68,7 @@ class Preferences(SignalSender):
     }
 
     def __init__(self, parent):
-        super().__init__(parent.seer)
+        super().__init__(parent.signal_receiver)
         self.parent = parent
         self.languages = Language(self.parent.app_context)
         self.settings = QSettings()

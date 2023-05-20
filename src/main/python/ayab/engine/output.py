@@ -45,7 +45,7 @@ class FeedbackHandler(SignalSender):
     @date   July 2020
     """
     def __init__(self, parent):
-        super().__init__(parent.seer)
+        super().__init__(parent.signal_receiver)
 
     def handle(self, result):
         method = "_" + result.name.lower()

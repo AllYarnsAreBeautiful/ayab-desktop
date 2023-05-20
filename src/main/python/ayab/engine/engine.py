@@ -47,7 +47,7 @@ class Engine(SignalSender, QDockWidget):
 
     def __init__(self, parent):
         # set up UI
-        super().__init__(parent.seer)
+        super().__init__(parent.signal_receiver)
         self.ui = Ui_Dock()
         self.ui.setupUi(self)
         self.config = OptionsTab(parent)

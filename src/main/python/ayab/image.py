@@ -41,7 +41,7 @@ class AyabImage(SignalSender):
     @date   July 2020
     """
     def __init__(self, parent):
-        super().__init__(parent.seer)
+        super().__init__(parent.signal_receiver)
         self.__parent = parent
         self.image = None
         self.filename = None

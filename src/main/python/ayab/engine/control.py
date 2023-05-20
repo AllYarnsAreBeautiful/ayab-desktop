@@ -44,7 +44,7 @@ class Control(SignalSender):
     FLANKING_NEEDLES = True
 
     def __init__(self, parent, engine):
-        super().__init__(parent.seer)
+        super().__init__(parent.signal_receiver)
         self.logger = logging.getLogger(type(self).__name__)
         self.status = engine.status
         self.api_version = self.FIRST_SUPPORTED_API_VERSION

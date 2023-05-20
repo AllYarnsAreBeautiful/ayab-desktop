@@ -28,14 +28,14 @@ class SignalSender(object):
     @author Tom Price
     @date   July 2020
     """
-    def __init__(self, observer, *args, **kwargs):
-        self.__seer = observer
-        for s in self.__seer.signals():
+    def __init__(self, signal_receiver, *args, **kwargs):
+        self.__signal_receiver = signal_receiver
+        for s in self.__signal_receiver.signals():
             setattr(self, "emit_" + s, self.__make_emit_method(s))
         super().__init__(*args, **kwargs)
 
     def __make_emit_method(self, signal):
-        return lambda *args: getattr(self.__seer, signal).emit(*args)
+        return lambda *args: getattr(self.__signal_receiver, signal).emit(*args)
 
     def emit_blocking_popup(self, message="", message_type="info"):
         """Sends the blocking_popup_displayer signal."""
