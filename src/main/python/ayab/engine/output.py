@@ -84,7 +84,8 @@ class FeedbackHandler(Observable):
         self.emit_blocking_popup("Device not ready, try again.")
 
     def _next_line(self):
-        ##self.emit_audio_player("nextline")
+        ##self.emit_audio_player("nextline
+        pass
 
     def _knitting_finished(self):
         self.emit_notification(
