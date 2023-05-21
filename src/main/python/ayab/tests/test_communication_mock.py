@@ -70,7 +70,7 @@ class TestCommunicationMock(unittest.TestCase):
 
     def test_req_test_API6(self):
         expected_result = (bytes([Token.cnfTest.value, 0]), Token.cnfTest, 0)
-        self.comm_dummy.req_test_API6(Machine.KH910_KH950)
+        self.comm_dummy.req_test_API6()
         bytes_read = self.comm_dummy.update_API6()
         assert bytes_read == expected_result
 

@@ -89,10 +89,9 @@ class TestCommunication(unittest.TestCase):
         assert bytes_read == byte_array
 
     def test_req_test_API6(self):
-        machine_val = Machine.KH910_KH950.value
-        self.comm_dummy.req_test_API6(machine_val)
+        self.comm_dummy.req_test_API6()
         byte_array = bytearray([
-            Token.slipFrameEnd.value, Token.reqTest.value, machine_val,
+            Token.slipFrameEnd.value, Token.reqTest.value,
             Token.slipFrameEnd.value
         ])
         bytes_read = self.dummy_serial.read(len(byte_array))

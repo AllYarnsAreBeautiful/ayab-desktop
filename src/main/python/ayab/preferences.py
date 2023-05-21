@@ -29,7 +29,7 @@ from PyQt5.QtCore import Qt, QSettings, QCoreApplication
 from PyQt5.QtWidgets import QDialog, QFormLayout, QLabel, QCheckBox, QComboBox
 
 from .prefs_gui import Ui_Prefs
-from .observable import Observable
+from .signal_sender import SignalSender
 from .engine.options import Alignment
 from .engine.mode import Mode
 from .machine import Machine
@@ -43,7 +43,7 @@ def str2bool(qvariant):
         return qvariant
 
 
-class Preferences(Observable):
+class Preferences(SignalSender):
     """Default settings class.
 
     Variable names and classes are defined in the dict `variables`.
@@ -68,7 +68,7 @@ class Preferences(Observable):
     }
 
     def __init__(self, parent):
-        super().__init__(parent.seer)
+        super().__init__(parent.signal_receiver)
         self.parent = parent
         self.languages = Language(self.parent.app_context)
         self.settings = QSettings()
