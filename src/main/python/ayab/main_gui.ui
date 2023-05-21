@@ -150,7 +150,7 @@
               </property>
               <property name="sizeHint" stdset="0">
                <size>
-                <width>20</width>
+                <width>8</width>
                 <height>20</height>
                </size>
               </property>
@@ -179,7 +179,7 @@
               </property>
               <property name="sizeHint" stdset="0">
                <size>
-                <width>20</width>
+                <width>8</width>
                 <height>20</height>
                </size>
               </property>
@@ -211,21 +211,7 @@
            <property name="sizeConstraint">
             <enum>QLayout::SetMaximumSize</enum>
            </property>
-           <item>
-            <widget class="Line" name="line">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-            </widget>
-           </item>
           </layout>
-         </widget>
-        </item>
-        <item>
-         <widget class="Line" name="line_2">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
          </widget>
         </item>
         <item alignment="Qt::AlignHCenter">
@@ -239,7 +225,7 @@
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
-          <layout class="QVBoxLayout" name="vertical_layout_3">
+          <layout class="QHBoxLayout" name="layout_3">
            <property name="sizeConstraint">
             <enum>QLayout::SetMaximumSize</enum>
            </property>

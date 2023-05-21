@@ -14,7 +14,7 @@
      <x>0</x>
      <y>0</y>
      <width>240</width>
-     <height>581</height>
+     <height>506</height>
     </rect>
    </property>
    <property name="sizePolicy">
@@ -26,13 +26,13 @@
    <property name="minimumSize">
     <size>
      <width>240</width>
-     <height>581</height>
+     <height>506</height>
     </size>
    </property>
    <property name="maximumSize">
     <size>
      <width>260</width>
-     <height>581</height>
+     <height>506</height>
     </size>
    </property>
    <widget class="QWidget" name="ayab_config">
