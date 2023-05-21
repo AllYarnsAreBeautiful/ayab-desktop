@@ -63,7 +63,7 @@ Install the remaining prerequisites.
     python -m pip install --upgrade pip
     pip install --upgrade setuptools
     pip install --ignore-installed -r requirements.txt
-    bash setup-environment.sh
+    bash setup-environment.ps1
 
 Now start AYAB with
 
@@ -101,7 +101,7 @@ To be able to work on GUI elements and translation files, the Qt Dev tools are n
 
 Convert the PyQt5 `.ui` files and generate the translation files:
 
-    pwsh setup-environment.sh
+    pwsh setup-environment.ps1
 
 Download and install Qt5 from [this link](https://download.qt.io/archive/qt/5.12/5.12.12/qt-opensource-windows-x86-5.12.12.exe)
 and create the remaining files:
@@ -157,7 +157,7 @@ To be able to work on GUI elements and translation files, the Qt Dev tools are n
 
 Finally, convert the PyQt5 `.ui` files and generate the translation files:
 
-    bash setup-environment.sh
+    bash setup-environment.ps1
 
 Now start AYAB with
 

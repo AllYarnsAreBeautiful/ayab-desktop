@@ -5,6 +5,7 @@
 # to native line endings on checkout.
 *.py text
 *.sh text
+*.ps1 text
 *.yml text
 *.yaml text
 *.md text

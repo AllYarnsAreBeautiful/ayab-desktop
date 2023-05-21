@@ -30,7 +30,7 @@ jobs:
         pip install --upgrade setuptools
         pip install flake8 pytest
         pip install -r requirements.txt
-        bash setup-environment.sh
+        bash setup-environment.ps1
     - name: Cache Python modules
       if:   steps.pip-cache.outputs.cache-hit != 'true'
       uses: actions/cache/save@v3
