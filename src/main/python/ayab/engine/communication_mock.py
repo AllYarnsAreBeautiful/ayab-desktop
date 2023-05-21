@@ -78,7 +78,7 @@ class CommunicationMock(Communication):
             [Token.indState.value, 0, 0xFF, 0xFF, 0xFF, 0xFF, 1, 0x00, 1])
         self.rx_msg_list.append(indState)
  
-    def req_test_API6(self, machine_val) -> None:
+    def req_test_API6(self) -> None:
         """Send a request for hardware testing."""
         cnfTest = bytes([Token.cnfTest.value, 0])
         self.rx_msg_list.append(cnfTest)
