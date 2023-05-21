@@ -26,7 +26,7 @@ from PyQt5.QtCore import QTranslator, QCoreApplication, QLocale, QObjectCleanupH
 from PyQt5.QtWidgets import QComboBox, QDockWidget, QWidget
 
 from .. import utils
-from ..observable import Observable
+from ..signal_sender import SignalSender
 from .control import Control
 from .state import Operation, State
 from .pattern import Pattern
@@ -37,17 +37,17 @@ from .output import Output, FeedbackHandler
 from .dock_gui import Ui_Dock
 
 
-class Engine(Observable, QDockWidget):
+class Engine(SignalSender, QDockWidget):
     """
     Top-level class for the slave thread that communicates with the shield.
 
-    Implemented as a subclass of `QDockWidget` and `Observable`.
+    Implemented as a subclass of `QDockWidget` and `SignalSender`.
     """
     port_opener = pyqtSignal()
 
     def __init__(self, parent):
         # set up UI
-        super().__init__(parent.seer)
+        super().__init__(parent.signal_receiver)
         self.ui = Ui_Dock()
         self.ui.setupUi(self)
         self.config = OptionsTab(parent)
