@@ -179,17 +179,14 @@ class Engine(SignalSender, QDockWidget):
                 self.emit_notification("Knitting canceled.")
                 self.__logger.info("Knitting canceled.")
             else:
+                # operation == Operation.TEST:
                 self.__logger.info("Finished knitting.")
             # small delay to finish printing to knit progress window
             # before "finish.wav" sound plays
             sleep(1)
         else:
             # TODO: provide translations for these messages
-            if self.__canceled:
-                self.emit_notification("Testing canceled.")
-                self.__logger.info("Testing canceled.")
-            else:
-                self.__logger.info("Finished testing.")
+            self.__logger.info("Finished testing.")
 
         # send signal to finish operation
         # "finish.wav" sound only plays if knitting was not canceled

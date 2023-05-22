@@ -46,10 +46,10 @@ class Menu(QMenuBar):
         except Exception:
             pass
         self.removeAction(self.ui.menu_tools.menuAction())
-
-    def repopulate(self):
         self.removeAction(self.ui.menu_preferences.menuAction())
         self.removeAction(self.ui.menu_help.menuAction())
+
+    def repopulate(self):
         self.addAction(self.ui.menu_image_actions.menuAction())
         self.setup()
 

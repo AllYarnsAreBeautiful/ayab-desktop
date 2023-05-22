@@ -32,7 +32,7 @@ from .hw_test_communication_mock import HardwareTestCommunicationMock
 class HardwareTestDialog(QDialog):
     """Console for hardware tests."""
 
-    commands = ["help", "send", "beep", "read", "auto", "test", "quit"] 
+    commands = ["help", "send", "beep", "read", "auto", "test", "quit"]
 
     def __init__(self, parent):
         super().__init__()
@@ -111,6 +111,7 @@ class HardwareTestDialog(QDialog):
         token = getattr(Token, "quitCmd").value
         payload.append(token)
         self.__control.com.write_API6(payload)
+        self.__control.state = State.FINISHED
         # reset dialog
         self._auto_button.setChecked(False)
         self._test_button.setChecked(False)
