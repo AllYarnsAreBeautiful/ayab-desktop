@@ -95,7 +95,6 @@ class FSM(object):
             lambda: parent.engine.knit_config(parent.scene.ayabimage.image))
         self.KNITTING.entered.connect(parent.start_knitting)
         self.TESTING.entered.connect(parent.start_testing)
-        self.TESTING_NO_IMAGE.entered.connect(parent.start_testing)
 
     def set_properties(self, parent):
         """
