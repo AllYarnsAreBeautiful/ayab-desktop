@@ -23,14 +23,14 @@ from enum import Enum
 from PyQt5.QtCore import Qt, QCoreApplication, QSettings
 from PyQt5.QtWidgets import QWidget
 
-from ayab.observable import Observable
+from ayab.signal_sender import SignalSender
 from .options_gui import Ui_Options
 from .mode import Mode
 from ayab.machine import Machine
 
 
 # FIXME translations for UI
-class OptionsTab(Observable, QWidget):
+class OptionsTab(SignalSender, QWidget):
     """
     Class for the configuration options tab of the dock widget,
     implemented as a subclass of `QWidget`.
@@ -39,7 +39,7 @@ class OptionsTab(Observable, QWidget):
     @date   June 2020
     """
     def __init__(self, parent):
-        super().__init__(parent.seer)
+        super().__init__(parent.signal_receiver)
         self.prefs = parent.prefs
         self.ui = Ui_Options()
         self.__setup_ui()

@@ -26,7 +26,7 @@ from .engine.control import Control
 from .utils import display_blocking_popup
 
 
-class Observer(QObject):
+class SignalReceiver(QObject):
     """
     Container for signals.
 
@@ -61,7 +61,7 @@ class Observer(QObject):
         """Iterator over names of signals."""
         return filter(
             lambda x: type(getattr(self, x)).__name__ == "pyqtBoundSignal",
-            Observer.__dict__.keys())
+            SignalReceiver.__dict__.keys())
 
     def activate_signals(self, parent):
         self.start_row_updater.connect(parent.update_start_row)

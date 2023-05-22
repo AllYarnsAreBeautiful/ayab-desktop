@@ -183,7 +183,7 @@ M
         token, param = control.check_serial_API6()
         if token == Token.indState:
             if param == 0:
-                control.com.req_test_API6(control.machine.value)
+                control.com.req_test_API6()
                 control.state = State.CONFIRM_TEST
             else:
                 # any value of param other than 0 is some kind of error code

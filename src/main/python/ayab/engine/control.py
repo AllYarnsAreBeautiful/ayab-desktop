@@ -23,7 +23,7 @@ from bitarray import bitarray
 
 from PyQt5.QtCore import QCoreApplication
 
-from ..observable import Observable
+from ..signal_sender import SignalSender
 from .communication import Communication, Token
 from .communication_mock import CommunicationMock
 from .options import Alignment
@@ -34,7 +34,7 @@ from .status import Carriage, Direction
 #from ..machine import Machine
 
 
-class Control(Observable):
+class Control(SignalSender):
     """
     Class governing information flow with the shield.
     """
@@ -44,7 +44,7 @@ class Control(Observable):
     FLANKING_NEEDLES = True
 
     def __init__(self, parent, engine):
-        super().__init__(parent.seer)
+        super().__init__(parent.signal_receiver)
         self.logger = logging.getLogger(type(self).__name__)
         self.status = engine.status
         self.api_version = self.FIRST_SUPPORTED_API_VERSION

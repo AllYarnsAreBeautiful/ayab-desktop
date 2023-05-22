@@ -112,9 +112,9 @@ class Communication(object):
         data = self.__driver.send(bytes([Token.reqInfo.value]))
         self.__ser.write(data)
 
-    def req_test_API6(self, machine_val):
+    def req_test_API6(self):
         """Send a request for testing to the device."""
-        data = self.__driver.send(bytes([Token.reqTest.value, machine_val]))
+        data = self.__driver.send(bytes([Token.reqTest.value]))
         self.__ser.write(data)
 
     def req_start_API6(self, start_needle, stop_needle,
