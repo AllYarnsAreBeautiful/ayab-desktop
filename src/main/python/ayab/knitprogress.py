@@ -49,6 +49,7 @@ class KnitProgress(QTableWidget):
         for r in range(5):
             self.setHorizontalHeaderItem(r, self.blank)
         self.previousStatus = None
+        self.scene = parent.scene
 
     def start(self):
         self.clearContents()
@@ -78,7 +79,7 @@ class KnitProgress(QTableWidget):
 
     def update(self, status, row_multiplier, midline, auto_mirror):
         if not self.uiStateChanged(status):
-            return 
+            return
 
         if status.current_row < 0:
             return
@@ -151,6 +152,9 @@ class KnitProgress(QTableWidget):
         # self.ensureWidgetVisible(w0)
 
         self.previousStatus = status
+
+        # update bar in Scene
+        self.scene.row_progress = status.current_row
 
     def __item(self, text):
         table = "<table><tr><td>" + text + "</td></tr></table>"
