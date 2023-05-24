@@ -144,6 +144,29 @@ jobs:
         path: src/main/resources/base/ayab/translations/*.qm
         key:  qm-${{ hashFiles('src/main/resources/base/ayab/translations/ayab-translation-master.tsv') }}
 
+  deploy:
+    name: Create and deploy source code documentation
+    runs-on: ubuntu-20.04
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      with:
+        submodules: recursive
+    - name: Install dependencies for doxygen
+      run: |
+        sudo apt-get install doxygen graphviz -y
+    - name: Create .nojekyll so that filenames with underscores work on Github Pages
+      run: |
+        mkdir -p docs/html
+        touch docs/html/.nojekyll
+    - name: Deploy to pages
+      uses: DenverCoder1/doxygen-github-pages-action@v1.3.0
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        branch: gh-pages
+        folder: docs/html
+        config_file: Doxyfile
+
   build-windows:
     name: Create and upload Windows release
     needs: setup
