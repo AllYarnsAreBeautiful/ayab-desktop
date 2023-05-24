@@ -59,6 +59,7 @@ class FSM(object):
                                             self.NO_IMAGE)
         self.CONFIGURING.addTransition(parent.ui.knit_button.clicked,
                                        self.CHECKING)
+        self.CONFIGURING.addTransition(parent.menu.ui.action_knit.triggered, self.CHECKING)
         self.CONFIGURING.addTransition(parent.menu.ui.action_test_AYAB_device.triggered, self.TESTING)
         self.CHECKING.addTransition(parent.signal_receiver.got_image_flag,
                                     self.CONFIGURING)
@@ -120,6 +121,12 @@ class FSM(object):
         self.KNITTING.assignProperty(parent.ui.knit_button, "enabled", "False")
         self.TESTING.assignProperty(parent.ui.knit_button, "enabled", "False")
 
+        # Knit menu action
+        self.NO_IMAGE.assignProperty(parent.menu.ui.action_knit, "enabled", "False")
+        self.CONFIGURING.assignProperty(parent.menu.ui.action_knit, "enabled", "True")
+        self.KNITTING.assignProperty(parent.menu.ui.action_knit, "enabled", "False")
+        self.TESTING.assignProperty(parent.menu.ui.action_knit, "enabled", "False")
+
         # Cancel button
         self.NO_IMAGE.assignProperty(parent.ui.cancel_button, "enabled",
                                      "False")
@@ -129,3 +136,8 @@ class FSM(object):
                                      "True")
         self.TESTING.assignProperty(parent.ui.cancel_button, "enabled",
                                     "False")
+        # Cancel Knitting menu action
+        self.NO_IMAGE.assignProperty(parent.menu.ui.action_cancel, "enabled", "False")
+        self.CONFIGURING.assignProperty(parent.menu.ui.action_cancel, "enabled", "False")
+        self.KNITTING.assignProperty(parent.menu.ui.action_cancel, "enabled", "True")
+        self.TESTING.assignProperty(parent.menu.ui.action_cancel, "enabled", "False")
