@@ -28,7 +28,7 @@ from PyQt5.QtWidgets import QComboBox, QDockWidget, QWidget
 from .. import utils
 from ..signal_sender import SignalSender
 from .control import Control
-from .state import Operation, State
+from .engine_fsm import Operation, State
 from .pattern import Pattern
 from .options import OptionsTab, Alignment, NeedleColor
 from .status import Status, StatusTab

@@ -23,8 +23,8 @@ import logging
 from PyQt5.QtCore import QStateMachine, QState, QObject
 
 
-class FSM(object):
-    """Finite State Machine.
+class gui_fsm(object):
+    """Finite State Machine for GUI thread.
 
     This replaces `fsyom` and various imperatively-programmed structures
     with a declaratively-programmed, event-driven framework tailored to the UI.
