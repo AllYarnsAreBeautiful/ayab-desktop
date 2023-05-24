@@ -1,4 +1,0 @@
-sphinxcontrib-seqdiag
-sphinxcontrib-napoleon
--e software/python
-
