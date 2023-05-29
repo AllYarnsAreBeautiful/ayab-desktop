@@ -142,8 +142,8 @@ M
                 control.state = State.CONFIRM_START
             else:
                 # any value of param other than 0 is some kind of error code
-                control.logger.error("Knit init failed with error code " +
-                                     str(param))
+                control.logger.debug("Knit init failed with error code " +
+                                     str(param) + " in state " + str(control.status.firmware_state))
                 # TODO: more output to describe error
         # fallthrough
         return Output.NONE
@@ -187,7 +187,8 @@ M
                 control.state = State.CONFIRM_TEST
             else:
                 # any value of param other than 0 is some kind of error code
-                control.logger.error("Test init failed")
+                control.logger.debug("Test init failed with error code " +
+                                     str(param) + " in state " + str(control.status.firmware_state))
                 # TODO: more output to describe error
         # fallthrough
         return Output.NONE

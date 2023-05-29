@@ -106,6 +106,7 @@ class Status(object):
     def reset(self):
         self.active = True
         # data fields
+        self.firmware_state = -1
         self.current_row = -1
         self.line_number = -1
         self.total_rows = -1
@@ -124,6 +125,7 @@ class Status(object):
 
     def copy(self, status):
         self.active = status.active
+        self.firmware_state = status.firmware_state
         self.current_row = status.current_row
         self.line_number = status.line_number
         self.repeats = status.repeats
@@ -142,23 +144,25 @@ class Status(object):
             return
 
         # else
-        hall_l = int((msg[2] << 8) + msg[3])
-        hall_r = int((msg[4] << 8) + msg[5])
+        firmware_state = msg[2]
 
-        if msg[6] == 0:
+        hall_l = int((msg[3] << 8) + msg[4])
+        hall_r = int((msg[5] << 8) + msg[6])
+
+        if msg[7] == 0:
             carriage_type = Carriage.Knit
-        elif msg[6] == 1:
+        elif msg[7] == 1:
             carriage_type = Carriage.Lace
-        elif msg[6] == 2:
+        elif msg[7] == 2:
             carriage_type = Carriage.Garter
         else:
             carriage_type = Carriage.Unknown
 
-        carriage_position = int(msg[7])
+        carriage_position = int(msg[8])
 
-        if msg[8] == 0:
+        if msg[9] == 0:
             carriage_direction = Direction.Left
-        elif msg[8] == 1:
+        elif msg[9] == 1:
             carriage_direction = Direction.Right
         else:
             carriage_direction = Direction.Unknown
