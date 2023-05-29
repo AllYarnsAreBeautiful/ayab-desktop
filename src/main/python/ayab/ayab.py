@@ -139,19 +139,23 @@ class GuiMain(QMainWindow):
 
     def start_operation(self):
         """Disable UI elements at start of operation."""
-        self.menu.depopulate()
         self.ui.filename_lineedit.setEnabled(False)
         self.ui.open_image_file_button.setEnabled(False)
+        self.ui.load_file_button.setEnabled(False)
+        self.menu.setEnabled(False)
 
     def finish_operation(self, operation: Operation, beep: bool):
         """(Re-)enable UI elements after operation finishes."""
         if operation == Operation.KNIT:
-            self.knit_thread.terminate()
+            self.knit_thread.wait()
         else:
-            self.test_thread.terminate()
-        self.menu.repopulate()
+            # operation = Operation.TEST:
+            self.test_thread.wait()
         self.ui.filename_lineedit.setEnabled(True)
         self.ui.open_image_file_button.setEnabled(True)
+        self.ui.load_file_button.setEnabled(True)
+        self.menu.setEnabled(True)
+
         if operation == Operation.KNIT and beep:
             self.audio.play("finish")
 

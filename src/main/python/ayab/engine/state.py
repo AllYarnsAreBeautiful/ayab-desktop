@@ -212,8 +212,12 @@ M
         return Output.NONE
 
     def _API6_run_test(control, operation):
-        # control.logger.debug("State RUN_TEST")
-        token, param = control.check_serial_API6()
+        control.logger.debug("State RUN_TEST")
+        while True:
+            token, param = control.check_serial_API6()
+            if token != Token.none:
+                break
+        control.logger.debug("Token " + token.name + ", param " + str(param))
         return Output.NONE
 
     def _API6_finished(control, operation):

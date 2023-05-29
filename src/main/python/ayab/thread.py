@@ -29,7 +29,6 @@ class GenericThread(QThread):
         self.kwargs = kwargs
 
     def __del__(self):
-        #self.join()
         self.wait()
 
     def run(self):
