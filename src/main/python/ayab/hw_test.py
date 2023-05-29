@@ -24,9 +24,9 @@ from PyQt5.QtGui import QFont
 from PyQt5.QtCore import QTimer
 
 #from .cmd_buttons import CmdButtons
-from .state import State
-from .communication import Token
-from .hw_test_communication_mock import HardwareTestCommunicationMock
+from .engine.engine_fsm import State
+from .engine.communication import Token
+from .engine.hw_test_communication_mock import HardwareTestCommunicationMock
 
 
 class HardwareTestDialog(QDialog):

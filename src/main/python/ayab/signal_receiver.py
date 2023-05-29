@@ -21,7 +21,7 @@
 from PyQt5.QtCore import QObject, pyqtSignal, Qt
 from .engine.status import Status
 from .engine.options import Alignment
-from .engine.state import Operation
+from .engine.engine_fsm import Operation
 from .engine.control import Control
 from .utils import display_blocking_popup
 

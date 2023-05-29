@@ -27,13 +27,14 @@ from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox
 from PyQt5.QtCore import Qt, QThread, QCoreApplication, QTimer
 
 from .main_gui import Ui_MainWindow
-from .fsm import FSM
+from .gui_fsm import gui_fsm
 from .signal_receiver import SignalReceiver
 from .audio import AudioPlayer
 from .menu import Menu
 from .scene import Scene
 from .transforms import Transform
 from .firmware_flash import FirmwareFlash
+from .hw_test import HardwareTestDialog
 from .preferences import Preferences
 # from .statusbar import StatusBar
 from .progressbar import ProgressBar
@@ -41,9 +42,8 @@ from .about import About
 from .knitprogress import KnitProgress
 from .thread import GenericThread
 from .engine import Engine
-from .engine.state import Operation
+from .engine.engine_fsm import Operation
 from .engine.options import Alignment
-from .engine.hw_test import HardwareTestDialog
 from .machine import Machine
 
 
@@ -91,7 +91,7 @@ class GuiMain(QMainWindow):
         self.__activate_menu()
 
         # initialize FSM
-        self.fsm = FSM()
+        self.fsm = gui_fsm()
         self.fsm.set_transitions(self)
         self.fsm.set_properties(self)
         self.fsm.machine.start()
