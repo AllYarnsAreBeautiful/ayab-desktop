@@ -141,7 +141,6 @@ class GuiMain(QMainWindow):
         """Disable UI elements at start of operation."""
         self.ui.filename_lineedit.setEnabled(False)
         self.ui.open_image_file_button.setEnabled(False)
-        self.ui.load_file_button.setEnabled(False)
         self.menu.setEnabled(False)
 
     def finish_operation(self, operation: Operation, beep: bool):
@@ -153,7 +152,6 @@ class GuiMain(QMainWindow):
             self.test_thread.wait()
         self.ui.filename_lineedit.setEnabled(True)
         self.ui.open_image_file_button.setEnabled(True)
-        self.ui.load_file_button.setEnabled(True)
         self.menu.setEnabled(True)
 
         if operation == Operation.KNIT and beep:
