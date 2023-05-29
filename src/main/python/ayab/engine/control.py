@@ -28,7 +28,7 @@ from .communication import Communication, Token
 from .communication_mock import CommunicationMock
 from .options import Alignment
 from .mode import Mode, ModeFunc
-from .state import State, StateMachine, Operation
+from .engine_fsm import State, StateMachine, Operation
 from .output import Output
 from .status import Carriage, Direction
 #from ..machine import Machine
