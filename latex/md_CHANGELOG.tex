@@ -1,0 +1,136 @@
+All notable changes to this project will be documented in this file.
+
+The format is based on \href{https://keepachangelog.com/en/1.0.0/}{\texttt{ Keep a Changelog}}, and this project adheres to \href{https://semver.org/spec/v2.0.0.html}{\texttt{ Semantic Versioning}} (at least since version 1.\+0.\+0).\hypertarget{md_CHANGELOG_autotoc_md1}{}\doxysection{1.\+0.\+0 / Unreleased}\label{md_CHANGELOG_autotoc_md1}
+
+\begin{DoxyItemize}
+\item \#467 Devops\+: Drop support for Arduino Mega
+\item \#466 Devops\+: Bundle firmware for desktop application based on a manifest file
+\item \#464 Devops\+: Patch python module fbs to fix Windows installer bug
+\item \#447 Engine\+: Pass machine type to firmware before attempting to knit
+\item \#443 Engine\+: Fix flanking needle color for singlebed mode
+\item \#452 Devops\+: Drop build of .deb package
+\item \#411,\#420 Engine\+: Migrate to A\+PI v6
+\item \#419 Devops\+: Change R\+E\+A\+D\+ME with instructions to use Miniconda on all platforms
+\item \#413 Engine\+: Add run-\/time test methods and change required A\+PI version to 6
+\item \#404 G\+UI\+: Fix image alignment and placement of limit lines in graphical scene
+\item \#395 G\+UI\+: Check for new release on startup
+\item \#393 Documentation\+: Add forthcoming features to C\+H\+A\+N\+G\+E\+L\+OG
+\item \#389 G\+UI\+: Rollback to Python3.\+6, Py\+Qt5==5.\+9.\+2
+\item \#379 G\+UI\+: Change appearance of menu bar
+\item \#375 Devops\+: Add script to make Py\+Qt5 files from X\+ML during build
+\item \#371 Documentation\+: Add need to install avrdude for Linux to R\+E\+A\+D\+ME
+\item \#364 Engine\+: Force engine to communicate with G\+UI via signals to ensure thread safety
+\item \#363 Engine, G\+UI\+: Change implementation of finite state machines
+\item \#356 Engine\+: Add classes for configuration options
+\item \#354 Devops\+: Add script to make translation files from master during build
+\item \#353 G\+UI\+: Add translations for languages other than German
+\item \#348 Engine\+: Fix color of needles flanking image to background
+\item \#345 G\+UI\+: Remove Configure button
+\item \#342 G\+UI\+: Add link to documentation in Help-\/\+About form
+\item \#338 G\+UI\+: Fix crash on knitting restart
+\item \#326 Engine\+: Change parsing of serial communication
+\item \#311 Engine\+: Add C\+R\+C8 check for serial communication
+\item \#308 Engine\+: Change representation of pattern from grayscale to color
+\item \#303 G\+UI\+: Update Python dependencies
+\item \#301 Devops\+: Add tests of Python code to CI workflow
+\item \#300 G\+UI\+: Add Simulation mode
+\item \#298 G\+UI\+: Add ability to load and convert D\+AK .P\+AT and .S\+TP files
+\item \#290 G\+UI\+: Remove shield test from firmware flash menu
+\item \#289 G\+UI\+: Copy pattern files to user directory on startup
+\item \#286 G\+UI\+: Improve visibility of icon
+\item \#278,\#310 Devops\+: Add Windows, O\+SX, and App\+Image builds to Github workflow
+\item \#270 G\+UI\+: Limit excessive pattern width when transforming image
+\item \#238 G\+UI\+: Add preference settings menu item and dialog
+\item \#236 G\+UI\+: Add checkbox to options dock for image mirroring
+\item \#226 G\+UI\+: Add knit progress area reporting line-\/by-\/line graphics
+\item \#208 G\+UI\+: Add sound effects at start, end, and new line
+\item \#206 G\+UI\+: Add 10 second timeout for firmware flash
+\item \#145 G\+UI\+: Add feedback while flashing firmware
+\item \#131,\#261 G\+UI\+: Add stretch and reflect to image actions submenu
+\item \#155 G\+UI\+: Fix scrolling of pattern when scrolling the sidebar
+\item Devops\+: Migrate from Ubuntu 16.\+04 to Ubuntu 20.\+04 for github workflows
+\end{DoxyItemize}\hypertarget{md_CHANGELOG_autotoc_md2}{}\doxysection{0.\+95 / 2019-\/01-\/28}\label{md_CHANGELOG_autotoc_md2}
+
+\begin{DoxyItemize}
+\item \#280 G\+UI\+: Fix crash when pattern is outside left edge
+\item \#271 Engine\+: Add Heart-\/of-\/\+Pluto Ribber mode (see A\+Y\+AB manual)
+\item \#259 G\+UI\+: Write date and time to the log
+\item \#253 Devops\+: Fix Mac installation\+: need O\+SX 10.\+12 (Sierra) or newer
+\item \#249 G\+UI\+: Fix lace patterns 8-\/29, 8-\/30, 8-\/31, 9-\/32, 10-\/33 thru 10-\/36
+\item \#248 G\+UI\+: Show number of completed repeats
+\item \#246 Engine\+: Reduce carriage turn around time
+\item \#245 G\+UI\+: Center patterns with an odd number of stitches on green 1
+\item \#244 Engine\+: Allow some backwards carriage movement without advancing to the next row
+\item \#239 Engine\+: Add Middle-\/\+Color-\/\+Twice Ribber mode (see A\+Y\+AB manual)
+\item \#226 G\+UI\+: Show current color in progess bar
+\item \#225 G\+UI\+: Enlarge row number in progress bar
+\end{DoxyItemize}\hypertarget{md_CHANGELOG_autotoc_md3}{}\doxysection{0.\+91 / 2018-\/04-\/01 \mbox{[}\+U\+N\+R\+E\+L\+E\+A\+S\+E\+D\mbox{]}}\label{md_CHANGELOG_autotoc_md3}
+
+\begin{DoxyItemize}
+\item \#251 G\+UI\+: Add Repeat image action and shortcuts
+\item Engine\+: Add experimental support for Garter Carriage
+\item Engine\+: Improve I2C communication (PR \#11)
+\item Engine\+: Change E\+N\+D\+\_\+\+O\+F\+\_\+\+L\+I\+N\+E\+\_\+\+O\+F\+F\+S\+E\+T\+\_\+L to 12 (\#9)
+\end{DoxyItemize}\hypertarget{md_CHANGELOG_autotoc_md4}{}\doxysection{0.\+90 / 2017-\/08-\/31}\label{md_CHANGELOG_autotoc_md4}
+
+\begin{DoxyItemize}
+\item \#220 G\+UI\+: Check image width before setting pixels
+\item \#211,\#212 G\+UI\+: Improve image file dialogue
+\item \#205,\#207 Engine\+: Validate number of colors in single and circular mode
+\item \#197 Engine\+: Fix multicolor ribber knitting
+\item \#191 G\+UI\+: Fix image rotation with Pillow 3.\+0
+\item \#189 G\+UI\+: Remove Smart Resize menu option for now
+\item \#167 Engine\+: Fix start row in ribber infinite knitting
+\item \#166 G\+UI\+: Add automatic window maximization on startup
+\item \#162 G\+UI\+: Change name of logfile to ayab\+\_\+log.\+txt
+\item \#156 G\+UI\+: Show filename in status bar
+\item \#153 G\+UI\+: Fix automatic setting of start/stop needle for odd image widths
+\item \#148 Engine\+: Fix A\+B\+BA pattern in 2 color ribber infinite mode
+\item \#148 Engine\+: Fix circular knitting
+\item \#143 Engine\+: Fix exception during serial port closing
+\item \#141 G\+UI\+: Remove progress bar
+\item \#137,\#151 G\+UI\+: Fix start line spinbox range
+\item \#127 G\+UI\+: More verbose user notification when using incompatible firmware
+\item \#126 G\+UI\+: Fix handling of spaces in file paths
+\item Devops\+: Add O\+SX App bundle
+\item Devops\+: Add Windows 7 and Windows 10 builds
+\item Engine\+: New end beep
+\item Engine\+: Fix accidental double selection of last row in every knitting mode
+\item Engine\+: Add K\+H910 capability
+\item G\+UI\+: Migrate from Python2 to Python3
+\item G\+UI\+: Migrate from Py\+Qt4 to Py\+Qt5
+\item G\+UI\+: Add custom patterns
+\end{DoxyItemize}\hypertarget{md_CHANGELOG_autotoc_md5}{}\doxysection{0.\+80 / 2015-\/11-\/01}\label{md_CHANGELOG_autotoc_md5}
+
+\begin{DoxyItemize}
+\item Engine\+: Migrate to A\+PI v4
+\item Engine\+: Add test mode
+\item Engine\+: Add Auto-\/\+Init functionality
+\item Engine\+: Add firmware version definition
+\item Engine\+: Fix reset of needles out of active needle area
+\item Engine\+: Add support for I2C port expander on shield v1.\+3\+TH (M\+C\+P23008)
+\item G\+UI\+: Add basic visualization of pattern position
+\item G\+UI\+: Add mouse wheel zooming of pattern
+\item G\+UI\+: Add visualization of test mode data
+\item G\+UI\+: Add Auto-\/\+Init functionality (no need to click OK several times when starting to knit)
+\item G\+UI\+: Move firmware database to external J\+S\+ON file
+\item G\+UI\+: Fix pattern rotation direction
+\item G\+UI\+: Fix pattern inversion
+\item G\+UI\+: Fix growth of image when rotating
+\item G\+UI\+: Fix unlocking of knit controls after image manipulation
+\end{DoxyItemize}\hypertarget{md_CHANGELOG_autotoc_md6}{}\doxysection{0.\+75 / 2015-\/02-\/28}\label{md_CHANGELOG_autotoc_md6}
+
+\begin{DoxyItemize}
+\item Engine\+: Fix lace carriage support
+\end{DoxyItemize}\hypertarget{md_CHANGELOG_autotoc_md7}{}\doxysection{0.\+7 / 2015-\/02-\/01}\label{md_CHANGELOG_autotoc_md7}
+
+\begin{DoxyItemize}
+\item Engine\+: Add lace carriage support
+\item G\+UI\+: Show info about current line number
+\item G\+UI\+: Fix some layout issues (e.\+g. disable UI elements)
+\item G\+UI\+: Start to knit with the bottom of the image
+\item G\+UI\+: Fix progress bar in 2 color doublebed mode
+\item G\+UI\+: Make Start and Stop needle selection as on the machine (orange/green)
+\item G\+UI\+: Add infinite repeat functionality
+\item G\+UI\+: Add Cancel button 
+\end{DoxyItemize}
