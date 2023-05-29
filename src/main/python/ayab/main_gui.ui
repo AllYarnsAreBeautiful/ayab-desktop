@@ -188,7 +188,7 @@
            </layout>
           </item>
           <item alignment="Qt::AlignHCenter">
-           <widget class="QPushButton" name="load_file_button">
+           <widget class="QPushButton" name="open_image_file_button">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
               <horstretch>0</horstretch>
@@ -196,7 +196,7 @@
              </sizepolicy>
             </property>
             <property name="text">
-             <string>1. Load Image File</string>
+             <string>1. Open Image File</string>
             </property>
             <property name="shortcut">
              <string notr="true">Ctrl+O</string>

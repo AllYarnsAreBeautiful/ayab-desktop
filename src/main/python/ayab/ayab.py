@@ -97,7 +97,7 @@ class GuiMain(QMainWindow):
         self.fsm.machine.start()
 
     def __activate_ui(self):
-        self.ui.load_file_button.clicked.connect(
+        self.ui.open_image_file_button.clicked.connect(
             self.scene.ayabimage.select_file)
         self.ui.filename_lineedit.returnPressed.connect(
             self.scene.ayabimage.select_file)
@@ -106,10 +106,13 @@ class GuiMain(QMainWindow):
             lambda: self.finish_operation(Operation.TEST, False))
 
     def __activate_menu(self):
+        self.menu.ui.action_open_image_file.triggered.connect(
+            self.scene.ayabimage.select_file)
         self.menu.ui.action_quit.triggered.connect(
             QCoreApplication.instance().quit)
         self.menu.ui.action_load_AYAB_firmware.triggered.connect(
             self.flash.open)
+        self.menu.ui.action_cancel.triggered.connect(self.engine.cancel)
         self.menu.ui.action_set_preferences.triggered.connect(
             self.prefs.open_dialog)
         self.menu.ui.action_about.triggered.connect(self.about.show)
@@ -137,7 +140,7 @@ class GuiMain(QMainWindow):
     def start_operation(self):
         """Disable UI elements at start of operation."""
         self.ui.filename_lineedit.setEnabled(False)
-        self.ui.load_file_button.setEnabled(False)
+        self.ui.open_image_file_button.setEnabled(False)
         self.menu.setEnabled(False)
 
     def finish_operation(self, operation: Operation, beep: bool):
@@ -148,8 +151,9 @@ class GuiMain(QMainWindow):
             # operation = Operation.TEST:
             self.test_thread.wait()
         self.ui.filename_lineedit.setEnabled(True)
-        self.ui.load_file_button.setEnabled(True)
+        self.ui.open_image_file_button.setEnabled(True)
         self.menu.setEnabled(True)
+
         if operation == Operation.KNIT and beep:
             self.audio.play("finish")
 

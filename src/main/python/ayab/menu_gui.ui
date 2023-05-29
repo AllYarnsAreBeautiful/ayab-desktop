@@ -9,6 +9,7 @@
    <property name="title">
     <string>File</string>
    </property>
+   <addaction name="action_open_image_file"/>
    <addaction name="action_quit"/>
   </widget>
   <widget class="QMenu" name="menu_help">
@@ -23,6 +24,8 @@
    </property>
    <addaction name="action_load_AYAB_firmware"/>
    <addaction name="action_test_AYAB_device"/>
+   <addaction name="action_knit"/>
+   <addaction name="action_cancel"/>
   </widget>
   <widget class="QMenu" name="menu_preferences">
    <property name="title">
@@ -48,14 +51,12 @@
    <addaction name="separator"/>
   </widget>
   <addaction name="menu_file"/>
-  <action name="action_load_AYAB_firmware">
+  <action name="action_open_image_file">
    <property name="text">
-    <string>Load AYAB Firmware</string>
+    <string>Open Image File</string>
    </property>
-  </action>
-  <action name="action_test_AYAB_device">
-   <property name="text">
-    <string>Test AYAB Device</string>
+   <property name="shortcut">
+    <string notr="true">Ctrl+O</string>
    </property>
   </action>
   <action name="action_quit">
@@ -66,9 +67,30 @@
     <string notr="true">Ctrl+Q</string>
    </property>
   </action>
-  <action name="action_open_knitting_project">
+  <action name="action_load_AYAB_firmware">
    <property name="text">
-    <string>Open Knitting Project</string>
+    <string>Load AYAB Firmware</string>
+   </property>
+  </action>
+  <action name="action_test_AYAB_device">
+   <property name="text">
+    <string>Test AYAB Device</string>
+   </property>
+  </action>
+  <action name="action_knit">
+   <property name="text">
+    <string>Knit</string>
+   </property>
+   <property name="shortcut">
+    <string notr="true">Ctrl+K</string>
+   </property>
+  </action>
+  <action name="action_cancel">
+   <property name="text">
+    <string>Cancel Knitting</string>
+   </property>
+   <property name="shortcut">
+    <string notr="true">Escape</string>
    </property>
   </action>
   <action name="action_about">
@@ -148,6 +170,9 @@
   <action name="action_set_preferences">
    <property name="text">
     <string>Set Preferences</string>
+   </property>
+   <property name="shortcut">
+    <string notr="true">Ctrl+P</string>
    </property>
   </action>
  </widget>
