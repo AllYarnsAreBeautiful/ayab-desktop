@@ -43,10 +43,11 @@ class KnitProgress(QTableWidget):
         self.setGeometry(QRect(0, 0, 700, 220))
         self.setContentsMargins(1, 1, 1, 1)
         self.verticalHeader().setDefaultSectionSize(16)
+        self.verticalHeader().setVisible(False)
         self.blank = QTableWidgetItem()
         self.blank.setSizeHint(QSize(0, 0))
-        self.setColumnCount(5)
-        for r in range(5):
+        self.setColumnCount(6)
+        for r in range(6):
             self.setHorizontalHeaderItem(r, self.blank)
         self.previousStatus = None
         self.scene = parent.scene
@@ -55,6 +56,7 @@ class KnitProgress(QTableWidget):
         self.clearContents()
         self.clearSelection()
         self.setRowCount(0)
+        self.horizontalHeader().setSectionHidden(5, False)
         self.row = -1
         self.color = True
 
@@ -78,6 +80,8 @@ class KnitProgress(QTableWidget):
 
 
     def update(self, status, row_multiplier, midline, auto_mirror):
+        # FIXME auto_mirror not used
+
         if not self.uiStateChanged(status):
             return
 
@@ -90,8 +94,7 @@ class KnitProgress(QTableWidget):
         columns = []
 
         # row
-        header = self.__item(
-            tr_("KnitProgress", "Row") + " " + str(status.current_row))
+        columns.append(tr_("KnitProgress", "Row") + " " + str(status.current_row))
 
         # pass
         columns.append(tr_("KnitProgress", "Pass") + " " + str(swipe + 1))
@@ -118,14 +121,7 @@ class KnitProgress(QTableWidget):
             table_text += self.__stitch(status.color, status.bits[c],
                                         status.alt_color)
         table_text += "</tr></table>"
-        # FIXME: align label right
-        # w4 = QWidget()
-        # w4a = QHBoxLayout()
-        # w4b = QLabel(table_text)
-        # w4a.setAlignment(Qt.AlignRight)
-        # w4a.addWidget(w4b)
-        # w4.setLayout(w4a)
-        left = QLabel(table_text)
+        left_side = QLabel(table_text)
 
         table_text = "<table style='cell-spacing: 1; cell-padding: 1; background-color: #{:06x};'><tr> ".format(
             self.green)
@@ -133,23 +129,17 @@ class KnitProgress(QTableWidget):
             table_text += self.__stitch(status.color, status.bits[c],
                                         status.alt_color)
         table_text += "</tr></table>"
-        # FIXME: align label left
-        # w5 = QWidget()
-        # w5a = QHBoxLayout()
-        # w5b = QLabel(table_text)
-        # w5a.setAlignment(Qt.AlignLeft)
-        # w5a.addWidget(w5b)
-        # w5.setLayout(w5a)
-        right = QLabel(table_text)
+        right_side = QLabel(table_text)
 
         self.insertRow(0)
-        self.setVerticalHeaderItem(0, header)
         for i, col in enumerate(columns):
             self.setItem(0, i, self.__item(col))
-        self.setCellWidget(0, len(columns) + 1, left)
-        self.setCellWidget(0, len(columns) + 2, right)
+        n_cols = len(columns)
+        self.setCellWidget(0, n_cols, left_side)
+        self.setCellWidget(0, n_cols + 1, right_side)
+        if n_cols < 4:
+            self.horizontalHeader().hideSection(5)
         self.resizeColumnsToContents()
-        # self.ensureWidgetVisible(w0)
 
         self.previousStatus = status
 
