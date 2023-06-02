@@ -95,16 +95,12 @@ Install the prerequisite Python modules.
     pip install --upgrade setuptools
     pip install --ignore-installed -r requirements.txt
 
-To be able to work on GUI elements and translation files, the Qt Dev tools are needed:
+To be able to work on GUI elements and translation files, the Qt Dev tools are needed.
+Navigate to https://www.qt.io/download in a web browser and follow the installation
+instructions. From the available options, select "Custom install" and then "Qt 5.15.2".
+Then convert the PyQt5 `.ui` files and generate the translation files:
 
-    https://download.qt.io/archive/qt/5.12/5.12.12/qt-opensource-windows-x86-5.12.12.exe
-
-Convert the PyQt5 `.ui` files and generate the translation files:
-
-    pwsh setup-environment.ps1
-
-Download and install Qt5 from [this link](https://download.qt.io/archive/qt/5.12/5.12.12/qt-opensource-windows-x86-5.12.12.exe)
-and create the remaining files:
+    .\setup-environment.ps1
 
 Finally, the `fbs` module needs a small patch.
 
