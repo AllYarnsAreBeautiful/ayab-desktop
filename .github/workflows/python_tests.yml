@@ -25,11 +25,12 @@ jobs:
         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
     - name: Install dependencies
       run: |
+        sudo apt update
         sudo apt install -y libasound2-dev qt5-default qttools5-dev-tools
         pip install --upgrade pip
         pip install --upgrade setuptools
         pip install flake8 pytest
-        pip install -r requirements.txt
+        pip install --ignore-installed -r requirements.txt
         bash setup-environment.ps1
     - name: Cache Python modules
       if:   steps.pip-cache.outputs.cache-hit != 'true'
