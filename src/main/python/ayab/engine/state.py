@@ -121,6 +121,7 @@ M
                 control.logger.error("Error initializing firmware: " + str(param))
                 return Output.ERROR_INITIALIZING_FIRMWARE
         # else
+        control.logger.error("Machine type "+str(control.machine.value))
         control.com.req_init_API6(control.machine.value)
         return Output.INITIALIZING_FIRMWARE
 
@@ -128,6 +129,7 @@ M
         control.logger.debug("State REQUEST_START")
         token, param = control.check_serial_API6()
         if token == Token.indState:
+            control.logger.debug("indState "+str(control.status.hall_l)+ " "+str(control.status.hall_r))
             if param == 0:
                 # record initial position, direction, carriage
                 control.initial_carriage = control.status.carriage_type
@@ -168,6 +170,8 @@ M
     def _API6_run_knit(control, operation):
         control.logger.debug("State RUN_KNIT")
         token, param = control.check_serial_API6()
+        if token == Token.indState:
+            control.logger.debug("indState "+str(control.status.hall_l)+ " "+str(control.status.hall_r)+" "+str(control.status.carriage_position))
         if token == Token.reqLine:
             pattern_finished = control.cnf_line_API6(param)
             if pattern_finished:

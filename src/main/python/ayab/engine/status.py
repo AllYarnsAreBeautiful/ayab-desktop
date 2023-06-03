@@ -156,6 +156,9 @@ class Status(object):
 
         carriage_position = int(msg[7])
 
+        if len(msg) < 9:
+            print("MSG TOO SMALL" + str(msg))
+
         if msg[8] == 0:
             carriage_direction = Direction.Left
         elif msg[8] == 1:
