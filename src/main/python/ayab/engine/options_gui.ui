@@ -155,7 +155,7 @@
         <string/>
        </property>
        <property name="minimum">
-        <number>0</number>
+        <number>1</number>
        </property>
        <property name="maximum">
         <number>100</number>
@@ -200,7 +200,7 @@
         <string/>
        </property>
        <property name="minimum">
-        <number>0</number>
+        <number>1</number>
        </property>
        <property name="maximum">
         <number>100</number>
