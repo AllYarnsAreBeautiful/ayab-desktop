@@ -182,8 +182,8 @@ class FirmwareFlash(QFrame):
                 return None
             exe_route = re.sub(r"\n$", r"", result.stdout.decode("ascii"))
         elif os_name == "Darwin":  # macOS
-            exe_route = self.__app_context.get_resource(
-                "ayab/firmware/avrdude_mac")
+            exe_route = "\"" + self.__app_context.get_resource(
+                "ayab/firmware/avrdude_mac") + "\""
 
         binary_file = os.path.join(
             self.__app_context.get_resource("ayab/firmware"), firmware_name)
