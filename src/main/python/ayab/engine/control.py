@@ -143,6 +143,10 @@ class Control(SignalSender):
         if self.former_request == self.BLOCK_LENGTH - 1 and line_number == 0:
             # wrap to next block of lines
             self.line_block += 1
+        # requested line number should either be the same as the previous request, or the next line
+        elif self.former_request != line_number and self.former_request + 1 != line_number:
+            self.logger.error("Requested line number out of sequence")
+            return True  # stop knitting
 
         # store requested line number for next request
         self.former_request = line_number
