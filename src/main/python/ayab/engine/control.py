@@ -47,6 +47,7 @@ class Control(SignalSender):
         super().__init__(parent.signal_receiver)
         self.logger = logging.getLogger(type(self).__name__)
         self.status = engine.status
+        self.notification = Output.NONE
         self.api_version = self.FIRST_SUPPORTED_API_VERSION
 
     def start(self, pattern, options, operation):
