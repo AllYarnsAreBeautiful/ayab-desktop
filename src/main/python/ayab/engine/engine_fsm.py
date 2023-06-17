@@ -127,93 +127,89 @@ M
         return Output.INITIALIZING_FIRMWARE
 
     def _API6_request_start(control, operation):
-        while True:
-            token, param = control.check_serial_API6()
-            if token == Token.indState:
-                break
-        if param == 0:
-            # record initial position, direction, carriage
-            control.initial_carriage = control.status.carriage_type
-            control.initial_position = control.status.carriage_position
-            control.initial_direction = control.status.carriage_direction
-            # set status.active
-            control.status.active = control.continuous_reporting
-            # request start
-            control.com.req_start_API6(control.pattern.knit_start_needle,
-                                       control.pattern.knit_end_needle - 1,
-                                       control.continuous_reporting)
-            control.state = State.CONFIRM_START
-            control.logger.debug("State CONFIRM_START")
-        else:
-            # any value of param other than 0 is some kind of error code
-            control.logger.debug("Knit init failed with error code " +
-                                 str(param) + " in state " + str(control.status.firmware_state))
-            # TODO: more output to describe error
+        token, param = control.check_serial_API6()
+        if token == Token.indState:
+            if param == 0:
+                # record initial position, direction, carriage
+                control.initial_carriage = control.status.carriage_type
+                control.initial_position = control.status.carriage_position
+                control.initial_direction = control.status.carriage_direction
+                # set status.active
+                control.status.active = control.continuous_reporting
+                # request start
+                control.com.req_start_API6(control.pattern.knit_start_needle,
+                                           control.pattern.knit_end_needle - 1,
+                                           control.continuous_reporting)
+                control.state = State.CONFIRM_START
+                control.logger.debug("State CONFIRM_START")
+            else:
+                # any value of param other than 0 is some kind of error code
+                control.logger.debug("Knit init failed with error code " +
+                                     str(param) + " in state " + str(control.status.firmware_state))
+                # TODO: more output to describe error
         return Output.NONE
 
     def _API6_confirm_start(control, operation):
-        while True:
-            token, param = control.check_serial_API6()
-            if token == Token.cnfStart:
-                break
-        if param == 0:
-            control.state = State.RUN_KNIT
-            control.logger.debug("State RUN_KNIT")
-            return Output.PLEASE_KNIT
-        else:
-            # any value of param other than 0 is some kind of error code
-            control.logger.error(
-                "Device not ready, returned `cnfStart` with error code " +
-                str(param))
-            # TODO: more output to describe error
-            return Output.DEVICE_NOT_READY
+        token, param = control.check_serial_API6()
+        if token == Token.cnfStart:
+            if param == 0:
+                control.state = State.RUN_KNIT
+                control.logger.debug("State RUN_KNIT")
+                return Output.PLEASE_KNIT
+            else:
+                # any value of param other than 0 is some kind of error code
+                control.logger.error(
+                    "Device not ready, returned `cnfStart` with error code " +
+                    str(param))
+                # TODO: more output to describe error
+                return Output.DEVICE_NOT_READY
+        # else
+        return Output.NONE
 
     def _API6_run_knit(control, operation):
-        while True:
-            token, param = control.check_serial_API6()
-            if token == Token.reqLine:
-                break
-        pattern_finished = control.cnf_line_API6(param)
-        if pattern_finished:
-            control.state = State.FINISHED
-            return Output.KNITTING_FINISHED
-        else:
-            return Output.NEXT_LINE
+        token, param = control.check_serial_API6()
+        if token == Token.reqLine:
+            pattern_finished = control.cnf_line_API6(param)
+            if pattern_finished:
+                control.state = State.FINISHED
+                return Output.KNITTING_FINISHED
+            else:
+                return Output.NEXT_LINE
+        # else
+        return Output.NONE
 
     def _API6_request_test(control, operation):
-        while True:
-            token, param = control.check_serial_API6()
-            if token == Token.indState:
-                break
-        if param == 0:
-            control.com.req_test_API6()
-            control.state = State.CONFIRM_TEST
-            control.logger.debug("State CONFIRM_TEST")
-        else:
-            # any value of param other than 0 is some kind of error code
-            control.logger.debug("Test init failed with error code " +
-                                 str(param) + " in state " + str(control.status.firmware_state))
-            # TODO: more output to describe error
+        token, param = control.check_serial_API6()
+        if token == Token.indState:
+            if param == 0:
+                control.com.req_test_API6()
+                control.state = State.CONFIRM_TEST
+                control.logger.debug("State CONFIRM_TEST")
+            else:
+                # any value of param other than 0 is some kind of error code
+                control.logger.debug("Test init failed with error code " +
+                                     str(param) + " in state " + str(control.status.firmware_state))
+                # TODO: more output to describe error
         return Output.NONE
 
     def _API6_confirm_test(control, operation):
-        while True:
-            token, param = control.check_serial_API6()
-            if token == Token.cnfTest:
-                break
-        if param == 0:
-            control.emit_hw_test_starter(control)
-            control.state = State.RUN_TEST
-            control.logger.debug("State RUN_TEST")
-            # TODO: need more informative messages for HW test
-            return Output.NONE
-        else:
-            # any value of param other than 0 is some kind of error code
-            control.logger.error(
-                "Device not ready, returned `cnfTest` with error code " +
-                str(param))
-            # TODO: more output to describe error
-            return Output.DEVICE_NOT_READY
+        token, param = control.check_serial_API6()
+        if token == Token.cnfTest:
+            if param == 0:
+                control.emit_hw_test_starter(control)
+                control.state = State.RUN_TEST
+                control.logger.debug("State RUN_TEST")
+                # TODO: need more informative messages for HW test
+                return Output.NONE
+            else:
+                # any value of param other than 0 is some kind of error code
+                control.logger.error(
+                    "Device not ready, returned `cnfTest` with error code " +
+                    str(param))
+                # TODO: more output to describe error
+                return Output.DEVICE_NOT_READY
+        # else
+        return Output.NONE
 
     def _API6_run_test(control, operation):
         while True:
