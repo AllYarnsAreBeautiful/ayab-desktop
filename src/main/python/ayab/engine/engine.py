@@ -166,7 +166,9 @@ class Engine(SignalSender, QDockWidget):
             # continue operating
             # typically each step involves some communication with the device
             output = self.control.operate(operation)
-            self.__feedback.handle(output)
+            if output != self.control.notification:
+                self.__feedback.handle(output)
+                self.control.notification = output
             if operation == Operation.KNIT:
                 self.__handle_status()
             if self.__canceled or self.control.state == State.FINISHED:
