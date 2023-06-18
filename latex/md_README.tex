@@ -66,15 +66,9 @@ pip install --ignore-installed -r requirements.txt
 \end{DoxyVerb}
 
 
-To be able to work on G\+UI elements and translation files, the Qt Dev tools are needed\+: \begin{DoxyVerb}https://download.qt.io/archive/qt/5.12/5.12.12/qt-opensource-windows-x86-5.12.12.exe
+To be able to work on G\+UI elements and translation files, the Qt Dev tools are needed. Navigate to \href{https://www.qt.io/download}{\texttt{ https\+://www.\+qt.\+io/download}} in a web browser and follow the installation instructions. From the available options, select \char`\"{}\+Custom install\char`\"{} and then \char`\"{}\+Qt 5.\+15.\+2\char`\"{}. Then convert the Py\+Qt5 {\ttfamily .ui} files and generate the translation files\+: \begin{DoxyVerb}.\setup-environment.ps1
 \end{DoxyVerb}
 
-
-Convert the Py\+Qt5 {\ttfamily .ui} files and generate the translation files\+: \begin{DoxyVerb}pwsh setup-environment.ps1
-\end{DoxyVerb}
-
-
-Download and install Qt5 from \href{https://download.qt.io/archive/qt/5.12/5.12.12/qt-opensource-windows-x86-5.12.12.exe}{\texttt{ this link}} and create the remaining files\+:
 
 Finally, the {\ttfamily fbs} module needs a small patch. \begin{DoxyVerb}conda install -c free patch
 $dir = $(pwd).Path
@@ -86,6 +80,14 @@ patch -u -i $dir\windows-build\patch-fbs.diff _defaults\src\installer\windows\In
 Now start A\+Y\+AB with\+: \begin{DoxyVerb}fbs run
 \end{DoxyVerb}
 \hypertarget{md_README_autotoc_md15}{}\doxysubsection{mac\+OS}\label{md_README_autotoc_md15}
+{\itshape If on Apple Silicon (M1 \& M2 chips)}
+
+
+\begin{DoxyItemize}
+\item You will need to install the virtual environment using the x86\+\_\+64 versions of packages due to the requirement of Python 3.\+6 (which has no build in Conda due to it predating Apple silicon). In order to do this, you need to set the terminal to fetch packages built for x86\+\_\+64 architectures rather than the native arm64. In Applications, go to the Utilities folder and right click on the Terminal app, and choosing {\ttfamily Get Info}. Select the {\ttfamily Open using Rosetta} checkbox and close the window. Check that the change has taken place by opening the terminal and entering the command {\ttfamily arch}. This should return {\ttfamily i386} if everything went correctly.
+\item Installing both native and rosetta versions of packages can cause conflicts. You can remove conflicting packages from homebrew by specifying architecture and using the remove command\+: {\ttfamily arch=arm64 brew remove xyz}.
+\end{DoxyItemize}
+
 You can install Git using Homebrew\+: \begin{DoxyVerb}brew install git
 \end{DoxyVerb}
 
@@ -121,9 +123,11 @@ To be able to work on G\+UI elements and translation files, the Qt Dev tools are
 \end{DoxyVerb}
 
 
-Finally, convert the Py\+Qt5 {\ttfamily .ui} files and generate the translation files\+: \begin{DoxyVerb}bash setup-environment.ps1
+Finally, convert the Py\+Qt5 {\ttfamily .ui} files and generate the translation files\+: \begin{DoxyVerb}./setup-environment.ps1
 \end{DoxyVerb}
 
+
+If you get errors about missing {\ttfamily lrelease}, you can skip this if you do not need the translation files. To do so, comment out lines \mbox{[}23\+:26\mbox{]} of {\ttfamily setup-\/environment.\+ps1}.
 
 Now start A\+Y\+AB with \begin{DoxyVerb}fbs run
 \end{DoxyVerb}

@@ -108,16 +108,19 @@ cd ayab-desktop
 </pre><p>Install the prerequisite Python modules. </p><pre class="fragment">python -m pip install --upgrade pip
 pip install --upgrade setuptools
 pip install --ignore-installed -r requirements.txt
-</pre><p>To be able to work on GUI elements and translation files, the Qt Dev tools are needed: </p><pre class="fragment">https://download.qt.io/archive/qt/5.12/5.12.12/qt-opensource-windows-x86-5.12.12.exe
-</pre><p>Convert the PyQt5 <code>.ui</code> files and generate the translation files: </p><pre class="fragment">pwsh setup-environment.ps1
-</pre><p>Download and install Qt5 from <a href="https://download.qt.io/archive/qt/5.12/5.12.12/qt-opensource-windows-x86-5.12.12.exe">this link</a> and create the remaining files:</p>
-<p>Finally, the <code>fbs</code> module needs a small patch. </p><pre class="fragment">conda install -c free patch
+</pre><p>To be able to work on GUI elements and translation files, the Qt Dev tools are needed. Navigate to <a href="https://www.qt.io/download">https://www.qt.io/download</a> in a web browser and follow the installation instructions. From the available options, select "Custom install" and then "Qt 5.15.2". Then convert the PyQt5 <code>.ui</code> files and generate the translation files: </p><pre class="fragment">.\setup-environment.ps1
+</pre><p>Finally, the <code>fbs</code> module needs a small patch. </p><pre class="fragment">conda install -c free patch
 $dir = $(pwd).Path
 cd $Env:CONDA_PREFIX\Lib\site-packages\fbs\
 patch -u -i $dir\windows-build\patch-fbs.diff _defaults\src\installer\windows\Installer.nsi
 </pre><p>Now start AYAB with: </p><pre class="fragment">fbs run
 </pre><h2><a class="anchor" id="autotoc_md15"></a>
 macOS</h2>
+<p><em>If on Apple Silicon (M1 &amp; M2 chips)</em></p>
+<ul>
+<li>You will need to install the virtual environment using the x86_64 versions of packages due to the requirement of Python 3.6 (which has no build in Conda due to it predating Apple silicon). In order to do this, you need to set the terminal to fetch packages built for x86_64 architectures rather than the native arm64. In Applications, go to the Utilities folder and right click on the Terminal app, and choosing <code>Get Info</code>. Select the <code>Open using Rosetta</code> checkbox and close the window. Check that the change has taken place by opening the terminal and entering the command <code>arch</code>. This should return <code>i386</code> if everything went correctly.</li>
+<li>Installing both native and rosetta versions of packages can cause conflicts. You can remove conflicting packages from homebrew by specifying architecture and using the remove command: <code>arch=arm64 brew remove xyz</code>.</li>
+</ul>
 <p>You can install Git using Homebrew: </p><pre class="fragment">brew install git
 </pre><p>You will also need the Xcode command line tools: </p><pre class="fragment">xcode-select --install
 </pre><p>Next download the git repository: </p><pre class="fragment">git clone https://github.com/AllYarnsAreBeautiful/ayab-desktop
@@ -129,8 +132,9 @@ pip install --upgrade setuptools
 pip install -r requirements.txt
 </pre><p>To solve pip SSL:TLSV1_ALERT_PROTOCOL_VERSION problem: </p><pre class="fragment">curl https://bootstrap.pypa.io/get-pip.py | python
 </pre><p>To be able to work on GUI elements and translation files, the Qt Dev tools are needed also: </p><pre class="fragment">https://download.qt.io/archive/qt/5.12/5.12.12/qt-opensource-mac-x64-5.12.12.dmg
-</pre><p>Finally, convert the PyQt5 <code>.ui</code> files and generate the translation files: </p><pre class="fragment">bash setup-environment.ps1
-</pre><p>Now start AYAB with </p><pre class="fragment">fbs run
+</pre><p>Finally, convert the PyQt5 <code>.ui</code> files and generate the translation files: </p><pre class="fragment">./setup-environment.ps1
+</pre><p>If you get errors about missing <code>lrelease</code>, you can skip this if you do not need the translation files. To do so, comment out lines [23:26] of <code>setup-environment.ps1</code>.</p>
+<p>Now start AYAB with </p><pre class="fragment">fbs run
 </pre><h1><a class="anchor" id="autotoc_md16"></a>
 CI/CD on GitHub</h1>
 <h2><a class="anchor" id="autotoc_md17"></a>
