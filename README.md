@@ -117,7 +117,7 @@ Now start AYAB with:
 
 *If on Apple Silicon (M1 & M2 chips)*
 
-* You will need to install the virtual environment using the x86_64 versions of packages due to the requirement of Python 3.6 (which has no build in Conda due to it predating Apple silicon). In order to do this, you need to set the terminal to fetch packages built for x86_64 architectures rather than the native arm64. In Applications, go to the Utilities folder and right click on the Terminal app. Select `Open using Rosetta`. Check that the change has taken place by opening the terminal and entering the command `arch`. This should return `i386` if everything went correctly.
+* You will need to install the virtual environment using the x86_64 versions of packages due to the requirement of Python 3.6 (which has no build in Conda due to it predating Apple silicon). In order to do this, you need to set the terminal to fetch packages built for x86_64 architectures rather than the native arm64. In Applications, go to the Utilities folder and right click on the Terminal app, and choosing `Get Info`. Select the `Open using Rosetta` checkbox and close the window. Check that the change has taken place by opening the terminal and entering the command `arch`. This should return `i386` if everything went correctly.
 * Installing both native and rosetta versions of packages can cause conflicts. You can remove conflicting packages from homebrew by specifying architecture and using the remove command: `arch=arm64 brew remove xyz`.
 
 You can install Git using Homebrew:
