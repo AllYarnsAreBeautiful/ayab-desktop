@@ -118,7 +118,7 @@ M
                     # operation = Operation.KNIT:
                     control.state = State.REQUEST_START
                     control.logger.debug("State REQUEST_START")
-                    return Output.WAIT_FOR_INIT
+                    return Output.NONE
             else:
                 control.logger.error("Error initializing firmware: " + str(param))
                 return Output.ERROR_INITIALIZING_FIRMWARE
@@ -147,7 +147,7 @@ M
                 control.logger.debug("Knit init failed with error code " +
                                      str(param) + " in state " + str(control.status.firmware_state))
                 # TODO: more output to describe error
-        return Output.NONE
+        return Output.WAIT_FOR_INIT
 
     def _API6_confirm_start(control, operation):
         token, param = control.check_serial_API6()
