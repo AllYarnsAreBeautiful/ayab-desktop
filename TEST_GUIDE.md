@@ -6,9 +6,12 @@ The full list of builds is on the [releases](https://github.com/AllYarnsAreBeaut
 
 If you're just interested in poking around, choose the most recent build.
 
-When you click on a build you should see a list of files under the **Assets** section. Click on the correct file for your operating system. If you're on a mac, you want the **.dmg**, if you're on windows you want the **.exe**, if you're on Linux you'll have to build from source.
+When you click on a build you should see a list of files under the **Assets** section. Click on the correct file for your operating system. If you're on a mac, you want the **.dmg**, if you're on windows you want the **.exe**. Open the file you downloaded and install it the way you normally would. If you're on Linux you'll have to build from source.
 
-Open the file you downloaded and install it the way you normally would.
+
+### Extra Linux setup
+Follow [instructions in the firmware repository](https://github.com/AllYarnsAreBeautiful/ayab-firmware/tree/v1.0-dev), and compile the firmware, making the compiled hex file available in your AYAB desktop directory at `src/main/resources/base/ayab/firmware/firmware.hex`. If you've compiled with PlatformIO in VSCode, you can find the hex file at `.pio/build/uno/firmware.hex` in your AYAB firmware directory. This step needs to be done if you want to use the AYAB desktop utility to flash the firmware - you can of course always flash it through PlatformIO, as well.
+
 
 ### Extra Mac setup
 
@@ -30,7 +33,7 @@ Click **Ok** to dismiss the dialog.
 
 ## Install the firmware
 
-These releases have the corresponding firmware bundled in. You no longer need to specify which machine  you have for the firmware.
+These releases have the corresponding firmware bundled in. You no longer need to specify which machine  you have for the firmware. This is with the exception of Linux, where you need to compile and drop in the firmware to upload it through AYAB Desktop (or upload it through other means - described above in the Extra Linux setup section).
 
 Connect your AYAB hardware to your computer.
 
