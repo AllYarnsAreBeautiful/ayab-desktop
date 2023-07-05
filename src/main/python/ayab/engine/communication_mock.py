@@ -67,7 +67,7 @@ class CommunicationMock(Communication):
 
     def req_info(self) -> None:
         """Send a request for API version information."""
-        cnfInfo = bytes([Token.cnfInfo.value, 6, 1, 0])  # APIv6, FWv1.0
+        cnfInfo = bytes([Token.cnfInfo.value, 6, 1, 0, 0, 0])  # APIv6, FW v1.0.0
         self.rx_msg_list.append(cnfInfo)
 
     def req_init_API6(self, machine_val):

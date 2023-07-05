@@ -132,7 +132,9 @@ class Control(SignalSender):
         api = msg[1]
         log = "API v" + str(api)
         if api >= 5:
-            log += ", FW v" + str(msg[2]) + "." + str(msg[3])
+            log += ", FW v" + str(msg[2]) + "." + str(msg[3])  + "." + str(msg[4])
+            if msg[5] is not 0:
+                log += "-dirty"
         self.logger.info(log)
 
     def cnf_line_API6(self, line_number):
