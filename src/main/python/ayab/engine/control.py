@@ -133,7 +133,7 @@ class Control(SignalSender):
         log = "API v" + str(api)
         if api >= 5:
             log += ", FW v" + str(msg[2]) + "." + str(msg[3])  + "." + str(msg[4])
-            if msg[5] is not 0:
+            if msg[5] == 1:
                 log += "-dirty"
         self.logger.info(log)
 
