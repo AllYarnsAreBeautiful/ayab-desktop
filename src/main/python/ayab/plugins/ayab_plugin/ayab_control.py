@@ -15,6 +15,7 @@
 #    along with AYAB.  If not, see <http://www.gnu.org/licenses/>.
 #
 #    Copyright 2013, 2014 Sebastian Oliva, Christian Obersteiner, Andreas Müller, Christian Gerbrandt
+#    Copyright 2022 Marcus Hoose (eKnitter.com)
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
 from .ayab_communication import AyabCommunication

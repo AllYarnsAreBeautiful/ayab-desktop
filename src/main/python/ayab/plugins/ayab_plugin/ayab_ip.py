@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# This file is for AYAB @ https://github.com/AllYarnsAreBeautiful/ayab-desktop
+# This file is part of AYAB.
 #
 #    AYAB is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -14,8 +14,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with AYAB.  If not, see <http://www.gnu.org/licenses/>.
 #
-#    Copyright 2021 Marcus Hoose
-#    
+#    Copyright 2022 Marcus Hoose (eKnitter.com)
 
 """Handles the ip communication protocol.
 
