@@ -183,3 +183,5 @@ The tag can be pushed from your local environment, or via the ["Draft a new Rele
 ### Choosing the firmware release to be bundled with the build
 
 The CI automatically downloads a given firmware release from the [ayab-firmware repo](https://github.com/AllYarnsAreBeautiful/ayab-firmware) and packs it into the Desktop release. The name of the firmware release is chosen in [this manifest file](https://github.com/AllYarnsAreBeautiful/ayab-desktop/blob/1.0.0-dev/src/main/resources/base/ayab/firmware/manifest.txt) in the ayab-desktop repo.
+
+Whenever building from source, you should ensure that the firmware is available as a compiled hex file is available at `main/resources/base/ayab/firmware/firmware.hex`. You can either compile the firmware and upload it through other means (e.g. VSCode with PlatformIO), or compile and then drop it into the right path in the desktop directory, making it available for the flash through AYAB desktop.
