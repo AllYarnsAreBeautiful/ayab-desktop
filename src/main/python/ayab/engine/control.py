@@ -132,7 +132,12 @@ class Control(SignalSender):
         api = msg[1]
         log = "API v" + str(api)
         if api >= 5:
-            log += ", FW v" + str(msg[2]) + "." + str(msg[3])
+            log += ", FW v" + str(msg[2]) + "." + str(msg[3])  + "." + str(msg[4])
+            suffix = msg[5:21]
+            suffix_null_index = suffix.find(0)
+            suffix = suffix[:suffix_null_index+1].decode()
+            if len(suffix) > 1:
+                log += "-" + suffix
         self.logger.info(log)
 
     def cnf_line_API6(self, line_number):
