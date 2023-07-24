@@ -1,4 +1,4 @@
-fbs==0.8.6
+fbs
 PyInstaller==3.4
 pyqt5==5.9.2
 Pillow==7.1.2

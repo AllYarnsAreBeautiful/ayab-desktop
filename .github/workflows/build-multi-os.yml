@@ -16,8 +16,7 @@ name: Build
 on:
   push:
     tags:
-    - 'v*'
-    - 'test*'
+    - '[0-9]+.[0-9]+.[0-9]+'
 
 jobs:
   setup:
@@ -269,16 +268,6 @@ jobs:
         pwd
         ls -l src/main/python/ayab/
         ls -l src/main/resources/base/ayab/translations/
-    - name: Patch fbs package
-      shell: pwsh
-      run: |
-        $cwd = $(Get-Location).Path
-        $path = '${{ steps.py.outputs.python-path }}' -Replace '[^\\]*$', ''
-        echo $path
-        $fbs = $(Get-ChildItem -Path $path -Depth 3 -Filter 'fbs')[0].FullName + '\..\'
-        echo $fbs
-        Set-Location $fbs
-        patch -u -i $($cwd + '\windows-build\patch-fbs.diff') 'fbs/_defaults/src/installer/windows/Installer.nsi'
     - name: Build app
       shell: pwsh
       run: python -m fbs freeze --debug
