@@ -102,13 +102,6 @@ Then convert the PyQt5 `.ui` files and generate the translation files:
 
     .\setup-environment.ps1
 
-Finally, the `fbs` module needs a small patch.
-
-    conda install -c free patch
-    $dir = $(pwd).Path
-    cd $Env:CONDA_PREFIX\Lib\site-packages\fbs\
-    patch -u -i $dir\windows-build\patch-fbs.diff _defaults\src\installer\windows\Installer.nsi
-
 Now start AYAB with:
 
     fbs run

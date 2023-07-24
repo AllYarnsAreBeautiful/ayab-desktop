@@ -16,8 +16,7 @@ name: Build
 on:
   push:
     tags:
-    - 'v*'
-    - 'test*'
+    - 'v?[0-9]+.[0-9]+.[0-9]+-?[a-zA-Z0-9]*'
 
 jobs:
   setup:
@@ -61,8 +60,9 @@ jobs:
     - name: Set PACKAGE_VERSION
       run: |
         echo ${{ steps.vars.outputs.tag }} > src/main/resources/base/ayab/package_version
-        sed -i 's/PACKAGE_VERSION/${{steps.vars.outputs.tag}}/' src/build/settings/base.json
-        cat src/main/resources/base/ayab/package_version
+        # remove suffix from semver tag, as fbs does not support them
+        version_without_suffix=$(echo ${{ steps.vars.outputs.tag }} | sed -E 's/^v?([0-9]+\.[0-9]+\.[0-9]+).*$/\1/')
+        sed -i -e s/PACKAGE_VERSION/$version_without_suffix/ src/build/settings/base.json
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4
       with:
@@ -111,6 +111,12 @@ jobs:
       with:
         path: src/main/resources/base/ayab/translations/*.qm
         key:  qm-${{ hashFiles('src/main/resources/base/ayab/translations/ayab-translation-master.tsv') }}
+    - name: Use cached `base.json` file
+      id:   base-cache
+      uses: actions/cache@v3
+      with:
+        path: src/build/settings/base.json
+        key:  base-${{ steps.vars.outputs.tag }}
     - name: Convert UI and translation files
       if:   ${{ (steps.gui1-cache.outputs.cache-hit != 'true') ||
                 (steps.gui2-cache.outputs.cache-hit != 'true') ||
@@ -143,6 +149,12 @@ jobs:
       with:
         path: src/main/resources/base/ayab/translations/*.qm
         key:  qm-${{ hashFiles('src/main/resources/base/ayab/translations/ayab-translation-master.tsv') }}
+    - name: Cache `base.json` file
+      if:   ${{ (steps.base-cache.outputs.cache-hit != 'true') }}
+      uses: actions/cache/save@v3
+      with:
+        path: src/build/settings/base.json
+        key:  base-${{ steps.vars.outputs.tag }}
 
   deploy:
     name: Create and deploy source code documentation
@@ -187,12 +199,6 @@ jobs:
         echo "tag=$(git describe --tags)" >> $GITHUB_OUTPUT
         echo "draft=$(git describe --tags | sed -e 's/^test.*/true/;s/^v.*/false/')" >> $GITHUB_OUTPUT
         echo "manifest=$(cat src/main/resources/base/ayab/firmware/manifest.txt)" >> $GITHUB_OUTPUT
-    - name: Set PACKAGE_VERSION
-      shell: bash
-      run: |
-        echo ${{steps.vars.outputs.tag}} > src/main/resources/base/ayab/package_version
-        sed -i 's/PACKAGE_VERSION/${{steps.vars.outputs.tag}}/' src/build/settings/base.json
-        cat src/main/resources/base/ayab/package_version
     - name: Set up Python ${{ matrix.python-version }}
       id: py
       uses: actions/setup-python@v4
@@ -247,6 +253,14 @@ jobs:
         key:  qm-${{ hashFiles('src/main/resources/base/ayab/translations/ayab-translation-master.tsv') }}
         enableCrossOsArchive: true
         fail-on-cache-miss: true
+    - name: Restore cached `base.json` file
+      id:   base-cache
+      uses: actions/cache@v3
+      with:
+        path: src/build/settings/base.json
+        key:  base-${{ steps.vars.outputs.tag }}
+        enableCrossOsArchive: true
+        fail-on-cache-miss: true
     - name: Remove unneeded files
       shell: bash
       run: |
@@ -269,16 +283,6 @@ jobs:
         pwd
         ls -l src/main/python/ayab/
         ls -l src/main/resources/base/ayab/translations/
-    - name: Patch fbs package
-      shell: pwsh
-      run: |
-        $cwd = $(Get-Location).Path
-        $path = '${{ steps.py.outputs.python-path }}' -Replace '[^\\]*$', ''
-        echo $path
-        $fbs = $(Get-ChildItem -Path $path -Depth 3 -Filter 'fbs')[0].FullName + '\..\'
-        echo $fbs
-        Set-Location $fbs
-        patch -u -i $($cwd + '\windows-build\patch-fbs.diff') 'fbs/_defaults/src/installer/windows/Installer.nsi'
     - name: Build app
       shell: pwsh
       run: python -m fbs freeze --debug
@@ -320,15 +324,11 @@ jobs:
         submodules: recursive
     - name: Set variables
       id: vars
+      shell: bash
       run: |
         echo "sha-short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
         echo "tag=$(git describe --tags)" >> $GITHUB_OUTPUT
         echo "manifest=$(cat src/main/resources/base/ayab/firmware/manifest.txt)" >> $GITHUB_OUTPUT
-    - name: Set PACKAGE_VERSION
-      run: |
-        echo ${{steps.vars.outputs.tag}} > src/main/resources/base/ayab/package_version
-        sed -i'' -e 's/PACKAGE_VERSION/${{steps.vars.outputs.tag}}/' src/build/settings/base.json
-        cat src/main/resources/base/ayab/package_version
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4
       with:
@@ -373,6 +373,14 @@ jobs:
       with:
         path: src/main/resources/base/ayab/translations/*.qm
         key:  qm-${{ hashFiles('src/main/resources/base/ayab/translations/ayab-translation-master.tsv') }}
+        fail-on-cache-miss: true
+    - name: Restore cached `base.json` file
+      id:   base-cache
+      uses: actions/cache@v3
+      with:
+        path: src/build/settings/base.json
+        key:  base-${{ steps.vars.outputs.tag }}
+        enableCrossOsArchive: true
         fail-on-cache-miss: true
     - name: Remove unneeded files
       run: |
@@ -432,12 +440,6 @@ jobs:
         echo "python=python${{matrix.python-version}}" >> $GITHUB_OUTPUT
         echo "manifest=$(cat src/main/resources/base/ayab/firmware/manifest.txt)" >> $GITHUB_OUTPUT
         echo "python-appimage=python${{matrix.python-version}}.15-cp36-cp36m-manylinux2014_x86_64.AppImage" >> $GITHUB_OUTPUT
-    - name: Set PACKAGE_VERSION
-      run: |
-        cd git
-        echo ${{steps.vars.outputs.tag}} > src/main/resources/base/ayab/package_version
-        sed -i 's/PACKAGE_VERSION/${{steps.vars.outputs.tag}}/' src/build/settings/base.json
-        cat src/main/resources/base/ayab/package_version
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4
       with:
@@ -498,6 +500,14 @@ jobs:
         path: src/main/resources/base/ayab/translations/*.qm
         key:  qm-${{ hashFiles('src/main/resources/base/ayab/translations/ayab-translation-master.tsv') }}
         fail-on-cache-miss: true
+    - name: Restore cached `base.json` file
+      id:   base-cache
+      uses: actions/cache@v3
+      with:
+        path: src/build/settings/base.json
+        key:  base-${{ steps.vars.outputs.tag }}
+        enableCrossOsArchive: true
+        fail-on-cache-miss: true
     - name: Move cached files
       run: |
         mv src/main/resources/base/ayab/firmware/*.hex squashfs-root/src/main/resources/base/ayab/firmware/
@@ -505,6 +515,7 @@ jobs:
         mv src/main/python/ayab/engine/*_gui.py squashfs-root/src/main/python/ayab/engine/
         mv src/main/python/ayab/ayab_logo_rc.py squashfs-root/src/main/python/ayab/
         mv src/main/resources/base/ayab/translations/*.qm squashfs-root/src/main/resources/base/ayab/translations/
+        mv src/build/settings/base.json squashfs-root/src/build/settings/base.json
     - name: Remove unneeded files
       run: |
         rm squashfs-root/src/main/python/ayab/*_gui.ui
