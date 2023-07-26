@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## 1.0.0 / Unreleased
 
+Change in versioning scheme: From now on, the AYAB desktop software and firmware are using the Semantic Versioning 2.0.0 (https://semver.org/) versioning scheme.
+Pre-releases are marked with a suffix, e.g. `1.0.0-rc1`, which stands for "release candidate 1"
+
 * #467 Devops: Drop support for Arduino Mega
 * #466 Devops: Bundle firmware for desktop application based on a manifest file
 * #464 Devops: Patch python module fbs to fix Windows installer bug 

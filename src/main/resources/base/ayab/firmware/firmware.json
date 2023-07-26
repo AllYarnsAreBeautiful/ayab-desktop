@@ -3,7 +3,7 @@
         "uno":[
             {
                 "url":"/",
-                "version":"1.0.0 (prototype)",
+                "version":"0.99.0-rc1",
                 "file":"ayab_monolithic_uno.hex"
             }
         ]
