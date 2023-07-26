@@ -61,7 +61,9 @@ jobs:
     - name: Set PACKAGE_VERSION
       run: |
         echo ${{ steps.vars.outputs.tag }} > src/main/resources/base/ayab/package_version
-        sed -i 's/PACKAGE_VERSION/${{steps.vars.outputs.tag}}/' src/build/settings/base.json
+        # remove suffix from semver tag, as fbs does not support them
+        version_without_suffix=$(echo ${{ steps.vars.outputs.tag }} | sed -E 's/^(v?[0-9]+\.[0-9]+\.[0-9]+).*$/\1/')
+        sed -i 's/PACKAGE_VERSION/$version_without_suffix/' src/build/settings/base.json
         cat src/main/resources/base/ayab/package_version
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4
@@ -191,7 +193,9 @@ jobs:
       shell: bash
       run: |
         echo ${{steps.vars.outputs.tag}} > src/main/resources/base/ayab/package_version
-        sed -i 's/PACKAGE_VERSION/${{steps.vars.outputs.tag}}/' src/build/settings/base.json
+        # remove suffix from semver tag, as fbs does not support them
+        version_without_suffix=$(echo ${{ steps.vars.outputs.tag }} | sed -E 's/^(v?[0-9]+\.[0-9]+\.[0-9]+).*$/\1/')
+        sed -i 's/PACKAGE_VERSION/$version_without_suffix/' src/build/settings/base.json
         cat src/main/resources/base/ayab/package_version
     - name: Set up Python ${{ matrix.python-version }}
       id: py
@@ -327,7 +331,9 @@ jobs:
     - name: Set PACKAGE_VERSION
       run: |
         echo ${{steps.vars.outputs.tag}} > src/main/resources/base/ayab/package_version
-        sed -i'' -e 's/PACKAGE_VERSION/${{steps.vars.outputs.tag}}/' src/build/settings/base.json
+        # remove suffix from semver tag, as fbs does not support them
+        version_without_suffix=$(echo ${{ steps.vars.outputs.tag }} | sed -E 's/^(v?[0-9]+\.[0-9]+\.[0-9]+).*$/\1/')
+        sed -i 's/PACKAGE_VERSION/$version_without_suffix/' src/build/settings/base.json
         cat src/main/resources/base/ayab/package_version
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4
@@ -436,7 +442,9 @@ jobs:
       run: |
         cd git
         echo ${{steps.vars.outputs.tag}} > src/main/resources/base/ayab/package_version
-        sed -i 's/PACKAGE_VERSION/${{steps.vars.outputs.tag}}/' src/build/settings/base.json
+        # remove suffix from semver tag, as fbs does not support them
+        version_without_suffix=$(echo ${{ steps.vars.outputs.tag }} | sed -E 's/^(v?[0-9]+\.[0-9]+\.[0-9]+).*$/\1/')
+        sed -i 's/PACKAGE_VERSION/$version_without_suffix/' src/build/settings/base.json
         cat src/main/resources/base/ayab/package_version
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4
