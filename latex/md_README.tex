@@ -70,13 +70,6 @@ To be able to work on G\+UI elements and translation files, the Qt Dev tools are
 \end{DoxyVerb}
 
 
-Finally, the {\ttfamily fbs} module needs a small patch. \begin{DoxyVerb}conda install -c free patch
-$dir = $(pwd).Path
-cd $Env:CONDA_PREFIX\Lib\site-packages\fbs\
-patch -u -i $dir\windows-build\patch-fbs.diff _defaults\src\installer\windows\Installer.nsi
-\end{DoxyVerb}
-
-
 Now start A\+Y\+AB with\+: \begin{DoxyVerb}fbs run
 \end{DoxyVerb}
 \hypertarget{md_README_autotoc_md15}{}\doxysubsection{mac\+OS}\label{md_README_autotoc_md15}
@@ -144,4 +137,6 @@ A new build is triggered when a new tag is created, either starting with
 Convention for the test-\/tag is to suffix the current date in the Y\+Y\+M\+Mdd format. If there is already an existing test build for a single day, attach a letter. The test tags and releases will be manually removed from time for a better overview.
 
 The tag can be pushed from your local environment, or via the \href{https://github.com/AllYarnsAreBeautiful/ayab-desktop/releases/new}{\texttt{ \char`\"{}\+Draft a new Release\char`\"{}}} button on the Git\+Hub website.\hypertarget{md_README_autotoc_md18}{}\doxysubsection{Choosing the firmware release to be bundled with the build}\label{md_README_autotoc_md18}
-The CI automatically downloads a given firmware release from the \href{https://github.com/AllYarnsAreBeautiful/ayab-firmware}{\texttt{ ayab-\/firmware repo}} and packs it into the Desktop release. The name of the firmware release is chosen in \href{https://github.com/AllYarnsAreBeautiful/ayab-desktop/blob/1.0.0-dev/src/main/resources/base/ayab/firmware/manifest.txt}{\texttt{ this manifest file}} in the ayab-\/desktop repo. 
+The CI automatically downloads a given firmware release from the \href{https://github.com/AllYarnsAreBeautiful/ayab-firmware}{\texttt{ ayab-\/firmware repo}} and packs it into the Desktop release. The name of the firmware release is chosen in \href{https://github.com/AllYarnsAreBeautiful/ayab-desktop/blob/1.0.0-dev/src/main/resources/base/ayab/firmware/manifest.txt}{\texttt{ this manifest file}} in the ayab-\/desktop repo.
+
+Whenever building from source, you should ensure that the firmware is available as a compiled hex file is available at {\ttfamily main/resources/base/ayab/firmware/firmware.\+hex}. You can either compile the firmware and upload it through other means (e.\+g. V\+S\+Code with Platform\+IO), or compile and then drop it into the right path in the desktop directory, making it available for the flash through A\+Y\+AB desktop. 

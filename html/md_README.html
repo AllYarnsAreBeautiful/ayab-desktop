@@ -109,10 +109,6 @@ cd ayab-desktop
 pip install --upgrade setuptools
 pip install --ignore-installed -r requirements.txt
 </pre><p>To be able to work on GUI elements and translation files, the Qt Dev tools are needed. Navigate to <a href="https://www.qt.io/download">https://www.qt.io/download</a> in a web browser and follow the installation instructions. From the available options, select "Custom install" and then "Qt 5.15.2". Then convert the PyQt5 <code>.ui</code> files and generate the translation files: </p><pre class="fragment">.\setup-environment.ps1
-</pre><p>Finally, the <code>fbs</code> module needs a small patch. </p><pre class="fragment">conda install -c free patch
-$dir = $(pwd).Path
-cd $Env:CONDA_PREFIX\Lib\site-packages\fbs\
-patch -u -i $dir\windows-build\patch-fbs.diff _defaults\src\installer\windows\Installer.nsi
 </pre><p>Now start AYAB with: </p><pre class="fragment">fbs run
 </pre><h2><a class="anchor" id="autotoc_md15"></a>
 macOS</h2>
@@ -148,7 +144,8 @@ Triggering a new build</h2>
 <p>The tag can be pushed from your local environment, or via the <a href="https://github.com/AllYarnsAreBeautiful/ayab-desktop/releases/new">"Draft a new Release"</a> button on the GitHub website.</p>
 <h2><a class="anchor" id="autotoc_md18"></a>
 Choosing the firmware release to be bundled with the build</h2>
-<p>The CI automatically downloads a given firmware release from the <a href="https://github.com/AllYarnsAreBeautiful/ayab-firmware">ayab-firmware repo</a> and packs it into the Desktop release. The name of the firmware release is chosen in <a href="https://github.com/AllYarnsAreBeautiful/ayab-desktop/blob/1.0.0-dev/src/main/resources/base/ayab/firmware/manifest.txt">this manifest file</a> in the ayab-desktop repo. </p>
+<p>The CI automatically downloads a given firmware release from the <a href="https://github.com/AllYarnsAreBeautiful/ayab-firmware">ayab-firmware repo</a> and packs it into the Desktop release. The name of the firmware release is chosen in <a href="https://github.com/AllYarnsAreBeautiful/ayab-desktop/blob/1.0.0-dev/src/main/resources/base/ayab/firmware/manifest.txt">this manifest file</a> in the ayab-desktop repo.</p>
+<p>Whenever building from source, you should ensure that the firmware is available as a compiled hex file is available at <code>main/resources/base/ayab/firmware/firmware.hex</code>. You can either compile the firmware and upload it through other means (e.g. VSCode with PlatformIO), or compile and then drop it into the right path in the desktop directory, making it available for the flash through AYAB desktop. </p>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
 <!-- start footer part -->
