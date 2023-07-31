@@ -1,13 +1,11 @@
-fbs~=1.2
-PyInstaller~=3.4
-pyqt5==5.9.2
+fbs @ git+https://github.com/AllYarnsAreBeautiful/fbs@ayab-py38
 Pillow==7.1.2
 pyserial~=3.4
 sliplib==0.4.0
 pytest==5.4.1
 mock==3.0.5
 bitarray-hardbyte==1.1.0
-simpleaudio==1.0.2
+simpleaudio==1.0.4
 wave==0.0.2
 numpy
 requests
