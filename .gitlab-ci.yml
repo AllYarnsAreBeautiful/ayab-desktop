@@ -29,7 +29,7 @@ build:osx:
     when: always
     paths:
     - dist/release/
-  script: 
+  script:
   - mac-build/build.sh
   after_script:
   - ls -lisa dist/release
@@ -37,7 +37,7 @@ build:osx:
     - tags
 
 build:linux:
-  image: python:3.6
+  image: python:3.8
   tags:
     - linux
     - docker
