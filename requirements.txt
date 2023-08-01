@@ -2,7 +2,7 @@ fbs @ git+https://github.com/AllYarnsAreBeautiful/fbs@1.2.1-py38
 PyQt5==5.12.3
 PyInstaller==4.1
 Pillow==7.1.2
-pyserial~=3.4
+pyserial==3.4
 sliplib==0.4.0
 pytest==5.4.1
 mock==3.0.5
