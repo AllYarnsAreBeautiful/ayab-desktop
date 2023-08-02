@@ -1,7 +1,7 @@
 This is the G\+UI interface for A\+Y\+AB.
 
 For information on how to install the release version of the software, see \href{http://manual.ayab-knitting.com}{\texttt{ http\+://manual.\+ayab-\/knitting.\+com}}\hypertarget{md_README_autotoc_md9}{}\doxysection{Running from Source \& Development}\label{md_README_autotoc_md9}
-The A\+Y\+AB desktop software runs using Python 3.\+6. This is not the current version of Python, so it is recommended to install the software to a virtual environment. Miniconda provides a virtual environment that is platform-\/independent and easy to use\+: download the lastest version from \href{https://docs.conda.io/en/latest/miniconda.html}{\texttt{ https\+://docs.\+conda.\+io/en/latest/miniconda.\+html}} and follow the installation instructions for your operating system.
+The A\+Y\+AB desktop software runs using Python 3.\+8. This is not the current version of Python, so it is recommended to install the software to a virtual environment. Miniconda provides a virtual environment that is platform-\/independent and easy to use\+: download the lastest version from \href{https://docs.conda.io/en/latest/miniconda.html}{\texttt{ https\+://docs.\+conda.\+io/en/latest/miniconda.\+html}} and follow the installation instructions for your operating system.
 
 The Python module dependencies can be found in {\itshape requirements.\+txt}.
 
@@ -25,7 +25,7 @@ cd ayab-desktop
 \end{DoxyVerb}
 
 
-Create a virtual environment for A\+Y\+AB\+: \begin{DoxyVerb}conda create --name ayab -c conda-forge python=3.6 pip
+Create a virtual environment for A\+Y\+AB\+: \begin{DoxyVerb}conda create --name ayab -c conda-forge python=3.8 pip
 \end{DoxyVerb}
 
 
@@ -52,7 +52,7 @@ cd ayab-desktop
 \end{DoxyVerb}
 
 
-Next, create a virtual environment for A\+Y\+AB\+: \begin{DoxyVerb}conda create --name ayab -c conda-forge python=3.6 pip
+Next, create a virtual environment for A\+Y\+AB\+: \begin{DoxyVerb}conda create --name ayab -c conda-forge python=3.8 pip
 \end{DoxyVerb}
 
 
@@ -77,7 +77,7 @@ Now start A\+Y\+AB with\+: \begin{DoxyVerb}fbs run
 
 
 \begin{DoxyItemize}
-\item You will need to install the virtual environment using the x86\+\_\+64 versions of packages due to the requirement of Python 3.\+6 (which has no build in Conda due to it predating Apple silicon). In order to do this, you need to set the terminal to fetch packages built for x86\+\_\+64 architectures rather than the native arm64. In Applications, go to the Utilities folder and right click on the Terminal app, and choosing {\ttfamily Get Info}. Select the {\ttfamily Open using Rosetta} checkbox and close the window. Check that the change has taken place by opening the terminal and entering the command {\ttfamily arch}. This should return {\ttfamily i386} if everything went correctly.
+\item You will need to install the virtual environment using the x86\+\_\+64 versions of packages due to the requirement of Python 3.\+8 (which has no build in Conda due to it predating Apple silicon). In order to do this, you need to set the terminal to fetch packages built for x86\+\_\+64 architectures rather than the native arm64. In Applications, go to the Utilities folder and right click on the Terminal app, and choosing {\ttfamily Get Info}. Select the {\ttfamily Open using Rosetta} checkbox and close the window. Check that the change has taken place by opening the terminal and entering the command {\ttfamily arch}. This should return {\ttfamily i386} if everything went correctly.
 \item Installing both native and rosetta versions of packages can cause conflicts. You can remove conflicting packages from homebrew by specifying architecture and using the remove command\+: {\ttfamily arch=arm64 brew remove xyz}.
 \end{DoxyItemize}
 
@@ -94,7 +94,7 @@ cd ayab-desktop
 \end{DoxyVerb}
 
 
-Create a virtual environment for A\+Y\+AB\+: \begin{DoxyVerb}conda create --name ayab -c conda-forge python=3.6 pip
+Create a virtual environment for A\+Y\+AB\+: \begin{DoxyVerb}conda create --name ayab -c conda-forge python=3.8 pip
 \end{DoxyVerb}
 
 

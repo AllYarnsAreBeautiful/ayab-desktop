@@ -71,7 +71,7 @@ $(function() {
 <p>For information on how to install the release version of the software, see <a href="http://manual.ayab-knitting.com">http://manual.ayab-knitting.com</a></p>
 <h1><a class="anchor" id="autotoc_md9"></a>
 Running from Source &amp; Development</h1>
-<p>The AYAB desktop software runs using Python 3.6. This is not the current version of Python, so it is recommended to install the software to a virtual environment. Miniconda provides a virtual environment that is platform-independent and easy to use: download the lastest version from <a href="https://docs.conda.io/en/latest/miniconda.html">https://docs.conda.io/en/latest/miniconda.html</a> and follow the installation instructions for your operating system.</p>
+<p>The AYAB desktop software runs using Python 3.8. This is not the current version of Python, so it is recommended to install the software to a virtual environment. Miniconda provides a virtual environment that is platform-independent and easy to use: download the lastest version from <a href="https://docs.conda.io/en/latest/miniconda.html">https://docs.conda.io/en/latest/miniconda.html</a> and follow the installation instructions for your operating system.</p>
 <p>The Python module dependencies can be found in <em>requirements.txt</em>.</p>
 <p>This repository uses <a href="https://pre-commit.com/">pre-commit</a> hooks. After cloning the repo and installing the requirements, you should run <code>pre-commit install</code> to set up the git hook scripts.</p>
 <h2><a class="anchor" id="autotoc_md10"></a>
@@ -91,7 +91,7 @@ All Distributions</h3>
 sudo usermod -aG dialout [userName]
 </pre><p>To install the development version you can checkout the git repository. </p><pre class="fragment">git clone https://github.com/AllYarnsAreBeautiful/ayab-desktop
 cd ayab-desktop
-</pre><p>Create a virtual environment for AYAB: </p><pre class="fragment">conda create --name ayab -c conda-forge python=3.6 pip
+</pre><p>Create a virtual environment for AYAB: </p><pre class="fragment">conda create --name ayab -c conda-forge python=3.8 pip
 </pre><p>Now activate the virtual environment. The command prompt should now display <code>(ayab)</code> at the beginning of each line. </p><pre class="fragment">conda activate ayab
 </pre><p>Install the remaining prerequisites. </p><pre class="fragment">python -m pip install --upgrade pip
 pip install --upgrade setuptools
@@ -103,7 +103,7 @@ Windows</h2>
 <p>Run Anaconda Powershell as administrator and install git. </p><pre class="fragment">conda install git
 </pre><p>Now you can download the git repository with: </p><pre class="fragment">git clone https://github.com/AllYarnsAreBeautiful/ayab-desktop
 cd ayab-desktop
-</pre><p>Next, create a virtual environment for AYAB: </p><pre class="fragment">conda create --name ayab -c conda-forge python=3.6 pip
+</pre><p>Next, create a virtual environment for AYAB: </p><pre class="fragment">conda create --name ayab -c conda-forge python=3.8 pip
 </pre><p>Activate the virtual environment. The command prompt should now display <code>(ayab)</code> at the beginning of each line. </p><pre class="fragment">conda activate ayab
 </pre><p>Install the prerequisite Python modules. </p><pre class="fragment">python -m pip install --upgrade pip
 pip install --upgrade setuptools
@@ -114,14 +114,14 @@ pip install --ignore-installed -r requirements.txt
 macOS</h2>
 <p><em>If on Apple Silicon (M1 &amp; M2 chips)</em></p>
 <ul>
-<li>You will need to install the virtual environment using the x86_64 versions of packages due to the requirement of Python 3.6 (which has no build in Conda due to it predating Apple silicon). In order to do this, you need to set the terminal to fetch packages built for x86_64 architectures rather than the native arm64. In Applications, go to the Utilities folder and right click on the Terminal app, and choosing <code>Get Info</code>. Select the <code>Open using Rosetta</code> checkbox and close the window. Check that the change has taken place by opening the terminal and entering the command <code>arch</code>. This should return <code>i386</code> if everything went correctly.</li>
+<li>You will need to install the virtual environment using the x86_64 versions of packages due to the requirement of Python 3.8 (which has no build in Conda due to it predating Apple silicon). In order to do this, you need to set the terminal to fetch packages built for x86_64 architectures rather than the native arm64. In Applications, go to the Utilities folder and right click on the Terminal app, and choosing <code>Get Info</code>. Select the <code>Open using Rosetta</code> checkbox and close the window. Check that the change has taken place by opening the terminal and entering the command <code>arch</code>. This should return <code>i386</code> if everything went correctly.</li>
 <li>Installing both native and rosetta versions of packages can cause conflicts. You can remove conflicting packages from homebrew by specifying architecture and using the remove command: <code>arch=arm64 brew remove xyz</code>.</li>
 </ul>
 <p>You can install Git using Homebrew: </p><pre class="fragment">brew install git
 </pre><p>You will also need the Xcode command line tools: </p><pre class="fragment">xcode-select --install
 </pre><p>Next download the git repository: </p><pre class="fragment">git clone https://github.com/AllYarnsAreBeautiful/ayab-desktop
 cd ayab-desktop
-</pre><p>Create a virtual environment for AYAB: </p><pre class="fragment">conda create --name ayab -c conda-forge python=3.6 pip
+</pre><p>Create a virtual environment for AYAB: </p><pre class="fragment">conda create --name ayab -c conda-forge python=3.8 pip
 </pre><p>Now activate the virtual environment. The command prompt should now display <code>(ayab)</code> at the beginning of each line. </p><pre class="fragment">conda activate ayab
 </pre><p>Then install the remaining prerequisites with: </p><pre class="fragment">python -m pip install --upgrade pip
 pip install --upgrade setuptools
