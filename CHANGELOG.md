@@ -6,141 +6,231 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 (at least since version 1.0.0).
 
-## 1.0.0 / Unreleased
+## [Unreleased]
+
+## [1.0.0]
 
 Change in versioning scheme: From now on, the AYAB desktop software and firmware are using the Semantic Versioning 2.0.0 (https://semver.org/) versioning scheme.
 Pre-releases are marked with a suffix, e.g. `1.0.0-rc1`, which stands for "release candidate 1"
 
-* #467 Devops: Drop support for Arduino Mega
-* #466 Devops: Bundle firmware for desktop application based on a manifest file
-* #464 Devops: Patch python module fbs to fix Windows installer bug 
-* #447 Engine: Pass machine type to firmware before attempting to knit
-* #443 Engine: Fix flanking needle color for singlebed mode
-* #452 Devops: Drop build of .deb package 
-* #411,#420 Engine: Migrate to API v6
-* #419 Devops: Change README with instructions to use Miniconda on all platforms
-* #413 Engine: Add run-time test methods and change required API version to 6 
-* #404 GUI: Fix image alignment and placement of limit lines in graphical scene
-* #395 GUI: Check for new release on startup
-* #393 Documentation: Add forthcoming features to CHANGELOG
-* #389 GUI: Rollback to Python3.6, PyQt5==5.9.2
-* #379 GUI: Change appearance of menu bar
-* #375 Devops: Add script to make PyQt5 files from XML during build
-* #371 Documentation: Add need to install avrdude for Linux to README
-* #364 Engine: Force engine to communicate with GUI via signals
-  to ensure thread safety
-* #363 Engine, GUI: Change implementation of finite state machines
-* #356 Engine: Add classes for configuration options
-* #354 Devops: Add script to make translation files from master during build
-* #353 GUI: Add translations for languages other than German
-* #348 Engine: Fix color of needles flanking image to background
-* #345 GUI: Remove Configure button
-* #342 GUI: Add link to documentation in Help-About form
-* #338 GUI: Fix crash on knitting restart
-* #326 Engine: Change parsing of serial communication
-* #311 Engine: Add CRC8 check for serial communication
-* #308 Engine: Change representation of pattern from grayscale to color
-* #303 GUI: Update Python dependencies
-* #301 Devops: Add tests of Python code to CI workflow
-* #300 GUI: Add Simulation mode
-* #298 GUI: Add ability to load and convert DAK .PAT and .STP files
-* #290 GUI: Remove shield test from firmware flash menu
-* #289 GUI: Copy pattern files to user directory on startup
-* #286 GUI: Improve visibility of icon
-* #278,#310 Devops: Add Windows, OSX, and AppImage builds to Github workflow
-* #270 GUI: Limit excessive pattern width when transforming image
-* #238 GUI: Add preference settings menu item and dialog
-* #236 GUI: Add checkbox to options dock for image mirroring
-* #226 GUI: Add knit progress area reporting line-by-line graphics
-* #208 GUI: Add sound effects at start, end, and new line
-* #206 GUI: Add 10 second timeout for firmware flash
-* #145 GUI: Add feedback while flashing firmware
-* #131,#261 GUI: Add stretch and reflect to image actions submenu
-* #155 GUI: Fix scrolling of pattern when scrolling the sidebar
-* Devops: Migrate from Ubuntu 16.04 to Ubuntu 20.04 for github workflows
+### Added
 
-## 0.95 / 2019-01-28
+- Devops: TEST_GUIDE.md (#546).
+- Devops: Mac M1 build documentation (#543).
+- Engine: Check for out-of-sequence line number requests (#540).
+- Devops: Doxygen documentation of Python code (#519,#522).
+- GUI: New menu items and keyboard shortcuts (#517).
+- Engine: Run-time test methods and change required API version to 6 (#413).
+- GUI: Check for new release on startup (#395).
+- Devops: Forthcoming features to CHANGELOG (#393).
+- Devops: Script to make PyQt5 files from XML during build (#375).
+- Engine: Classes for configuration options (#356).
+- Devops: Script to make translation files from master during build (#354).
+- GUI: Translations for languages other than German (#353).
+- GUI: Link to documentation in Help-About form (#342).
+- Engine: CRC8 check for serial communication (#311).
+- Devops: Tests of Python code to CI workflow (#301).
+- GUI: Simulation mode (#300).
+- GUI: Ability to load and convert DAK .PAT and .STP files (#298).
+- Devops: Windows, OSX, and AppImage builds to Github workflow (#278,#310).
+- GUI: Preference settings menu item and dialog (#238).
+- GUI: Checkbox to options dock for image mirroring (#236).
+- GUI: Knit progress area reporting line-by-line graphics (#226).
+- GUI: Sound effects at start, end, and new line (#208).
+- GUI: 10 second timeout for firmware flash (#206).
+- GUI: Feedback while flashing firmware (#145).
+- GUI: Stretch and reflect to image actions submenu (#131,#261).
 
-* #280 GUI: Fix crash when pattern is outside left edge
-* #271 Engine: Add Heart-of-Pluto Ribber mode (see AYAB manual)
-* #259 GUI: Write date and time to the log
-* #253 Devops: Fix Mac installation: need OSX 10.12 (Sierra) or newer
-* #249 GUI: Fix lace patterns 8-29, 8-30, 8-31, 9-32, 10-33 thru 10-36
-* #248 GUI: Show number of completed repeats
-* #246 Engine: Reduce carriage turn around time
-* #245 GUI: Center patterns with an odd number of stitches on green 1
-* #244 Engine: Allow some backwards carriage movement without advancing
-  to the next row
-* #239 Engine: Add Middle-Color-Twice Ribber mode (see AYAB manual)
-* #226 GUI: Show current color in progess bar
-* #225 GUI: Enlarge row number in progress bar
+### Fixed
 
-## 0.91 / 2018-04-01 [UNRELEASED]
+- GUI: avrdude command where there is whitespace in the file path (#458,#535,#539).
+- Devops: Test workflow (#531,#533).
+- GUI: Knitting progress window for knitting modes using ribber (#527,#530).
+- GUI: Width of image files by removing needle at 0 (#526,#529,#530).
+- GUI: Black line showing knitting progress (#516).
+- GUI: Hardware test operation (#515).
+- Devops: System calls under Windows (#513).
+- GUI: Audio error after knitting finishes (#506,#514).
+- Engine: Communication errors logged as debug messages (#498,#499)
+- Engine: ReqTest message sending redundant machine type information (#496,#497).
+- GUI: Error in audio playback (#492,#495).
+- Engine: Typos in FSM (#482).
+- GUI: Persistence of test thread after test dialog is closed (#477).
+- Devops: Typo in README.md (#475).
+- Devops: Missing firmware hex file in AppImage (#472).
+- GUI: Firmware flashing utility (#471,#472).
+- Devops: Conda command for to set up Python 3.6 environment (#470).
+- Engine: Mock communication for knitting operation (#469,#479).
+- Engine: Flanking needle color for singlebed mode (#443).
+- GUI: Image alignment and placement of limit lines in graphical scene (#404).
+- Engine: Color of needles flanking image to background (#348).
+- GUI: Crash on knitting restart (#338).
+- GUI: Scrolling of pattern when scrolling the sidebar (#155).
 
-* #251 GUI: Add Repeat image action and shortcuts
-* Engine: Add experimental support for Garter Carriage
-* Engine: Improve I2C communication (PR #11)
-* Engine: Change END_OF_LINE_OFFSET_L to 12 (#9)
+### Changed
 
-## 0.90 / 2017-08-31
+- Devops: Transition from Python 3.6 to 3.8, update dependencies (#555,#557,#559).
+- Devops: Use most recent version of fbs (#554).
+- Engine: Log engine state only on change (#537,#538).
+- Devops: Establish semantic versioning (#476,#534,#551).
+- GUI: Rename modules (#518,#523).
+- GUI: Make DockWidget shorter (#511,#512).
+- Devops: Rename setup-environment.sh as setup-environment.ps1 (#509,#510).
+- GUI: Rename object names (#501,#502).
+- Engine: Use API version sent by device (#493).
+- Engine: Change indState message (#490).
+- Engine: Change tokens to be consistent with APIv6 (#487).
+- Devops: Change source file line endings from CRLF to LF (#481).
+- Devops: Update CHANGELOG.md (#480,#553).
+- Devops: Bundle firmware for desktop application based on a manifest file (#466,#468).
+- Devops: Patch python module fbs to fix Windows installer bug (#464).
+- Engine: Pass machine type to firmware before attempting to knit (#447).
+- Engine: Migrate to API v6 (#411,#420).
+- Devops: Change README with instructions to use Miniconda on all platforms (#419).
+- GUI: Rollback to Python 3.6, PyQt5==5.9.2 (#389).
+- GUI: Change appearance of menu bar (#379).
+- Devops: Add need to install avrdude for Linux to README (#371).
+- Engine: Force engine to communicate with GUI via signals to ensure thread safety (#364).
+- Engine, GUI: Change implementation of finite state machines (#363).
+- Engine: Change parsing of serial communication (#326).
+- Engine: Change representation of pattern from grayscale to color (#308).
+- GUI: Update Python dependencies (#303).
+- GUI: Copy pattern files to user directory on startup (#289).
+- GUI: Improve visibility of icon (#286).
+- GUI: Limit excessive pattern width when transforming image (#270).
+- Devops: Migrate from Ubuntu 16.04 to Ubuntu 20.04 for github workflows.
 
-* #220 GUI: Check image width before setting pixels
-* #211,#212 GUI: Improve image file dialogue
-* #205,#207 Engine: Validate number of colors in single and circular mode
-* #197 Engine: Fix multicolor ribber knitting
-* #191 GUI: Fix image rotation with Pillow 3.0
-* #189 GUI: Remove Smart Resize menu option for now
-* #167 Engine: Fix start row in ribber infinite knitting
-* #166 GUI: Add automatic window maximization on startup
-* #162 GUI: Change name of logfile to ayab_log.txt
-* #156 GUI: Show filename in status bar
-* #153 GUI: Fix automatic setting of start/stop needle for odd image widths
-* #148 Engine: Fix ABBA pattern in 2 color ribber infinite mode
-* #148 Engine: Fix circular knitting
-* #143 Engine: Fix exception during serial port closing
-* #141 GUI: Remove progress bar
-* #137,#151 GUI: Fix start line spinbox range
-* #127 GUI: More verbose user notification when using incompatible firmware
-* #126 GUI: Fix handling of spaces in file paths
-* Devops: Add OSX App bundle
-* Devops: Add Windows 7 and Windows 10 builds
-* Engine: New end beep
-* Engine: Fix accidental double selection of last row in every knitting mode
-* Engine: Add KH910 capability
-* GUI: Migrate from Python2 to Python3
-* GUI: Migrate from PyQt4 to PyQt5
-* GUI: Add custom patterns
+### Removed
 
-## 0.80 / 2015-11-01
+- Devops: .gitlab-ci.yml (#558,#560).
+- Engine: Blocking while loops in FSM (#541,#542).
+- Devops: Out-of-date documentation in docs folder (#520,#521).
+- Devops: Support for Arduino Mega (#467).
+- Devops: Build of .deb package (#452,#474).
+- GUI: Configure button (#345).
+- GUI: Shield test from firmware flash menu (#290).
 
-* Engine: Migrate to API v4
-* Engine: Add test mode
-* Engine: Add Auto-Init functionality
-* Engine: Add firmware version definition
-* Engine: Fix reset of needles out of active needle area
-* Engine: Add support for I2C port expander on shield v1.3TH (MCP23008)
-* GUI: Add basic visualization of pattern position
-* GUI: Add mouse wheel zooming of pattern
-* GUI: Add visualization of test mode data
-* GUI: Add Auto-Init functionality (no need to click OK several times when
-  starting to knit)
-* GUI: Move firmware database to external JSON file
-* GUI: Fix pattern rotation direction
-* GUI: Fix pattern inversion
-* GUI: Fix growth of image when rotating
-* GUI: Fix unlocking of knit controls after image manipulation
+## [0.95] - 2019-01-28
 
-## 0.75 / 2015-02-28
+### Added
 
-* Engine: Fix lace carriage support
+- Engine: Heart-of-Pluto Ribber mode (see AYAB manual) (#271).
+- Engine: Middle-Color-Twice Ribber mode (see AYAB manual) (#239).
 
-## 0.7 / 2015-02-01
+### Fixed
 
-* Engine: Add lace carriage support
-* GUI: Show info about current line number
-* GUI: Fix some layout issues (e.g. disable UI elements)
-* GUI: Start to knit with the bottom of the image
-* GUI: Fix progress bar in 2 color doublebed mode
-* GUI: Make Start and Stop needle selection as on the machine (orange/green)
-* GUI: Add infinite repeat functionality
-* GUI: Add Cancel button
+- GUI: Crash when pattern is outside left edge (#280).
+- Devops: Mac installation: need OSX 10 (#253).12 (Sierra) or newer.
+- GUI: Lace patterns 8-29, 8-30, 8-31, 9-32, 10-33 thru 10-36 (#249).
+
+### Changed
+
+- GUI: Write date and time to the log (#259).
+- GUI: Show number of completed repeats (#248).
+- Engine: Reduce carriage turn around time (#246).
+- GUI: Center patterns with an odd number of stitches on green 1 (#245).
+- Engine: Allow some backwards carriage movement without advancing to the next row (#244).
+- GUI: Show current color in progess bar (#226).
+- GUI: Enlarge row number in progress bar (#225).
+
+## [0.91] - 2018-04-01 [UNRELEASED]
+
+### Added
+
+- GUI: Add Repeat image action and shortcuts (#251).
+- Engine: Add experimental support for Garter Carriage.
+
+### Changed
+
+- Engine: Improve I2C communication (#11).
+- Engine: Change END_OF_LINE_OFFSET_L to 12 (#9).
+
+## [0.90] - 2017-08-31
+
+### Added
+
+- GUI: Automatic window maximization on startup (#166).
+- Devops: OSX App bundle.
+- Devops: Windows 7 and Windows 10 builds.
+- Engine: KH910 capability.
+- GUI: Custom patterns.
+
+### Fixed
+
+- Engine: Multicolor ribber knitting (#197).
+- GUI: Image rotation with Pillow 3.0 (#191).
+- Engine: Start row in ribber infinite knitting (#167).
+- GUI: Automatic setting of start/stop needle for odd image widths (#153).
+- Engine: ABBA pattern in 2 color ribber infinite mode (#148).
+- Engine: Circular knitting (#148).
+- Engine: Exception during serial port closing (#143).
+- GUI: Start line spinbox range (#137,#151).
+- GUI: Handling of spaces in file paths (#126).
+- Engine: Accidental double selection of last row in every knitting mode.
+
+### Changed
+
+- GUI: Check image width before setting pixels (#220).
+- GUI: Improve image file dialogue (#211,#212).
+- Engine: Validate number of colors in single and circular mode (#205,#207).
+- GUI: Change name of logfile to ayab_log.txt (#162).
+- GUI: Show filename in status bar (#156).
+- GUI: More verbose user notification when using incompatible firmware (#127).
+- Engine: New end beep.
+- GUI: Migrate from Python2 to Python3.
+- GUI: Migrate from PyQt4 to PyQt5.
+
+### Removed
+
+- GUI: Remove Smart Resize menu option for now (#189).
+- GUI: Remove progress bar (#141).
+
+## [0.80] - 2015-11-01
+
+### Added
+
+- Engine: Test mode.
+- Engine: Auto-Init functionality.
+- Engine: Firmware version definition.
+- Engine: Support for I2C port expander on shield v1.3TH (MCP23008).
+- GUI: Basic visualization of pattern position.
+- GUI: Mouse wheel zooming of pattern.
+- GUI: Visualization of test mode data.
+
+### Fixed
+
+- Engine: Reset of needles out of active needle area.
+- GUI: Pattern rotation direction.
+- GUI: Pattern inversion.
+- GUI: Growth of image when rotating.
+- GUI: Unlocking of knit controls after image manipulation.
+
+### Changed
+
+- Engine: Migrate to API v4.
+- GUI: Move firmware database to external JSON file.
+
+## [0.75] - 2015-02-28
+
+### Fixed
+
+- Engine: Lace carriage support.
+
+## [0.7] - 2015-02-01
+
+### Added
+
+- Engine: Lace carriage support.
+- GUI: Infinite repeat functionality.
+- GUI: Cancel button.
+* GUI: Show info about current line number.
+
+### Fixed
+
+- GUI: Some layout issues (e.g. disable UI elements).
+- GUI: Progress bar in 2 color doublebed mode.
+
+### Changed
+
+- GUI: Start to knit with the bottom of the image.
+- GUI: Make Start and Stop needle selection as on the machine (orange/green).
