@@ -40,7 +40,7 @@ jobs:
     - name: Get firmware version matching manifest
       run: |
         echo ${{ steps.vars.outputs.manifest }}
-        available=$(curl -s https://github.com/AllYarnsAreBeautiful/ayab-firmware/releases | grep -oE '/tag/[^\"]+' | sed -E 's/\/tag\///') 
+        available=$(curl -s https://github.com/AllYarnsAreBeautiful/ayab-firmware/releases | grep -oE '/tag/[^\"]+' | sed -E 's/\/tag\///')
         echo $available
         match=$(for x in $available; do echo $x; done | grep ^${{ steps.vars.outputs.manifest }} | sort -r | head -1)
         echo $match
@@ -69,6 +69,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
+        sudo apt update
         sudo apt-get install -y avrdude libasound2-dev
     - name: Restore pip cache
       id:   pip-cache
