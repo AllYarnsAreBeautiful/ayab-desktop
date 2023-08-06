@@ -1,20 +1,20 @@
 This is the G\+UI interface for A\+Y\+AB.
 
-For information on how to install the release version of the software, see \href{http://manual.ayab-knitting.com}{\texttt{ http\+://manual.\+ayab-\/knitting.\+com}}\hypertarget{md_README_autotoc_md9}{}\doxysection{Running from Source \& Development}\label{md_README_autotoc_md9}
+For information on how to install the release version of the software, see \href{http://manual.ayab-knitting.com}{\texttt{ http\+://manual.\+ayab-\/knitting.\+com}}\hypertarget{md_README_autotoc_md30}{}\doxysection{Running from Source \& Development}\label{md_README_autotoc_md30}
 The A\+Y\+AB desktop software runs using Python 3.\+8. This is not the current version of Python, so it is recommended to install the software to a virtual environment. Miniconda provides a virtual environment that is platform-\/independent and easy to use\+: download the lastest version from \href{https://docs.conda.io/en/latest/miniconda.html}{\texttt{ https\+://docs.\+conda.\+io/en/latest/miniconda.\+html}} and follow the installation instructions for your operating system.
 
 The Python module dependencies can be found in {\itshape requirements.\+txt}.
 
-This repository uses \href{https://pre-commit.com/}{\texttt{ pre-\/commit}} hooks. After cloning the repo and installing the requirements, you should run {\ttfamily pre-\/commit install} to set up the git hook scripts.\hypertarget{md_README_autotoc_md10}{}\doxysubsection{Linux}\label{md_README_autotoc_md10}
-For flashing the firmware, avrdude has to be available on your system. To be able to work on G\+UI elements and translation files, the Qt Dev tools are needed also.\hypertarget{md_README_autotoc_md11}{}\doxysubsubsection{Debian/\+Ubuntu}\label{md_README_autotoc_md11}
+This repository uses \href{https://pre-commit.com/}{\texttt{ pre-\/commit}} hooks. After cloning the repo and installing the requirements, you should run {\ttfamily pre-\/commit install} to set up the git hook scripts.\hypertarget{md_README_autotoc_md31}{}\doxysubsection{Linux}\label{md_README_autotoc_md31}
+For flashing the firmware, avrdude has to be available on your system. To be able to work on G\+UI elements and translation files, the Qt Dev tools are needed also.\hypertarget{md_README_autotoc_md32}{}\doxysubsubsection{Debian/\+Ubuntu}\label{md_README_autotoc_md32}
 \begin{DoxyVerb}sudo apt-get install python3-pip python3-dev python3-virtualenv python3-gi
 sudo apt-get install libasound2-dev avrdude qttools5-dev-tools
 \end{DoxyVerb}
-\hypertarget{md_README_autotoc_md12}{}\doxysubsubsection{For open\+S\+U\+SE}\label{md_README_autotoc_md12}
+\hypertarget{md_README_autotoc_md33}{}\doxysubsubsection{For open\+S\+U\+SE}\label{md_README_autotoc_md33}
 \begin{DoxyVerb}sudo zypper install python3-pip python3-virtualenv python3-gi
 sudo zypper install libasound avrdude qttools5-dev-tools
 \end{DoxyVerb}
-\hypertarget{md_README_autotoc_md13}{}\doxysubsubsection{All Distributions}\label{md_README_autotoc_md13}
+\hypertarget{md_README_autotoc_md34}{}\doxysubsubsection{All Distributions}\label{md_README_autotoc_md34}
 To be able to communicate with your Arduino, it might be necessary to add the rights for U\+SB communication by adding your user to some groups. \begin{DoxyVerb}sudo usermod -aG tty [userName]
 sudo usermod -aG dialout [userName]
 \end{DoxyVerb}
@@ -42,7 +42,7 @@ bash setup-environment.ps1
 
 Now start A\+Y\+AB with \begin{DoxyVerb}fbs run
 \end{DoxyVerb}
-\hypertarget{md_README_autotoc_md14}{}\doxysubsection{Windows}\label{md_README_autotoc_md14}
+\hypertarget{md_README_autotoc_md35}{}\doxysubsection{Windows}\label{md_README_autotoc_md35}
 Run Anaconda Powershell as administrator and install git. \begin{DoxyVerb}conda install git
 \end{DoxyVerb}
 
@@ -72,7 +72,7 @@ To be able to work on G\+UI elements and translation files, the Qt Dev tools are
 
 Now start A\+Y\+AB with\+: \begin{DoxyVerb}fbs run
 \end{DoxyVerb}
-\hypertarget{md_README_autotoc_md15}{}\doxysubsection{mac\+OS}\label{md_README_autotoc_md15}
+\hypertarget{md_README_autotoc_md36}{}\doxysubsection{mac\+OS}\label{md_README_autotoc_md36}
 {\itshape If on Apple Silicon (M1 \& M2 chips)}
 
 
@@ -124,8 +124,8 @@ If you get errors about missing {\ttfamily lrelease}, you can skip this if you d
 
 Now start A\+Y\+AB with \begin{DoxyVerb}fbs run
 \end{DoxyVerb}
-\hypertarget{md_README_autotoc_md16}{}\doxysection{C\+I/\+C\+D on Git\+Hub}\label{md_README_autotoc_md16}
-\hypertarget{md_README_autotoc_md17}{}\doxysubsection{Triggering a new build}\label{md_README_autotoc_md17}
+\hypertarget{md_README_autotoc_md37}{}\doxysection{C\+I/\+C\+D on Git\+Hub}\label{md_README_autotoc_md37}
+\hypertarget{md_README_autotoc_md38}{}\doxysubsection{Triggering a new build}\label{md_README_autotoc_md38}
 A new build is triggered when a new tag is created, either starting with
 
 
@@ -136,7 +136,7 @@ A new build is triggered when a new tag is created, either starting with
 
 Convention for the test-\/tag is to suffix the current date in the Y\+Y\+M\+Mdd format. If there is already an existing test build for a single day, attach a letter. The test tags and releases will be manually removed from time for a better overview.
 
-The tag can be pushed from your local environment, or via the \href{https://github.com/AllYarnsAreBeautiful/ayab-desktop/releases/new}{\texttt{ \char`\"{}\+Draft a new Release\char`\"{}}} button on the Git\+Hub website.\hypertarget{md_README_autotoc_md18}{}\doxysubsection{Choosing the firmware release to be bundled with the build}\label{md_README_autotoc_md18}
+The tag can be pushed from your local environment, or via the \href{https://github.com/AllYarnsAreBeautiful/ayab-desktop/releases/new}{\texttt{ \char`\"{}\+Draft a new Release\char`\"{}}} button on the Git\+Hub website.\hypertarget{md_README_autotoc_md39}{}\doxysubsection{Choosing the firmware release to be bundled with the build}\label{md_README_autotoc_md39}
 The CI automatically downloads a given firmware release from the \href{https://github.com/AllYarnsAreBeautiful/ayab-firmware}{\texttt{ ayab-\/firmware repo}} and packs it into the Desktop release. The name of the firmware release is chosen in \href{https://github.com/AllYarnsAreBeautiful/ayab-desktop/blob/1.0.0-dev/src/main/resources/base/ayab/firmware/manifest.txt}{\texttt{ this manifest file}} in the ayab-\/desktop repo.
 
 Whenever building from source, you should ensure that the firmware is available as a compiled hex file is available at {\ttfamily main/resources/base/ayab/firmware/firmware.\+hex}. You can either compile the firmware and upload it through other means (e.\+g. V\+S\+Code with Platform\+IO), or compile and then drop it into the right path in the desktop directory, making it available for the flash through A\+Y\+AB desktop. 
