@@ -150,7 +150,7 @@ class FirmwareFlash(QFrame):
         try:
             p = check_output(command, stderr=STDOUT, timeout=10, shell=True)
         except Exception as e:
-            self.__logger.info("Error flashing firmware: " + str(e))
+            self.__logger.info("Error flashing firmware: " + repr(e))
             utils.display_blocking_popup(
                 tr_("Firmware", "Error flashing firmware."), "error")
             return False
@@ -172,7 +172,7 @@ class FirmwareFlash(QFrame):
                 # run subprocess
                 result = run(["which", "avrdude"], stdout=PIPE, stderr=PIPE)
                 print(result)
-            except:
+            except Exception:
                 self.__logger.error("`avrdude` not found in path")
                 utils.display_blocking_popup(
                     QCoreApplication.translate(

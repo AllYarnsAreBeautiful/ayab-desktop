@@ -152,8 +152,8 @@ class AyabImage(SignalSender):
         self.image = transform(self.image, args)
         try:
             pass #self.image = transform(self.image, args)
-        except:
-            logging.error("Error while executing image transform.")
+        except Exception as e:
+            logging.error("Error while executing image transform: " + repr(e))
 
         # Update the view
         self.emit_image_resizer()
