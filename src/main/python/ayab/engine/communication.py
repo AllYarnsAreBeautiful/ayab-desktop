@@ -88,7 +88,7 @@ class Communication(object):
                 self.__ser = serial.Serial(self.__portname,
                                            115200,
                                            timeout=0.1)
-            except:
+            except Exception:
                 self.logger.error("could not open serial port " +
                                     self.__portname)
                 raise CommunicationException()
@@ -102,7 +102,7 @@ class Communication(object):
                 del (self.__ser)
                 self.__ser = None
                 self.logger.info("Closing serial port successful.")
-            except:
+            except Exception:
                 self.logger.warning("Closing serial port failed. \
                                       Was it ever open?")
 
