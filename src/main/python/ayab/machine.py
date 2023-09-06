@@ -36,7 +36,8 @@ class Machine(Enum):
     # number of needles on machine
     def width(self):
         if self == Machine.KH270:
-            return 114
+            # The last needles don't pattern.
+            return 112
         else:
             return 200
 
