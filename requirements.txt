@@ -4,7 +4,7 @@ PyInstaller==5.13.2
 Pillow==9.5.0
 pyserial==3.4
 sliplib==0.4.0
-pytest==5.4.1
+pytest==7.4.2
 mock==3.0.5
 bitarray-hardbyte==2.3.8
 simpleaudio==1.0.4
