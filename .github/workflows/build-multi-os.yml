@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        python-version: [3.8]
+        python-version: [3.11]
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
@@ -186,7 +186,7 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        python-version: [3.8]
+        python-version: [3.11]
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
@@ -317,7 +317,7 @@ jobs:
     runs-on: macos-latest
     strategy:
       matrix:
-        python-version: [3.8]
+        python-version: [3.11]
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
@@ -337,6 +337,7 @@ jobs:
     - name: Install dependencies
       run: |
         brew install avrdude
+        brew install pyqt@5
         python -m pip install --upgrade pip
         python -m pip install --upgrade setuptools
         python -m pip install -r requirements.txt
@@ -424,7 +425,7 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        python-version: [3.8]
+        python-version: [3.11]
     steps:
     - name: Checkout repo into AppDir
       uses: actions/checkout@v3
