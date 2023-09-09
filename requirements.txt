@@ -1,12 +1,12 @@
-fbs @ git+https://github.com/AllYarnsAreBeautiful/fbs@1.2.1-py38
-PyQt5==5.12.3
-PyInstaller==4.4
-Pillow==7.1.2
+fbs @ git+https://github.com/X-Sam/fbs@7c99881
+PyQt5==5.15.9
+PyInstaller==5.13.2
+Pillow==9.5.0
 pyserial==3.4
 sliplib==0.4.0
 pytest==5.4.1
 mock==3.0.5
-bitarray-hardbyte==1.1.0
+bitarray-hardbyte==2.3.8
 simpleaudio==1.0.4
 wave==0.0.2
 numpy
