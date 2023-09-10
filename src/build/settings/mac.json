@@ -3,6 +3,5 @@
     "resources_to_filter": [
         "src/main/resources/mac-frozen/Contents/Info.plist"
     ],
-    "extra_pyinstaller_args": ["--target-arch","universal2"],
-    "hidden_imports": ["charset_normalizer.md__mypyc"]
+    "extra_pyinstaller_args": ["--target-arch","universal2"]
 }

@@ -10,5 +10,6 @@ bitarray-hardbyte==2.3.8
 simpleaudio==1.0.4
 wave==0.0.2
 numpy
+charset-normalizer<3.0.0
 requests
 pre-commit
