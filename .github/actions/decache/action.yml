@@ -8,6 +8,7 @@ inputs:
   steps:
   - name: Set variables
     id: vars
+    shell: bash
     run: |
       cd git
       echo "tag=$(git describe --tags)" >> $GITHUB_OUTPUT
@@ -57,10 +58,12 @@ inputs:
       enableCrossOsArchive: true
       fail-on-cache-miss: true
   - name: Remove unneeded files
+    shell: bash
     run: |
       rm src/main/python/ayab/*_gui.ui
       rm src/main/python/ayab/ayab_logo_rc.qrc
   - name: Check cached files
+    shell: bash
     run: |
       pwd
       ls -l src/main/python/ayab/
