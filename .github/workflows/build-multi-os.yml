@@ -340,7 +340,7 @@ jobs:
         brew install pyqt@5
         python -m pip install --upgrade pip
         python -m pip install --upgrade setuptools
-        python -m pip install --no-binary charset_normalizer -r requirements.txt
+        python -m pip install --no-binary charset_normalizer --platform universal2 -r requirements.txt
     - name: Restore cached firmware
       id:   firmware-cache
       uses: actions/cache@v3
