@@ -1,9 +1,10 @@
 name: decache
+description: Restore cached files
 runs:
   using: "composite"
 inputs:
   python-version:
-    required: true  
+    required: true
   steps:
   - name: Set variables
     id: vars
