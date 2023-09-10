@@ -32,9 +32,7 @@ jobs:
     - name: Set variables
       id: vars
       run: |
-        echo "sha-short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
         echo "tag=$(git describe --tags)" >> $GITHUB_OUTPUT
-        echo "draft=$(git describe --tags | sed -e 's/^test.*/true/;s/^v.*/false/')" >> $GITHUB_OUTPUT
         echo "manifest=$(cat src/main/resources/base/ayab/firmware/manifest.txt)" >> $GITHUB_OUTPUT
     - name: Get firmware version matching manifest
       run: |
@@ -152,10 +150,7 @@ jobs:
       id: vars
       shell: bash
       run: |
-        echo "sha-short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
         echo "tag=$(git describe --tags)" >> $GITHUB_OUTPUT
-        echo "draft=$(git describe --tags | sed -e 's/^test.*/true/;s/^v.*/false/')" >> $GITHUB_OUTPUT
-        echo "manifest=$(cat src/main/resources/base/ayab/firmware/manifest.txt)" >> $GITHUB_OUTPUT
     - name: Set up Python ${{ matrix.python-version }}
       id: py
       uses: actions/setup-python@v4
@@ -193,24 +188,13 @@ jobs:
       run: |
         python -m fbs installer
         Move-Item -Path target\AYABSetup.exe -Destination target\AYAB-${{ steps.vars.outputs.tag }}.exe
-    - name: Upload asset
-      uses: ncipollo/release-action@v1
+    - name: Upload release asset        
+      uses: ./.github/workflows/release@master
       with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        tag: ${{ steps.vars.outputs.tag }}
-        commit: ${{ steps.vars.outputs.sha }}
-        body: ""  # release message, alternative to body_path
-        # body_path: release_text.md  # uncomment if not used
-        draft: ${{ steps.vars.outputs.draft }}
-        prerelease: false
-        allowUpdates: true
-        artifacts: target/AYAB-${{ steps.vars.outputs.tag }}.exe
-        artifactContentType: application/exe
-        replacesArtifacts: true
-    - uses: actions/upload-artifact@v3
-      with:
-        name: AYAB-${{ steps.vars.outputs.tag }}.exe
-        path: target/AYAB-${{ steps.vars.outputs.tag }}.exe
+        type: exe
+        suffix: exe
+      secrets:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   build-macos:
     name: Create and upload Mac OSX release
@@ -228,9 +212,7 @@ jobs:
       id: vars
       shell: bash
       run: |
-        echo "sha-short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
         echo "tag=$(git describe --tags)" >> $GITHUB_OUTPUT
-        echo "manifest=$(cat src/main/resources/base/ayab/firmware/manifest.txt)" >> $GITHUB_OUTPUT
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4
       with:
@@ -251,24 +233,13 @@ jobs:
       run: |
         python -m fbs installer
         mv target/AYAB.dmg target/AYAB-${{ steps.vars.outputs.tag }}.dmg
-    - name: Upload asset
-      uses: ncipollo/release-action@v1
+    - name: Upload release asset        
+      uses: ./.github/workflows/release@master
       with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        tag: ${{ steps.vars.outputs.tag }}
-        commit: ${{ steps.vars.outputs.sha }}
-        body: ""  # release message, alternative to body_path
-        # body_path: release_text.md  # uncomment if not used
-        draft: ${{ steps.vars.outputs.draft }}
-        prerelease: false
-        allowUpdates: true
-        artifacts: target/AYAB-${{ steps.vars.outputs.tag }}.dmg
-        artifactContentType: application/dmg
-        replacesArtifacts: true
-    - uses: actions/upload-artifact@v3
-      with:
-        name: AYAB-${{ steps.vars.outputs.tag }}.dmg
-        path: target/AYAB-${{ steps.vars.outputs.tag }}.dmg
+        type: dmg
+        suffix: dmg
+      secrets:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   # see https://github.com/AppImage/AppImageKit/wiki/Bundling-Python-apps
   build-appimage:
@@ -288,11 +259,8 @@ jobs:
     - name: Set variables
       id: vars
       run: |
-        cd git
-        echo "sha-short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
         echo "tag=$(git describe --tags)" >> $GITHUB_OUTPUT
         echo "python=python${{matrix.python-version}}" >> $GITHUB_OUTPUT
-        echo "manifest=$(cat src/main/resources/base/ayab/firmware/manifest.txt)" >> $GITHUB_OUTPUT
         echo "python-appimage=python${{matrix.python-version}}.17-cp38-cp38-manylinux2014_x86_64.AppImage" >> $GITHUB_OUTPUT
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4
@@ -366,22 +334,13 @@ jobs:
         sudo apt install appstream
         VERSION=${{steps.vars.outputs.tag}} ./appimagetool-*-x86_64.AppImage squashfs-root/
         sudo apt remove appstream
-        mv ayab-${{ steps.vars.outputs.tag }}-x86_64.AppImage AYAB-${{ steps.vars.outputs.tag }}-x86_64.AppImage
-    - name: Upload asset
-      uses: ncipollo/release-action@v1
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        tag: ${{ steps.vars.outputs.tag }}
-        commit: ${{ steps.vars.outputs.sha }}
-        body: ""  # release message, alternative to body_path
-        # body_path: release_text.md  # uncomment if not used
-        draft: ${{ steps.vars.outputs.draft }}
-        prerelease: false
-        allowUpdates: true
-        artifacts: AYAB-${{ steps.vars.outputs.tag }}-x86_64.AppImage
-        artifactContentType: application/AppImage
-        replacesArtifacts: true
+        mkdir -p target/
+        mv ayab-${{ steps.vars.outputs.tag }}-x86_64.AppImage target/AYAB-${{ steps.vars.outputs.tag }}-x86_64.AppImage
     - uses: actions/upload-artifact@v3
+    - name: Upload release asset        
+      uses: ./.github/workflows/release@master
       with:
-        name: AYAB-${{ steps.vars.outputs.tag }}-x86_64.AppImage
-        path: AYAB-${{ steps.vars.outputs.tag }}-x86_64.AppImage
+        type: AppImage
+        suffix: -x86_64.AppImage
+      secrets:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
