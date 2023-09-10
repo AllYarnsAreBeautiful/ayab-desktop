@@ -336,7 +336,6 @@ jobs:
         sudo apt remove appstream
         mkdir -p target/
         mv ayab-${{ steps.vars.outputs.tag }}-x86_64.AppImage target/AYAB-${{ steps.vars.outputs.tag }}-x86_64.AppImage
-    - uses: actions/upload-artifact@v3
     - name: Upload release asset        
       uses: ./.github/workflows/release.yml
       with:
