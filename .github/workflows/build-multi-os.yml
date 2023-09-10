@@ -189,7 +189,7 @@ jobs:
         python -m fbs installer
         Move-Item -Path target\AYABSetup.exe -Destination target\AYAB-${{ steps.vars.outputs.tag }}.exe
     - name: Upload release asset        
-      uses: ./.github/workflows/release@master
+      uses: ./.github/workflows/release.yml
       with:
         type: exe
         suffix: exe
@@ -234,7 +234,7 @@ jobs:
         python -m fbs installer
         mv target/AYAB.dmg target/AYAB-${{ steps.vars.outputs.tag }}.dmg
     - name: Upload release asset        
-      uses: ./.github/workflows/release@master
+      uses: ./.github/workflows/release.yml
       with:
         type: dmg
         suffix: dmg
@@ -338,7 +338,7 @@ jobs:
         mv ayab-${{ steps.vars.outputs.tag }}-x86_64.AppImage target/AYAB-${{ steps.vars.outputs.tag }}-x86_64.AppImage
     - uses: actions/upload-artifact@v3
     - name: Upload release asset        
-      uses: ./.github/workflows/release@master
+      uses: ./.github/workflows/release.yml
       with:
         type: AppImage
         suffix: -x86_64.AppImage
