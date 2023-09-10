@@ -128,13 +128,6 @@ jobs:
       uses: actions/checkout@v3
       with:
         submodules: recursive
-    - name: Install dependencies for doxygen
-      run: |
-        sudo apt-get install doxygen graphviz -y
-    - name: Create .nojekyll so that filenames with underscores work on Github Pages
-      run: |
-        mkdir -p docs/html
-        touch docs/html/.nojekyll
     - name: Deploy to pages
       uses: DenverCoder1/doxygen-github-pages-action@v1.3.0
       with:
