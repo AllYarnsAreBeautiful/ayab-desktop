@@ -52,7 +52,7 @@ jobs:
           exit 1
         fi
     - name: Cache firmware
-      uses: actions/cache/save@v3
+      uses: actions/cache@v3
       with:
         path: src/main/resources/base/ayab/firmware/*.hex
         key: firmware-${{ steps.vars.outputs.manifest }}
@@ -70,7 +70,7 @@ jobs:
       run: |
         sudo apt update
         sudo apt-get install -y avrdude libasound2-dev
-    - name: Restore pip cache
+    - name: Cache pip
       id:   pip-cache
       uses: actions/cache@v3
       with:
@@ -81,37 +81,31 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install --upgrade setuptools
         python -m pip install -r requirements.txt
-    - name: Cache Python modules
-      if:   steps.pip-cache.outputs.cache-hit != 'true'
-      uses: actions/cache/save@v3
-      with:
-        path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-    - name: Use cached gui files (1)
+    - name: Cached gui files (1)
       id:   gui1-cache
       uses: actions/cache@v3
       with:
         path: src/main/python/ayab/*_gui.py
         key:  gui1-${{ hashFiles('src/main/python/ayab/*_gui.ui') }}
-    - name: Use cached gui files (2)
+    - name: Cache gui files (2)
       id:   gui2-cache
       uses: actions/cache@v3
       with:
         path: src/main/python/ayab/engine/*_gui.py
         key:  gui2-${{ hashFiles('src/main/python/ayab/engine/*_gui.ui') }}
-    - name: Use cached logo
+    - name: Cache logo
       id:   logo-cache
       uses: actions/cache@v3
       with:
         path: src/main/python/ayab/ayab_logo_rc.py
         key:  logo-${{ hashFiles('src/main/python/ayab/ayab_logo_rc.qrc') }}
-    - name: Use cached translation files
+    - name: Cache translation files
       id:   qm-cache
       uses: actions/cache@v3
       with:
         path: src/main/resources/base/ayab/translations/*.qm
         key:  qm-${{ hashFiles('src/main/resources/base/ayab/translations/ayab-translation-master.tsv') }}
-    - name: Use cached `base.json` file
+    - name: Cache `base.json` file
       id:   base-cache
       uses: actions/cache@v3
       with:
@@ -125,36 +119,6 @@ jobs:
       run: |
         sudo apt install -y qt5-default qttools5-dev-tools
         bash setup-environment.ps1
-    - name: Cache gui files (1)
-      if:   ${{ (steps.gui1-cache.outputs.cache-hit != 'true') }}
-      uses: actions/cache/save@v3
-      with:
-        path: src/main/python/ayab/*_gui.py
-        key:  gui1-${{ hashFiles('src/main/python/ayab/*_gui.ui') }}
-    - name: Cache gui files (2)
-      if:   ${{ (steps.gui2-cache.outputs.cache-hit != 'true') }}
-      uses: actions/cache/save@v3
-      with:
-        path: src/main/python/ayab/*_gui.py
-        key:  gui2-${{ hashFiles('src/main/python/ayab/engine/*_gui.ui') }}
-    - name: Cache logo
-      if:   ${{ (steps.logo-cache.outputs.cache-hit != 'true') }}
-      uses: actions/cache/save@v3
-      with:
-        path: src/main/python/ayab/ayab_logo_rc.py
-        key:  logo-${{ hashFiles('src/main/python/ayab/ayab_logo_rc.qrc') }}
-    - name: Cache translation files
-      if:   ${{ (steps.qm-cache.outputs.cache-hit != 'true') }}
-      uses: actions/cache/save@v3
-      with:
-        path: src/main/resources/base/ayab/translations/*.qm
-        key:  qm-${{ hashFiles('src/main/resources/base/ayab/translations/ayab-translation-master.tsv') }}
-    - name: Cache `base.json` file
-      if:   ${{ (steps.base-cache.outputs.cache-hit != 'true') }}
-      uses: actions/cache/save@v3
-      with:
-        path: src/build/settings/base.json
-        key:  base-${{ steps.vars.outputs.tag }}
 
   deploy:
     name: Create and deploy source code documentation
