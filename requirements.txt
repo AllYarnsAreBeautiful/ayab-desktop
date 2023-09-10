@@ -10,5 +10,5 @@ bitarray-hardbyte==2.3.8
 simpleaudio==1.0.4
 wave==0.0.2
 numpy
-requests
+requests[use_chardet_on_py3]
 pre-commit
