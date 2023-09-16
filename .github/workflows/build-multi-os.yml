@@ -220,6 +220,11 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install --upgrade setuptools
         python -m pip install -r requirements.txt
+    - name: Cache homebrew folder
+      uses: actions/cache@v3
+      with:
+        path: /Library/Caches/Homebrew
+        key: brew-${{ requirements.txt }}
     - name: Restore cached files
       uses: ./.github/actions/decache
       with:
