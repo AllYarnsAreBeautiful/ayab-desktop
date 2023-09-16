@@ -84,7 +84,7 @@ class CommunicationMock(Communication):
         self.rx_msg_list.append(cnfTest)
 
     def req_start_API6(self, start_needle, stop_needle,
-                       continuous_reporting) -> None:
+                       continuous_reporting, disable_hardware_beep) -> None:
         """Send a request to start knitting."""
         self.__is_started = True
         cnfStart = bytes([Token.cnfStart.value, 0])
