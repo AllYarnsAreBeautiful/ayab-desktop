@@ -223,8 +223,8 @@ jobs:
     - name: Cache homebrew folder
       uses: actions/cache@v3
       with:
-        path: /Library/Caches/Homebrew
-        key: brew-${{ requirements.txt }}
+        path: ~/Library/Caches/Homebrew/*
+        key: brew-${{ hashFiles('.github/brew-formulae') }}
     - name: Restore cached files
       uses: ./.github/actions/decache
       with:
