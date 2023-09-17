@@ -35,6 +35,8 @@ import serial.tools.list_ports
 
 import pprint
 
+udpThread = UDPThread()
+
 class KnittingMode(Enum):
     SINGLEBED = 0
     CLASSIC_RIBBER_1 = 1            # Classic Ribber 1
@@ -251,7 +253,7 @@ class AyabPluginControl(KnittingPlugin):
 
     if not ipportlist:
         #self.__ayabCom.broadcast()
-        ipportlist = test.getIPlist()
+        ipportlist = udpThread.getIPlist()
                
     def populate(combo_box, ipportlist):
         for item in ipportlist:
@@ -380,13 +382,11 @@ class AyabPluginControl(KnittingPlugin):
     self.__formerRequest = 0
     self.__lineBlock = 0
     
-    global test    
-    test = UDPThread()
-    test.start()
+    udpThread.start()
 
   def __del__(self):    
     self.__close_serial()
-    test.stop()
+    udpThread.stop()
 
 ###Copied from ayab_control
 #####################################
