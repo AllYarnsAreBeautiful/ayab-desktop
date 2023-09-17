@@ -21,7 +21,7 @@ class UDPThread(threading.Thread):
       self.__sockUDP.settimeout(0.1)
       self.__sockUDP.setblocking(False)
       self.__hostname = socket.gethostname()
-      self.__ip_addresses = socket.gethostbyname_ex(self.__hostname)
+      self.__ip_addresses = socket.gethostbyname_ex('localhost')
       self.__ip_address = "0.0.0.0"
       self.addresslist = list()
 
