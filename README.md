@@ -75,47 +75,78 @@ Now start ayab with
 
 ### macOS
 
-You need Python 3.5.3 and PyQt5.
-For Python I would recommend `pyenv`
-You can install it using Homebrew
+You will need brew as package manager, git to acccess github, anaconda for Python 3.5 in an virtual environment
 
-    brew install pyenv
-    brew install pyenv-virtualenv
+install brew (not needed if git already installed):
 
-You also need the Xcode command line tools installed (xcode-select --install).
-Once these have been installed, you need to get the Python version installed
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
-    env PYTHON_CONFIGURE_OPTS="--enable-framework" CFLAGS="-I$(xcrun --show-sdk-path)/usr/include" pyenv install 3.5.3
+install git via brew (not needed if git already installed) :
 
-To install the development version you can checkout the git repository
+    brew install git
 
-    git clone https://github.com/AllYarnsAreBeautiful/ayab-desktop
+install Xcode command line tools:
 
-Create a virtual enviroment in the cloned repository
+    xcode-select --install
 
-    cd ayab-desktop
-    pyenv virtualenv 3.5.3 venv
-    pyenv activate venv
+get ayab-desktop for eKnitter from github:
 
-(If the pyenv commands don't work out, you probably have to add
+    git clone -b ComViaIp https://github.com/yekomS/ayab-desktop ayab-desktop-eknitter
 
-    eval "$(pyenv init -)"
-    eval "$(pyenv virtualenv-init -)"
+change to ayab-desktop-eknitter directory:
 
-to your ~/.bash_profile)
+    cd ayab-desktop-eknitter
 
-Then install the remaining prerequisites with
+make directory for anaconda (python virtual environment):
 
-    pip3 install -r requirements.txt
+    mkdir -p ~/miniconda3
 
-To solve pip3 SSL:TLSV1_ALERT_PROTOCOL_VERSION problem:
+you can check your mac processor architecture (neede for next command):
 
-    curl https://bootstrap.pypa.io/get-pip.py | python3
+    arch
 
-Now start ayab with
+if you use mac with arm processor: get anaconda for arm64 processor:
+
+    curl https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-arm64.sh -o ~/miniconda3/miniconda.sh
+
+if you use mac with intel processor: get anaconda for x86_64 processor:
+
+    curl https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh -o ~/miniconda3/miniconda.sh
+
+install anaconda (python virtual environment): 
+    
+    bash ~/miniconda3/miniconda.sh -b -u -p ~/miniconda3
+
+remove anaconda install script:
+
+    rm -rf ~/miniconda3/miniconda.sh
+
+
+init anaconda:
+
+    ~/miniconda3/bin/conda init bash
+    ~/miniconda3/bin/conda init zsh
+
+restart you terminal window
+
+create python 3.5 virtual environment:
+
+    conda create --name venv -c conda-forge python=3.5 pip
+
+activate python environment:
+
+    conda activate venv
+
+update your python environment with required tools:
+
+    python -m pip install --upgrade pip
+    pip install --upgrade setuptools
+    pip install -r requirements.txt
+
+To solve pip3 SSL:TLSV1_ALERT_PROTOCOL_VERSION problem (dont know if neccessary):
+    
+    curl https://bootstrap.pypa.io/get-pip.py | python
+
+start ayab-desktop for eKnitter:
 
     python3 -m fbs run
-
-To be able to work on GUI elements and translation files, the Qt Dev tools are needed also:
-
-    http://download.qt.io/official_releases/online_installers/qt-unified-mac-x64-online.dmg
