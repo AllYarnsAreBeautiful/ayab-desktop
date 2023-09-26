@@ -149,12 +149,12 @@ To solve pip3 SSL:TLSV1_ALERT_PROTOCOL_VERSION problem (dont know if neccessary)
 
 start ayab-desktop for eKnitter:
 
-    python3 -m fbs run
+    python -m fbs run
 
 
 once all tools are installed, you can start ayab-desktop for eKnitter:
     
     cd ayab-desktop-eknitter
-    conda activate ayab
-    python3 -m fbs run
+    conda activate venv
+    python -m fbs run
 
