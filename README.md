@@ -127,7 +127,9 @@ init anaconda:
     ~/miniconda3/bin/conda init bash
     ~/miniconda3/bin/conda init zsh
 
-restart you terminal window
+restart you terminal window and change to ayab-desktop-eknitter directory:
+
+    cd ayab-desktop-eknitter
 
 create python 3.5 virtual environment:
 
@@ -147,9 +149,15 @@ To solve pip3 SSL:TLSV1_ALERT_PROTOCOL_VERSION problem (dont know if neccessary)
     
     curl https://bootstrap.pypa.io/get-pip.py | python
 
+load patterns from github:
+
+    git clone https://github.com/AllYarnsAreBeautiful/ayab-patterns ./src/main/resources/base/patterns
+
 start ayab-desktop for eKnitter:
 
     python -m fbs run
+
+Install done :-)
 
 
 once all tools are installed, you can start ayab-desktop for eKnitter:
