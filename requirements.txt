@@ -1,5 +1,5 @@
 pyqt5==5.11.3
-Pillow==4.1.0
+Pillow==10.0.1
 pyserial==3.3
 sliplib==0.3.0
 fysom==2.1.3
