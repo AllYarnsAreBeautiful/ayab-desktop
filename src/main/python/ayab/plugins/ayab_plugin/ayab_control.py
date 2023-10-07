@@ -806,6 +806,8 @@ class AyabPluginControl(KnittingPlugin):
                     curState = 's_start'
                 else:
                     self.__logger.debug("init failed")
+              else:
+                curState = 's_start' 
 
           if curState == 's_start':
               self.__logger.info("s_start")
