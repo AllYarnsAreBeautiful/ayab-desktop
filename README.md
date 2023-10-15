@@ -60,8 +60,8 @@ Now activate the virtual environment. The command prompt should now display
 
 Install the remaining prerequisites.
 
-    python -m pip install --upgrade pip
-    pip install --upgrade setuptools
+    conda update pip
+    conda update setuptools
     pip install --ignore-installed -r requirements.txt
 
 The following is only necessary in WSLv1:
