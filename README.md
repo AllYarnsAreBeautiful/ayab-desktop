@@ -91,8 +91,8 @@ Activate the virtual environment. The command prompt should now display
 
 Install the prerequisite Python modules.
 
-    python -m pip install --upgrade pip
-    pip install --upgrade setuptools
+    conda update pip
+    conda update setuptools
     pip install --ignore-installed -r requirements.txt
 
 To be able to work on GUI elements and translation files, the Qt Dev tools are needed.
@@ -137,9 +137,9 @@ Now activate the virtual environment. The command prompt should now display
 
 Then install the remaining prerequisites with:
 
-    python -m pip install --upgrade pip
-    pip install --upgrade setuptools
-    pip install -r requirements.txt
+    conda update pip
+    conda update setuptools
+    pip install --ignore-installed -r requirements.txt
 
 To solve pip SSL:TLSV1_ALERT_PROTOCOL_VERSION problem:
 
