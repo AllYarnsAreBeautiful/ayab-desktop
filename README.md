@@ -63,6 +63,13 @@ Install the remaining prerequisites.
     python -m pip install --upgrade pip
     pip install --upgrade setuptools
     pip install --ignore-installed -r requirements.txt
+
+The following is only necessary in WSLv1:
+
+    sudo strip --remove-section=.note.ABI-tag /usr/lib/x86_64-linux-gnu/libQt5Core.so.5
+
+Finally, convert the PyQt5 `.ui` files and generate the translation files:
+
     bash setup-environment.ps1
 
 Now start AYAB with
