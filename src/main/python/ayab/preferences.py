@@ -64,6 +64,7 @@ class Preferences(SignalSender):
         'default_knit_side_image': bool,
         # 'default_continuous_reporting': bool,
         'quiet_mode': bool,
+        'disable_hardware_beep': bool,
         'language': Language,
     }
 
