@@ -34,6 +34,7 @@ from .engine.options import Alignment
 from .engine.mode import Mode
 from .machine import Machine
 from .language import Language
+from .scene import AspectRatio
 
 
 def str2bool(qvariant):
@@ -62,6 +63,7 @@ class Preferences(SignalSender):
         'default_infinite_repeat': bool,
         'default_alignment': Alignment,
         'default_knit_side_image': bool,
+        'aspect_ratio': AspectRatio,
         # 'default_continuous_reporting': bool,
         'quiet_mode': bool,
         'disable_hardware_beep': bool,
