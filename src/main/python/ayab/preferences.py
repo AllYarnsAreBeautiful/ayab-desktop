@@ -66,6 +66,7 @@ class Preferences(SignalSender):
         'aspect_ratio': AspectRatio,
         # 'default_continuous_reporting': bool,
         'quiet_mode': bool,
+        'disable_hardware_beep': bool,
         'language': Language,
     }
 

@@ -108,8 +108,7 @@ class GuiMain(QMainWindow):
     def __activate_menu(self):
         self.menu.ui.action_open_image_file.triggered.connect(
             self.scene.ayabimage.select_file)
-        self.menu.ui.action_quit.triggered.connect(
-            QCoreApplication.instance().quit)
+        self.menu.ui.action_quit.triggered.connect(self.__quit)
         self.menu.ui.action_load_AYAB_firmware.triggered.connect(
             self.flash.open)
         self.menu.ui.action_cancel.triggered.connect(self.engine.cancel)
@@ -125,6 +124,11 @@ class GuiMain(QMainWindow):
     def __set_prefs(self):
         self.prefs.open_dialog()
         self.scene.refresh()
+
+    def __quit(self):
+        logging.debug("Quitting")
+        QCoreApplication.instance().quit()
+        sys.exit()
 
     def start_knitting(self):
         """Start the knitting process."""

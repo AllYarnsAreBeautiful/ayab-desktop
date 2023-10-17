@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>Firmware</class>
- <widget class="QFrame" name="FirmwareFlashFrame">
+ <widget class="QDialog" name="FirmwareFlashFrame">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -13,11 +13,8 @@
   <property name="windowTitle">
    <string>Firmware Flashing Utility</string>
   </property>
-  <property name="frameShape">
-   <enum>QFrame::StyledPanel</enum>
-  </property>
-  <property name="frameShadow">
-   <enum>QFrame::Raised</enum>
+  <property name="modal">
+   <bool>True</bool>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
    <item>
@@ -77,6 +74,9 @@ p, li { white-space: pre-wrap; }
       <widget class="QPushButton" name="flash_firmware">
        <property name="text">
         <string>Flash</string>
+       </property>
+       <property name="flat">
+        <bool>False</bool>
        </property>
       </widget>
      </item>
