@@ -80,7 +80,7 @@ class AyabImage(SignalSender):
             raise
         else:
             # self.emit_statusbar_updater(filename, True)
-            pass
+            self.__parent.scene.row_progress = 0
 
     def __open(self, filename):
         # check for files that need conversion
