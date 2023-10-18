@@ -162,8 +162,10 @@ class Scene(QGraphicsView):
         '''Use mouse wheel events to zoom the graphical image'''
         if self.ayabimage.image is not None:
             # angleDelta.y is 120 or -120 when scrolling
-            zoom = event.angleDelta().y() / 120
-            self.__zoom += zoom * 0.5
-            self.__zoom = max(1, self.__zoom)
-            self.__zoom = min(7, self.__zoom)
-            self.refresh()
+            self.set_zoom(event.angleDelta().y() / 120)
+
+    def set_zoom(self, zoom):
+        self.__zoom += zoom * 0.5
+        self.__zoom = max(1, self.__zoom)
+        self.__zoom = min(7, self.__zoom)
+        self.refresh()
