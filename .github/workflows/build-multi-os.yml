@@ -440,7 +440,7 @@ jobs:
         echo "tag=$(git describe --tags)" >> $GITHUB_OUTPUT
         echo "python=python${{matrix.python-version}}" >> $GITHUB_OUTPUT
         echo "manifest=$(cat src/main/resources/base/ayab/firmware/manifest.txt)" >> $GITHUB_OUTPUT
-        echo "python-appimage=python${{matrix.python-version}}.17-cp38-cp38-manylinux2014_x86_64.AppImage" >> $GITHUB_OUTPUT
+        echo "python-appimage=python${{matrix.python-version}}.18-cp38-cp38-manylinux2014_x86_64.AppImage" >> $GITHUB_OUTPUT
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4
       with:

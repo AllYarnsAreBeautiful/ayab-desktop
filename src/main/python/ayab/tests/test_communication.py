@@ -68,12 +68,17 @@ class TestCommunication(unittest.TestCase):
         assert result == expected_result
 
     def test_req_start_API6(self):
-        start_val, end_val, continuous_reporting, crc8 = 0, 10, True, 0x36
+        start_val, end_val, continuous_reporting, disable_hardware_beep, crc8 = 0, 10, True, False, 0x8A
         self.comm_dummy.req_start_API6(start_val, end_val,
-                                       continuous_reporting)
+                                       continuous_reporting,
+                                       disable_hardware_beep)
         byte_array = bytearray([
-            Token.slipFrameEnd.value, Token.reqStart.value,
-            start_val, end_val, continuous_reporting, crc8,
+            Token.slipFrameEnd.value,
+            Token.reqStart.value,
+            start_val,
+            end_val,
+            1 * continuous_reporting + 2 * (not disable_hardware_beep),
+            crc8,
             Token.slipFrameEnd.value
         ])
         bytes_read = self.dummy_serial.read(len(byte_array))
