@@ -148,6 +148,12 @@ class AyabImage(SignalSender):
     def rotate_right(self):
         self.apply_transform(Transform.rotate_right)
 
+    def zoom_in(self):
+        self.__parent.scene.set_zoom(+1)
+
+    def zoom_out(self):
+        self.__parent.scene.set_zoom(-1)
+
     def apply_transform(self, transform, *args):
         """Executes an image transform specified by function and args."""
         self.image = transform(self.image, args)
