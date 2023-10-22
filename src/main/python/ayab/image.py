@@ -80,6 +80,7 @@ class AyabImage(SignalSender):
             raise
         else:
             # self.emit_statusbar_updater(filename, True)
+            self.__parent.scene.row_progress = 0
             self.__parent.engine.config.refresh()
 
     def __open(self, filename):
