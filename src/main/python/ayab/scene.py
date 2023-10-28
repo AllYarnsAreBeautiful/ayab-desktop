@@ -46,8 +46,6 @@ class Scene(QGraphicsView):
     @date   June 2020
     """
 
-    BAR_HEIGHT = 5.0
-
     def __init__(self, parent):
         super().__init__(parent.ui.graphics_splitter)
         self.setGeometry(QRect(0, 0, 700, 686))
@@ -90,15 +88,15 @@ class Scene(QGraphicsView):
         # draw "machine"
         rect_orange = QGraphicsRectItem(
             -machine_width / 2 - 0.5,
-            -self.BAR_HEIGHT - 0.5,
+            -5.5,
             machine_width / 2 + 0.5,
-            self.BAR_HEIGHT)
+            5)
         rect_orange.setBrush(QBrush(QColor("orange")))
         rect_green = QGraphicsRectItem(
             0,
-            -self.BAR_HEIGHT - 0.5,
+            -5.5,
             machine_width / 2 + 0.5,
-            self.BAR_HEIGHT)
+            5)
         rect_green.setBrush(QBrush(QColor("green")))
 
         qscene.addItem(rect_orange)
@@ -108,15 +106,15 @@ class Scene(QGraphicsView):
         qscene.addItem(
             QGraphicsRectItem(
                 self.__start_needle - machine_width / 2 - 0.5,
-                -self.BAR_HEIGHT - 0.5,
+                -5.5,
                 0,
-                pixmap.height() + self.BAR_HEIGHT + 0.5))
+                pixmap.height() + 5.5))
         qscene.addItem(
             QGraphicsRectItem(
                 self.__stop_needle - machine_width / 2 + 1.5,
-                -self.BAR_HEIGHT - 0.5,
+                -5.5,
                 0,
-                pixmap.height() + self.BAR_HEIGHT + 0.5))
+                pixmap.height() + 5.5))
         qscene.addItem(
             QGraphicsRectItem(
                 self.__start_needle - machine_width / 2 - 1,
