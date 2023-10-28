@@ -754,6 +754,7 @@ class AyabPluginControl(KnittingPlugin):
             return 0  # keep knitting
 
   def __knitImage(self, pImage, pOptions):
+      self.__lineBlock = 0
       self.__formerRequest = 0
       self.__image = pImage
       self.__startLine = pImage.startLine()
