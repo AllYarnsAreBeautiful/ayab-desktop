@@ -1,0 +1,45 @@
+name: Release
+description: Upload release asset
+
+on:
+  workflow_call:
+    inputs:
+      type:
+        required: true
+        type: string
+      suffix:
+        required: true
+        type: string
+    secrets:
+      GITHUB_TOKEN:
+        required: true
+
+jobs:
+  release:
+    steps:
+    - name: Set variables
+      id: vars
+      shell: bash
+      run: |
+        echo "sha-short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+        echo "tag=$(git describe --tags)" >> $GITHUB_OUTPUT
+        echo "draft=$(git describe --tags | sed -e 's/^test.*/true/;s/^v.*/false/')" >> $GITHUB_OUTPUT
+        echo "manifest=$(cat src/main/resources/base/ayab/firmware/manifest.txt)" >> $GITHUB_OUTPUT
+    - name: Upload asset
+      uses: ncipollo/release-action@v1
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        tag: ${{ steps.vars.outputs.tag }}
+        commit: ${{ steps.vars.outputs.sha }}
+        body: ""  # release message, alternative to body_path
+        # body_path: release_text.md  # uncomment if not used
+        draft: ${{ steps.vars.outputs.draft }}
+        prerelease: false
+        allowUpdates: true
+        artifacts: target/AYAB-${{ steps.vars.outputs.tag }}.${{ inputs.suffix }}
+        artifactContentType: application/${{ inputs.type }}
+        replacesArtifacts: true
+    - uses: actions/upload-artifact@v3
+      with:
+        name: AYAB-${{ steps.vars.outputs.tag }}.${{ inputs.suffix }}
+        path: target/AYAB-${{ steps.vars.outputs.tag }}.${{ inputs.suffix }}

@@ -19,6 +19,7 @@
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
 import logging
+from enum import Enum
 
 from PyQt5.QtCore import QRect
 from PyQt5.QtGui import QImage, QPixmap, QBrush, QColor
@@ -27,6 +28,15 @@ from PyQt5.QtWidgets import QGraphicsScene, QGraphicsRectItem, QGraphicsView
 from .image import AyabImage
 from .engine.options import Alignment
 from .machine import Machine
+
+
+class AspectRatio(Enum):
+    DEFAULT = 0
+    FAIRISLE = 1
+
+    def add_items(box):
+        box.addItem("1:1")
+        box.addItem("4:5")
 
 
 class Scene(QGraphicsView):
@@ -112,7 +122,7 @@ class Scene(QGraphicsView):
                 self.LIMIT_BAR_WIDTH))
 
         self.resetTransform()
-        self.scale(self.zoom, self.zoom)
+        self.scale(self.zoom, self.zoom * (1.0 - 0.2 * self.__prefs.value("aspect_ratio")))
         self.setScene(qscene)
 
     @property
@@ -152,8 +162,10 @@ class Scene(QGraphicsView):
         '''Use mouse wheel events to zoom the graphical image'''
         if self.ayabimage.image is not None:
             # angleDelta.y is 120 or -120 when scrolling
-            zoom = event.angleDelta().y() / 120
-            self.__zoom += zoom
-            self.__zoom = max(1, self.__zoom)
-            self.__zoom = min(5, self.__zoom)
-            self.refresh()
+            self.set_zoom(event.angleDelta().y() / 120)
+
+    def set_zoom(self, zoom):
+        self.__zoom += zoom * 0.5
+        self.__zoom = max(1, self.__zoom)
+        self.__zoom = min(7, self.__zoom)
+        self.refresh()
