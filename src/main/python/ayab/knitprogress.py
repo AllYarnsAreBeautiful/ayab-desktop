@@ -18,7 +18,7 @@
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
 from PyQt5.QtCore import Qt, QCoreApplication, QRect, QSize
-from PyQt5.QtWidgets import QTableWidget, QTableWidgetItem, QLabel, QSizePolicy, QAbstractItemView, QWidget, QHBoxLayout, QHeaderView
+from PyQt5.QtWidgets import QTableWidget, QTableWidgetItem, QLabel, QSizePolicy, QAbstractItemView, QWidget, QHBoxLayout
 from bitarray import bitarray
 
 from . import utils
@@ -39,9 +39,10 @@ class KnitProgress(QTableWidget):
         super().__init__(parent.ui.graphics_splitter)
         self.clear()
         self.setRowCount(0)
+        self.setStyleSheet("border-width: 0;")
         self.setGeometry(QRect(0, 0, 700, 220))
         self.setContentsMargins(1, 1, 1, 1)
-        self.verticalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
+        self.verticalHeader().setDefaultSectionSize(16)
         self.verticalHeader().setVisible(False)
         self.blank = QTableWidgetItem()
         self.blank.setSizeHint(QSize(0, 0))
@@ -114,7 +115,7 @@ class KnitProgress(QTableWidget):
         status.bits.reverse()
         midline = len(status.bits) - midline
 
-        table_text = "<table style='cell-spacing: 1; cell-padding: 1; background-color: #{:06x};'><tr>".format(
+        table_text = "<table style='cell-spacing: 1; cell-padding: 1; background-color: #{:06x};'><tr> ".format(
             self.orange)
         for c in range(0, midline):
             table_text += self.__stitch(status.color, status.bits[c],
@@ -122,7 +123,7 @@ class KnitProgress(QTableWidget):
         table_text += "</tr></table>"
         left_side = QLabel(table_text)
 
-        table_text = "<table style='cell-spacing: 1; cell-padding: 1; background-color: #{:06x};'><tr>".format(
+        table_text = "<table style='cell-spacing: 1; cell-padding: 1; background-color: #{:06x};'><tr> ".format(
             self.green)
         for c in range(midline, len(status.bits)):
             table_text += self.__stitch(status.color, status.bits[c],
@@ -136,10 +137,8 @@ class KnitProgress(QTableWidget):
         n_cols = len(columns)
         self.setCellWidget(0, n_cols, left_side)
         self.setCellWidget(0, n_cols + 1, right_side)
-        if row_multiplier == 1:
-            self.hideColumn(1)
         if n_cols < 4:
-            self.hideColumn(5)
+            self.horizontalHeader().hideSection(5)
         self.resizeColumnsToContents()
 
         self.previousStatus = status
@@ -148,18 +147,20 @@ class KnitProgress(QTableWidget):
         self.scene.row_progress = status.current_row
 
     def __item(self, text):
+        table = "<table><tr><td>" + text + "</td></tr></table>"
         item = QTableWidgetItem(text)
         return item
 
     def __stitch(self, color, bit, alt_color=None):
         # FIXME: borders are not visible
-        text = "<td width='12' style='border: 1 black "
+        text = "<td width='12' style='"
         if bit:
-            text += "solid; background-color: #{:06x};".format(
+            text += "border: 1 solid black; background-color: #{:06x};".format(
                 color)
         elif alt_color is not None:
-            text += "solid; background-color: #{:06x};".format(
+            text += "border: 1 solid black; background-color: #{:06x};".format(
                 alt_color)
         else:
-            text += "dotted;"
-        return text + "'/>"
+            text += "border: 1 dotted black;"
+        text += "'/>"
+        return text

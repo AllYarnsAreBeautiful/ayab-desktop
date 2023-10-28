@@ -14,10 +14,10 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Cache pip
+    - name: Restore pip cache
       id:   pip-cache
       uses: actions/cache@v3
       with:
@@ -32,6 +32,12 @@ jobs:
         pip install flake8 pytest
         pip install --ignore-installed -r requirements.txt
         bash setup-environment.ps1
+    - name: Cache Python modules
+      if:   steps.pip-cache.outputs.cache-hit != 'true'
+      uses: actions/cache/save@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names

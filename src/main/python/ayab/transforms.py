@@ -110,14 +110,6 @@ class Transform(Image.Image):
         new_w = old_w * args[1]  # horizontal
         return image.resize((new_w, new_h), Image.BOX)
 
-    def zoom_in(self):
-        # allows menu action
-        pass
-
-    def zoom_out(self):
-        # allows menu action
-        pass
-
 
 class Mirrors:
     '''

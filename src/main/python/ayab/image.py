@@ -80,8 +80,7 @@ class AyabImage(SignalSender):
             raise
         else:
             # self.emit_statusbar_updater(filename, True)
-            self.__parent.scene.row_progress = 0
-            self.__parent.engine.config.refresh()
+            pass
 
     def __open(self, filename):
         # check for files that need conversion
@@ -147,12 +146,6 @@ class AyabImage(SignalSender):
 
     def rotate_right(self):
         self.apply_transform(Transform.rotate_right)
-
-    def zoom_in(self):
-        self.__parent.scene.set_zoom(+1)
-
-    def zoom_out(self):
-        self.__parent.scene.set_zoom(-1)
 
     def apply_transform(self, transform, *args):
         """Executes an image transform specified by function and args."""

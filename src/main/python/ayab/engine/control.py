@@ -63,7 +63,6 @@ class Control(SignalSender):
             self.mode = options.mode
             self.inf_repeat = options.inf_repeat
             self.continuous_reporting = options.continuous_reporting
-            self.prefs = options.prefs
             self.len_pat_expanded = self.pat_height * self.num_colors
             self.passes_per_row = self.mode.row_multiplier(self.num_colors)
             self.start_needle = max(0, self.pattern.pat_start_needle)

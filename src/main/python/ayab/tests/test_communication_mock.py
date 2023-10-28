@@ -42,11 +42,10 @@ class TestCommunicationMock(unittest.TestCase):
         assert self.comm_dummy.update_API6() == (None, Token.none, 0)
 
     def test_req_start_API6(self):
-        start_val, end_val, continuous_reporting, disable_hardware_beep = 0, 10, True, False
+        start_val, end_val, continuous_reporting, crc8 = 0, 10, True, 0xb9
         expected_result = (bytes([Token.cnfStart.value, 0]), Token.cnfStart, 0)
         self.comm_dummy.req_start_API6(start_val, end_val,
-                                       continuous_reporting,
-                                       disable_hardware_beep)
+                                       continuous_reporting)
         bytes_read = self.comm_dummy.update_API6()
         assert bytes_read == expected_result
 
@@ -87,10 +86,9 @@ class TestCommunicationMock(unittest.TestCase):
 
     def test_req_line_API6(self):
         self.comm_dummy.open_serial()
-        start_val, end_val, continuous_reporting, disable_hardware_beep = 0, 10, True, False
+        start_val, end_val, continuous_reporting = 0, 10, True
         self.comm_dummy.req_start_API6(start_val, end_val,
-                                       continuous_reporting,
-                                       disable_hardware_beep)
+                                       continuous_reporting)
         self.comm_dummy.update_API6()  # cnfStart
 
         for i in range(0, 256):

@@ -19,7 +19,7 @@
 
 from PyQt5 import QtGui, QtWidgets
 from PyQt5.QtCore import QSettings, QCoreApplication
-from PyQt5.QtWidgets import QDialog, QListWidgetItem
+from PyQt5.QtWidgets import QFrame, QListWidgetItem
 
 import serial
 import json
@@ -33,10 +33,8 @@ from subprocess import run, STDOUT, PIPE, check_output
 from .firmware_flash_gui import Ui_Firmware
 from . import utils
 
-# press Esc to Quit dialog
-# press Return to Flash firmware
 
-class FirmwareFlash(QDialog):
+class FirmwareFlash(QFrame):
     # Arduino devices and their `avrdude` names
     device_dict = {
         "uno": "atmega328p",
@@ -55,7 +53,6 @@ class FirmwareFlash(QDialog):
         self.ui = Ui_Firmware()
         self.ui.setupUi(self)
         self.ui.flash_firmware.setEnabled(False)
-        self.ui.flash_firmware.setDefault(True)
         self.load_json()
 
         self.ui.port_combo_box.currentIndexChanged.connect(self.port_selected)
@@ -69,12 +66,6 @@ class FirmwareFlash(QDialog):
         utils.populate_ports(self.ui.port_combo_box)
         self.port_selected()
         self.show()
-
-    def close(self):
-        """Close dialog and clean firmware list."""
-        #self.clean_controller_list()
-        self.clean_firmware_list()
-        self.accept()
 
     def load_json(self):
         self.json_object = self.parse_json("")
@@ -167,7 +158,6 @@ class FirmwareFlash(QDialog):
             self.__logger.info("Flashing done!")
             utils.display_blocking_popup(
                 tr_("Firmware", "Flashing done!"))
-            self.close()
             return True
 
     def generate_command(self, base_dir, os_name, controller_name,

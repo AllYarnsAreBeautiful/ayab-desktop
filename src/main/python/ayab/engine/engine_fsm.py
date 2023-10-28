@@ -139,8 +139,7 @@ M
                 # request start
                 control.com.req_start_API6(control.pattern.knit_start_needle,
                                            control.pattern.knit_end_needle - 1,
-                                           control.continuous_reporting,
-                                           control.prefs.value("disable_hardware_beep"))
+                                           control.continuous_reporting)
                 control.state = State.CONFIRM_START
                 control.logger.debug("State CONFIRM_START")
             else:
