@@ -15,6 +15,7 @@
 #    along with AYAB.  If not, see <http://www.gnu.org/licenses/>.
 #
 #    Copyright 2013, 2014 Sebastian Oliva, Christian Obersteiner, Andreas Müller, Christian Gerbrandt
+#    Copyright 2022 Marcus Hoose (eKnitter.com)
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
 from .ayab_communication import AyabCommunication
@@ -774,6 +775,10 @@ class AyabPluginControl(KnittingPlugin):
       while self._knitImage:
           # TODO catch keyboard interrupts to abort knitting
           # TODO: port to state machine or similar.
+          if (not self.__ayabCom.isOpen()):
+            self.__updateNotification("Connection Close")
+            break
+
           rcvMsg, rcvParam = self.__checkSerial()
           if curState == 's_init':
               self.__logger.info("s_init")
@@ -801,6 +806,8 @@ class AyabPluginControl(KnittingPlugin):
                     curState = 's_start'
                 else:
                     self.__logger.debug("init failed")
+              else:
+                curState = 's_start' 
 
           if curState == 's_start':
               self.__logger.info("s_start")
