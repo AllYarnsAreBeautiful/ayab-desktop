@@ -1,5 +1,5 @@
 {
-    "app_name": "AYAB",
+    "app_name": "AYAB-eKnitter",
     "main_module": "src/main/python/main.py",
     "author": "ayab-knitting.com",
     "version": "PACKAGE_VERSION"
