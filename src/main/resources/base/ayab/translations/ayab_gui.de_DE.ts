@@ -54,8 +54,8 @@
     </message>
     <message>
         <location filename="ayab_gui.py" line="233"/>
-        <source>Load AYAB Firmware</source>
-        <translation>AYAB Firmware aufspielen</translation>
+        <source>Load Firmware</source>
+        <translation>Firmware aufspielen</translation>
     </message>
     <message>
         <location filename="ayab_gui.py" line="234"/>

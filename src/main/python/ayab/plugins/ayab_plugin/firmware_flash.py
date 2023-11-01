@@ -17,6 +17,8 @@ from subprocess import Popen, PIPE, STDOUT
 
 from .firmware_flash_ui import Ui_FirmwareFlashFrame
 
+# import espota
+import esptool
 
 class FirmwareFlash(QFrame):
 
@@ -137,37 +139,60 @@ class FirmwareFlash(QFrame):
             if firmware.get("version") == firmware_key:
                 firmware_name = firmware.get("file")
 
-        command = self.generate_command_with_options(base_dir,
-                                                     os_name,
-                                                     port,
-                                                     controller_name,
-                                                     firmware_name,
-                                                     )
+        if "eknitter" in controller_name:
+            if "COM" in port:
+                command = ['--port', str(port), 'write_flash', '0x10000', os.path.join(self.__parent_ui.app_context.get_resource("ayab/firmware/eknitter"),firmware_name)]
+                
+                try:
+                    esptool.main(command)
+                    self.__logger.info("Flashing Done!")
+                    self.display_blocking_pop_up("Flashing Done!")
 
-        try:
-            p = Popen(command,
-                      stdout=PIPE, stderr=STDOUT, shell=True)
+                except Exception as e:
+                    self.__logger.info("Error on flashing firmware." + e)
+                    self.display_blocking_pop_up("Error on flashing firmware.", message_type="error")
 
-            rc = p.poll()
-            while rc != 0:
-                while True:
-                    line = p.stdout.readline()
-                    self.__logger.debug(line)
-                    if not line:
-                        break
+
+            # elif "." in port:
+            #     command = ['-i', str(port), '-p', '3232', '-f', './fw.bin','-d', 'True', '-r', 'True']
+            #     espota.main(command)
+            #     time.sleep(10)
+                    #  command = ['-i', str(selection), '-p', '3232', '-s', '-f', './fs.bin','-d', 'True', '-r', 'True']
+            #     print("flash via OTA: " + str(command))
+            #     espota.main(command)
+
+        else:
+            command = self.generate_command_with_options(base_dir,
+                                                        os_name,
+                                                        port,
+                                                        controller_name,
+                                                        firmware_name,
+                                                        )
+
+            try:
+                p = Popen(command,
+                        stdout=PIPE, stderr=STDOUT, shell=True)
+
                 rc = p.poll()
+                while rc != 0:
+                    while True:
+                        line = p.stdout.readline()
+                        self.__logger.debug(line)
+                        if not line:
+                            break
+                    rc = p.poll()
 
-            if rc == 0:
-                self.__logger.info("Flashing Done!")
-                self.display_blocking_pop_up("Flashing Done!")
-            else:
-                self.__logger.info("Error on flashing firmware.")
+                if rc == 0:
+                    self.__logger.info("Flashing Done!")
+                    self.display_blocking_pop_up("Flashing Done!")
+                else:
+                    self.__logger.info("Error on flashing firmware.")
+                    self.display_blocking_pop_up("Error on flashing firmware.",
+                                                message_type="error")
+            except Exception as e:
+                self.__logger.info("Error on flashing firmware." + e)
                 self.display_blocking_pop_up("Error on flashing firmware.",
-                                             message_type="error")
-        except Exception as e:
-            self.__logger.info("Error on flashing firmware." + e)
-            self.display_blocking_pop_up("Error on flashing firmware.",
-                                         message_type="error")
+                                            message_type="error")
 
     def generate_command_with_options(self, base_dir, os_name, port,
                                       controller_name, firmware_name):

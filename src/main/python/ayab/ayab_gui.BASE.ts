@@ -34,7 +34,7 @@
     </message>
     <message>
         <location filename="ayab_gui.py" line="233"/>
-        <source>Load AYAB Firmware</source>
+        <source>Load Firmware</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

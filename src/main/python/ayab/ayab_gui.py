@@ -233,7 +233,7 @@ class Ui_MainWindow(object):
         self.menuHelp.setTitle(_translate("MainWindow", "Help"))
         self.menuTools.setTitle(_translate("MainWindow", "Tools"))
         self.menuImage_Actions.setTitle(_translate("MainWindow", "Image Actions"))
-        self.actionLoad_AYAB_Firmware.setText(_translate("MainWindow", "Load AYAB Firmware"))
+        self.actionLoad_AYAB_Firmware.setText(_translate("MainWindow", "Load Firmware"))
         self.actionQuit.setText(_translate("MainWindow", "Quit"))
         self.actionQuit.setShortcut(_translate("MainWindow", "Ctrl+Q"))
         self.actionOpen_Knitting_Project.setText(_translate("MainWindow", "Open Knitting Project"))

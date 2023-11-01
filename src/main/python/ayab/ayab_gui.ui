@@ -346,7 +346,7 @@
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionLoad_AYAB_Firmware">
    <property name="text">
-    <string>Load AYAB Firmware</string>
+    <string>Load Firmware</string>
    </property>
   </action>
   <action name="actionQuit">
