@@ -1,26 +1,19 @@
 {
     "0":{
-        "description": "KH-910, KH-950(i)",
+        "description": "KH-910, KH-930, KH-950(i)",
         "controller": {
         "eknitter":[
             {
                 "url":"/",
-                "version":"0.4.1",
-                "file":"eknitter.bin"
+                "version":"Firmware",
+                "file":"fw.bin"
+            },
+            {
+                "url":"/",
+                "version":"Filesystem",
+                "file":"fs.bin"
             }
         ]
       }
-    },
-    "1":{
-        "description": "KH-930",
-        "controller": {
-            "eknitter":[
-                {
-                    "url":"/",
-                    "version":"0.4.1",
-                    "file":"eknitter.bin"
-                }
-            ]
-        }
     }
 }

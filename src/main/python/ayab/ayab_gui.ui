@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>All Yarns Are Beautiful</string>
+   <string>All Yarns Are Beautiful for eKnitter</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
@@ -346,7 +346,7 @@
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionLoad_AYAB_Firmware">
    <property name="text">
-    <string>Load Firmware</string>
+    <string>Update eKnitter</string>
    </property>
   </action>
   <action name="actionQuit">

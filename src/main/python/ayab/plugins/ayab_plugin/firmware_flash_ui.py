@@ -73,7 +73,7 @@ class Ui_FirmwareFlashFrame(object):
 
     def retranslateUi(self, FirmwareFlashFrame):
         _translate = QtCore.QCoreApplication.translate
-        FirmwareFlashFrame.setWindowTitle(_translate("FirmwareFlashFrame", "Firmware Flashing Utility"))
+        FirmwareFlashFrame.setWindowTitle(_translate("FirmwareFlashFrame", "Update eKnitter"))
         self.label_3.setText(_translate("FirmwareFlashFrame", "Port"))
         self.label_4.setText(_translate("FirmwareFlashFrame", "Hardware List"))
         self.label.setText(_translate("FirmwareFlashFrame", "Controller"))

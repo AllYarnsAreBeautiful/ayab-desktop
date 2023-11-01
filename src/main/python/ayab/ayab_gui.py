@@ -217,7 +217,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "All Yarns Are Beautiful"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "All Yarns Are Beautiful for eKnitter"))
         self.label_current_color.setText(_translate("MainWindow", "label_current_color"))
         self.label_current_row.setText(_translate("MainWindow", "label_current_row"))
         self.label_notifications.setText(_translate("MainWindow", "label_notifications"))
@@ -233,7 +233,7 @@ class Ui_MainWindow(object):
         self.menuHelp.setTitle(_translate("MainWindow", "Help"))
         self.menuTools.setTitle(_translate("MainWindow", "Tools"))
         self.menuImage_Actions.setTitle(_translate("MainWindow", "Image Actions"))
-        self.actionLoad_AYAB_Firmware.setText(_translate("MainWindow", "Load Firmware"))
+        self.actionLoad_AYAB_Firmware.setText(_translate("MainWindow", "Update eKnitter"))
         self.actionQuit.setText(_translate("MainWindow", "Quit"))
         self.actionQuit.setShortcut(_translate("MainWindow", "Ctrl+Q"))
         self.actionOpen_Knitting_Project.setText(_translate("MainWindow", "Open Knitting Project"))
