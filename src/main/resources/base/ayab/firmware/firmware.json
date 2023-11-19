@@ -6,12 +6,12 @@
             {
                 "url":"/",
                 "version":"Firmware",
-                "file":"fw.bin"
+                "file":"eKnitter_fw.bin"
             },
             {
                 "url":"/",
                 "version":"Filesystem",
-                "file":"fs.bin"
+                "file":"eKnitter_fs.bin"
             }
         ]
       }
