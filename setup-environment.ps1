@@ -17,8 +17,10 @@ pyuic5 src/main/python/ayab/engine/dock_gui.ui -o src/main/python/ayab/engine/do
 pyuic5 src/main/python/ayab/engine/options_gui.ui -o src/main/python/ayab/engine/options_gui.py
 pyuic5 src/main/python/ayab/engine/status_gui.ui -o src/main/python/ayab/engine/status_gui.py
 
-# generate PyQt5 resource file
+# generate PyQt5 resource filea
 pyrcc5 src/main/python/ayab/ayab_logo_rc.qrc -o src/main/python/ayab/ayab_logo_rc.py
+pyrcc5 src/main/python/ayab/engine/lowercase_e_rc.qrc -o src/main/python/ayab/engine/lowercase_e_rc.py
+pyrcc5 src/main/python/ayab/engine/lowercase_e_reversed_rc.qrc -o src/main/python/ayab/engine/lowercase_e_reversed_rc.py
 
 # generate translation files
 cd src/main/resources/base/ayab/translations/
