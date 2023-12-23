@@ -108,13 +108,11 @@ class GuiMain(QMainWindow):
     def __activate_menu(self):
         self.menu.ui.action_open_image_file.triggered.connect(
             self.scene.ayabimage.select_file)
-        self.menu.ui.action_quit.triggered.connect(
-            QCoreApplication.instance().quit)
+        self.menu.ui.action_quit.triggered.connect(self.__quit)
         self.menu.ui.action_load_AYAB_firmware.triggered.connect(
             self.flash.open)
         self.menu.ui.action_cancel.triggered.connect(self.engine.cancel)
-        self.menu.ui.action_set_preferences.triggered.connect(
-            self.prefs.open_dialog)
+        self.menu.ui.action_set_preferences.triggered.connect(self.__set_prefs)
         self.menu.ui.action_about.triggered.connect(self.about.show)
         # get names of image actions from Transform methods
         transforms = filter(lambda x: x[0] != "_", Transform.__dict__.keys())
@@ -122,6 +120,15 @@ class GuiMain(QMainWindow):
             action = getattr(self.menu.ui, "action_" + t)
             slot = getattr(self.scene.ayabimage, t)
             action.triggered.connect(slot)
+
+    def __set_prefs(self):
+        self.prefs.open_dialog()
+        self.scene.refresh()
+
+    def __quit(self):
+        logging.debug("Quitting")
+        QCoreApplication.instance().quit()
+        sys.exit()
 
     def start_knitting(self):
         """Start the knitting process."""

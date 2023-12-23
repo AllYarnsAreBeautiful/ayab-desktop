@@ -49,6 +49,8 @@
    <addaction name="action_rotate_left"/>
    <addaction name="action_rotate_right"/>
    <addaction name="separator"/>
+   <addaction name="action_zoom_in"/>
+   <addaction name="action_zoom_out"/>
   </widget>
   <addaction name="menu_file"/>
   <action name="action_open_image_file">
@@ -165,6 +167,22 @@
    </property>
    <property name="shortcut">
     <string notr="true">Ctrl+Right</string>
+   </property>
+  </action>
+  <action name="action_zoom_in">
+   <property name="text">
+    <string>Zoom in</string>
+   </property>
+   <property name="shortcut">
+    <string notr="true">Ctrl++</string>
+   </property>
+  </action>
+  <action name="action_zoom_out">
+   <property name="text">
+    <string>Zoom out</string>
+   </property>
+   <property name="shortcut">
+    <string notr="true">Ctrl+-</string>
    </property>
   </action>
   <action name="action_set_preferences">

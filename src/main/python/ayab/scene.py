@@ -19,14 +19,24 @@
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
 import logging
+from enum import Enum
 
 from PyQt5.QtCore import QRect
-from PyQt5.QtGui import QImage, QPixmap, QBrush, QColor
+from PyQt5.QtGui import QImage, QPixmap, QPen, QBrush, QColor
 from PyQt5.QtWidgets import QGraphicsScene, QGraphicsRectItem, QGraphicsView
 
 from .image import AyabImage, Transform
 from .engine.options import Alignment
 from .machine import Machine
+
+
+class AspectRatio(Enum):
+    DEFAULT = 0
+    FAIRISLE = 1
+
+    def add_items(box):
+        box.addItem("1:1")
+        box.addItem("4:5")
 
 
 class Scene(QGraphicsView):
@@ -35,9 +45,6 @@ class Scene(QGraphicsView):
     @author Tom Price
     @date   June 2020
     """
-
-    BAR_HEIGHT = 5.0
-    LIMIT_BAR_WIDTH = 0.5
 
     def __init__(self, parent):
         super().__init__(parent.ui.graphics_splitter)
@@ -94,11 +101,15 @@ class Scene(QGraphicsView):
 
         # draw "machine"
         rect_L = QGraphicsRectItem(
-            -machine_width / 2 - self.LIMIT_BAR_WIDTH, -self.BAR_HEIGHT,
-            machine_width / 2 + self.LIMIT_BAR_WIDTH, self.BAR_HEIGHT)
+            -machine_width / 2 - 0.5,
+            -5.5,
+            machine_width / 2 + 0.5,
+            5)
         rect_R = QGraphicsRectItem(
-            0, -self.BAR_HEIGHT,
-            machine_width / 2 + self.LIMIT_BAR_WIDTH, self.BAR_HEIGHT)
+            0,
+            -5.5,
+            machine_width / 2 + 0.5,
+            5)
         if self.__reversed:
             rect_L.setBrush(QBrush(QColor("green")))
             rect_R.setBrush(QBrush(QColor("orange")))
@@ -112,36 +123,48 @@ class Scene(QGraphicsView):
         if self.__reversed:
             qscene.addItem(
                 QGraphicsRectItem(
-                    -self.__start_needle + machine_width / 2 + self.LIMIT_BAR_WIDTH,
-                    -self.BAR_HEIGHT, self.LIMIT_BAR_WIDTH,
-                    pixmap.height() + self.BAR_HEIGHT))
+                    -self.__start_needle + machine_width / 2 + 0.5,
+                    -5.5,
+                    0,
+                    pixmap.height() + 5.5))
             qscene.addItem(
                 QGraphicsRectItem(
-                    -self.__stop_needle - 1 + machine_width / 2,
-                    -self.BAR_HEIGHT, self.LIMIT_BAR_WIDTH,
-                    pixmap.height() + self.BAR_HEIGHT))
+                    -self.__stop_needle + machine_width / 2 - 1.5,
+                    -5.5,
+                    0,
+                    pixmap.height() + 5.5))
         else:
             qscene.addItem(
                 QGraphicsRectItem(
-                    self.__start_needle - machine_width / 2 - self.LIMIT_BAR_WIDTH,
-                    -self.BAR_HEIGHT, self.LIMIT_BAR_WIDTH,
-                    pixmap.height() + self.BAR_HEIGHT))
+                    self.__start_needle - machine_width / 2 - 0.5,
+                    -5.5,
+                    0,
+                    pixmap.height() + 5.5))
             qscene.addItem(
                 QGraphicsRectItem(
-                    self.__stop_needle + 1 - machine_width / 2,
-                    -self.BAR_HEIGHT, self.LIMIT_BAR_WIDTH,
-                    pixmap.height() + self.BAR_HEIGHT))
-
-        # Draw knitting progress
+                    self.__stop_needle - machine_width / 2 + 1.5,
+                    -5.5,
+                    0,
+                    pixmap.height() + 5.5))
         qscene.addItem(
             QGraphicsRectItem(
-                -machine_width / 2 - self.LIMIT_BAR_WIDTH,
-                pixmap.height() - self.__row_progress + self.LIMIT_BAR_WIDTH,
-                machine_width + 2 * self.LIMIT_BAR_WIDTH,
-                self.LIMIT_BAR_WIDTH))
+                self.__start_needle - machine_width / 2 - 1,
+                pixmap.height() + 0.5,
+                self.__stop_needle - self.__start_needle + 3,
+                0))
+
+        # Draw knitting progress
+        grey = QGraphicsRectItem(
+            self.__start_needle - machine_width / 2,
+            pixmap.height(),
+            self.__stop_needle - self.__start_needle + 1,
+            -self.__row_progress)
+        grey.setPen(QPen(QColor(127, 127, 127, 127), 0))
+        grey.setBrush(QBrush(QColor(127, 127, 127, 127)))
+        qscene.addItem(grey)
 
         self.resetTransform()
-        self.scale(self.zoom, self.zoom)
+        self.scale(self.zoom, self.zoom * (1.0 - 0.2 * self.__prefs.value("aspect_ratio")))
         self.setScene(qscene)
 
     @property
@@ -181,8 +204,10 @@ class Scene(QGraphicsView):
         '''Use mouse wheel events to zoom the graphical image'''
         if self.ayabimage.image is not None:
             # angleDelta.y is 120 or -120 when scrolling
-            zoom = event.angleDelta().y() / 120
-            self.__zoom += zoom
-            self.__zoom = max(1, self.__zoom)
-            self.__zoom = min(5, self.__zoom)
-            self.refresh()
+            self.set_zoom(event.angleDelta().y() / 120)
+
+    def set_zoom(self, zoom):
+        self.__zoom += zoom * 0.5
+        self.__zoom = max(1, self.__zoom)
+        self.__zoom = min(7, self.__zoom)
+        self.refresh()
