@@ -25,7 +25,7 @@ from PyQt5.QtCore import QRect
 from PyQt5.QtGui import QImage, QPixmap, QPen, QBrush, QColor
 from PyQt5.QtWidgets import QGraphicsScene, QGraphicsRectItem, QGraphicsView
 
-from .image import AyabImage
+from .image import AyabImage, Transform
 from .engine.options import Alignment
 from .machine import Machine
 
@@ -52,6 +52,7 @@ class Scene(QGraphicsView):
         self.ayabimage = AyabImage(parent)
         self.__prefs = parent.prefs
         default = self.__prefs.value("default_alignment")
+        self.__reversed = self.__prefs.value("default_knit_side_image")
         self.__alignment = Alignment(default)
         machine_width = Machine(self.__prefs.value("machine")).width
         self.__start_needle = (machine_width // 2) - 20
@@ -62,12 +63,22 @@ class Scene(QGraphicsView):
         self.setDragMode(QGraphicsView.ScrollHandDrag)
         self.__zoom = 3
 
+    def reverse(self):
+        '''Mirrors the graphics scene'''
+        self.__reversed = not self.__reversed
+        self.refresh()
+
     def refresh(self):
         '''Updates the graphics scene'''
         qscene = QGraphicsScene()
 
         width, height = self.ayabimage.image.size
         data = self.ayabimage.image.convert("RGBA").tobytes("raw", "RGBA")
+        if self.__reversed:
+            im = Transform.hflip(self.ayabimage.image)
+        else:
+            im = self.ayabimage.image
+        data = im.convert("RGBA").tobytes("raw", "RGBA")
         qim = QImage(data, width, height, QImage.Format_ARGB32)
         pixmap = QPixmap.fromImage(qim)
 
@@ -83,38 +94,58 @@ class Scene(QGraphicsView):
         else:
             logging.warning("invalid alignment")
             return
-        pattern.setPos(pos, 0)
+        if self.__reversed:
+            pattern.setPos(- pixmap.width() - pos, 0)
+        else:
+            pattern.setPos(pos, 0)
 
         # draw "machine"
-        rect_orange = QGraphicsRectItem(
+        rect_L = QGraphicsRectItem(
             -machine_width / 2 - 0.5,
             -5.5,
             machine_width / 2 + 0.5,
             5)
-        rect_orange.setBrush(QBrush(QColor("orange")))
-        rect_green = QGraphicsRectItem(
+        rect_R = QGraphicsRectItem(
             0,
             -5.5,
             machine_width / 2 + 0.5,
             5)
-        rect_green.setBrush(QBrush(QColor("green")))
-
-        qscene.addItem(rect_orange)
-        qscene.addItem(rect_green)
+        if self.__reversed:
+            rect_L.setBrush(QBrush(QColor("green")))
+            rect_R.setBrush(QBrush(QColor("orange")))
+        else:
+            rect_L.setBrush(QBrush(QColor("orange")))
+            rect_R.setBrush(QBrush(QColor("green")))
+        qscene.addItem(rect_L)
+        qscene.addItem(rect_R)
 
         # draw limiting lines (start/stop needle)
-        qscene.addItem(
-            QGraphicsRectItem(
-                self.__start_needle - machine_width / 2 - 0.5,
-                -5.5,
-                0,
-                pixmap.height() + 5.5))
-        qscene.addItem(
-            QGraphicsRectItem(
-                self.__stop_needle - machine_width / 2 + 1.5,
-                -5.5,
-                0,
-                pixmap.height() + 5.5))
+        if self.__reversed:
+            qscene.addItem(
+                QGraphicsRectItem(
+                    -self.__start_needle + machine_width / 2 + 0.5,
+                    -5.5,
+                    0,
+                    pixmap.height() + 5.5))
+            qscene.addItem(
+                QGraphicsRectItem(
+                    -self.__stop_needle + machine_width / 2 - 1.5,
+                    -5.5,
+                    0,
+                    pixmap.height() + 5.5))
+        else:
+            qscene.addItem(
+                QGraphicsRectItem(
+                    self.__start_needle - machine_width / 2 - 0.5,
+                    -5.5,
+                    0,
+                    pixmap.height() + 5.5))
+            qscene.addItem(
+                QGraphicsRectItem(
+                    self.__stop_needle - machine_width / 2 + 1.5,
+                    -5.5,
+                    0,
+                    pixmap.height() + 5.5))
         qscene.addItem(
             QGraphicsRectItem(
                 self.__start_needle - machine_width / 2 - 1,
