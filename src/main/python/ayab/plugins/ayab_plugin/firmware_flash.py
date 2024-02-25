@@ -18,7 +18,7 @@ from subprocess import Popen, PIPE, STDOUT
 from .firmware_flash_ui import Ui_FirmwareFlashFrame
 
 # import espota
-import esptool
+# import esptool
 
 class FirmwareFlash(QFrame):
 
