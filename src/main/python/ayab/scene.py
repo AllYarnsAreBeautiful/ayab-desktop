@@ -124,14 +124,20 @@ class Scene(QGraphicsView):
                 -5.5,
                 0,
                 pixmap.height() + 5.5))
-        qscene.addItem(
-            QGraphicsRectItem(
-                self.__start_needle - machine_width / 2 - 1,
-                pixmap.height() + 0.5,
-                self.__stop_needle - self.__start_needle + 3,
-                0))
 
         # Draw knitting progress
+        qscene.addItem(
+            QGraphicsRectItem(
+                - machine_width / 2 - 1,
+                pixmap.height() - self.__row_progress - 0.5,
+                self.__start_needle,
+                0))
+        qscene.addItem(
+            QGraphicsRectItem(
+                self.__stop_needle - machine_width / 2 + 1,
+                pixmap.height() - self.__row_progress - 0.5,
+                machine_width - self.__stop_needle,
+                0))
         grey = QGraphicsRectItem(
             self.__start_needle - machine_width / 2,
             pixmap.height(),
