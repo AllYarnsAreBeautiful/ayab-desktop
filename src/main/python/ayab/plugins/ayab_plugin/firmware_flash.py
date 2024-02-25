@@ -17,6 +17,8 @@ from subprocess import Popen, PIPE, STDOUT
 
 from .firmware_flash_ui import Ui_FirmwareFlashFrame
 
+# import espota
+import esptool
 
 class FirmwareFlash(QFrame):
 
@@ -137,16 +139,14 @@ class FirmwareFlash(QFrame):
             if firmware.get("version") == firmware_key:
                 firmware_name = firmware.get("file")
 
-        command = self.generate_command_with_options(base_dir,
-                                                     os_name,
-                                                     port,
-                                                     controller_name,
-                                                     firmware_name,
-                                                     )
+        if "eknitter" in controller_name and "COM" in port:
+            command = self.generate_command_eknitter(base_dir, os_name, port, controller_name, firmware_name)
+        else:
+            command = self.generate_command_with_options(base_dir, os_name, port, controller_name, firmware_name)
 
         try:
             p = Popen(command,
-                      stdout=PIPE, stderr=STDOUT, shell=True)
+                    stdout=PIPE, stderr=STDOUT, shell=True)
 
             rc = p.poll()
             while rc != 0:
@@ -163,11 +163,36 @@ class FirmwareFlash(QFrame):
             else:
                 self.__logger.info("Error on flashing firmware.")
                 self.display_blocking_pop_up("Error on flashing firmware.",
-                                             message_type="error")
+                                            message_type="error")
         except Exception as e:
             self.__logger.info("Error on flashing firmware." + e)
             self.display_blocking_pop_up("Error on flashing firmware.",
-                                         message_type="error")
+                                        message_type="error")
+            
+    def generate_command_eknitter(self, base_dir, os_name, port,
+                                      controller_name, firmware_name):
+
+        if os_name == "Windows":
+            exe_route = self.__parent_ui.app_context.get_resource("ayab/firmware/esp32/win64/esptool.exe")
+            exe_route = "\"" + exe_route + "\""
+        elif os_name == "Linux":
+            exe_route = self.__parent_ui.app_context.get_resource("ayab/firmware/esp32/linux-amd64/esptool")
+        elif os_name == "Darwin":  # macOS
+            exe_route = self.__parent_ui.app_context.get_resource("ayab/firmware/esp32/macos/esptool")
+        
+        binary_file = os.path.join(self.__parent_ui.app_context.get_resource("ayab/firmware"), controller_name, firmware_name)
+
+        serial_port = port
+
+        if "fw" in firmware_name:
+            exec_command = """{0} --port {1} --baud 921600 --no-stub  write_flash --flash_size 8MB 0x10000 {2} --force """.format(exe_route, serial_port, binary_file)
+        elif "fs" in firmware_name:
+            exec_command = """{0} --port {1} --baud 921600 --no-stub  write_flash --flash_size 8MB 0x670000 {2} --force """.format(exe_route, serial_port, binary_file)
+        else:
+            exec_command = "error firmware or filesystem"
+
+        self.__logger.debug(exec_command)
+        return exec_command
 
     def generate_command_with_options(self, base_dir, os_name, port,
                                       controller_name, firmware_name):

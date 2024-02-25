@@ -4,8 +4,8 @@
     <name>MainWindow</name>
     <message>
         <location filename="ayab_gui.py" line="221"/>
-        <source>All Yarns Are Beautiful</source>
-        <translation>All Yarns Are Beautiful</translation>
+        <source>All Yarns Are Beautiful for eKnitter</source>
+        <translation>All Yarns Are Beautiful for eKnitter</translation>
     </message>
     <message>
         <location filename="ayab_gui.py" line="225"/>
@@ -54,8 +54,8 @@
     </message>
     <message>
         <location filename="ayab_gui.py" line="233"/>
-        <source>Load AYAB Firmware</source>
-        <translation>AYAB Firmware aufspielen</translation>
+        <source>Update eKnitter</source>
+        <translation>Update eKnitter</translation>
     </message>
     <message>
         <location filename="ayab_gui.py" line="234"/>
