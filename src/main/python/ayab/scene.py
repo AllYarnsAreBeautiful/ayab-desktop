@@ -79,7 +79,7 @@ class Scene(QGraphicsView):
         else:
             im = self.ayabimage.image
         data = im.convert("RGBA").tobytes("raw", "RGBA")
-        qim = QImage(data, width, height, QImage.Format_ARGB32)
+        qim = QImage(data, width, height, QImage.Format_RGBA8888)
         pixmap = QPixmap.fromImage(qim)
 
         # add pattern and locate according to alignment
