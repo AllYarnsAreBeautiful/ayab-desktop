@@ -117,10 +117,6 @@ class Engine(SignalSender, QDockWidget):
         # start to knit with the bottom first
         image = image.transpose(Image.ROTATE_180)
 
-        # mirroring option
-        if self.config.auto_mirror:
-            image = image.transpose(Image.FLIP_LEFT_RIGHT)
-
         # TODO: detect if previous conf had the same
         # image to avoid re-generating.
         self.pattern = Pattern(image, self.config,

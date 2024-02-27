@@ -178,7 +178,7 @@ class GuiMain(QMainWindow):
         self.scene.refresh()
 
     def reverse_image(self):
-        """Flip scene horizontally."""
+        """Flip image horizontally."""
         self.scene.reverse()
 
     def update_start_row(self, start_row):
