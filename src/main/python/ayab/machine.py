@@ -41,6 +41,16 @@ class Machine(Enum):
         else:
             return 200
 
+    @property
+    def name(self):
+        if self == Machine.KH910_KH950:
+            return "KH-910, KH-950i"
+        if self == Machine.KH900_KH930_KH940_KH965:
+            return "KH-900, KH-930, KH-940, KH-965i"
+        if self == Machine.KH270:
+            return "KH-270"
+        return ""
+
     def add_items(box):
         """Add items to alignment combo box."""
         box.addItem("KH-910, KH-950i")

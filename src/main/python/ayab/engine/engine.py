@@ -27,6 +27,7 @@ from PyQt5.QtWidgets import QComboBox, QDockWidget, QWidget
 
 from .. import utils
 from ..signal_sender import SignalSender
+from ..machine import Machine
 from .control import Control
 from .engine_fsm import Operation, State
 from .pattern import Pattern
@@ -61,7 +62,7 @@ class Engine(SignalSender, QDockWidget):
         self.control = Control(parent, self)
         self.__feedback = FeedbackHandler(parent)
         self.__logger = logging.getLogger(type(self).__name__)
-        # self.fs =
+        self.setWindowTitle("Machine: " + Machine(self.control.prefs.value("machine")).name)
 
     def __del__(self):
         self.control.stop()
