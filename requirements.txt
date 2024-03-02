@@ -1,5 +1,5 @@
 fbs @ git+https://github.com/X-Sam/fbs@7c99881
-PyQt5==5.15.9
+PyQt5==5.15.10
 PyInstaller==5.13.2
 Pillow==9.5.0
 pyserial==3.4
