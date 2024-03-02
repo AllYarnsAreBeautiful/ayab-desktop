@@ -1,6 +1,6 @@
-fbs @ git+https://github.com/X-Sam/fbs@29c58a1
+fbs @ git+https://github.com/X-Sam/fbs@d823fe6
 PyQt5==5.15.10
-PyInstaller==5.13.2
+PyInstaller==6.4.0
 Pillow==9.5.0
 pyserial==3.4
 sliplib==0.4.0
