@@ -24,8 +24,8 @@ import logging
 from time import sleep
 from collections import deque
 
-from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QMessageBox
+from PySide6 import QtWidgets
+from PySide6.QtWidgets import QMessageBox
 
 from .communication import Communication, Token
 

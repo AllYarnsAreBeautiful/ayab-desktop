@@ -20,8 +20,8 @@
 
 from enum import Enum
 
-from PyQt5.QtCore import Qt, QCoreApplication, QSettings
-from PyQt5.QtWidgets import QWidget
+from PySide6.QtCore import Qt, QCoreApplication, QSettings
+from PySide6.QtWidgets import QWidget
 
 from ayab.signal_sender import SignalSender
 from .options_gui import Ui_Options

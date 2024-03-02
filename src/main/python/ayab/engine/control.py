@@ -21,7 +21,7 @@
 import logging
 from bitarray import bitarray
 
-from PyQt5.QtCore import QCoreApplication
+from PySide6.QtCore import QCoreApplication
 
 from ..signal_sender import SignalSender
 from .communication import Communication, Token

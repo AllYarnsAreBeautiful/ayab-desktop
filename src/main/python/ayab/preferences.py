@@ -25,8 +25,8 @@ The method of configuration may differ depending on the OS.
 
 import re
 
-from PyQt5.QtCore import Qt, QSettings, QCoreApplication
-from PyQt5.QtWidgets import QDialog, QFormLayout, QLabel, QCheckBox, QComboBox
+from PySide6.QtCore import Qt, QSettings, QCoreApplication
+from PySide6.QtWidgets import QDialog, QFormLayout, QLabel, QCheckBox, QComboBox
 
 from .prefs_gui import Ui_Prefs
 from .signal_sender import SignalSender

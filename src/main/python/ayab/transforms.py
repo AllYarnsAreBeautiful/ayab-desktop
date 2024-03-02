@@ -20,7 +20,7 @@
 import logging
 from PIL import Image, ImageOps
 
-from PyQt5.QtWidgets import QDialog
+from PySide6.QtWidgets import QDialog
 
 from .mirrors_gui import Ui_Mirrors
 

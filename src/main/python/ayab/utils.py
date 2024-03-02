@@ -24,7 +24,7 @@ import numpy as np
 import serial.tools.list_ports
 import requests
 
-from PyQt5.QtWidgets import QMessageBox
+from PySide6.QtWidgets import QMessageBox
 
 
 def even(x):

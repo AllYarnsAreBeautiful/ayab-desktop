@@ -20,7 +20,8 @@
 
 import logging
 
-from PyQt5.QtCore import QStateMachine, QState, QObject
+from PySide6.QtStateMachine import QStateMachine, QState
+from PySide6.QtCore import QObject
 
 
 class gui_fsm(object):

@@ -20,8 +20,8 @@
 from enum import Enum
 from bitarray import bitarray
 
-from PyQt5.QtCore import QCoreApplication
-from PyQt5.QtWidgets import QWidget
+from PySide6.QtCore import QCoreApplication
+from PySide6.QtWidgets import QWidget
 
 from .status_gui import Ui_StatusTab
 

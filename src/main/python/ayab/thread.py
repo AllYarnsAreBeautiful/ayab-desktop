@@ -17,7 +17,7 @@
 #    Copyright 2014 Sebastian Oliva, Christian Obersteiner, Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
-from PyQt5.QtCore import QThread
+from PySide6.QtCore import QThread
 
 
 class GenericThread(QThread):

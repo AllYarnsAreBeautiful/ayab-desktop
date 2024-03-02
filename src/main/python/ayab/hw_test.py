@@ -19,9 +19,9 @@
 
 from copy import copy
 import serial
-from PyQt5.QtWidgets import QDialog, QVBoxLayout, QPlainTextEdit, QButtonGroup, QPushButton, QGroupBox, QHBoxLayout, QCheckBox
-from PyQt5.QtGui import QFont
-from PyQt5.QtCore import QTimer
+from PySide6.QtWidgets import QDialog, QVBoxLayout, QPlainTextEdit, QButtonGroup, QPushButton, QGroupBox, QHBoxLayout, QCheckBox
+from PySide6.QtGui import QFont
+from PySide6.QtCore import QTimer
 
 #from .cmd_buttons import CmdButtons
 from .engine.engine_fsm import State

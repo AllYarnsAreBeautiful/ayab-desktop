@@ -19,7 +19,7 @@
 
 import re
 from time import sleep
-from PyQt5.QtCore import QObject, pyqtSignal
+from PySide6.QtCore import QObject, Signal
 
 from .communication import Token
 from .communication_mock import CommunicationMock

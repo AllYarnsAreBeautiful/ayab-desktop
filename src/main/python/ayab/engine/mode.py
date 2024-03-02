@@ -21,7 +21,7 @@
 import logging
 from enum import Enum
 
-from PyQt5.QtCore import QCoreApplication
+from PySide6.QtCore import QCoreApplication
 
 from ayab.utils import odd, even
 
