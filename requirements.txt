@@ -1,4 +1,4 @@
-fbs @ git+https://github.com/X-Sam/fbs@7c99881
+fbs @ git+https://github.com/X-Sam/fbs@29c58a1
 PyQt5==5.15.10
 PyInstaller==5.13.2
 Pillow==9.5.0
