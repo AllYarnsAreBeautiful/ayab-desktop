@@ -170,6 +170,10 @@ class GuiMain(QMainWindow):
             ": {} x {}".format(width, height), False)
         self.scene.refresh()
 
+    def reverse_image(self):
+        """Flip image horizontally."""
+        self.scene.reverse()
+
     def update_start_row(self, start_row):
         self.progbar.update(start_row)
         self.scene.row_progress = start_row

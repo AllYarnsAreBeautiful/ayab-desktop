@@ -106,6 +106,12 @@ jobs:
       with:
         path: src/main/python/ayab/ayab_logo_rc.py
         key:  logo-${{ hashFiles('src/main/python/ayab/ayab_logo_rc.qrc') }}
+    - name: Use cached graphics
+      id:   e-cache
+      uses: actions/cache@v3
+      with:
+        path: src/main/python/ayab/engine/*_rc.py
+        key:  e-${{ hashFiles('src/main/python/ayab/engine/*_rc.qrc') }}
     - name: Use cached translation files
       id:   qm-cache
       uses: actions/cache@v3
@@ -122,6 +128,7 @@ jobs:
       if:   ${{ (steps.gui1-cache.outputs.cache-hit != 'true') ||
                 (steps.gui2-cache.outputs.cache-hit != 'true') ||
                 (steps.logo-cache.outputs.cache-hit != 'true') ||
+                (steps.e-cache.outputs.cache-hit    != 'true') ||
                 (steps.qm-cache.outputs.cache-hit   != 'true') }}
       run: |
         sudo apt install -y qt5-default qttools5-dev-tools
@@ -144,6 +151,12 @@ jobs:
       with:
         path: src/main/python/ayab/ayab_logo_rc.py
         key:  logo-${{ hashFiles('src/main/python/ayab/ayab_logo_rc.qrc') }}
+    - name: Cache graphics
+      if:   ${{ (steps.e-cache.outputs.cache-hit != 'true') }}
+      uses: actions/cache/save@v3
+      with:
+        path: src/main/python/ayab/engine/*_rc.py
+        key:  e-${{ hashFiles('src/main/python/ayab/engine/*_rc.qrc') }}
     - name: Cache translation files
       if:   ${{ (steps.qm-cache.outputs.cache-hit != 'true') }}
       uses: actions/cache/save@v3
@@ -244,6 +257,14 @@ jobs:
       with:
         path: src/main/python/ayab/ayab_logo_rc.py
         key:  logo-${{ hashFiles('src/main/python/ayab/ayab_logo_rc.qrc') }}
+        enableCrossOsArchive: true
+        fail-on-cache-miss: true
+    - name: Restore cached graphics
+      id:   e-cache
+      uses: actions/cache@v3
+      with:
+        path: src/main/python/ayab/engine/*_rc.py
+        key:  e-${{ hashFiles('src/main/python/ayab/engine/*_rc.qrc') }}
         enableCrossOsArchive: true
         fail-on-cache-miss: true
     - name: Restore cached translation files
@@ -378,6 +399,13 @@ jobs:
         path: src/main/python/ayab/ayab_logo_rc.py
         key:  logo-${{ hashFiles('src/main/python/ayab/ayab_logo_rc.qrc') }}
         fail-on-cache-miss: true
+    - name: Restore cached graphics
+      id:   e-cache
+      uses: actions/cache@v3
+      with:
+        path: src/main/python/ayab/engine/*_rc.py
+        key:  e-${{ hashFiles('src/main/python/ayab/engine/*_rc.qrc') }}
+        fail-on-cache-miss: true
     - name: Restore cached translation files
       id:   qm-cache
       uses: actions/cache@v3
@@ -504,6 +532,13 @@ jobs:
         path: src/main/python/ayab/ayab_logo_rc.py
         key:  logo-${{ hashFiles('src/main/python/ayab/ayab_logo_rc.qrc') }}
         fail-on-cache-miss: true
+    - name: Restore cached graphics
+      id:   e-cache
+      uses: actions/cache@v3
+      with:
+        path: src/main/python/ayab/engine/*_rc.py
+        key:  e-${{ hashFiles('src/main/python/ayab/engine/*_rc.qrc') }}
+        fail-on-cache-miss: true
     - name: Restore cached translation files
       id:   qm-cache
       uses: actions/cache@v3
@@ -525,12 +560,16 @@ jobs:
         mv src/main/python/ayab/*_gui.py squashfs-root/src/main/python/ayab/
         mv src/main/python/ayab/engine/*_gui.py squashfs-root/src/main/python/ayab/engine/
         mv src/main/python/ayab/ayab_logo_rc.py squashfs-root/src/main/python/ayab/
+        mv src/main/python/ayab/engine/lowercase_e_rc.py squashfs-root/src/main/python/ayab/engine
+        mv src/main/python/ayab/engine/lowercase_e_reversed_rc.py squashfs-root/src/main/python/ayab/engine
         mv src/main/resources/base/ayab/translations/*.qm squashfs-root/src/main/resources/base/ayab/translations/
         mv src/build/settings/base.json squashfs-root/src/build/settings/base.json
     - name: Remove unneeded files
       run: |
         rm squashfs-root/src/main/python/ayab/*_gui.ui
         rm squashfs-root/src/main/python/ayab/ayab_logo_rc.qrc
+        rm squashfs-root/src/main/python/ayab/engine/lowercase_e_rc.qrc
+        rm squashfs-root/src/main/python/ayab/engine/lowercase_e_reversed_rc.qrc
     - name: Check cached files
       run: |
         pwd

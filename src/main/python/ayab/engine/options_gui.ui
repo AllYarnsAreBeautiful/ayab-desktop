@@ -242,6 +242,17 @@
      </widget>
     </item>
     <item>
+     <widget class="QLabel" name="auto_mirror_icon">
+      <property name="pixmap">
+       <pixmap resource="lowercase_e_reversed_rc.qrc">:/garamond-lowercase-e-reversed.png</pixmap>
+       <size>
+        <width>32</width>
+        <height>32</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item>
      <widget class="QCheckBox" name="continuous_reporting_checkbox">
       <property name="text">
        <string>Continuous Status Reporting</string>
@@ -251,6 +262,8 @@
    </layout>
   </widget>
  </widget>
- <resources/>
+ <resources>
+  <include location="ayab.engine.lowercase_e_reversed.qrc"/>
+ </resources>
  <connections/>
 </ui>
