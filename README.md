@@ -23,8 +23,8 @@ For flashing the firmware, avrdude has to be available on your system.
 To be able to work on GUI elements and translation files, you will also need Qt Dev & Localization Tools.
 #### Debian/Ubuntu
 ```bash
-    sudo apt-get install python3-pip python3-dev python3-virtualenv python3-gi
-    sudo apt-get install libasound2-dev avrdude qt6-tools-dev-tools qt6-l10n-tools
+    sudo apt install python3.11 python3.11-dev python3.11-venv
+    sudo apt install libasound2-dev avrdude qt6-tools-dev-tools build-essential qt6-l10n-tools
     export PATH=/usr/lib/qt6/bin:$PATH
 ```
 #### openSUSE
@@ -66,6 +66,7 @@ Activate the virtual environment. The command prompt should now display
 ```ps
     conda activate ayab
 ```
+(You may skip the virtual environment setup below.)
 
 To be able to work on GUI elements and translation files, the Qt Dev tools are needed.  
 Navigate to https://www.qt.io/download in a web browser and follow the installation
