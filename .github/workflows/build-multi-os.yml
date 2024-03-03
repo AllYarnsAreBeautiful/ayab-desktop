@@ -367,8 +367,8 @@ jobs:
         python -m pip download --only-binary=:all: --platform macosx_11_0_arm64 numpy==1.26.4
         mkdir tmp-wheel/
         delocate-fuse numpy*arm* numpy*x86* -w tmp-wheel/
-        python -m pip download --only-binary=:all: --platform macosx_10_10_x86_64 Pillow==9.5.0
-        python -m pip download --only-binary=:all: --platform macosx_11_0_arm64 Pillow==9.5.0
+        python -m pip download --only-binary=:all: --platform macosx_10_10_x86_64 Pillow==10.0.0
+        python -m pip download --only-binary=:all: --platform macosx_11_0_arm64 Pillow==10.0.0
         delocate-fuse pillow*arm* pillow*x86* -w tmp-wheel/
         python -m pip install tmp-wheel/*.whl
         python -m pip install --no-binary charset_normalizer -r requirements.build.txt
