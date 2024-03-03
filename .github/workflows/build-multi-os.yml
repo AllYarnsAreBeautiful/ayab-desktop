@@ -335,7 +335,7 @@ jobs:
   build-macos:
     name: Create and upload Mac OSX release
     needs: setup
-    runs-on: macos-latest
+    runs-on: macos-14
     strategy:
       matrix:
         python-version: [3.11]
