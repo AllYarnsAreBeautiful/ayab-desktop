@@ -61,7 +61,7 @@ class SignalReceiver(QObject):
     def signals(self):
         """Iterator over names of signals."""
         return filter(
-            lambda x: type(getattr(self, x)).__name__ == "pyqtBoundSignal",
+            lambda x: type(getattr(self, x)).__name__ == "SignalInstance",
             SignalReceiver.__dict__.keys())
 
     def activate_signals(self, parent):
