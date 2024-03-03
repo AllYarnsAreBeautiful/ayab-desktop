@@ -131,8 +131,8 @@ jobs:
                 (steps.e-cache.outputs.cache-hit    != 'true') ||
                 (steps.qm-cache.outputs.cache-hit   != 'true') }}
       run: |
-        sudo apt install -y qt6-base-dev qt6-tools-dev-tools qt6-l10n-tools
-        PATH=$PATH:/usr/lib/qt6/bin bash setup-environment.ps1
+        sudo apt install -y qt6-base-dev qt6-tools-dev-tools
+        PATH=/usr/lib/qt6/bin:$PATH bash setup-environment.ps1
     - name: Cache gui files (1)
       if:   ${{ (steps.gui1-cache.outputs.cache-hit != 'true') }}
       uses: actions/cache/save@v3
