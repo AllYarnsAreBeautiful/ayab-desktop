@@ -9,7 +9,7 @@ mock==3.0.5
 bitarray-hardbyte==2.3.8
 simpleaudio==1.0.4
 wave==0.0.2
-numpy
+numpy==1.26.4
 charset-normalizer<3.0.0
-requests
-pre-commit
+requests==2.31.0
+pre-commit==3.6.2
