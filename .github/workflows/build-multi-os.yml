@@ -432,10 +432,13 @@ jobs:
         ls -l src/main/python/ayab/
         ls -l src/main/resources/base/ayab/translations/
     - name: Build app
-      run: python -m fbs freeze --debug
+      run: |
+        python -m fbs freeze --debug
+        codesign -s - --force --all-architectures --timestamp --deep ./target/AYAB-mac.app
     - name: Create installer
       run: |
         python -m fbs installer
+        codesign -s - --force --all-architectures --timestamp --deep ./target/AYAB.dmg
         mv target/AYAB.dmg target/AYAB-${{ steps.vars.outputs.tag }}.dmg
     - name: Upload asset
       uses: ncipollo/release-action@v1
