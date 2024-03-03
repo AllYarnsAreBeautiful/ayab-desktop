@@ -369,7 +369,7 @@ jobs:
         delocate-fuse numpy*arm* numpy*x86* -w tmp-wheel/
         python -m pip download --only-binary=:all: --platform macosx_10_10_x86_64 Pillow==10.0.0
         python -m pip download --only-binary=:all: --platform macosx_11_0_arm64 Pillow==10.0.0
-        delocate-fuse pillow*arm* pillow*x86* -w tmp-wheel/
+        delocate-fuse Pillow*arm* Pillow*x86* -w tmp-wheel/
         python -m pip install tmp-wheel/*.whl
         python -m pip install --no-binary charset_normalizer -r requirements.build.txt
     - name: Restore cached firmware
