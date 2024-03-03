@@ -84,7 +84,7 @@ class Pattern(object):
         if actual_num_colors < self.__num_colors:
             # TODO: issue warning if number of colors is less than expected
             # TODO: reduce number of colors
-            # self.__num_colors = num_colors = actual_num_colors
+            self.__num_colors = num_colors = actual_num_colors
             # TODO: reduce number of colors in configuration box
             pass
 
