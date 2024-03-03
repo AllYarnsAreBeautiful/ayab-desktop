@@ -371,7 +371,7 @@ jobs:
         python -m pip download --only-binary=:all: --platform macosx_11_0_arm64 Pillow==9.5.0
         delocate-fuse pillow*arm* pillow*x86* -w tmp-wheel/
         python -m pip install tmp-wheel/*.whl
-        python -m pip install --no-binary charset_normalizer --platform universal2 -r requirements.build.txt
+        python -m pip install --no-binary charset_normalizer -r requirements.build.txt
     - name: Restore cached firmware
       id:   firmware-cache
       uses: actions/cache@v3
