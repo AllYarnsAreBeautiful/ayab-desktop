@@ -7,7 +7,7 @@ For information on how to install the release version of the software, see
 
 ## Running from Source & Development
 
-The AYAB desktop software runs using Python 3.8. This is not the current
+The AYAB desktop software runs using Python 3.11. This is not the current
 version of Python, so it is recommended to install the software to a
 virtual environment. Miniconda provides a virtual environment that is
 platform-independent and easy to use: download the lastest version from
@@ -29,12 +29,12 @@ needed also.
 #### Debian/Ubuntu
 
     sudo apt-get install python3-pip python3-dev python3-virtualenv python3-gi
-    sudo apt-get install libasound2-dev avrdude qttools5-dev-tools
+    sudo apt-get install libasound2-dev avrdude qt6-tools-dev-tools
 
 #### For openSUSE
 
     sudo zypper install python3-pip python3-virtualenv python3-gi
-    sudo zypper install libasound avrdude qttools5-dev-tools
+    sudo zypper install libasound avrdude qt6-tools
 
 #### All Distributions
 
@@ -97,8 +97,8 @@ Install the prerequisite Python modules.
 
 To be able to work on GUI elements and translation files, the Qt Dev tools are needed.
 Navigate to https://www.qt.io/download in a web browser and follow the installation
-instructions. From the available options, select "Custom install" and then "Qt 5.15.2".
-Then convert the PyQt5 `.ui` files and generate the translation files:
+instructions. From the available options, select "Custom install" and then "Qt 6.6.1".
+Then convert the PySide6 `.ui` files and generate the translation files:
 
     .\setup-environment.ps1
 
@@ -107,11 +107,6 @@ Now start AYAB with:
     fbs run
 
 ### macOS
-
-*If on Apple Silicon (M1 & M2 chips)*
-
-* You will need to install the virtual environment using the x86_64 versions of packages due to the requirement of Python 3.8 (which has no build in Conda due to it predating Apple silicon). In order to do this, you need to set the terminal to fetch packages built for x86_64 architectures rather than the native arm64. In Applications, go to the Utilities folder and right click on the Terminal app, and choosing `Get Info`. Select the `Open using Rosetta` checkbox and close the window. Check that the change has taken place by opening the terminal and entering the command `arch`. This should return `i386` if everything went correctly.
-* Installing both native and rosetta versions of packages can cause conflicts. You can remove conflicting packages from homebrew by specifying architecture and using the remove command: `arch=arm64 brew remove xyz`.
 
 You can install Git using Homebrew:
 
@@ -126,18 +121,20 @@ Next download the git repository:
     git clone https://github.com/AllYarnsAreBeautiful/ayab-desktop
     cd ayab-desktop
 
+Install python from [the official universal2 installer](https://www.python.org/ftp/python/3.11.8/python-3.11.8-macos11.pkg). (Conda does not produce universal binaries)
+
 Create a virtual environment for AYAB:
 
-    conda create --name ayab -c conda-forge python=3.8 pip
+    python3 -m venv ayab 
 
 Now activate the virtual environment. The command prompt should now display
 `(ayab)` at the beginning of each line.
 
-    conda activate ayab
+    source ayab/bin/activate
 
 Then install the remaining prerequisites with:
 
-    python -m pip install --upgrade pip
+    python3 -m pip install --upgrade pip
     pip install --upgrade setuptools
     pip install -r requirements.txt
 
@@ -149,7 +146,7 @@ To be able to work on GUI elements and translation files, the Qt Dev tools are n
 
     https://download.qt.io/archive/qt/5.12/5.12.12/qt-opensource-mac-x64-5.12.12.dmg
 
-Finally, convert the PyQt5 `.ui` files and generate the translation files:
+Finally, convert the PySide6 `.ui` files and generate the translation files:
 
     ./setup-environment.ps1
 
