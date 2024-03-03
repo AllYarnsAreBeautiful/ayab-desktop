@@ -76,18 +76,18 @@ jobs:
       uses: actions/cache@v3
       with:
         path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.build.txt') }}
     - name: Install Python modules
       run: |
         python -m pip install --upgrade pip
         python -m pip install --upgrade setuptools
-        python -m pip install -r requirements.txt
+        python -m pip install -r requirements.build.txt
     - name: Cache Python modules
       if:   steps.pip-cache.outputs.cache-hit != 'true'
       uses: actions/cache/save@v3
       with:
         path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.build.txt') }}
     - name: Use cached gui files (1)
       id:   gui1-cache
       uses: actions/cache@v3
@@ -225,7 +225,7 @@ jobs:
         choco install vcredist-all # fixes dependency on msvcr100.dll
         python -m pip install --upgrade pip
         python -m pip install --upgrade setuptools
-        python -m pip install -r requirements.txt
+        python -m pip install -r requirements.build.txt
         python -m pip install -r windows-build\windows_build_requirements.txt
     - name: Restore cached firmware
       id:   firmware-cache
@@ -371,7 +371,7 @@ jobs:
         python -m pip download --only-binary=:all: --platform macosx_11_0_arm64 Pillow==9.5.0
         delocate-fuse pillow*arm* pillow*x86* -w tmp-wheel/
         python -m pip install tmp-wheel/*.whl
-        python -m pip install --no-binary charset_normalizer --platform universal2 -r requirements.txt
+        python -m pip install --no-binary charset_normalizer --platform universal2 -r requirements.build.txt
     - name: Restore cached firmware
       id:   firmware-cache
       uses: actions/cache@v3
@@ -500,7 +500,7 @@ jobs:
         ./AppRun -m pip install --upgrade setuptools
         # hack to fix setup.py script with faulty include
         ./AppRun -m pip install --global-option=build_ext --global-option="-I$(pwd)/opt/${{steps.vars.outputs.python}}/include/${{steps.vars.outputs.python}}" simpleaudio
-        ./AppRun -m pip install -r requirements.txt
+        ./AppRun -m pip install -r requirements.build.txt
     - name: Add AppDir subdirectories to PATH
       run: |
         echo "usr/bin" >> $GITHUB_PATH
