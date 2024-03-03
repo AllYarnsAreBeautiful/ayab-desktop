@@ -7,154 +7,128 @@ For information on how to install the release version of the software, see
 
 ## Running from Source & Development
 
-The AYAB desktop software runs using Python 3.11. This is not the current
-version of Python, so it is recommended to install the software to a
-virtual environment. Miniconda provides a virtual environment that is
-platform-independent and easy to use: download the lastest version from
-https://docs.conda.io/en/latest/miniconda.html and follow the installation
-instructions for your operating system.
-
-The Python module dependencies can be found in *requirements.txt*.
+The AYAB desktop software runs using Python 3.11.  
+The Python module dependencies are split across **runtime dependencies**, which are in *requirements.build.txt* and **development dependencies**, found in *requirements.txt*.
 
 This repository uses [pre-commit](https://pre-commit.com/) hooks.
-After cloning the repo and installing the requirements, you should run
+After cloning the repo and installing the development dependencies, you should run
 `pre-commit install` to set up the git hook scripts.
+### Platform-Specific Setup
+<details>
+    <summary>
+        Linux
+    </summary>
 
-### Linux
-
-For flashing the firmware, avrdude has to be available on your system.
-To be able to work on GUI elements and translation files, the Qt Dev tools are
-needed also.
-
+For flashing the firmware, avrdude has to be available on your system.  
+To be able to work on GUI elements and translation files, you will also need Qt Dev & Localization Tools.
 #### Debian/Ubuntu
-
+```bash
     sudo apt-get install python3-pip python3-dev python3-virtualenv python3-gi
-    sudo apt-get install libasound2-dev avrdude qt6-tools-dev-tools
-
-#### For openSUSE
-
-    sudo zypper install python3-pip python3-virtualenv python3-gi
-    sudo zypper install libasound avrdude qt6-tools
-
+    sudo apt-get install libasound2-dev avrdude qt6-tools-dev-tools qt6-l10n-tools
+    export PATH=/usr/lib/qt6/bin:$PATH
+```
+#### openSUSE
+```bash
+    sudo zypper install python311 python311-pip python311-virtualenv python311-devel
+    sudo zypper install libasound2 alsa-devel avrdude qt6-tools qt6-tools-linguist
+    export PATH=/usr/lib/qt6/bin:$PATH 
+```
 #### All Distributions
 
 To be able to communicate with your Arduino, it might be necessary to add the
 rights for USB communication by adding your user to some groups.
-
+```bash
     sudo usermod -aG tty [userName]
     sudo usermod -aG dialout [userName]
+```
+</details>
 
-To install the development version you can checkout the git repository.
-
-    git clone https://github.com/AllYarnsAreBeautiful/ayab-desktop
-    cd ayab-desktop
-
-Create a virtual environment for AYAB:
-
-    conda create --name ayab -c conda-forge python=3.8 pip
-
-Now activate the virtual environment. The command prompt should now display
-`(ayab)` at the beginning of each line.
-
-    conda activate ayab
-
-Install the remaining prerequisites.
-
-    python -m pip install --upgrade pip
-    pip install --upgrade setuptools
-    pip install --ignore-installed -r requirements.txt
-    bash setup-environment.ps1
-
-Now start AYAB with
-
-    fbs run
-
-### Windows
+<details>
+    <summary>
+        Windows
+    </summary>
 
 Run Anaconda Powershell as administrator and install git.
-
+```ps
     conda install git
-
+```
 Now you can download the git repository with:
-
+```ps
     git clone https://github.com/AllYarnsAreBeautiful/ayab-desktop
     cd ayab-desktop
-
+```
 Next, create a virtual environment for AYAB:
-
-    conda create --name ayab -c conda-forge python=3.8 pip
-
+```ps
+    conda create --name ayab -c conda-forge python=3.11 pip
+```
 Activate the virtual environment. The command prompt should now display
 `(ayab)` at the beginning of each line.
-
+```ps
     conda activate ayab
+```
 
-Install the prerequisite Python modules.
-
-    python -m pip install --upgrade pip
-    pip install --upgrade setuptools
-    pip install --ignore-installed -r requirements.txt
-
-To be able to work on GUI elements and translation files, the Qt Dev tools are needed.
+To be able to work on GUI elements and translation files, the Qt Dev tools are needed.  
 Navigate to https://www.qt.io/download in a web browser and follow the installation
 instructions. From the available options, select "Custom install" and then "Qt 6.6.1".
-Then convert the PySide6 `.ui` files and generate the translation files:
+</details>
 
-    .\setup-environment.ps1
-
-Now start AYAB with:
-
-    fbs run
-
-### macOS
+<details>
+<summary>
+macOS
+</summary>
 
 You can install Git using Homebrew:
-
+```bash
     brew install git
-
+```
 You will also need the Xcode command line tools:
-
+```bash
     xcode-select --install
+```
+To be able to work on GUI elements and translation files, the Qt Dev tools are needed also:
+```bash
+    brew install qt
+```
+Install python from [the official universal2 installer](https://www.python.org/ftp/python/3.11.8/python-3.11.8-macos11.pkg). (Conda does not produce universal binaries)  
 
-Next download the git repository:
+If you encounter the pip `SSL:TLSV1_ALERT_PROTOCOL_VERSION` problem:
+```bash
+    curl https://bootstrap.pypa.io/get-pip.py | python
+```
+</details>
 
+### Universal Setup Steps
+Once platform-specific setup is complete, download the git repository:
+```bash
     git clone https://github.com/AllYarnsAreBeautiful/ayab-desktop
     cd ayab-desktop
-
-Install python from [the official universal2 installer](https://www.python.org/ftp/python/3.11.8/python-3.11.8-macos11.pkg). (Conda does not produce universal binaries)
-
+```
 Create a virtual environment for AYAB:
-
-    python3 -m venv ayab 
-
+```bash
+    python3.11 -m venv .venv 
+```
 Now activate the virtual environment. The command prompt should now display
-`(ayab)` at the beginning of each line.
-
-    source ayab/bin/activate
-
-Then install the remaining prerequisites with:
-
-    python3 -m pip install --upgrade pip
+`(.venv)` at the beginning of each line.
+```bash
+    source .venv/bin/activate
+```
+Install the remaining prerequisites with:
+```bash
+    python -m pip install --upgrade pip
     pip install --upgrade setuptools
     pip install -r requirements.txt
+```
 
-To solve pip SSL:TLSV1_ALERT_PROTOCOL_VERSION problem:
+Next, convert the PySide6 `.ui` files and generate the translation files:
+```bash
+    bash ./setup-environment.ps1
+```
+If you get errors about missing `lrelease`, you can skip this (if you do not need the translation files). To do so, comment out lines [23:26] of `setup-environment.ps1`.
 
-    curl https://bootstrap.pypa.io/get-pip.py | python
-
-To be able to work on GUI elements and translation files, the Qt Dev tools are needed also:
-
-    https://download.qt.io/archive/qt/5.12/5.12.12/qt-opensource-mac-x64-5.12.12.dmg
-
-Finally, convert the PySide6 `.ui` files and generate the translation files:
-
-    ./setup-environment.ps1
-
-If you get errors about missing `lrelease`, you can skip this if you do not need the translation files. To do so, comment out lines [23:26] of `setup-environment.ps1`.
-
-Now start AYAB with
-
+Finally, you can start AYAB with
+```bash
     fbs run
+```
 
 ## CI/CD on GitHub
 
