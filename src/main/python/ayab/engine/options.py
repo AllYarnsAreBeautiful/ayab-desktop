@@ -223,8 +223,8 @@ class NeedleColor(Enum):
     def add_items(box):
         """Add items to needle color combo box."""
         tr_ = QCoreApplication.translate
-        box.addItem(tr_("NeedleColor", "orange"))
-        box.addItem(tr_("NeedleColor", "green"))
+        box.addItem(tr_("NeedleColor", "left"))
+        box.addItem(tr_("NeedleColor", "right"))
 
     def read(self, needle, machine):
         if self == NeedleColor.ORANGE:
