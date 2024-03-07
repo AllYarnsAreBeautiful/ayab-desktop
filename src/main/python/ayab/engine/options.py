@@ -22,15 +22,12 @@ from enum import Enum
 
 from PySide6.QtCore import Qt, QCoreApplication, QSettings
 from PySide6.QtWidgets import QWidget
-from PySide6.QtGui import QPixmap
 
 from ayab.signal_sender import SignalSender
 from .options_gui import Ui_Options
 from .mode import Mode
 from ayab.machine import Machine
 
-import ayab.engine.lowercase_e_rc
-import ayab.engine.lowercase_e_reversed_rc
 
 # FIXME translations for UI
 class OptionsTab(SignalSender, QWidget):
@@ -75,7 +72,6 @@ class OptionsTab(SignalSender, QWidget):
             self.update_needles)
         self.ui.alignment_combo_box.currentIndexChanged.connect(
             lambda: self.emit_alignment_updater(self.__read_alignment()))
-        self.ui.auto_mirror_checkbox.clicked.connect(self.__reverse_image)
 
     def update_needles(self):
         """Sends the needles_updater signal."""
@@ -83,13 +79,6 @@ class OptionsTab(SignalSender, QWidget):
         start_needle = NeedleColor.read_start_needle(self.ui, self.machine)
         stop_needle = NeedleColor.read_stop_needle(self.ui, self.machine)
         self.emit_needles_updater(start_needle, stop_needle)
-
-    def __reverse_image(self):
-        if self.ui.auto_mirror_checkbox.isChecked():
-            self.ui.auto_mirror_icon.setPixmap(QPixmap(":/garamond-lowercase-e.png"))
-        else:
-            self.ui.auto_mirror_icon.setPixmap(QPixmap(":/garamond-lowercase-e-reversed.png"))
-        self.emit_image_reverser()
 
     def __read_start_row(self):
         return int(self.ui.start_row_edit.value()) - 1
@@ -138,10 +127,8 @@ class OptionsTab(SignalSender, QWidget):
         self.ui.alignment_combo_box.setCurrentIndex(self.alignment.value)
         if self.auto_mirror:
             self.ui.auto_mirror_checkbox.setCheckState(Qt.Checked)
-            self.ui.auto_mirror_icon.setPixmap(QPixmap(":/garamond-lowercase-e.png"))
         else:
             self.ui.auto_mirror_checkbox.setCheckState(Qt.Unchecked)
-            self.ui.auto_mirror_icon.setPixmap(QPixmap(":/garamond-lowercase-e-reversed.png"))
         # self.ui.continuous_reporting_checkbox
 
     def as_dict(self):

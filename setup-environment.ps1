@@ -17,10 +17,8 @@ pyside6-uic src/main/python/ayab/engine/dock_gui.ui -o src/main/python/ayab/engi
 pyside6-uic src/main/python/ayab/engine/options_gui.ui -o src/main/python/ayab/engine/options_gui.py
 pyside6-uic src/main/python/ayab/engine/status_gui.ui -o src/main/python/ayab/engine/status_gui.py
 
-# generate PyQt5 resource filea
+# generate PySide6 resource file
 pyside6-rcc src/main/python/ayab/ayab_logo_rc.qrc -o src/main/python/ayab/ayab_logo_rc.py
-pyside6-rcc src/main/python/ayab/engine/lowercase_e_rc.qrc -o src/main/python/ayab/engine/lowercase_e_rc.py
-pyside6-rcc src/main/python/ayab/engine/lowercase_e_reversed_rc.qrc -o src/main/python/ayab/engine/lowercase_e_reversed_rc.py
 
 # generate translation files
 cd src/main/resources/base/ayab/translations/
