@@ -21,8 +21,8 @@
 from enum import Enum
 
 from PySide6.QtCore import Qt, QCoreApplication
-from PyQt5.QtWidgets import QWidget
-from PyQt5.QtGui import QPixmap
+from PySide6.QtWidgets import QWidget
+from PySide6.QtGui import QPixmap
 
 from ayab.signal_sender import SignalSender
 from .options_gui import Ui_Options

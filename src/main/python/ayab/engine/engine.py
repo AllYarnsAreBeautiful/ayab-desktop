@@ -44,7 +44,7 @@ class Engine(SignalSender, QDockWidget):
 
     Implemented as a subclass of `QDockWidget` and `SignalSender`.
     """
-    port_opener = pyqtSignal()
+    port_opener = Signal()
 
     def __init__(self, parent):
         # set up UI
