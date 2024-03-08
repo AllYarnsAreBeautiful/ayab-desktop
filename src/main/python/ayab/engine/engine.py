@@ -23,7 +23,7 @@ from time import sleep
 from PIL import Image
 
 from PyQt5.QtCore import QTranslator, QCoreApplication, QLocale, QObjectCleanupHandler, pyqtSignal
-from PyQt5.QtWidgets import QComboBox, QDockWidget, QWidget
+from PyQt5.QtWidgets import QComboBox, QWidget
 
 from .. import utils
 from ..signal_sender import SignalSender
@@ -38,11 +38,11 @@ from .output import Output, FeedbackHandler
 from .dock_gui import Ui_Dock
 
 
-class Engine(SignalSender, QDockWidget):
+class Engine(SignalSender, QWidget):
     """
     Top-level class for the slave thread that communicates with the shield.
 
-    Implemented as a subclass of `QDockWidget` and `SignalSender`.
+    Implemented as a subclass of `QWidget` and `SignalSender`.
     """
     port_opener = pyqtSignal()
 
@@ -62,7 +62,6 @@ class Engine(SignalSender, QDockWidget):
         self.control = Control(parent, self)
         self.__feedback = FeedbackHandler(parent)
         self.__logger = logging.getLogger(type(self).__name__)
-        self.setWindowTitle("Machine: " + Machine(self.control.prefs.value("machine")).name)
 
     def __del__(self):
         self.control.stop()
