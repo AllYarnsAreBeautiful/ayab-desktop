@@ -128,7 +128,7 @@ class Preferences(SignalSender):
 
     def open_dialog(self):
         machine_width = Machine(self.value("machine")).width
-        result = PrefsDialog(self.parent).exec_()
+        result = PrefsDialog(self.parent).exec()
         if machine_width != Machine(self.value("machine")).width:
             self.emit_image_resizer()
 
@@ -156,7 +156,7 @@ class PrefsDialog(QDialog):
 
         # connect dialog box buttons
         for widget in self.__widget.values():
-            widget.connect()
+            widget.connectChange()
         self.__ui.reset.clicked.connect(self.__reset_and_refresh)
         self.__ui.enter.clicked.connect(self.accept)
 
@@ -197,7 +197,7 @@ class PrefsBoolWidget(QCheckBox):
         self.var = var
         self.prefs = prefs
 
-    def connect(self):
+    def connectChange(self):
         self.toggled.connect(self.update_setting)
 
     def update_setting(self):
@@ -208,9 +208,9 @@ class PrefsBoolWidget(QCheckBox):
 
     def refresh(self):
         if self.prefs.value(self.var):
-            self.setCheckState(Qt.Checked)
+            self.setCheckState(Qt.CheckState.Checked)
         else:
-            self.setCheckState(Qt.Unchecked)
+            self.setCheckState(Qt.CheckState.Unchecked)
 
 
 class PrefsComboWidget(QComboBox):
@@ -226,7 +226,7 @@ class PrefsComboWidget(QComboBox):
         cls = self.prefs.variables[self.var]
         cls.add_items(self)
 
-    def connect(self):
+    def connectChange(self):
         self.currentIndexChanged.connect(self.update_setting)
 
     def update_setting(self):
@@ -247,7 +247,7 @@ class PrefsLangWidget(QComboBox):
         self.prefs = prefs
         self.prefs.languages.add_items(self)
 
-    def connect(self):
+    def connectChange(self):
         self.currentIndexChanged.connect(self.update_setting)
 
     def update_setting(self):
