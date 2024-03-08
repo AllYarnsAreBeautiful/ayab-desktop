@@ -1,85 +1,137 @@
+Linux
+
 This is the GUI interface for AYAB.
 
 For information on how to install the release version of the software, see \href{http://manual.ayab-knitting.com}{\texttt{ http\+://manual.\+ayab-\/knitting.\+com}}\hypertarget{md_README_autotoc_md30}{}\doxysection{Running from Source \& Development}\label{md_README_autotoc_md30}
-The AYAB desktop software runs using Python 3.\+11. This is not the current version of Python, so it is recommended to install the software to a virtual environment. Miniconda provides a virtual environment that is platform-\/independent and easy to use\+: download the lastest version from \href{https://docs.conda.io/en/latest/miniconda.html}{\texttt{ https\+://docs.\+conda.\+io/en/latest/miniconda.\+html}} and follow the installation instructions for your operating system.
+The AYAB desktop software runs using Python 3.\+11. ~\newline
+ The Python module dependencies are split across {\bfseries{runtime dependencies}}, which are in {\itshape requirements.\+build.\+txt} and {\bfseries{development dependencies}}, found in {\itshape requirements.\+txt}.
 
-The Python module dependencies can be found in {\itshape requirements.\+txt}.
+This repository uses \href{https://pre-commit.com/}{\texttt{ pre-\/commit}} hooks. After cloning the repo and installing the development dependencies, you should run {\ttfamily pre-\/commit install} to set up the git hook scripts. \hypertarget{md_README_autotoc_md31}{}\doxysubsection{Platform-\/\+Specific Setup}\label{md_README_autotoc_md31}
+$<$details$>$
 
-This repository uses \href{https://pre-commit.com/}{\texttt{ pre-\/commit}} hooks. After cloning the repo and installing the requirements, you should run {\ttfamily pre-\/commit install} to set up the git hook scripts.\hypertarget{md_README_autotoc_md31}{}\doxysubsection{Linux}\label{md_README_autotoc_md31}
-For flashing the firmware, avrdude has to be available on your system. To be able to work on GUI elements and translation files, the Qt Dev tools are needed also.\hypertarget{md_README_autotoc_md32}{}\doxysubsubsection{Debian/\+Ubuntu}\label{md_README_autotoc_md32}
-\begin{DoxyVerb}sudo apt-get install python3-pip python3-dev python3-virtualenv python3-gi
-sudo apt-get install libasound2-dev avrdude qt6-tools-dev-tools
-\end{DoxyVerb}
- \hypertarget{md_README_autotoc_md33}{}\doxysubsubsection{For open\+SUSE}\label{md_README_autotoc_md33}
-\begin{DoxyVerb}sudo zypper install python3-pip python3-virtualenv python3-gi
-sudo zypper install libasound avrdude qt6-tools
-\end{DoxyVerb}
+For flashing the firmware, avrdude has to be available on your system. ~\newline
+ To be able to work on GUI elements and translation files, you will also need Qt Dev \& Localization Tools. \hypertarget{md_README_autotoc_md32}{}\doxysubsubsection{Debian/\+Ubuntu}\label{md_README_autotoc_md32}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{sudo apt install python3.11 python3.11-\/dev python3.11-\/venv}
+\DoxyCodeLine{sudo apt install libasound2-\/dev avrdude qt6-\/tools-\/dev-\/tools build-\/essential qt6-\/l10n-\/tools}
+\DoxyCodeLine{export PATH=/usr/lib/qt6/bin:\$PATH}
+
+\end{DoxyCode}
+ \hypertarget{md_README_autotoc_md33}{}\doxysubsubsection{open\+SUSE}\label{md_README_autotoc_md33}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{sudo zypper install python311 python311-\/pip python311-\/virtualenv python311-\/devel}
+\DoxyCodeLine{sudo zypper install libasound2 alsa-\/devel avrdude qt6-\/tools qt6-\/tools-\/linguist}
+\DoxyCodeLine{export PATH=/usr/lib/qt6/bin:\$PATH }
+
+\end{DoxyCode}
  \hypertarget{md_README_autotoc_md34}{}\doxysubsubsection{All Distributions}\label{md_README_autotoc_md34}
-To be able to communicate with your Arduino, it might be necessary to add the rights for USB communication by adding your user to some groups. \begin{DoxyVerb}sudo usermod -aG tty [userName]
-sudo usermod -aG dialout [userName]
-\end{DoxyVerb}
- To install the development version you can checkout the git repository. \begin{DoxyVerb}git clone https://github.com/AllYarnsAreBeautiful/ayab-desktop
-cd ayab-desktop
-\end{DoxyVerb}
- Create a virtual environment for AYAB\+: \begin{DoxyVerb}conda create --name ayab -c conda-forge python=3.8 pip
-\end{DoxyVerb}
- Now activate the virtual environment. The command prompt should now display {\ttfamily (ayab)} at the beginning of each line. \begin{DoxyVerb}conda activate ayab
-\end{DoxyVerb}
- Install the remaining prerequisites. \begin{DoxyVerb}python -m pip install --upgrade pip
-pip install --upgrade setuptools
-pip install --ignore-installed -r requirements.txt
-bash setup-environment.ps1
-\end{DoxyVerb}
- Now start AYAB with \begin{DoxyVerb}fbs run
-\end{DoxyVerb}
- \hypertarget{md_README_autotoc_md35}{}\doxysubsection{Windows}\label{md_README_autotoc_md35}
-Run Anaconda Powershell as administrator and install git. \begin{DoxyVerb}conda install git
-\end{DoxyVerb}
- Now you can download the git repository with\+: \begin{DoxyVerb}git clone https://github.com/AllYarnsAreBeautiful/ayab-desktop
-cd ayab-desktop
-\end{DoxyVerb}
- Next, create a virtual environment for AYAB\+: \begin{DoxyVerb}conda create --name ayab -c conda-forge python=3.8 pip
-\end{DoxyVerb}
- Activate the virtual environment. The command prompt should now display {\ttfamily (ayab)} at the beginning of each line. \begin{DoxyVerb}conda activate ayab
-\end{DoxyVerb}
- Install the prerequisite Python modules. \begin{DoxyVerb}python -m pip install --upgrade pip
-pip install --upgrade setuptools
-pip install --ignore-installed -r requirements.txt
-\end{DoxyVerb}
- To be able to work on GUI elements and translation files, the Qt Dev tools are needed. Navigate to \href{https://www.qt.io/download}{\texttt{ https\+://www.\+qt.\+io/download}} in a web browser and follow the installation instructions. From the available options, select \char`\"{}\+Custom install\char`\"{} and then \char`\"{}\+Qt 6.\+6.\+1\char`\"{}. Then convert the Py\+Side6 {\ttfamily .ui} files and generate the translation files\+: \begin{DoxyVerb}.\setup-environment.ps1
-\end{DoxyVerb}
- Now start AYAB with\+: \begin{DoxyVerb}fbs run
-\end{DoxyVerb}
- \hypertarget{md_README_autotoc_md36}{}\doxysubsection{mac\+OS}\label{md_README_autotoc_md36}
-You can install Git using Homebrew\+: \begin{DoxyVerb}brew install git
-\end{DoxyVerb}
- You will also need the Xcode command line tools\+: \begin{DoxyVerb}xcode-select --install
-\end{DoxyVerb}
- Next download the git repository\+: \begin{DoxyVerb}git clone https://github.com/AllYarnsAreBeautiful/ayab-desktop
-cd ayab-desktop
-\end{DoxyVerb}
- Install python from \href{https://www.python.org/ftp/python/3.11.8/python-3.11.8-macos11.pkg}{\texttt{ the official universal2 installer}}. (Conda does not produce universal binaries)
+To be able to communicate with your Arduino, it might be necessary to add the rights for USB communication by adding your user to some groups. 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{sudo usermod -\/aG tty [userName]}
+\DoxyCodeLine{sudo usermod -\/aG dialout [userName]}
 
-Create a virtual environment for AYAB\+: \begin{DoxyVerb}python3 -m venv ayab 
-\end{DoxyVerb}
- Now activate the virtual environment. The command prompt should now display {\ttfamily (ayab)} at the beginning of each line. \begin{DoxyVerb}source ayab/bin/activate
-\end{DoxyVerb}
- Then install the remaining prerequisites with\+: \begin{DoxyVerb}python3 -m pip install --upgrade pip
-pip install --upgrade setuptools
-pip install -r requirements.txt
-\end{DoxyVerb}
- To solve pip SSL\+:TLSV1\+\_\+\+ALERT\+\_\+\+PROTOCOL\+\_\+\+VERSION problem\+: \begin{DoxyVerb}curl https://bootstrap.pypa.io/get-pip.py | python
-\end{DoxyVerb}
- To be able to work on GUI elements and translation files, the Qt Dev tools are needed also\+: \begin{DoxyVerb}https://download.qt.io/archive/qt/5.12/5.12.12/qt-opensource-mac-x64-5.12.12.dmg
-\end{DoxyVerb}
- Finally, convert the Py\+Side6 {\ttfamily .ui} files and generate the translation files\+: \begin{DoxyVerb}./setup-environment.ps1
-\end{DoxyVerb}
- If you get errors about missing {\ttfamily lrelease}, you can skip this if you do not need the translation files. To do so, comment out lines \mbox{[}23\+:26\mbox{]} of {\ttfamily setup-\/environment.\+ps1}.
+\end{DoxyCode}
+ $<$/details$>$
 
-Now start AYAB with \begin{DoxyVerb}fbs run
-\end{DoxyVerb}
- \hypertarget{md_README_autotoc_md37}{}\doxysection{CI/\+CD on Git\+Hub}\label{md_README_autotoc_md37}
-\hypertarget{md_README_autotoc_md38}{}\doxysubsection{Triggering a new build}\label{md_README_autotoc_md38}
+$<$details$>$
+
+Windows
+
+Run Anaconda Powershell as administrator and install git. 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{conda install git}
+
+\end{DoxyCode}
+ Now you can download the git repository with\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{git clone https://github.com/AllYarnsAreBeautiful/ayab-\/desktop}
+\DoxyCodeLine{cd ayab-\/desktop}
+
+\end{DoxyCode}
+ Next, create a virtual environment for AYAB\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{conda create -\/-\/name ayab -\/c conda-\/forge python=3.11 pip}
+
+\end{DoxyCode}
+ Activate the virtual environment. The command prompt should now display {\ttfamily (ayab)} at the beginning of each line. 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{conda activate ayab}
+
+\end{DoxyCode}
+ (You may skip the virtual environment setup below.)
+
+To be able to work on GUI elements and translation files, the Qt Dev tools are needed. ~\newline
+ Navigate to \href{https://www.qt.io/download}{\texttt{ https\+://www.\+qt.\+io/download}} in a web browser and follow the installation instructions. From the available options, select \char`\"{}\+Custom install\char`\"{} and then \char`\"{}\+Qt 6.\+6.\+1\char`\"{}. $<$/details$>$
+
+$<$details$>$
+
+mac\+OS
+
+You can install Git using Homebrew\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{brew install git}
+
+\end{DoxyCode}
+ You will also need the Xcode command line tools\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{xcode-\/select -\/-\/install}
+
+\end{DoxyCode}
+ To be able to work on GUI elements and translation files, the Qt Dev tools are needed also\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{brew install qt}
+
+\end{DoxyCode}
+ Install python from \href{https://www.python.org/ftp/python/3.11.8/python-3.11.8-macos11.pkg}{\texttt{ the official universal2 installer}}. (Conda does not produce universal binaries) ~\newline
+
+
+If you encounter the pip {\ttfamily SSL\+:TLSV1\+\_\+\+ALERT\+\_\+\+PROTOCOL\+\_\+\+VERSION} problem\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl https://bootstrap.pypa.io/get-\/pip.py | python}
+
+\end{DoxyCode}
+ $<$/details$>$\hypertarget{md_README_autotoc_md35}{}\doxysubsection{Universal Setup Steps}\label{md_README_autotoc_md35}
+Once platform-\/specific setup is complete, download the git repository\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{git clone https://github.com/AllYarnsAreBeautiful/ayab-\/desktop}
+\DoxyCodeLine{cd ayab-\/desktop}
+
+\end{DoxyCode}
+ Create a virtual environment for AYAB\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{python3.11 -\/m venv .venv }
+
+\end{DoxyCode}
+ Now activate the virtual environment. The command prompt should now display {\ttfamily (.venv)} at the beginning of each line. 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{source .venv/bin/activate}
+
+\end{DoxyCode}
+ Install the remaining prerequisites with\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{python -\/m pip install -\/-\/upgrade pip}
+\DoxyCodeLine{pip install -\/-\/upgrade setuptools}
+\DoxyCodeLine{pip install -\/r requirements.txt}
+
+\end{DoxyCode}
+
+
+Next, convert the Py\+Side6 {\ttfamily .ui} files and generate the translation files\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{bash ./setup-\/environment.ps1}
+
+\end{DoxyCode}
+ If you get errors about missing {\ttfamily lrelease}, you can skip this (if you do not need the translation files). To do so, comment out lines \mbox{[}23\+:26\mbox{]} of {\ttfamily setup-\/environment.\+ps1}.
+
+Finally, you can start AYAB with 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{fbs run}
+
+\end{DoxyCode}
+\hypertarget{md_README_autotoc_md36}{}\doxysection{CI/\+CD on Git\+Hub}\label{md_README_autotoc_md36}
+\hypertarget{md_README_autotoc_md37}{}\doxysubsection{Triggering a new build}\label{md_README_autotoc_md37}
 A new build is triggered when a new tag is created, either starting with
 
 
@@ -90,7 +142,7 @@ A new build is triggered when a new tag is created, either starting with
 
 Convention for the test-\/tag is to suffix the current date in the YYMMdd format. If there is already an existing test build for a single day, attach a letter. The test tags and releases will be manually removed from time for a better overview.
 
-The tag can be pushed from your local environment, or via the \href{https://github.com/AllYarnsAreBeautiful/ayab-desktop/releases/new}{\texttt{ \char`\"{}\+Draft a new Release\char`\"{}}} button on the Git\+Hub website.\hypertarget{md_README_autotoc_md39}{}\doxysubsection{Choosing the firmware release to be bundled with the build}\label{md_README_autotoc_md39}
+The tag can be pushed from your local environment, or via the \href{https://github.com/AllYarnsAreBeautiful/ayab-desktop/releases/new}{\texttt{ \char`\"{}\+Draft a new Release\char`\"{}}} button on the Git\+Hub website.\hypertarget{md_README_autotoc_md38}{}\doxysubsection{Choosing the firmware release to be bundled with the build}\label{md_README_autotoc_md38}
 The CI automatically downloads a given firmware release from the \href{https://github.com/AllYarnsAreBeautiful/ayab-firmware}{\texttt{ ayab-\/firmware repo}} and packs it into the Desktop release. The name of the firmware release is chosen in \href{https://github.com/AllYarnsAreBeautiful/ayab-desktop/blob/1.0.0-dev/src/main/resources/base/ayab/firmware/manifest.txt}{\texttt{ this manifest file}} in the ayab-\/desktop repo.
 
 Whenever building from source, you should ensure that the firmware is available as a compiled hex file is available at {\ttfamily main/resources/base/ayab/firmware/firmware.\+hex}. You can either compile the firmware and upload it through other means (e.\+g. VSCode with Platform\+IO), or compile and then drop it into the right path in the desktop directory, making it available for the flash through AYAB desktop. 
