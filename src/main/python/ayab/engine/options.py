@@ -20,7 +20,7 @@
 
 from enum import Enum
 
-from PyQt5.QtCore import Qt, QCoreApplication, QSettings
+from PySide6.QtCore import Qt, QCoreApplication
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtGui import QPixmap
 

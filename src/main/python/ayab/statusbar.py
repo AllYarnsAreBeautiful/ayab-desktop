@@ -19,7 +19,7 @@
 """Notification methods using the status bar."""
 
 import logging
-from PyQt5.QtWidgets import QStatusBar
+from PySide6.QtWidgets import QStatusBar
 
 
 class StatusBar(QStatusBar):

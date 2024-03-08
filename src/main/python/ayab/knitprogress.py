@@ -17,8 +17,8 @@
 #    Copyright 2014 Sebastian Oliva, Christian Obersteiner, Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
-from PyQt5.QtCore import Qt, QCoreApplication, QRect, QSize
-from PyQt5.QtWidgets import QTableWidget, QTableWidgetItem, QLabel, QSizePolicy, QAbstractItemView, QWidget, QHBoxLayout, QHeaderView
+from PySide6.QtCore import QCoreApplication, QRect, QSize
+from PySide6.QtWidgets import QTableWidget, QTableWidgetItem, QLabel, QHeaderView
 from bitarray import bitarray
 
 from . import utils

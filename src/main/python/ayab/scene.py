@@ -21,9 +21,9 @@
 import logging
 from enum import Enum
 
-from PyQt5.QtCore import QRect
-from PyQt5.QtGui import QImage, QPixmap, QPen, QBrush, QColor
-from PyQt5.QtWidgets import QGraphicsScene, QGraphicsRectItem, QGraphicsView
+from PySide6.QtCore import QRect
+from PySide6.QtGui import QImage, QPixmap, QPen, QBrush, QColor
+from PySide6.QtWidgets import QGraphicsScene, QGraphicsRectItem, QGraphicsView
 
 from .image import AyabImage, Transform
 from .engine.options import Alignment

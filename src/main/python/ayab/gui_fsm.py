@@ -20,8 +20,7 @@
 
 import logging
 
-from PyQt5.QtCore import QStateMachine, QState, QObject
-
+from PySide6.QtStateMachine import QStateMachine, QState
 
 class gui_fsm(object):
     """Finite State Machine for GUI thread.

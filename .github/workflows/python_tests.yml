@@ -7,10 +7,10 @@ on: [push, pull_request]
 
 jobs:
   run-pytest:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
-        python-version: [3.8]
+        python-version: [3.11]
     steps:
     - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}
@@ -26,7 +26,7 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt update
-        sudo apt install -y libasound2-dev qt5-default qttools5-dev-tools
+        sudo apt install -y libasound2-dev qt6-base-dev qt6-tools-dev-tools
         pip install --upgrade pip
         pip install --upgrade setuptools
         pip install flake8 pytest
@@ -46,3 +46,4 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with pytest
       run: pytest -v
+      

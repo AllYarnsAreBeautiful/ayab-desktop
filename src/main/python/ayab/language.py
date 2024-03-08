@@ -19,7 +19,7 @@
 
 from os import path
 from glob import glob
-from PyQt5.QtCore import QLocale
+from PySide6.QtCore import QLocale
 
 
 class Language(object):

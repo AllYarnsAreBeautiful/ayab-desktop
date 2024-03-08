@@ -23,8 +23,8 @@ from fbs_runtime.application_context.PyQt5 import ApplicationContext
 import sys
 import logging
 
-from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox
-from PyQt5.QtCore import Qt, QThread, QCoreApplication, QTimer
+from PySide6.QtWidgets import QMainWindow
+from PySide6.QtCore import QCoreApplication
 
 from .main_gui import Ui_MainWindow
 from .gui_fsm import gui_fsm

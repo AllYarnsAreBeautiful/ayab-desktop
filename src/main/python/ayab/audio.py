@@ -24,7 +24,7 @@ from os import path
 import simpleaudio as sa
 import wave
 
-from PyQt5.QtCore import QObject, QThread
+from PySide6.QtCore import QObject, QThread
 
 
 class AudioWorker(QObject):

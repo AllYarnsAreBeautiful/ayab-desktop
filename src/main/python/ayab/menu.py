@@ -17,7 +17,7 @@
 #    Copyright 2014 Sebastian Oliva, Christian Obersteiner, Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
-from PyQt5.QtWidgets import QMenuBar
+from PySide6.QtWidgets import QMenuBar
 
 from .menu_gui import Ui_MenuBar
 

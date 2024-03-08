@@ -1,8 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-	to create Python file use
-	`pyuic5 -‑from-imports ayab_about.ui -o ayab_about.py`
--->
 <ui version="4.0">
  <class>AboutForm</class>
  <widget class="QWidget" name="AboutForm">
@@ -74,8 +70,5 @@
    </item>
   </layout>
  </widget>
- <resources>
-  <include location="ayab.ayab_logo.qrc"/>
- </resources>
  <connections/>
 </ui>

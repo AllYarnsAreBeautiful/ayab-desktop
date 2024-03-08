@@ -20,9 +20,7 @@
 
 from enum import Enum, auto
 
-# from PyQt5.QtCore import QStateMachine, QState
-from PyQt5.QtCore import QCoreApplication
-from PyQt5.QtWidgets import QApplication
+from PySide6.QtCore import QCoreApplication
 
 from .communication import Communication, Token
 from .communication_mock import CommunicationMock
