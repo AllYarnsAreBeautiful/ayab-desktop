@@ -94,6 +94,16 @@ class CommunicationMock(Communication):
         cnfStart = bytes([Token.cnfStart.value, 0])
         self.rx_msg_list.append(cnfStart)
 
+    def req_quit_knit_API6(self):
+        """Send a quit knit message to the device."""
+        cnfQuit = bytes([Token.reqQuit.value, 0])
+        self.rx_msg_list.append(cnfQuit)
+
+    def req_quit_test_API6(self):
+        """Send a quit test message to the device."""
+        cnfQuit = bytes([Token.quitCmd.value, 0])
+        self.rx_msg_list.append(cnfQuit)
+
     def cnf_line_API6(self, line_number, color, flags, line_data) -> bool:
         """Send a row of stitch data."""
         return True

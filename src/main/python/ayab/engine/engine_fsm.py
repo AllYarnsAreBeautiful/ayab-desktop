@@ -45,19 +45,20 @@ class State(Enum):
     CONNECT = auto()
     VERSION_CHECK = auto()
     INIT = auto()
-    REQUEST_START = auto()
-    CONFIRM_START = auto()
+    REQUEST_KNIT = auto()
+    CONFIRM_KNIT = auto()
     RUN_KNIT = auto()
+    CANCEL_KNIT = auto()
     REQUEST_TEST = auto()
     CONFIRM_TEST = auto()
     RUN_TEST = auto()
+    CANCEL_TEST = auto()
     FINISHED = auto()
 
 
 class StateMachine(QStateMachine):
     """
         Each method is a step in the finite state machine that governs serial
-    M
         communication with the device and is called only by `Control.operate()`
 
         @author Tom Price
@@ -130,8 +131,8 @@ class StateMachine(QStateMachine):
                     return Output.NONE
                 else:
                     # operation = Operation.KNIT:
-                    control.state = State.REQUEST_START
-                    control.logger.debug("State REQUEST_START")
+                    control.state = State.REQUEST_KNIT
+                    control.logger.debug("State REQUEST_KNIT")
                     return Output.NONE
             else:
                 control.logger.error("Error initializing firmware: " + str(param))
@@ -141,7 +142,7 @@ class StateMachine(QStateMachine):
         return Output.INITIALIZING_FIRMWARE
 
     @staticmethod
-    def _API6_request_start(control: Control, operation: Operation) -> Output:
+    def _API6_request_knit(control: Control, operation: Operation) -> Output:
         token, param = control.check_serial_API6()
         if token == Token.indState:
             if param == 0:
@@ -158,8 +159,8 @@ class StateMachine(QStateMachine):
                     control.continuous_reporting,
                     control.prefs.value("disable_hardware_beep"),
                 )
-                control.state = State.CONFIRM_START
-                control.logger.debug("State CONFIRM_START")
+                control.state = State.CONFIRM_KNIT
+                control.logger.debug("State CONFIRM_KNIT")
             else:
                 # any value of param other than 0 is some kind of error code
                 control.logger.debug(
@@ -172,7 +173,7 @@ class StateMachine(QStateMachine):
         return Output.WAIT_FOR_INIT
 
     @staticmethod
-    def _API6_confirm_start(control: Control, operation: Operation) -> Output:
+    def _API6_confirm_knit(control: Control, operation: Operation) -> Output:
         token, param = control.check_serial_API6()
         if token == Token.cnfStart:
             if param == 0:
@@ -201,6 +202,13 @@ class StateMachine(QStateMachine):
             else:
                 return Output.NEXT_LINE
         # else
+        return Output.NONE
+
+    @staticmethod
+    def _API6_cancel_knit(control: Control, operation: Operation) -> Output:
+        control.logger.debug("State CANCEL_KNIT")
+        control.com.req_quit_knit_API6()
+        control.state = State.FINISHED
         return Output.NONE
 
     @staticmethod
@@ -249,6 +257,13 @@ class StateMachine(QStateMachine):
             if token != Token.none:
                 break
         control.logger.debug("Token " + token.name + ", param " + str(param))
+        return Output.NONE
+
+    @staticmethod
+    def _API6_cancel_test(control: Control, operation: Operation) -> Output:
+        control.logger.debug("State CANCEL_TEST")
+        control.com.req_quit_test_API6()
+        control.state = State.FINISHED
         return Output.NONE
 
     @staticmethod

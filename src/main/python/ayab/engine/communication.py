@@ -54,6 +54,8 @@ class Token(Enum):
     autoCmd = 0x2A
     testCmd = 0x2B
     quitCmd = 0x2C
+    reqQuit = 0x0C
+    cnfQuit = 0xCC
     reqInit = 0x05
     cnfInit = 0xC5
     setCmd = 0x2D
@@ -160,8 +162,19 @@ class Communication(object):
         data = self.__driver.send(bytes(data))
         self.__ser.write(data)
 
-    def quit_API6(self) -> None:
-        """Send a quit message to the device."""
+    def req_quit_knit_API6(self) -> None:
+        """Send a quit knit message to the device."""
+        if self.__ser is None:
+            return
+        data = bytearray()
+        data.append(Token.reqQuit.value)
+        data = self.__driver.send(bytes(data))
+        self.__ser.write(data)
+
+    def req_quit_test_API6(self) -> None:
+        """Send a quit test message to the device."""
+        if self.__ser is None:
+            return
         data = bytearray()
         data.append(Token.quitCmd.value)
         data = self.__driver.send(bytes(data))
