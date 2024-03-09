@@ -102,13 +102,12 @@ class HardwareTestDialog(QDialog):
     def hideEvent(self, event):
         self.__timer.stop()
         self.__console.setPlainText("")
-        self.__control.state == State.FINISHED
+        self.__control.state = State.FINISHED
         self.accept()
 
     def reject(self):
-        # send quitCmd
+        # cancel operation
         self.__control.com.quit_API6()
-        self.__control.state = State.FINISHED
         # reset dialog
         self._auto_button.setChecked(False)
         self._test_button.setChecked(False)
