@@ -1,4 +1,4 @@
-from fbs_runtime.application_context.PyQt5 import \
+from fbs_runtime.application_context.PySide6 import \
     ApplicationContext, cached_property
 
 import sys
@@ -6,9 +6,8 @@ from os import path
 import logging
 from distutils.dir_util import copy_tree
 
-from PyQt5.QtCore import \
+from PySide6.QtCore import \
     Qt, QCoreApplication, QTranslator, QLocale, QSettings
-from PyQt5.QtWidgets import QApplication
 
 from ayab.ayab import GuiMain
 from ayab import utils
@@ -22,11 +21,6 @@ class AppContext(ApplicationContext):  # 1. Subclass ApplicationContext
         super().__init__(*args, **kwargs)
 
     def configure_application(self):
-        # Fix PyQt5 for HiDPI screens
-        if hasattr(Qt, 'AA_EnableHighDpiScaling'):
-            QCoreApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
-        if hasattr(Qt, 'AA_UseHighDpiPixmaps'):
-            QCoreApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
         # Remove Help Button
         if hasattr(Qt, 'AA_DisableWindowContextHelpButton'):
             QCoreApplication.setAttribute(
@@ -43,7 +37,7 @@ class AppContext(ApplicationContext):  # 1. Subclass ApplicationContext
             url = "https://github.com/" + self.REPO + "/releases/tag/" + tag
             utils.display_blocking_popup(
                "<p>A new version of the AYAB desktop software has been released! You can download version <strong>" + tag + "</strong> using this link:<br/><br/><a href='" + url + "'>" + url + "</a></p>")
-        return self.app.exec_()  # 3. End run() with this line
+        return self.app.exec()  # 3. End run() with this line
 
     def check_new_version(self, repo):
         try:

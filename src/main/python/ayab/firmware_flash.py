@@ -17,9 +17,8 @@
 #    Copyright 2014 Sebastian Oliva, Christian Obersteiner, Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
-from PyQt5 import QtGui, QtWidgets
-from PyQt5.QtCore import QSettings, QCoreApplication
-from PyQt5.QtWidgets import QDialog, QListWidgetItem
+from PySide6.QtCore import QCoreApplication
+from PySide6.QtWidgets import QDialog, QListWidgetItem
 
 import serial
 import json

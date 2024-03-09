@@ -22,8 +22,8 @@ import logging
 from time import sleep
 from PIL import Image
 
-from PyQt5.QtCore import QTranslator, QCoreApplication, QLocale, QObjectCleanupHandler, pyqtSignal
-from PyQt5.QtWidgets import QComboBox, QDockWidget, QWidget
+from PySide6.QtCore import QCoreApplication, Signal
+from PySide6.QtWidgets import QDockWidget
 
 from .. import utils
 from ..signal_sender import SignalSender
@@ -44,7 +44,7 @@ class Engine(SignalSender, QDockWidget):
 
     Implemented as a subclass of `QDockWidget` and `SignalSender`.
     """
-    port_opener = pyqtSignal()
+    port_opener = Signal()
 
     def __init__(self, parent):
         # set up UI
@@ -62,7 +62,7 @@ class Engine(SignalSender, QDockWidget):
         self.control = Control(parent, self)
         self.__feedback = FeedbackHandler(parent)
         self.__logger = logging.getLogger(type(self).__name__)
-        self.setWindowTitle("Machine: " + Machine(self.control.prefs.value("machine")).name)
+        self.setWindowTitle("Machine: " + Machine(self.config.machine).name)
 
     def __del__(self):
         self.control.stop()

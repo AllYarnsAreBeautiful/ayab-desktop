@@ -22,8 +22,8 @@ import logging
 from math import ceil
 
 from PIL import Image
-from PyQt5.QtCore import QCoreApplication
-from PyQt5.QtWidgets import QInputDialog, QDialog, QFileDialog
+from PySide6.QtCore import QCoreApplication
+from PySide6.QtWidgets import QInputDialog, QDialog, QFileDialog
 
 from .transforms import Transform, Mirrors
 from .signal_sender import SignalSender

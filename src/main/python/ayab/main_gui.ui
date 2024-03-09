@@ -139,7 +139,7 @@
         <item>
          <layout class="QVBoxLayout" name="widget_imgload">
           <item>
-           <layout class="QHBoxLayout" name="horizontal_layout">
+           <layout class="QHBoxLayout" name="horizontal_layout1">
             <item>
              <spacer name="horizontalSpacer">
               <property name="orientation">

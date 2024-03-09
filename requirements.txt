@@ -1,14 +1,4 @@
-fbs @ git+https://github.com/AllYarnsAreBeautiful/fbs@1.2.1-py38
-PyQt5==5.15.10
-PyInstaller==4.4
-Pillow==7.1.2
-pyserial==3.4
-sliplib==0.4.0
-pytest==5.4.1
+-r requirements.build.txt
+pytest==7.4.2
 mock==3.0.5
-bitarray-hardbyte==1.1.0
-simpleaudio==1.0.4
-wave==0.0.2
-numpy
-requests
-pre-commit
+pre-commit==3.6.2

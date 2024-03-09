@@ -17,8 +17,6 @@
 #    Copyright 2013 Christian Obersteiner, Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
-# from PyQt5.QtCore import QCoreApplication
-
 from enum import Enum
 
 

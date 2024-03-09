@@ -17,8 +17,8 @@
 #    Copyright 2014 Sebastian Oliva, Christian Obersteiner, Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
-from PyQt5.QtWidgets import QFrame
-from PyQt5.QtCore import Qt, QCoreApplication
+from PySide6.QtWidgets import QFrame
+from PySide6.QtCore import Qt, QCoreApplication
 
 from .about_gui import Ui_AboutForm
 from . import utils

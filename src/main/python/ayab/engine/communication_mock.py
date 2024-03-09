@@ -24,8 +24,7 @@ import logging
 from time import sleep
 from collections import deque
 
-from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QMessageBox
+from PySide6.QtWidgets import QMessageBox
 
 from .communication import Communication, Token
 
@@ -107,9 +106,9 @@ class CommunicationMock(Communication):
             if self.__step:
                 # pop up box waits for user input before moving on to next line
                 msg = QMessageBox()
-                msg.setIcon(QMessageBox.Information)
+                msg.setIcon(QMessageBox.Icon.Information)
                 msg.setText("Line number = " + str(self.__line_count))
-                msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+                msg.setStandardButtons(QMessageBox.StandardButton.Ok | QMessageBox.StandardButton.Cancel)
                 ret = None
                 ret = msg.exec_()
                 while ret == None:
