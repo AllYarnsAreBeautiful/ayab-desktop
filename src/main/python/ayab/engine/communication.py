@@ -160,6 +160,13 @@ class Communication(object):
         data = self.__driver.send(bytes(data))
         self.__ser.write(data)
 
+    def quit_API6(self) -> None:
+        """Send a quit message to the device."""
+        data = bytearray()
+        data.append(Token.quitCmd.value)
+        data = self.__driver.send(bytes(data))
+        self.__ser.write(data)
+
     def cnf_line_API6(
         self, line_number: int, color: int, flags: int, line_data: bytes
     ) -> None:
