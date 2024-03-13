@@ -11,4 +11,4 @@ export TK_LIBRARY="${APPDIR}/usr/share/tcltk/tk8.5"
 export TKPATH="${TK_LIBRARY}"
 
 cd $APPDIR
-opt/python3.8/bin/fbs run
+opt/python3.11/bin/fbs run
