@@ -42,7 +42,7 @@ class SignalReceiver(QObject):
     start_row_updater = Signal(int)
     progress_bar_updater = Signal(int, int, int, str)
     knit_progress_updater = Signal(Status, int, int, bool)
-    notifier = Signal('QString', bool)
+    notifier = Signal(str, bool)
     # statusbar_updater = Signal('QString', bool)
     popup_displayer = Signal(str, str)
     blocking_popup_displayer = Signal(str, str)
