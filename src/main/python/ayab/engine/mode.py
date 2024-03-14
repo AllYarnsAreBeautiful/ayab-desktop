@@ -18,13 +18,17 @@
 #    Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
-import logging
+from __future__ import annotations
+
 from enum import Enum
 
 from PySide6.QtCore import QCoreApplication
+from PySide6.QtWidgets import QComboBox
 
-from ayab.utils import odd, even
-
+from ..utils import odd, even
+from typing import TYPE_CHECKING, Callable, TypeAlias
+if TYPE_CHECKING:
+    from .control import Control
 
 class Mode(Enum):
     SINGLEBED = 0
@@ -33,7 +37,7 @@ class Mode(Enum):
     HEARTOFPLUTO_RIBBER = 3
     CIRCULAR_RIBBER = 4
 
-    def row_multiplier(self, ncolors):
+    def row_multiplier(self, ncolors:int)->int:
         if self.name == "SINGLEBED":
             return 1
         if (self.name == "CLASSIC_RIBBER" and ncolors > 2) \
@@ -48,14 +52,14 @@ class Mode(Enum):
             # one line per color
             return ncolors
 
-    def good_ncolors(self, ncolors):
+    def good_ncolors(self, ncolors:int)->int:
         if self.name == "SINGLEBED" or self.name == "CIRCULAR_RIBBER":
             return ncolors == 2
         else:
             # no maximum
             return ncolors >= 2
 
-    def knit_func(self, ncolors):
+    def knit_func(self, ncolors:int)->str:
         method = "_" + self.name.lower()
         if self.name == "CLASSIC_RIBBER":
             method += ["_2col", "_multicol"][ncolors > 2]
@@ -63,14 +67,15 @@ class Mode(Enum):
 
     # FIXME this function is supposed to select needles
     # to knit the background color alongside the pattern
-    def flanking_needles(self, color, ncolors):
+    def flanking_needles(self, color:int, ncolors:int)->bool:
         # return (color == 0 and self.name == "CLASSIC_RIBBER") \
         #     or (color == ncolors - 1
         #         and (self.name == "MIDDLECOLORSTWICE_RIBBER"
         #             or self.name == "HEARTOFPLUTO_RIBBER"))
         return color == 0  # and self.name != "CIRCULAR_RIBBER"
 
-    def add_items(box):
+    @staticmethod
+    def add_items(box:QComboBox)->None:
         tr_ = QCoreApplication.translate
         box.addItem(tr_("KnitMode", "Singlebed"))
         box.addItem(tr_("KnitMode", "Ribber: Classic"))
@@ -78,6 +83,10 @@ class Mode(Enum):
         box.addItem(tr_("KnitMode", "Ribber: Heart of Pluto"))
         box.addItem(tr_("KnitMode", "Ribber: Circular"))
 
+
+if TYPE_CHECKING:
+    ModeTuple: TypeAlias = tuple[int,int,bool,bool]
+    ModeFuncType: TypeAlias = Callable[[Control,int],ModeTuple]
 
 class ModeFunc(object):
     """
@@ -88,7 +97,8 @@ class ModeFunc(object):
     """
 
     # singlebed, 2 color
-    def _singlebed(control, line_number):
+    @staticmethod
+    def _singlebed(control:Control, line_number:int)->ModeTuple:
         line_number += control.start_row
 
         # when knitting infinitely, keep the requested
@@ -115,7 +125,8 @@ class ModeFunc(object):
         return color, row_index, blank_line, last_line
 
     # doublebed, 2 color
-    def _classic_ribber_2col(control, line_number):
+    @staticmethod
+    def _classic_ribber_2col(control:Control, line_number:int)->ModeTuple:
         line_number += 2 * control.start_row
 
         # calculate line number index for colors
@@ -147,7 +158,8 @@ class ModeFunc(object):
         return color, row_index, blank_line, last_line
 
     # doublebed, multicolor
-    def _classic_ribber_multicol(control, line_number):
+    @staticmethod
+    def _classic_ribber_multicol(control:Control, line_number:int)->ModeTuple:
 
         # halve line_number because every second line is BLANK
         blank_line = odd(line_number)
@@ -173,7 +185,8 @@ class ModeFunc(object):
         return color, row_index, blank_line, last_line
 
     # Ribber, Middle-Colors-Twice
-    def _middlecolorstwice_ribber(control, line_number):
+    @staticmethod
+    def _middlecolorstwice_ribber(control:Control, line_number:int)->ModeTuple:
 
         # doublebed middle-colors-twice multicolor
         # 0-00 1-11 2-22 3-33 4-44 5-55 .. (pat_row)
@@ -212,7 +225,8 @@ class ModeFunc(object):
 
     # doublebed, multicolor <3 of pluto
     # rotates middle colors
-    def _heartofpluto_ribber(control, line_number):
+    @staticmethod
+    def _heartofpluto_ribber(control:Control, line_number:int)->ModeTuple:
 
         # doublebed <3 of pluto multicolor
         # 0000 1111 2222 3333 4444 5555 .. (pat_row)
@@ -249,7 +263,8 @@ class ModeFunc(object):
 
     # Ribber, Circular
     # not restricted to 2 colors
-    def _circular_ribber(control, line_number):
+    @staticmethod
+    def _circular_ribber(control:Control, line_number:int)->ModeTuple:
 
         # A B  A B  A B  .. (color)
         # 0-0- 1-1- 2-2- .. (pat_row)

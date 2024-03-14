@@ -23,8 +23,8 @@ import serial
 import unittest
 from mock import patch
 
-from ayab.engine.communication import Communication, Token
-from ayab.machine import Machine
+from ..engine.communication import Communication, Token
+from ..machine import Machine
 
 
 class TestCommunication(unittest.TestCase):
@@ -42,7 +42,6 @@ class TestCommunication(unittest.TestCase):
 
     def test_open_serial(self):
         with patch.object(serial, 'Serial') as mock_method:
-            mock_method.return_value = object()
             self.ayabCom = Communication()
             openStatus = self.ayabCom.open_serial('dummyPortname')
             assert openStatus

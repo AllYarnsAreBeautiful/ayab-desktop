@@ -18,11 +18,13 @@
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 '''Provides conveniency functions to aproximately resize an image using a rational continued fraction aproximation.'''
 
+from __future__ import annotations
+from typing import Any, Generator, Tuple
 from PIL import Image
-from math import sqrt, log, floor
+from math import floor
 
 
-def resize_image(image, width_proportion, height_proportion):
+def resize_image(image:Image.Image, width_proportion:float, height_proportion:float)->Image.Image:
     width, height = image.size
     resized_image = image.transform(
         (int(width_proportion * width), int(height_proportion * height)),
@@ -36,7 +38,7 @@ def resize_image(image, width_proportion, height_proportion):
 ## https://groups.yahoo.com/neo/groups/tuning-math/conversations/topics/14958
 
 
-def contfrac(a):
+def contfrac(a:int)->list[int]:
     '''Returns a list of terms for a continuated fraction.'''
     terms = []
     count = 0
@@ -50,7 +52,7 @@ def contfrac(a):
     return terms
 
 
-def ra(x):  ### 'rational approximation', or convergent
+def ra(x:int)->Generator[tuple[int,int],int,Any]:  ### 'rational approximation', or convergent
     '''Generator for rational aproximation tuples of the float provided.'''
     numerators = [0, 1]
     denominators = [1, 0]
@@ -65,6 +67,6 @@ def ra(x):  ### 'rational approximation', or convergent
         #print "%i/%i" % (numerators[index], denominators[index])
 
 
-def get_rational_ratios(ratio):
+def get_rational_ratios(ratio:int)->list[tuple[int,int]]:
     ratios_list = list(ra(ratio))
     return ratios_list[2::]

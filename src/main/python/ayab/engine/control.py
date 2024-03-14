@@ -18,19 +18,26 @@
 #    Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
+from __future__ import annotations
 import logging
 from bitarray import bitarray
 
 from ..signal_sender import SignalSender
 from .communication import Communication, Token
 from .communication_mock import CommunicationMock
-from .options import Alignment
-from .mode import Mode, ModeFunc
-from .engine_fsm import State, StateMachine, Operation
+from .options import OptionsTab
+from .mode import Mode
+from typing import TYPE_CHECKING, Any, Callable
+if TYPE_CHECKING:
+    from .mode import ModeFunc, ModeFuncType
+    from .engine_fsm import StateMachine
+    from .engine import Engine
+    from ..ayab import GuiMain
+from .engine_fsm import State, Operation
 from .output import Output
-from .status import Carriage, Direction
-#from ..machine import Machine
-
+from .status import Carriage, Direction, StatusTab
+from .pattern import Pattern
+from ..preferences import Preferences
 
 class Control(SignalSender):
     """
@@ -41,14 +48,42 @@ class Control(SignalSender):
     FIRST_SUPPORTED_API_VERSION = 6  # currently this is the only supported version
     FLANKING_NEEDLES = True
 
-    def __init__(self, parent, engine):
+    com:Communication|CommunicationMock
+    continuous_reporting:bool
+    end_needle:int
+    end_pixel:int
+    former_request:int
+    inf_repeat:bool
+    initial_carriage:Carriage
+    initial_direction:Direction
+    initial_position:int
+    len_pat_expanded:int
+    line_block:int
+    midline:int
+    mode:Mode
+    mode_func:ModeFuncType
+    num_colors:int
+    passes_per_row:int
+    pat_height:int
+    pat_row:int
+    pattern:Pattern
+    pattern_repeats:int
+    portname:str
+    prefs:Preferences
+    start_needle:int
+    start_pixel:int
+    start_row:int
+    state:State
+    logger:logging.Logger
+
+    def __init__(self, parent:GuiMain, engine:Engine):
         super().__init__(parent.signal_receiver)
         self.logger = logging.getLogger(type(self).__name__)
-        self.status = engine.status
+        self.status:StatusTab = engine.status
         self.notification = Output.NONE
-        self.api_version = self.FIRST_SUPPORTED_API_VERSION
+        self.api_version:int = self.FIRST_SUPPORTED_API_VERSION
 
-    def start(self, pattern, options, operation):
+    def start(self, pattern:Pattern, options:OptionsTab, operation:Operation)->None:
         self.machine = options.machine
         if operation == Operation.KNIT:
             self.former_request = 0
@@ -81,13 +116,13 @@ class Control(SignalSender):
         self.portname = options.portname
         self.state = State.CONNECT
 
-    def stop(self):
+    def stop(self)->None:
         try:
             self.com.close_serial()
         except Exception:
             pass
 
-    def func_selector(self):
+    def func_selector(self)->bool:
         """
         Method selecting the function that decides which line of data to send
         according to the knitting mode and number of colors.
@@ -105,10 +140,10 @@ class Control(SignalSender):
                 "Unrecognized value returned from Mode.knit_func()")
             return False
         # else
-        self.mode_func = getattr(ModeFunc, func_name)
+        self.mode_func:ModeFuncType = getattr(ModeFunc, func_name)
         return True
 
-    def reset_status(self):
+    def reset_status(self)->None:
         self.status.reset()
         if self.mode == Mode.SINGLEBED:
             self.status.alt_color = self.pattern.palette[1]
@@ -116,8 +151,10 @@ class Control(SignalSender):
         else:
             self.status.alt_color = None
 
-    def check_serial_API6(self):
+    def check_serial_API6(self)->tuple[Token,int]:
         msg, token, param = self.com.update_API6()
+        if msg is None: 
+            return Token.none,param #TODO: Do We Throw Here?
         if token == Token.cnfInfo:
             self.__log_cnfInfo(msg)
         elif token == Token.indState:
@@ -127,19 +164,19 @@ class Control(SignalSender):
                 self.emit_hw_test_writer(msg[1:].decode())
         return token, param
 
-    def __log_cnfInfo(self, msg):
+    def __log_cnfInfo(self, msg:bytes)->None:
         api = msg[1]
         log = "API v" + str(api)
         if api >= 5:
             log += ", FW v" + str(msg[2]) + "." + str(msg[3])  + "." + str(msg[4])
             suffix = msg[5:21]
             suffix_null_index = suffix.find(0)
-            suffix = suffix[:suffix_null_index+1].decode()
-            if len(suffix) > 1:
-                log += "-" + suffix
+            suffix_str = suffix[:suffix_null_index+1].decode()
+            if len(suffix_str) > 1:
+                log += "-" + suffix_str
         self.logger.info(log)
 
-    def cnf_line_API6(self, line_number):
+    def cnf_line_API6(self, line_number:int)->bool:
         if not (line_number < self.BLOCK_LENGTH):
             self.logger.error("Requested line number out of range")
             return True  # stop knitting
@@ -191,13 +228,13 @@ class Control(SignalSender):
         else:
             return True  # pattern finished
 
-    def __update_status(self, line_number, color, bits):
+    def __update_status(self, line_number:int, color:int, bits:bitarray)->None:
         self.status.current_row = self.pat_row + 1
         self.status.line_number = line_number
         if self.inf_repeat:
             self.status.repeats = self.pattern_repeats
         if self.mode != Mode.SINGLEBED:
-            self.status.color_symbol = self.COLOR_SYMBOLS[color]
+            self.status.color_symbol = self.COLOR_SYMBOLS[color] #type: ignore
         self.status.color = self.pattern.palette[color]
         if self.FLANKING_NEEDLES and self.mode != Mode.SINGLEBED:
             self.status.bits = bits[self.pattern.knit_start_needle:self.
@@ -210,7 +247,7 @@ class Control(SignalSender):
         else:
             self.status.carriage_direction = self.initial_direction.reverse()
 
-    def select_needles_API6(self, color, row_index, blank_line):
+    def select_needles_API6(self, color:int, row_index:int, blank_line:bool)->bitarray:
         bits = bitarray([False] * self.machine.width, endian="little")
 
         # select needles flanking the pattern
@@ -226,11 +263,12 @@ class Control(SignalSender):
 
         return bits
 
-    def operate(self, operation):
+    def operate(self, operation:Operation)->Output:
         """Finite State Machine governing serial communication"""
         method = "_API" + str(self.api_version) + "_" + self.state.name.lower()
         if not hasattr(StateMachine, method):
+            #TODO: yell about this maybe?
             return Output.NONE
-        dispatch = getattr(StateMachine, method)
+        dispatch:Callable[[Control,Operation],Output] = getattr(StateMachine, method)
         result = dispatch(self, operation)
         return result

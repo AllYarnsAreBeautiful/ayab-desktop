@@ -17,16 +17,21 @@
 #    Copyright 2014 Sebastian Oliva, Christian Obersteiner, Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
+from __future__ import annotations
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from .ayab import GuiMain
+    from .engine.status import ColorSymbolType
 
 class ProgressBar(object):
     """Methods for the progress bar."""
-    def __init__(self, parent):
+    def __init__(self, parent:GuiMain):
         self.__row_label = parent.ui.label_current_row
         self.__color_label = parent.ui.label_current_color
         self.__status_label = parent.engine.status.ui.label_progress
         self.reset()
 
-    def reset(self):
+    def reset(self)->None:
         self.row = -1
         self.total = -1
         self.repeats = -1
@@ -35,7 +40,7 @@ class ProgressBar(object):
         self.__color_label.setText("")
         self.__status_label.setText("")
 
-    def update(self, row, total=0, repeats=0, color_symbol=""):
+    def update(self, row:int, total:int=0, repeats:int=0, color_symbol:ColorSymbolType="")->bool:
         if row < 0:
             return False
         self.row = row
@@ -45,7 +50,7 @@ class ProgressBar(object):
         self.refresh()
         return True
 
-    def refresh(self):
+    def refresh(self)->None:
         '''Updates the color and row in progress bar'''
         if self.row < 0 or self.total < 0:
             return
