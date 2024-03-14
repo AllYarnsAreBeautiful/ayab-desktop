@@ -8,7 +8,6 @@ from distutils.dir_util import copy_tree
 
 from PySide6.QtCore import \
     Qt, QCoreApplication, QTranslator, QLocale, QSettings
-from PySide6.QtWidgets import QApplication
 
 from typing import TYPE_CHECKING, Any, cast
 if TYPE_CHECKING: #TODO: why does mypy not resolve the absolute import correctly?
@@ -21,7 +20,7 @@ else:
     from fbs_runtime.application_context.PySide6 import cached_property
 
 
-class AppContext(ApplicationContext):  # 1. Subclass ApplicationContext
+class AppContext(ApplicationContext): #type: ignore # 1. Subclass ApplicationContext
     REPO = "AllYarnsAreBeautiful/ayab-desktop"
 
     def __init__(self)->None:
