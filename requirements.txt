@@ -3,5 +3,5 @@ pytest==7.4.2
 mock==3.0.5
 pre-commit==3.6.2
 types-pyserial
-types-pymock
+types-mock
 types-requests
