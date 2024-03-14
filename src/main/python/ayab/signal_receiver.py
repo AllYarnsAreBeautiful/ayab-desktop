@@ -40,13 +40,13 @@ class SignalReceiver(QObject):
     # signals are defined as class attributes which are
     # over-ridden by instance attributes with the same name
     start_row_updater = Signal(int)
-    progress_bar_updater = Signal(int, int, int, 'QString')
+    progress_bar_updater = Signal(int, int, int, str)
     knit_progress_updater = Signal(Status, int, int, bool)
     notifier = Signal('QString', bool)
     # statusbar_updater = Signal('QString', bool)
-    popup_displayer = Signal('QString', 'QString')
-    blocking_popup_displayer = Signal('QString', 'QString')
-    audio_player = Signal('QString')
+    popup_displayer = Signal(str, str)
+    blocking_popup_displayer = Signal(str, str)
+    audio_player = Signal(str)
     needles_updater = Signal(int, int)
     alignment_updater = Signal(Alignment)
     image_resizer = Signal()
