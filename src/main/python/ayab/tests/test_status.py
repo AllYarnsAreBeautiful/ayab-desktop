@@ -21,7 +21,7 @@
 import pytest
 import unittest
 
-from ayab.engine.status import Status, Carriage, Direction
+from ..engine.status import Status, Carriage, Direction
 
 
 class TestStatus(unittest.TestCase):
