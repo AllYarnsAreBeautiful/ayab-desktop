@@ -26,14 +26,13 @@ from ..signal_sender import SignalSender
 from .communication import Communication, Token
 from .communication_mock import CommunicationMock
 from .options import OptionsTab
-from .mode import Mode
+from .mode import Mode, ModeFunc
 from typing import TYPE_CHECKING, Any, Callable
 if TYPE_CHECKING:
-    from .mode import ModeFunc, ModeFuncType
-    from .engine_fsm import StateMachine
+    from .mode import ModeFuncType
     from .engine import Engine
     from ..ayab import GuiMain
-from .engine_fsm import State, Operation
+from .engine_fsm import State, Operation,StateMachine
 from .output import Output
 from .status import Carriage, Direction, StatusTab
 from .pattern import Pattern
