@@ -43,6 +43,7 @@ class State(Enum):
     REQUEST_TEST = auto()
     CONFIRM_TEST = auto()
     RUN_TEST = auto()
+    CANCELED = auto()
     FINISHED = auto()
 
 
@@ -216,6 +217,12 @@ M
             if token != Token.none:
                 break
         control.logger.debug("Token " + token.name + ", param " + str(param))
+        return Output.NONE
+
+    def _API6_canceled(control, operation):
+        control.logger.debug("State CANCELED")
+        control.com.quit_API6()
+        control.state = State.FINISHED
         return Output.NONE
 
     def _API6_finished(control, operation):
