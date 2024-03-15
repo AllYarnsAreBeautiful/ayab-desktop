@@ -104,7 +104,7 @@ class PatternConverter:
 
     def check_header(self, header:bytes, ok_headers:tuple[bytes,...])->None:
         if self.debug:
-            print(f"header ${header.decode()}")
+            print(f"header {header.decode()}")
         if header not in ok_headers:
             self.exit("file header not recognized", -4) ## FIXME translate
 
