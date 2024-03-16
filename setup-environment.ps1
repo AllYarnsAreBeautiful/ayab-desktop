@@ -6,6 +6,9 @@
 
 git submodule update --init --recursive
 
+# generate PySide6 types
+pyside6-genpyi all
+
 # convert Qt `.ui` files to Python code
 pyside6-uic src/main/python/ayab/about_gui.ui -o src/main/python/ayab/about_gui.py
 perl -pi -e "s/^(.*def setupUi.*):$/\$1->None:/s" src/main/python/ayab/about_gui.py

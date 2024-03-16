@@ -23,7 +23,7 @@ from __future__ import annotations
 from enum import Enum, auto
 
 from PySide6.QtCore import QCoreApplication
-from PySide6.QtStateMachine import QStateMachine
+from PySide6.QtStateMachine import QStateMachine,QState
 
 from .communication import Communication, Token
 from .communication_mock import CommunicationMock
@@ -63,11 +63,13 @@ M
     @date   June 2020
     """
 
+    CONNECT:QState
+    VERSION_CHECK:QState
     def set_transitions(self, parent:Engine)->None:
         """Define transitions between states for Finite State Machine"""
 
         # Events that trigger state changes
-        self.CONNECT.addTransition(parent.port_opener, self.VERSION_CHECK) #type: ignore
+        self.CONNECT.addTransition(parent.port_opener, self.VERSION_CHECK) 
 
     @staticmethod
     def _API6_connect(control:Control, operation:Operation)->Output:

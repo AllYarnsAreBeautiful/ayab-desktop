@@ -71,7 +71,7 @@ class SignalReceiver(QObject):
         self.blocking_popup_displayer.connect(display_blocking_popup)
         self.popup_displayer.connect(display_blocking_popup)
         self.audio_player.connect(parent.audio.play,
-                                  type=Qt.ConnectionType.BlockingQueuedConnection) #type: ignore
+                                  type=Qt.ConnectionType.BlockingQueuedConnection)
         self.needles_updater.connect(parent.scene.update_needles)
         self.alignment_updater.connect(parent.scene.update_alignment)
         self.image_resizer.connect(parent.set_image_dimensions)

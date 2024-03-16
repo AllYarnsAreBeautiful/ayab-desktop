@@ -32,7 +32,7 @@ from .utils import display_blocking_popup
 from .machine import Machine
 from .pattern_import import PatPatternConverter, StpPatternConverter, CutPatternConverter
 
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING, Callable, Optional
 if TYPE_CHECKING:
     from .ayab import GuiMain
 
@@ -48,7 +48,7 @@ class AyabImage(SignalSender):
         super().__init__(parent.signal_receiver)
         self.__parent = parent
         self.image:Image.Image = None #type: ignore
-        self.filename = None
+        self.filename:Optional[str] = None
         self.reversed = False
         self.filename_input = self.__parent.ui.filename_lineedit
 

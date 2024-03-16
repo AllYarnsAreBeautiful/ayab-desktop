@@ -39,7 +39,7 @@ def odd(x:int)->bool:
 
 
 MessageTypes: TypeAlias = Literal["error","info","question","warning"]
-QMessageBoxFunc: TypeAlias = Callable[[Optional[QWidget],str,str,QMessageBox.StandardButton,QMessageBox.StandardButton],QMessageBox.StandardButton] 
+QMessageBoxFunc: TypeAlias = Callable[...,QMessageBox.StandardButton] 
 def display_blocking_popup(message:str="", message_type:MessageTypes="info")->bool:
     """Display a modal message box."""
     logging.debug("MessageBox {}: '{}'".format(message_type, message))
