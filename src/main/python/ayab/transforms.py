@@ -14,16 +14,17 @@
 #    You should have received a copy of the GNU General Public License
 #    along with AYAB.  If not, see <http://www.gnu.org/licenses/>.
 #
-#    Copyright 2014 Sebastian Oliva, Christian Obersteiner, Andreas Müller, Christian Gerbrandt
+#    Copyright 2014 Sebastian Oliva, Christian Obersteiner,
+#       Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
 from __future__ import annotations
-import logging
 from PIL import Image, ImageOps
 
 from PySide6.QtWidgets import QDialog
 
 from .mirrors_gui import Ui_Mirrors
+
 
 class Transform(Image.Image):
     """
@@ -32,35 +33,36 @@ class Transform(Image.Image):
     @author Tom Price
     @date   June 2020
     """
+
     @staticmethod
-    def rotate_left(image:Image.Image, args:None=None)->Image.Image:
+    def rotate_left(image: Image.Image, args: None = None) -> Image.Image:
         # TODO crop width if it exceeds the maximum after transform
         return image.transpose(Image.ROTATE_90)
 
     @staticmethod
-    def rotate_right(image:Image.Image, args:None=None)->Image.Image:
+    def rotate_right(image: Image.Image, args: None = None) -> Image.Image:
         # TODO crop width if it exceeds the maximum after transform
         return image.transpose(Image.ROTATE_270)
 
     @staticmethod
-    def invert(image:Image.Image, args:None=None)->Image.Image:
-        if image.mode == 'RGBA':
+    def invert(image: Image.Image, args: None = None) -> Image.Image:
+        if image.mode == "RGBA":
             r, g, b, a = image.split()
-            rgb_image = Image.merge('RGB', (r, g, b))
+            rgb_image = Image.merge("RGB", (r, g, b))
             return ImageOps.invert(rgb_image)
         else:
             return ImageOps.invert(image)
 
     @staticmethod
-    def hflip(image:Image.Image, args:None=None)->Image.Image:
+    def hflip(image: Image.Image, args: None = None) -> Image.Image:
         return image.transpose(Image.FLIP_LEFT_RIGHT)
 
     @staticmethod
-    def vflip(image:Image.Image, args:None=None)->Image.Image:
+    def vflip(image: Image.Image, args: None = None) -> Image.Image:
         return image.transpose(Image.FLIP_TOP_BOTTOM)
 
     @staticmethod
-    def repeat(image:Image.Image, args:tuple[int,int])->Image.Image:
+    def repeat(image: Image.Image, args: tuple[int, int]) -> Image.Image:
         # TODO crop width if it exceeds the maximum after transform
         """
         Repeat image.
@@ -70,14 +72,16 @@ class Transform(Image.Image):
         old_w, old_h = image.size
         new_h = old_h * args[0]  # Vertical
         new_w = old_w * args[1]  # Horizontal
-        new_im = Image.new('RGB', (new_w, new_h))
+        new_im = Image.new("RGB", (new_w, new_h))
         for h in range(0, new_h, old_h):
             for w in range(0, new_w, old_w):
                 new_im.paste(image, (w, h))
         return new_im
 
     @staticmethod
-    def reflect(image:Image.Image, args:tuple[tuple[int,int,int,int]])->Image.Image:
+    def reflect(
+        image: Image.Image, args: tuple[tuple[int, int, int, int]]
+    ) -> Image.Image:
         # TODO crop width if it exceeds the maximum after transform
         """
         Reflect image: Mirrors Left, Right, Top, Bottom.
@@ -105,7 +109,7 @@ class Transform(Image.Image):
         return image
 
     @staticmethod
-    def stretch(image:Image.Image, args:tuple[int,int])->Image.Image:
+    def stretch(image: Image.Image, args: tuple[int, int]) -> Image.Image:
         # TODO crop width if it exceeds the maximum after transform
         """
         Stretch image `args[1]` times horizontally, `args[0]` times vertically.
@@ -118,38 +122,40 @@ class Transform(Image.Image):
         new_w = old_w * args[1]  # horizontal
         return image.resize((new_w, new_h), Image.BOX)
 
-    def zoom_in(self)->None:
+    def zoom_in(self) -> None:
         # allows menu action
         pass
 
-    def zoom_out(self)->None:
+    def zoom_out(self) -> None:
         # allows menu action
         pass
 
 
 class Mirrors:
-    '''
+    """
     Image relection options and GUI methods.
 
     @author Tom Price
     @date   June 2020
-    '''
-    def __init__(self)->None:
+    """
+
+    def __init__(self) -> None:
         self.mirrors = [0, 0, 0, 0]
         self.result = MirrorDialog(self).exec_()
 
-    def toggled(self, box:int)->None:
+    def toggled(self, box: int) -> None:
         self.mirrors[box] = 1 - self.mirrors[box]
 
 
 class MirrorDialog(QDialog):
-    '''
+    """
     GUI to choose reflection options.
 
     @author Tom Price
     @date   June 2020
-    '''
-    def __init__(self, parent:Mirrors):
+    """
+
+    def __init__(self, parent: Mirrors):
         super().__init__()  # FIXME set the parent widget as GuiMain
         self.__ui = Ui_Mirrors()
         self.__ui.setupUi(self)

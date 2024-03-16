@@ -14,13 +14,15 @@
 #    You should have received a copy of the GNU General Public License
 #    along with AYAB.  If not, see <http://www.gnu.org/licenses/>.
 #
-#    Copyright 2014 Sebastian Oliva, Christian Obersteiner, Andreas Müller, Christian Gerbrandt
+#    Copyright 2014 Sebastian Oliva, Christian Obersteiner,
+#       Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
 from __future__ import annotations
 from PySide6.QtCore import QCoreApplication, QRect, QSize
 from PySide6.QtWidgets import QTableWidget, QTableWidgetItem, QLabel, QHeaderView
 from typing import TYPE_CHECKING, Optional, cast
+
 if TYPE_CHECKING:
     from .ayab import GuiMain
     from .engine.status import Status
@@ -33,53 +35,59 @@ class KnitProgress(QTableWidget):
     @author Tom Price
     @date   June 2020
     """
+
     green = 0xBBCCBB
     orange = 0xEECC99
 
-    def __init__(self, parent:GuiMain):
+    def __init__(self, parent: GuiMain):
         super().__init__(parent.ui.graphics_splitter)
         self.clear()
         self.setRowCount(0)
         self.setGeometry(QRect(0, 0, 700, 220))
         self.setContentsMargins(1, 1, 1, 1)
-        self.verticalHeader().setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
+        self.verticalHeader().setSectionResizeMode(
+            QHeaderView.ResizeMode.ResizeToContents
+        )
         self.verticalHeader().setVisible(False)
         self.blank = QTableWidgetItem()
         self.blank.setSizeHint(QSize(0, 0))
         self.setColumnCount(6)
         for r in range(6):
             self.setHorizontalHeaderItem(r, self.blank)
-        self.previousStatus:Optional[Status] = None
+        self.previousStatus: Optional[Status] = None
         self.scene = parent.scene
 
-    def start(self)->None:
+    def start(self) -> None:
         self.clearContents()
         self.clearSelection()
         self.setRowCount(0)
         self.horizontalHeader().setSectionHidden(5, False)
-        self.setCurrentCell(-1,-1)
+        self.setCurrentCell(-1, -1)
         self.color = True
 
-    def uiStateChanged(self, status:Status)->bool:
+    def uiStateChanged(self, status: Status) -> bool:
         if not self.previousStatus:
             return True
 
         if status == self.previousStatus:
             return False
 
-        if (status.line_number != self.previousStatus.line_number or
-            status.current_row != self.previousStatus.current_row or
-            status.color_symbol != self.previousStatus.color_symbol or
-            status.carriage_type != self.previousStatus.carriage_type or
-            status.carriage_direction != self.previousStatus.carriage_direction or
-            status.bits != self.previousStatus.bits or
-            status.alt_color != self.previousStatus.alt_color):
+        if (
+            status.line_number != self.previousStatus.line_number
+            or status.current_row != self.previousStatus.current_row
+            or status.color_symbol != self.previousStatus.color_symbol
+            or status.carriage_type != self.previousStatus.carriage_type
+            or status.carriage_direction != self.previousStatus.carriage_direction
+            or status.bits != self.previousStatus.bits
+            or status.alt_color != self.previousStatus.alt_color
+        ):
             return True
 
         return False
 
-
-    def update_progress(self, status:Status, row_multiplier:int, midline:int, auto_mirror:bool)->None: 
+    def update_progress(
+        self, status: Status, row_multiplier: int, midline: int, auto_mirror: bool
+    ) -> None:
         # FIXME auto_mirror not used
 
         if not self.uiStateChanged(status):
@@ -115,19 +123,25 @@ class KnitProgress(QTableWidget):
         status.bits.reverse()
         midline = len(status.bits) - midline
 
-        table_text = "<table style='cell-spacing: 1; cell-padding: 1; background-color: #{:06x};'><tr>".format(
-            self.orange)
+        table_text = (
+            "<table style='cell-spacing: 1; cell-padding: 1;"
+            + f" background-color: #{self.orange:06x};'><tr>"
+        )
         for c in range(0, midline):
-            table_text += self.__stitch(status.color, cast(bool,status.bits[c]),
-                                        status.alt_color)
+            table_text += self.__stitch(
+                status.color, cast(bool, status.bits[c]), status.alt_color
+            )
         table_text += "</tr></table>"
         left_side = QLabel(table_text)
 
-        table_text = "<table style='cell-spacing: 1; cell-padding: 1; background-color: #{:06x};'><tr>".format(
-            self.green)
+        table_text = (
+            "<table style='cell-spacing: 1; cell-padding: 1;"
+            + f" background-color: #{self.green};'><tr>"
+        )
         for c in range(midline, len(status.bits)):
-            table_text += self.__stitch(status.color, cast(bool,status.bits[c]),
-                                        status.alt_color)
+            table_text += self.__stitch(
+                status.color, cast(bool, status.bits[c]), status.alt_color
+            )
         table_text += "</tr></table>"
         right_side = QLabel(table_text)
 
@@ -148,19 +162,17 @@ class KnitProgress(QTableWidget):
         # update bar in Scene
         self.scene.row_progress = status.current_row
 
-    def __item(self, text:str)->QTableWidgetItem:
+    def __item(self, text: str) -> QTableWidgetItem:
         item = QTableWidgetItem(text)
         return item
 
-    def __stitch(self, color:int, bit:bool, alt_color:Optional[int]=None)->str:
+    def __stitch(self, color: int, bit: bool, alt_color: Optional[int] = None) -> str:
         # FIXME: borders are not visible
         text = "<td width='12' style='border: 1 black "
         if bit:
-            text += "solid; background-color: #{:06x};".format(
-                color)
+            text += f"solid; background-color: #{color:06x};"
         elif alt_color is not None:
-            text += "solid; background-color: #{:06x};".format(
-                alt_color)
+            text += f"solid; background-color: #{alt_color:06x};"
         else:
             text += "dotted;"
         return text + "'/>"

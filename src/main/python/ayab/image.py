@@ -30,11 +30,17 @@ from .transforms import Transform, Mirrors
 from .signal_sender import SignalSender
 from .utils import display_blocking_popup
 from .machine import Machine
-from .pattern_import import PatPatternConverter, StpPatternConverter, CutPatternConverter
+from .pattern_import import (
+    PatPatternConverter,
+    StpPatternConverter,
+    CutPatternConverter,
+)
 
 from typing import TYPE_CHECKING, Callable, Optional
+
 if TYPE_CHECKING:
     from .ayab import GuiMain
+
 
 class AyabImage(SignalSender):
     """
@@ -44,43 +50,50 @@ class AyabImage(SignalSender):
     @author Tom Price
     @date   July 2020
     """
-    def __init__(self, parent:GuiMain):
+
+    def __init__(self, parent: GuiMain):
         super().__init__(parent.signal_receiver)
         self.__parent = parent
-        self.image:Image.Image = None #type: ignore
-        self.filename:Optional[str] = None
+        self.image: Image.Image = None  # type: ignore
+        self.filename: Optional[str] = None
         self.reversed = False
         self.filename_input = self.__parent.ui.filename_lineedit
 
-    def select_file(self)->None:
+    def select_file(self) -> None:
         filename = self.filename_input.text()
-        if filename == '':
+        if filename == "":
             filepath = self.__parent.app_context.get_resource("patterns")
         else:
             filepath = filename
         selected_file, _ = QFileDialog.getOpenFileName(
-            self.__parent, "Open file", filepath,
-            'Images (*.png *.PNG *.jpg *.JPG *.jpeg *.JPEG *.bmp *.BMP *.gif *.GIF *.tiff *.TIFF *.tif *.TIF *.Pat *.pat *.PAT *.Stp *.stp *.STP *.Cut *.cut *.CUT)'
+            self.__parent,
+            "Open file",
+            filepath,
+            "Images "
+            + "(*.png *.PNG *.jpg *.JPG *.jpeg *.JPEG"
+            + " *.bmp *.BMP *.gif *.GIF *.tiff *.TIFF *.tif *.TIF"
+            + " *.Pat *.pat *.PAT *.Stp *.stp *.STP *.Cut *.cut *.CUT)",
         )
         if selected_file:
             self.filename = selected_file
             self.filename_input.setText(selected_file)
             self.__load(str(selected_file))
 
-    def __load(self, filename:str)->None:
-        '''Load an image into the graphics scene.'''
+    def __load(self, filename: str) -> None:
+        """Load an image into the graphics scene."""
         # TODO Check maximum width of image
         try:
             self.__open(filename)
-        except (OSError, FileNotFoundError):
+        except OSError:
             display_blocking_popup(
                 QCoreApplication.translate("Image", "Unable to load image file"),
-                "error")  # FIXME translate
+                "error",
+            )  # FIXME translate
             logging.error("Unable to load " + str(filename))
         except Exception as e:
             display_blocking_popup(
-                QCoreApplication.translate("Image", "Error loading image file"),
-                "error")  # FIXME translate
+                QCoreApplication.translate("Image", "Error loading image file"), "error"
+            )  # FIXME translate
             logging.error("Error loading image: " + str(e))
             raise
         else:
@@ -88,14 +101,14 @@ class AyabImage(SignalSender):
             self.__parent.scene.row_progress = 0
             self.__parent.engine.config.refresh()
 
-    def __open(self, filename:str)->None:
+    def __open(self, filename: str) -> None:
         # check for files that need conversion
         suffix = filename[-4:].lower()
-        if (suffix == ".pat"):
+        if suffix == ".pat":
             self.image = PatPatternConverter().pattern2im(filename)
-        elif (suffix == ".stp"):
+        elif suffix == ".stp":
             self.image = StpPatternConverter().pattern2im(filename)
-        elif (suffix == ".cut"):
+        elif suffix == ".cut":
             self.image = CutPatternConverter().pattern2im(filename)
         else:
             self.image = Image.open(filename)
@@ -103,67 +116,71 @@ class AyabImage(SignalSender):
         self.emit_got_image_flag()
         self.emit_image_resizer()
 
-    def invert(self)->None:
+    def invert(self) -> None:
         self.apply_transform(Transform.invert)
 
-    def repeat(self)->None:
+    def repeat(self) -> None:
         machine_width = Machine(self.__parent.prefs.value("machine")).width
-        v = QInputDialog.getInt(self.__parent,
-                                "Repeat",
-                                "Vertical",
-                                value=1,
-                                minValue=1)
-        h = QInputDialog.getInt(self.__parent,
-                                "Repeat",
-                                "Horizontal",
-                                value=1,
-                                minValue=1,
-                                maxValue=ceil(machine_width / self.image.width))
+        v = QInputDialog.getInt(
+            self.__parent, "Repeat", "Vertical", value=1, minValue=1
+        )
+        h = QInputDialog.getInt(
+            self.__parent,
+            "Repeat",
+            "Horizontal",
+            value=1,
+            minValue=1,
+            maxValue=ceil(machine_width / self.image.width),
+        )
         self.apply_transform(Transform.repeat, v[0], h[0])
 
-    def stretch(self)->None:
+    def stretch(self) -> None:
         machine_width = Machine(self.__parent.prefs.value("machine")).width
-        v = QInputDialog.getInt(self.__parent,
-                                "Stretch",
-                                "Vertical",
-                                value=1,
-                                minValue=1)
-        h = QInputDialog.getInt(self.__parent,
-                                "Stretch",
-                                "Horizontal",
-                                value=1,
-                                minValue=1,
-                                maxValue=ceil(machine_width / self.image.width))
+        v = QInputDialog.getInt(
+            self.__parent, "Stretch", "Vertical", value=1, minValue=1
+        )
+        h = QInputDialog.getInt(
+            self.__parent,
+            "Stretch",
+            "Horizontal",
+            value=1,
+            minValue=1,
+            maxValue=ceil(machine_width / self.image.width),
+        )
         self.apply_transform(Transform.stretch, v[0], h[0])
 
-    def reflect(self)->None:
+    def reflect(self) -> None:
         m = Mirrors()
-        if (m.result == QDialog.DialogCode.Accepted):
+        if m.result == QDialog.DialogCode.Accepted:
             self.apply_transform(Transform.reflect, m.mirrors)
 
-    def hflip(self)->None:
+    def hflip(self) -> None:
         self.apply_transform(Transform.hflip)
 
-    def vflip(self)->None:
+    def vflip(self) -> None:
         self.apply_transform(Transform.vflip)
 
-    def rotate_left(self)->None:
+    def rotate_left(self) -> None:
         self.apply_transform(Transform.rotate_left)
 
-    def rotate_right(self)->None:
+    def rotate_right(self) -> None:
         self.apply_transform(Transform.rotate_right)
 
-    def zoom_in(self)->None:
+    def zoom_in(self) -> None:
         self.__parent.scene.set_zoom(+1)
 
-    def zoom_out(self)->None:
+    def zoom_out(self) -> None:
         self.__parent.scene.set_zoom(-1)
 
-    def apply_transform(self, transform:Callable[...,Image.Image], *args:tuple[int,int]|list[int]|int)->None:
+    def apply_transform(
+        self,
+        transform: Callable[..., Image.Image],
+        *args: tuple[int, int] | list[int] | int,
+    ) -> None:
         """Executes an image transform specified by function and args."""
         self.image = transform(self.image, args)
         try:
-            pass #self.image = transform(self.image, args)
+            pass  # self.image = transform(self.image, args)
         except Exception as e:
             logging.error("Error while executing image transform: " + repr(e))
 

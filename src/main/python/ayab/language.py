@@ -14,7 +14,8 @@
 #    You should have received a copy of the GNU General Public License
 #    along with AYAB.  If not, see <http://www.gnu.org/licenses/>.
 #
-#    Copyright 2014 Sebastian Oliva, Christian Obersteiner, Andreas Müller, Christian Gerbrandt
+#    Copyright 2014 Sebastian Oliva, Christian Obersteiner,
+#       Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
 from __future__ import annotations
@@ -23,6 +24,7 @@ from glob import glob
 from PySide6.QtCore import QLocale
 from PySide6.QtWidgets import QComboBox
 from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     from ..main import AppContext
 
@@ -34,14 +36,15 @@ class Language(object):
     @author Tom Price
     @date   July 2020
     """
-    def __init__(self, app_context:AppContext):
+
+    def __init__(self, app_context: AppContext):
         self.__app_context = app_context
 
-    def add_items(self, box:QComboBox)->None:
+    def add_items(self, box: QComboBox) -> None:
         for loc in self.__available_locales():
             box.addItem(self.__native_language(loc), loc)
 
-    def default_language(self)->str:
+    def default_language(self) -> str:
         default = self.__default_locale()
         available = self.__available_locales()
         if default in available:
@@ -49,21 +52,21 @@ class Language(object):
         else:
             return "en_US"
 
-    def __default_locale(self)->str:
+    def __default_locale(self) -> str:
         return QLocale.system().name()
 
-    def __available_locales(self)->list[str]:
+    def __available_locales(self) -> list[str]:
         lang_dir = self.__app_context.get_resource("ayab/translations")
         lang_files = glob(path.join(lang_dir, "ayab_trans.*.qm"))
         return sorted(map(self.__locale, lang_files))
 
-    def __locale(self, string:str)->str:
+    def __locale(self, string: str) -> str:
         i = string.rindex("_")
-        return string[i - 2:i + 3]
+        return string[i - 2 : i + 3]
 
-    def __native_language(self, loc:str)->str:
-        lang = loc[0:3]
-        country = loc[3:6]
+    def __native_language(self, loc: str) -> str:
+        # lang = loc[0:3]
+        # country = loc[3:6]
         return QLocale(loc).nativeLanguageName()
         # return QLocale.languageToScript(QLocale(lang).language()) \
         # + " (" + country + ")"

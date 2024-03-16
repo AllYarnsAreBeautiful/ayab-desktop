@@ -18,7 +18,6 @@
 #    Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
-import pytest
 import unittest
 
 from ..engine.status import Status, Carriage, Direction

@@ -14,7 +14,8 @@
 #    You should have received a copy of the GNU General Public License
 #    along with AYAB.  If not, see <http://www.gnu.org/licenses/>.
 #
-#    Copyright 2014 Sebastian Oliva, Christian Obersteiner, Andreas Müller, Christian Gerbrandt
+#    Copyright 2014 Sebastian Oliva, Christian Obersteiner, Andreas Müller,
+#       Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 """Notification methods using the status bar."""
 
@@ -22,15 +23,16 @@ from __future__ import annotations
 import logging
 from PySide6.QtWidgets import QStatusBar
 from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     from .ayab import GuiMain
 
 
 class StatusBar(QStatusBar):
-    def __init__(self, parent:GuiMain):
+    def __init__(self, parent: GuiMain):
         super().__init__(parent)
 
-    def update(self, text:str, log:bool=True)->None: #type: ignore
+    def update(self, text: str, log: bool = True) -> None:  # type: ignore
         """Update the message in the status bar."""
         if log:
             logging.info("Status bar: " + text)
