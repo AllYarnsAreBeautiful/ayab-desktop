@@ -14,7 +14,8 @@
 #    You should have received a copy of the GNU General Public License
 #    along with AYAB.  If not, see <http://www.gnu.org/licenses/>.
 #
-#    Copyright 2014 Sebastian Oliva, Christian Obersteiner, Andreas Müller, Christian Gerbrandt
+#    Copyright 2014 Sebastian Oliva, Christian Obersteiner,
+#       Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
 from __future__ import annotations
@@ -25,31 +26,40 @@ from .about_gui import Ui_AboutForm
 from . import utils
 from . import ayab_logo_rc
 from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     from .ayab import GuiMain
 
+
 class About(QFrame):
-    def __init__(self, parent:GuiMain):
+    ayab_logo_rc
+
+    def __init__(self, parent: GuiMain):
         super().__init__()
         self.__version = utils.package_version(parent.app_context)
         self.__ui = Ui_AboutForm()
         self.__ui.setupUi(self)
         self.__ui.title_label.setText(
             QCoreApplication.translate("MainWindow", "All Yarns Are Beautiful")
-            + " " + self.__version)
+            + " "
+            + self.__version
+        )
         self.__ui.link_label.setText(
-            QCoreApplication.translate("MainWindow", "Website") +
-            ": <a href='http://ayab-knitting.com'>http://ayab-knitting.com</a>"
+            QCoreApplication.translate("MainWindow", "Website")
+            + ": <a href='http://ayab-knitting.com'>http://ayab-knitting.com</a>"
         )
         self.__ui.link_label.setTextFormat(Qt.TextFormat.RichText)
         self.__ui.link_label.setTextInteractionFlags(
-            Qt.TextInteractionFlag.TextBrowserInteraction)
+            Qt.TextInteractionFlag.TextBrowserInteraction
+        )
         self.__ui.link_label.setOpenExternalLinks(True)
         self.__ui.manual_label.setText(
-            QCoreApplication.translate("MainWindow", "Manual") +
-            ": <a href='http://manual.ayab-knitting.com'>http://manual.ayab-knitting.com</a>"
+            QCoreApplication.translate("MainWindow", "Manual")
+            + ": <a href='http://manual.ayab-knitting.com'>"
+            + "http://manual.ayab-knitting.com</a>"
         )
         self.__ui.manual_label.setTextFormat(Qt.TextFormat.RichText)
         self.__ui.manual_label.setTextInteractionFlags(
-            Qt.TextInteractionFlag.TextBrowserInteraction)
+            Qt.TextInteractionFlag.TextBrowserInteraction
+        )
         self.__ui.manual_label.setOpenExternalLinks(True)

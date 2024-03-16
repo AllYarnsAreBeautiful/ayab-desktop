@@ -22,19 +22,21 @@ from enum import Enum
 from typing import Literal
 from PySide6.QtWidgets import QComboBox
 
+
 class Machine(Enum):
     """Machine configuration class.
 
     @author Tom Price
     @date   July 2020
     """
+
     KH910_KH950 = 0
     KH900_KH930_KH940_KH965 = 1
     KH270 = 2
 
     @property
     # number of needles on machine
-    def width(self)->Literal[112,200]:
+    def width(self) -> Literal[112, 200]:
         if self == Machine.KH270:
             # The last needles don't pattern.
             return 112
@@ -42,7 +44,7 @@ class Machine(Enum):
             return 200
 
     @staticmethod
-    def add_items(box:QComboBox)->None:
+    def add_items(box: QComboBox) -> None:
         """Add items to alignment combo box."""
         box.addItem("KH-910, KH-950i")
         box.addItem("KH-900, KH-930, KH-940, KH-965i")

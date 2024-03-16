@@ -14,13 +14,14 @@
 #    You should have received a copy of the GNU General Public License
 #    along with AYAB.  If not, see <http://www.gnu.org/licenses/>.
 #
-#    Copyright 2014 Sebastian Oliva, Christian Obersteiner, Andreas Müller, Christian Gerbrandt
+#    Copyright 2014 Sebastian Oliva, Christian Obersteiner,
+#       Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
 from __future__ import annotations
 
 from enum import Enum
-from typing import Any, Literal, Optional,TypeAlias
+from typing import Any, Literal, Optional, TypeAlias
 from bitarray import bitarray
 
 from PySide6.QtCore import QCoreApplication
@@ -34,7 +35,7 @@ class Direction(Enum):
     Left = 1
     Right = 2
 
-    def reverse(self)->Direction:
+    def reverse(self) -> Direction:
         if self == Direction.Left:
             return Direction.Right
         # else
@@ -44,7 +45,7 @@ class Direction(Enum):
         return Direction.Unknown
 
     @property
-    def symbol(self)->Literal["\u2190","\u2192",""]:
+    def symbol(self) -> Literal["\u2190", "\u2192", ""]:
         if self == Direction.Left:
             return "\u2190"
         # else
@@ -54,7 +55,7 @@ class Direction(Enum):
         return ""
 
     @property
-    def text(self)->Literal["Left","Right",""]:
+    def text(self) -> Literal["Left", "Right", ""]:
         if self == Direction.Left:
             return "Left"
         # else
@@ -71,7 +72,7 @@ class Carriage(Enum):
     Garter = 3
 
     @property
-    def symbol(self)->Literal["K","L","G",""]:
+    def symbol(self) -> Literal["K", "L", "G", ""]:
         if self == Carriage.Knit:
             return "K"
         elif self == Carriage.Lace:
@@ -82,7 +83,7 @@ class Carriage(Enum):
             return ""
 
     @property
-    def text(self)->str:
+    def text(self) -> str:
         if self == Carriage.Knit:
             text = "Knit"
         elif self == Carriage.Lace:
@@ -95,7 +96,8 @@ class Carriage(Enum):
         return text
 
 
-ColorSymbolType: TypeAlias = Literal["","A","B","C","D","E","F"]
+ColorSymbolType: TypeAlias = Literal["", "A", "B", "C", "D", "E", "F"]
+
 
 class Status(object):
     """
@@ -104,30 +106,31 @@ class Status(object):
     @author Tom Price
     @date   July 2020
     """
-    active:bool
-    # data fields
-    alt_color:Optional[int]
-    bits:bitarray
-    color:int
-    color_symbol:ColorSymbolType
-    current_row:int
-    firmware_state:int
-    line_number:int
-    mirror:bool
-    repeats:int
-    total_rows:int
-    # carriage info
-    carriage_direction:Direction
-    carriage_position:int
-    carriage_type:Carriage
-    hall_l:int
-    hall_r:int
 
-    def __init__(self)->None:
+    active: bool
+    # data fields
+    alt_color: Optional[int]
+    bits: bitarray
+    color: int
+    color_symbol: ColorSymbolType
+    current_row: int
+    firmware_state: int
+    line_number: int
+    mirror: bool
+    repeats: int
+    total_rows: int
+    # carriage info
+    carriage_direction: Direction
+    carriage_position: int
+    carriage_type: Carriage
+    hall_l: int
+    hall_r: int
+
+    def __init__(self) -> None:
         super().__init__()
         self.reset()
 
-    def reset(self)->None:
+    def reset(self) -> None:
         self.active = True
         # data fields
         self.alt_color = None
@@ -147,7 +150,7 @@ class Status(object):
         self.hall_l = 0
         self.hall_r = 0
 
-    def copy(self, status:Status)->None:
+    def copy(self, status: Status) -> None:
         self.active = status.active
         self.firmware_state = status.firmware_state
         self.current_row = status.current_row
@@ -163,12 +166,12 @@ class Status(object):
         self.carriage_position = status.carriage_position
         self.carriage_direction = status.carriage_direction
 
-    def parse_device_state_API6(self, state:Any, msg:bytes)->None:
+    def parse_device_state_API6(self, state: Any, msg: bytes) -> None:
         if not (self.active):
             return
 
         # else
-        firmware_state = msg[2]
+        # firmware_state = msg[2]
 
         hall_l = int((msg[3] << 8) + msg[4])
         hall_r = int((msg[5] << 8) + msg[6])
@@ -209,15 +212,16 @@ class StatusTab(Status, QWidget):
     @author Tom Price
     @date   July 2020
     """
-    def __init__(self)->None:
+
+    def __init__(self) -> None:
         super().__init__()
         self.ui = Ui_StatusTab()
         self.ui.setupUi(self)
 
-    def refresh(self)->None:
+    def refresh(self) -> None:
         pass  # TODO
 
-    def write_carriage_info(self, status:Status)->None:
+    def write_carriage_info(self, status: Status) -> None:
         if not (self.active):
             return
         # else
