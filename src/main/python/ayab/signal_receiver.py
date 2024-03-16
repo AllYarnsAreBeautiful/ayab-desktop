@@ -15,7 +15,8 @@
 #    You should have received a copy of the GNU General Public License
 #    along with AYAB.  If not, see <http://www.gnu.org/licenses/>.
 #
-#    Copyright 2014 Sebastian Oliva, Christian Obersteiner, Andreas Müller, Christian Gerbrandt
+#    Copyright 2014 Sebastian Oliva, Christian Obersteiner,
+#       Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
 from __future__ import annotations
@@ -26,6 +27,7 @@ from .engine.engine_fsm import Operation
 from .engine.control import Control
 from .utils import display_blocking_popup
 from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     from .ayab import GuiMain
 
@@ -37,6 +39,7 @@ class SignalReceiver(QObject):
     @author Tom Price
     @date   July 2020
     """
+
     # signals are defined as class attributes which are
     # over-ridden by instance attributes with the same name
     start_row_updater = Signal(int)
@@ -59,10 +62,10 @@ class SignalReceiver(QObject):
     hw_test_starter = Signal(Control)
     hw_test_writer = Signal(str)
 
-    def __init__(self)->None:
+    def __init__(self) -> None:
         super().__init__()
 
-    def activate_signals(self, parent:GuiMain)->None:
+    def activate_signals(self, parent: GuiMain) -> None:
         self.start_row_updater.connect(parent.update_start_row)
         self.progress_bar_updater.connect(parent.progbar.update)
         self.knit_progress_updater.connect(parent.knitprog.update_progress)
@@ -70,8 +73,9 @@ class SignalReceiver(QObject):
         # self.statusbar_updater.connect(parent.statusbar.update)
         self.blocking_popup_displayer.connect(display_blocking_popup)
         self.popup_displayer.connect(display_blocking_popup)
-        self.audio_player.connect(parent.audio.play,
-                                  type=Qt.ConnectionType.BlockingQueuedConnection)
+        self.audio_player.connect(
+            parent.audio.play, type=Qt.ConnectionType.BlockingQueuedConnection
+        )
         self.needles_updater.connect(parent.scene.update_needles)
         self.alignment_updater.connect(parent.scene.update_alignment)
         self.image_resizer.connect(parent.set_image_dimensions)

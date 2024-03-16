@@ -1,5 +1,5 @@
 from . import engine
-from . import lowercase_e_rc,lowercase_e_reversed_rc
+from . import lowercase_e_rc, lowercase_e_reversed_rc
 
 # This adds the engine to the upper namespace of the module.
 Engine = engine.Engine

@@ -3,7 +3,19 @@ repos:
       rev: v3.1.0
       hooks:
           - id: check-yaml
-    - repo: https://github.com/pre-commit/mirrors-yapf
-      rev: v0.30.0
+    - repo: https://github.com/psf/black-pre-commit-mirror
+      rev: 24.3.0
       hooks:
-          - id: yapf
+          - id: black
+            language_version: python3.11
+    - repo: https://github.com/pycqa/flake8
+      rev: '7.0.0'
+      hooks:
+      -   id: flake8
+          additional_dependencies: [flake8-bugbear,flake8-sfs]
+    - repo: https://github.com/pre-commit/mirrors-mypy
+      rev: 'v1.9.0'
+      hooks:
+      -   id: mypy
+          args: [--config-file=.pre-commit.mypy.ini]
+          additional_dependencies: [numpy]

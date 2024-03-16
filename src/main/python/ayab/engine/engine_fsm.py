@@ -23,13 +23,14 @@ from __future__ import annotations
 from enum import Enum, auto
 
 from PySide6.QtCore import QCoreApplication
-from PySide6.QtStateMachine import QStateMachine,QState
+from PySide6.QtStateMachine import QStateMachine, QState
 
 from .communication import Communication, Token
 from .communication_mock import CommunicationMock
 from .hw_test_communication_mock import HardwareTestCommunicationMock
 from .output import Output
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     from .control import Control
     from .engine import Engine
@@ -55,36 +56,36 @@ class State(Enum):
 
 class StateMachine(QStateMachine):
     """
-    Each method is a step in the finite state machine that governs serial
-M
-    communication with the device and is called only by `Control.operate()`
+        Each method is a step in the finite state machine that governs serial
+    M
+        communication with the device and is called only by `Control.operate()`
 
-    @author Tom Price
-    @date   June 2020
+        @author Tom Price
+        @date   June 2020
     """
 
-    CONNECT:QState
-    VERSION_CHECK:QState
-    def set_transitions(self, parent:Engine)->None:
+    CONNECT: QState
+    VERSION_CHECK: QState
+
+    def set_transitions(self, parent: Engine) -> None:
         """Define transitions between states for Finite State Machine"""
 
         # Events that trigger state changes
-        self.CONNECT.addTransition(parent.port_opener, self.VERSION_CHECK) 
+        self.CONNECT.addTransition(parent.port_opener, self.VERSION_CHECK)
 
     @staticmethod
-    def _API6_connect(control:Control, operation:Operation)->Output:
+    def _API6_connect(control: Control, operation: Operation) -> Output:
         control.logger.debug("State CONNECT")
         if operation == Operation.KNIT:
             if not control.func_selector():
                 return Output.ERROR_INVALID_SETTINGS
         # else
         control.logger.debug("Port name: " + control.portname)
-        if control.portname == QCoreApplication.translate(
-                "KnitEngine", "Simulation"):
+        if control.portname == QCoreApplication.translate("KnitEngine", "Simulation"):
             if operation == Operation.KNIT:
                 control.com = CommunicationMock()
             else:
-                control.com = HardwareTestCommunicationMock() #type: ignore
+                control.com = HardwareTestCommunicationMock()  # type: ignore
         else:
             control.com = Communication()
         if not control.com.open_serial(control.portname):
@@ -97,7 +98,7 @@ M
         return Output.NONE
 
     @staticmethod
-    def _API6_version_check(control:Control, operation:Operation)->Output:
+    def _API6_version_check(control: Control, operation: Operation) -> Output:
         token, param = control.check_serial_API6()
         if token == Token.cnfInfo:
             if param >= control.FIRST_SUPPORTED_API_VERSION:
@@ -106,16 +107,19 @@ M
                 control.logger.debug("State INIT")
                 return Output.NONE
             else:
-                control.logger.error("Wrong API version: " + str(param) +
-                                     ", expected >= " +
-                                     str(control.FIRST_SUPPORTED_API_VERSION))
+                control.logger.error(
+                    "Wrong API version: "
+                    + str(param)
+                    + ", expected >= "
+                    + str(control.FIRST_SUPPORTED_API_VERSION)
+                )
                 return Output.ERROR_WRONG_API
         # else
         control.com.req_info()
         return Output.CONNECTING_TO_MACHINE
 
     @staticmethod
-    def _API6_init(control:Control, operation:Operation)->Output:
+    def _API6_init(control: Control, operation: Operation) -> Output:
         token, param = control.check_serial_API6()
         if token == Token.cnfInit:
             # no errors? Move on
@@ -135,8 +139,9 @@ M
         # else
         control.com.req_init_API6(control.machine)
         return Output.INITIALIZING_FIRMWARE
+
     @staticmethod
-    def _API6_request_start(control:Control, operation:Operation)->Output:
+    def _API6_request_start(control: Control, operation: Operation) -> Output:
         token, param = control.check_serial_API6()
         if token == Token.indState:
             if param == 0:
@@ -147,20 +152,27 @@ M
                 # set status.active
                 control.status.active = control.continuous_reporting
                 # request start
-                control.com.req_start_API6(control.pattern.knit_start_needle,
-                                           control.pattern.knit_end_needle - 1,
-                                           control.continuous_reporting,
-                                           control.prefs.value("disable_hardware_beep"))
+                control.com.req_start_API6(
+                    control.pattern.knit_start_needle,
+                    control.pattern.knit_end_needle - 1,
+                    control.continuous_reporting,
+                    control.prefs.value("disable_hardware_beep"),
+                )
                 control.state = State.CONFIRM_START
                 control.logger.debug("State CONFIRM_START")
             else:
                 # any value of param other than 0 is some kind of error code
-                control.logger.debug("Knit init failed with error code " +
-                                     str(param) + " in state " + str(control.status.firmware_state))
+                control.logger.debug(
+                    "Knit init failed with error code "
+                    + str(param)
+                    + " in state "
+                    + str(control.status.firmware_state)
+                )
                 # TODO: more output to describe error
         return Output.WAIT_FOR_INIT
+
     @staticmethod
-    def _API6_confirm_start(control:Control, operation:Operation)->Output:
+    def _API6_confirm_start(control: Control, operation: Operation) -> Output:
         token, param = control.check_serial_API6()
         if token == Token.cnfStart:
             if param == 0:
@@ -170,14 +182,16 @@ M
             else:
                 # any value of param other than 0 is some kind of error code
                 control.logger.error(
-                    "Device not ready, returned `cnfStart` with error code " +
-                    str(param))
+                    "Device not ready, returned `cnfStart` with error code "
+                    + str(param)
+                )
                 # TODO: more output to describe error
                 return Output.DEVICE_NOT_READY
         # else
         return Output.NONE
+
     @staticmethod
-    def _API6_run_knit(control:Control, operation:Operation)->Output:
+    def _API6_run_knit(control: Control, operation: Operation) -> Output:
         token, param = control.check_serial_API6()
         if token == Token.reqLine:
             pattern_finished = control.cnf_line_API6(param)
@@ -188,8 +202,9 @@ M
                 return Output.NEXT_LINE
         # else
         return Output.NONE
+
     @staticmethod
-    def _API6_request_test(control:Control, operation:Operation)->Output:
+    def _API6_request_test(control: Control, operation: Operation) -> Output:
         token, param = control.check_serial_API6()
         if token == Token.indState:
             if param == 0:
@@ -198,12 +213,17 @@ M
                 control.logger.debug("State CONFIRM_TEST")
             else:
                 # any value of param other than 0 is some kind of error code
-                control.logger.debug("Test init failed with error code " +
-                                     str(param) + " in state " + str(control.status.firmware_state))
+                control.logger.debug(
+                    "Test init failed with error code "
+                    + str(param)
+                    + " in state "
+                    + str(control.status.firmware_state)
+                )
                 # TODO: more output to describe error
         return Output.NONE
+
     @staticmethod
-    def _API6_confirm_test(control:Control, operation:Operation)->Output:
+    def _API6_confirm_test(control: Control, operation: Operation) -> Output:
         token, param = control.check_serial_API6()
         if token == Token.cnfTest:
             if param == 0:
@@ -215,25 +235,27 @@ M
             else:
                 # any value of param other than 0 is some kind of error code
                 control.logger.error(
-                    "Device not ready, returned `cnfTest` with error code " +
-                    str(param))
+                    "Device not ready, returned `cnfTest` with error code " + str(param)
+                )
                 # TODO: more output to describe error
                 return Output.DEVICE_NOT_READY
         # else
         return Output.NONE
+
     @staticmethod
-    def _API6_run_test(control:Control, operation:Operation)->Output:
+    def _API6_run_test(control: Control, operation: Operation) -> Output:
         while True:
             token, param = control.check_serial_API6()
             if token != Token.none:
                 break
         control.logger.debug("Token " + token.name + ", param " + str(param))
         return Output.NONE
+
     @staticmethod
-    def _API6_finished(control:Control, operation:Operation)->Output:
+    def _API6_finished(control: Control, operation: Operation) -> Output:
         control.logger.debug("State FINISHED")
         try:
-            control.timer.stop() #type: ignore
+            control.timer.stop()  # type: ignore
         except Exception:
             pass
         control.state = State.CONNECT

@@ -15,43 +15,52 @@
 #    along with AYAB.  If not, see <http://www.gnu.org/licenses/>.
 #
 #    Copyright 2013-2020 Sebastian Oliva, Christian Obersteiner,
-#    Andreas Müller, Christian Gerbrandt
+#       Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 """Functions that do not have a parent class."""
 
 from __future__ import annotations
 import logging
-from typing import Any, Callable, Literal, Optional, TypeAlias, cast, TYPE_CHECKING
+from typing import Any, Callable, Literal, Optional, TypeAlias, cast
 import numpy as np
 import numpy.typing as npt
 import serial.tools.list_ports
 import requests
 
-from PySide6.QtWidgets import QMessageBox,QWidget,QComboBox
+from PySide6.QtWidgets import QMessageBox, QComboBox
 
 
-def even(x:int)->bool:
+def even(x: int) -> bool:
     return x % 2 == 0
 
 
-def odd(x:int)->bool:
+def odd(x: int) -> bool:
     return x % 2 == 1
 
 
-MessageTypes: TypeAlias = Literal["error","info","question","warning"]
-QMessageBoxFunc: TypeAlias = Callable[...,QMessageBox.StandardButton] 
-def display_blocking_popup(message:str="", message_type:MessageTypes="info")->bool:
+MessageTypes: TypeAlias = Literal["error", "info", "question", "warning"]
+QMessageBoxFunc: TypeAlias = Callable[..., QMessageBox.StandardButton]
+
+
+def display_blocking_popup(
+    message: str = "", message_type: MessageTypes = "info"
+) -> bool:
     """Display a modal message box."""
-    logging.debug("MessageBox {}: '{}'".format(message_type, message))
-    box_function:dict[MessageTypes,QMessageBoxFunc]= {
+    logging.debug(f"MessageBox {message_type}: '{message}'")
+    box_function: dict[MessageTypes, QMessageBoxFunc] = {
         "error": QMessageBox.critical,
         "info": QMessageBox.information,
         "question": QMessageBox.question,
-        "warning": QMessageBox.warning
+        "warning": QMessageBox.warning,
     }
     message_box_function = box_function[message_type]
-    ret = message_box_function(None, "AYAB", message, QMessageBox.StandardButton.Ok,
-                               QMessageBox.StandardButton.Ok)
+    ret = message_box_function(
+        None,
+        "AYAB",
+        message,
+        QMessageBox.StandardButton.Ok,
+        QMessageBox.StandardButton.Ok,
+    )
     if ret == QMessageBox.StandardButton.Ok:
         return True
     return False
@@ -60,9 +69,12 @@ def display_blocking_popup(message:str="", message_type:MessageTypes="info")->bo
 # USB port functions
 
 
-def populate_ports(combo_box:Optional[QComboBox]=None, port_list:Optional[list[str]]=None)->None:
+def populate_ports(
+    combo_box: Optional[QComboBox] = None, port_list: Optional[list[str]] = None
+) -> None:
     """Populate combo box with a list of ports."""
-    if not combo_box: return
+    if not combo_box:
+        return
     if not port_list:
         port_list = get_serial_ports()
     combo_box.clear()
@@ -71,39 +83,40 @@ def populate_ports(combo_box:Optional[QComboBox]=None, port_list:Optional[list[s
         combo_box.addItem(item[0])
 
 
-def get_serial_ports()->list[str]:
+def get_serial_ports() -> list[str]:
     """Return a list of all USB serial ports."""
-    return list(serial.tools.list_ports.grep("USB")) #type: ignore
+    return list(serial.tools.list_ports.grep("USB"))  # type: ignore
 
 
 # Color functions
 
 
-def rgb2array(color:int)->npt.NDArray[np.int_]:
+def rgb2array(color: int) -> npt.NDArray[np.int_]:
     return np.array([color // 0x1000, (color // 0x100) & 0xFF, color & 0xFF])
 
 
-def greyscale(rgb:npt.NDArray[np.int_])->int:
-    return cast(int,np.dot([.299, .587, .114], rgb))
+def greyscale(rgb: npt.NDArray[np.int_]) -> int:
+    return cast(int, np.dot([0.299, 0.587, 0.114], rgb))
 
 
-def contrast_color(color:int)->int:
+def contrast_color(color: int) -> int:
     return [0x000000, 0xFFFFFF][greyscale(rgb2array(color)) < 0x80]
 
 
 # Version
 
 
-def package_version(app_context:Any)->str:
+def package_version(app_context: Any) -> str:
     version = "package_version"
     filename_version = app_context.get_resource("ayab/package_version")
     with open(filename_version) as version_file:
         version = version_file.read().strip()
     return version
 
-def latest_version(repo:str)->str:
+
+def latest_version(repo: str) -> str:
     r = requests.get("https://api.github.com/repos/" + repo + "/releases/latest")
     obj = r.json()
-    if obj["draft"] == False and obj["prerelease"] == False:
-        return cast(str,obj["tag_name"])
+    if obj["draft"] is False and obj["prerelease"] is False:
+        return cast(str, obj["tag_name"])
     return ""

@@ -31,6 +31,7 @@ from .communication import Communication, Token
 
 class CommunicationMock(Communication):
     """Class Handling the mock communication protocol."""
+
     def __init__(self, delay=True, step=False) -> None:
         """Initialize communication."""
         logging.basicConfig(level=logging.DEBUG)
@@ -66,7 +67,9 @@ class CommunicationMock(Communication):
 
     def req_info(self) -> None:
         """Send a request for API version information"""
-        cnfInfo = bytes([Token.cnfInfo.value, 6, 1, 0, 0, 109, 111, 99, 107, 0])  # APIv6, FW v1.0.0-mock
+        cnfInfo = bytes(
+            [Token.cnfInfo.value, 6, 1, 0, 0, 109, 111, 99, 107, 0]
+        )  # APIv6, FW v1.0.0-mock
         self.rx_msg_list.append(cnfInfo)
 
     def req_init_API6(self, machine_val):
@@ -74,7 +77,8 @@ class CommunicationMock(Communication):
         cnfInit = bytes([Token.cnfInit.value, 0])
         self.rx_msg_list.append(cnfInit)
         indState = bytes(
-            [Token.indState.value, 0, 1, 0xFF, 0xFF, 0xFF, 0xFF, 1, 0x00, 1])
+            [Token.indState.value, 0, 1, 0xFF, 0xFF, 0xFF, 0xFF, 1, 0x00, 1]
+        )
         self.rx_msg_list.append(indState)
 
     def req_test_API6(self) -> None:
@@ -82,8 +86,9 @@ class CommunicationMock(Communication):
         cnfTest = bytes([Token.cnfTest.value, 0])
         self.rx_msg_list.append(cnfTest)
 
-    def req_start_API6(self, start_needle, stop_needle,
-                       continuous_reporting, disable_hardware_beep) -> None:
+    def req_start_API6(
+        self, start_needle, stop_needle, continuous_reporting, disable_hardware_beep
+    ) -> None:
         """Send a request to start knitting."""
         self.__is_started = True
         cnfStart = bytes([Token.cnfStart.value, 0])
@@ -93,7 +98,7 @@ class CommunicationMock(Communication):
         """Send a row of stitch data."""
         return True
 
-    def update_API6(self) -> tuple[bytes,Token,int]:
+    def update_API6(self) -> tuple[bytes, Token, int]:
         """Read and parse data packet."""
         if self.__is_open and self.__is_started:
             reqLine = bytes([Token.reqLine.value, self.__line_count])
@@ -108,10 +113,12 @@ class CommunicationMock(Communication):
                 msg = QMessageBox()
                 msg.setIcon(QMessageBox.Icon.Information)
                 msg.setText("Line number = " + str(self.__line_count))
-                msg.setStandardButtons(QMessageBox.StandardButton.Ok | QMessageBox.StandardButton.Cancel)
+                msg.setStandardButtons(
+                    QMessageBox.StandardButton.Ok | QMessageBox.StandardButton.Cancel
+                )
                 ret = None
                 ret = msg.exec_()
-                while ret == None:
+                while ret is None:
                     pass
         if len(self.rx_msg_list) > 0:
             return self.parse_API6(self.rx_msg_list.popleft())  # FIFO
