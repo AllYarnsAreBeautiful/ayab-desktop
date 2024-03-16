@@ -48,6 +48,8 @@ rights for USB communication by adding your user to some groups.
         Windows
     </summary>
 
+AYAB requires Windows version 10 or later.
+
 Run Anaconda Powershell as administrator and install git.
 ```ps
     conda install git
