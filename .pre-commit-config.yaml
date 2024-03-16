@@ -17,3 +17,5 @@ repos:
       rev: 'v1.9.0'
       hooks:
       -   id: mypy
+          args: [--config-file=.pre-commit.mypy.ini]
+          additional_dependencies: [numpy]
