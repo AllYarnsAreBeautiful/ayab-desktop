@@ -18,9 +18,13 @@
 #    Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
+from __future__ import annotations
 import logging
 
 from PySide6.QtStateMachine import QStateMachine, QState
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from .ayab import GuiMain
 
 class gui_fsm(object):
     """Finite State Machine for GUI thread.
@@ -30,7 +34,7 @@ class gui_fsm(object):
     @author Tom Price
     @date   June 2020
     """
-    def __init__(self):
+    def __init__(self)->None:
         """Define Finite State Machine"""
 
         # Finite State Machine
@@ -47,7 +51,7 @@ class gui_fsm(object):
         # Set machine state
         self.machine.setInitialState(self.NO_IMAGE)
 
-    def set_transitions(self, parent):
+    def set_transitions(self, parent:GuiMain)->None:
         """Define transitions between states for Finite State Machine"""
 
         # Events that trigger state changes
@@ -96,7 +100,7 @@ class gui_fsm(object):
         self.KNITTING.entered.connect(parent.start_knitting)
         self.TESTING.entered.connect(parent.start_testing)
 
-    def set_properties(self, parent):
+    def set_properties(self, parent:GuiMain)->None:
         """
         Define properties for GUI elements linked to
         states in Finite State Machine

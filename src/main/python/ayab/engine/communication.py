@@ -24,9 +24,12 @@ to the device.
 The initializer can also be overriden with a dummy serial object.
 """
 
+from __future__ import annotations
+from typing import Optional
 import serial
 import sliplib
 from enum import Enum
+from ..machine import Machine
 
 import logging
 import pprint
@@ -60,27 +63,27 @@ class Token(Enum):
 
 class Communication(object):
     """Class Handling the serial communication protocol."""
-    def __init__(self, serial=None):
+    def __init__(self, serial:Optional[serial.Serial] = None):
         """Create an AyabCommunication object,
         with an optional serial communication object."""
         logging.basicConfig(level=logging.DEBUG)
         self.logger = logging.getLogger(type(self).__name__)
         self.__ser = serial
         self.__driver = sliplib.Driver()
-        self.rx_msg_list = list()
+        self.rx_msg_list: list[bytes] = list()
 
-    def __del__(self):
+    def __del__(self)->None:
         """Handle behaviour on deletion by closing the serial port connection."""
         self.close_serial()
 
-    def is_open(self):
+    def is_open(self)->bool:
         """Return status of the serial interface"""
-        if self.__set is not None:
+        if self.__ser is not None:
             return self.__ser.is_open
         else:
             return False
 
-    def open_serial(self, portname=None):
+    def open_serial(self, portname:Optional[str]=None)->bool:
         """Open serial port communication."""
         if not self.__ser:
             self.__portname = portname
@@ -89,12 +92,12 @@ class Communication(object):
                                            115200,
                                            timeout=0.1)
             except Exception:
-                self.logger.error("could not open serial port " +
-                                    self.__portname)
+                self.logger.error(f"could not open serial port {self.__portname}")
                 raise CommunicationException()
             return True
+        return False
 
-    def close_serial(self):
+    def close_serial(self)->None:
         """Close the serial port."""
         if self.__ser is not None and self.__ser.is_open is True:
             try:
@@ -107,19 +110,22 @@ class Communication(object):
                                       Was it ever open?")
 
     # NB this method must be the same for all API versions
-    def req_info(self):
+    def req_info(self)->None:
         """Send a request for information to the device."""
+        if self.__ser is None: return
         data = self.__driver.send(bytes([Token.reqInfo.value]))
         self.__ser.write(data)
 
-    def req_test_API6(self):
+    def req_test_API6(self)->None:
         """Send a request for testing to the device."""
+        if self.__ser is None: return
         data = self.__driver.send(bytes([Token.reqTest.value]))
         self.__ser.write(data)
 
-    def req_start_API6(self, start_needle, stop_needle,
-                       continuous_reporting, disable_hardware_beep):
+    def req_start_API6(self, start_needle:int, stop_needle:int,
+                       continuous_reporting:bool, disable_hardware_beep:bool)->None:
         """Send a start message to the device."""
+        if self.__ser is None: return
         data = bytearray()
         data.append(Token.reqStart.value)
         data.append(start_needle)
@@ -133,18 +139,19 @@ class Communication(object):
         data = self.__driver.send(bytes(data))
         self.__ser.write(data)
 
-    def req_init_API6(self, machine_val):
+    def req_init_API6(self, machine:Machine)->None:
         """Send a start message to the device."""
+        if self.__ser is None: return
         data = bytearray()
         data.append(Token.reqInit.value)
-        data.append(machine_val)
+        data.append(machine.value)
         hash = 0
         hash = add_crc(hash, data)
         data.append(hash)
         data = self.__driver.send(bytes(data))
         self.__ser.write(data)
 
-    def cnf_line_API6(self, line_number, color, flags, line_data):
+    def cnf_line_API6(self, line_number:int, color:int, flags:int, line_data:bytes)->None:
         """Send a line of data via the serial port.
 
         Send a line of data to the serial port. All arguments are mandatory.
@@ -157,6 +164,7 @@ class Communication(object):
           flags (int): The flags sent to the controller.
           line_data (bytes): The bytearray to be sent to needles.
         """
+        if self.__ser is None: return
         data = bytearray()
         data.append(Token.cnfLine.value)
         data.append(line_number)
@@ -169,11 +177,11 @@ class Communication(object):
         data = self.__driver.send(bytes(data))
         self.__ser.write(data)
 
-    def update_API6(self):
+    def update_API6(self)->tuple[bytes|None,Token,int]:
         """Read data from serial and parse as SLIP packet."""
         return self.parse_API6(self.read_API6())
 
-    def parse_API6(self, msg):
+    def parse_API6(self, msg:Optional[bytes])->tuple[bytes|None,Token,int]:
         if msg is None:
             return None, Token.none, 0
         # else
@@ -186,7 +194,7 @@ class Communication(object):
         pp.pprint(msg[1: -1].decode())
         return msg, Token.unknown, 0
 
-    def read_API6(self):
+    def read_API6(self)->Optional[bytes]:
         """Read data from serial as SLIP packet."""
         if self.__ser:
             data = self.__ser.read(1000)
@@ -197,14 +205,14 @@ class Communication(object):
         # else
         return None
 
-    def write_API6(self, cmd: str) -> None:
+    def write_API6(self, cmd:bytearray) -> None:
         # SLIP protocol, no CRC8
         if self.__ser:
             self.__ser.write(cmd)
 
 
 # CRC algorithm after Maxim/Dallas
-def add_crc(crc, data):
+def add_crc(crc:int, data:bytearray)->int:
     for i in range(len(data)):
         n = data[i]
         for j in range(8):

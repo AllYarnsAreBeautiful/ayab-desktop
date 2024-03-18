@@ -23,6 +23,7 @@ User preferences are configured on startup.
 The method of configuration may differ depending on the OS.
 """
 
+from __future__ import annotations
 import re
 
 from PySide6.QtCore import Qt, QSettings, QCoreApplication
@@ -35,14 +36,36 @@ from .engine.mode import Mode
 from .machine import Machine
 from .language import Language
 from .scene import AspectRatio
+from typing import TYPE_CHECKING, Any, Callable, Literal, Optional, TypeAlias, TypeVar, TypedDict, cast 
+if TYPE_CHECKING:
+    from .ayab import GuiMain
 
+T = TypeVar('T')
 
-def str2bool(qvariant):
+def str2bool(qvariant:str|bool)->bool:
     if type(qvariant) == str:
         return qvariant.lower() == "true"
     else:
-        return qvariant
+        return cast(bool,qvariant)
 
+
+
+PreferencesDictBoolKeys: TypeAlias = Literal['default_infinite_repeat', 'default_knit_side_image', 'quiet_mode', 'disable_hardware_beep']
+PreferencesDictObjKeys: TypeAlias = Literal['aspect_ratio', 'default_alignment', 'default_knitting_mode', 'machine']
+PreferencesDictKeys : TypeAlias = Literal[PreferencesDictBoolKeys,PreferencesDictObjKeys,'language']
+
+PreferencesDict = TypedDict('PreferencesDict',{
+    'machine':type[Machine],
+    'default_knitting_mode': type[Mode],
+    'default_infinite_repeat': type[bool],
+    'default_alignment': type[Alignment],
+    'default_knit_side_image': type[bool],
+    'aspect_ratio': type[AspectRatio],
+    #'default_continuous_reporting': bool,
+    'quiet_mode': type[bool],
+    'disable_hardware_beep': type[bool],
+    'language': type[Language],
+})
 
 class Preferences(SignalSender):
     """Default settings class.
@@ -57,7 +80,7 @@ class Preferences(SignalSender):
     @author Tom Price
     @date   June 2020
     """
-    variables = {
+    variables:PreferencesDict = {
         'machine': Machine,
         'default_knitting_mode': Mode,
         'default_infinite_repeat': bool,
@@ -70,7 +93,7 @@ class Preferences(SignalSender):
         'language': Language,
     }
 
-    def __init__(self, parent):
+    def __init__(self, parent:GuiMain):
         super().__init__(parent.signal_receiver)
         self.parent = parent
         self.languages = Language(self.parent.app_context)
@@ -78,41 +101,41 @@ class Preferences(SignalSender):
         self.settings.setFallbacksEnabled(False)
         self.refresh()
 
-    def refresh(self):
+    def refresh(self)->None:
         for var in self.variables.keys():
-            self.settings.setValue(var, self.value(var))
+            self.settings.setValue(var, self.value(cast(PreferencesDictKeys,var)))
 
-    def reset(self):
+    def reset(self)->None:
         """Reset all the fields except language"""
         for var in self.variables.keys():
-            if self.variables[var] != Language:
-                self.settings.setValue(var, self.default_value(var))
+            if self.variables[cast(PreferencesDictKeys,var)] != Language:
+                self.settings.setValue(var, self.default_value(cast(PreferencesDictKeys,var)))
 
-    def value(self, var):
+    def value(self, var:PreferencesDictKeys)->Any:
         if var in self.settings.allKeys():
             try:
                 return self.convert(var)(self.settings.value(var))
             except ValueError:
                 # saved setting is wrong type
-                return self.convert(var)()
+                return self.convert(var)() #type: ignore
         else:
             return self.default_value(var)
 
-    def convert(self, var):
+    def convert(self, var:PreferencesDictKeys)->Callable[[T],Any]:
         try:
             cls = self.variables[var]
         except KeyError:
             return str
         # else
         if cls == bool:
-            return str2bool
+            return cast(Callable[[T],Any],str2bool)
         # else
         if cls == Language:
             return str
         # else
-        return int
+        return cast(Callable[[T],Any],int)
 
-    def default_value(self, var):
+    def default_value(self, var:PreferencesDictKeys)->Optional[bool|str|Literal[0]]:
         try:
             cls = self.variables[var]
         except KeyError:
@@ -126,7 +149,7 @@ class Preferences(SignalSender):
         # else
         return 0
 
-    def open_dialog(self):
+    def open_dialog(self)->None:
         machine_width = Machine(self.value("machine")).width
         result = PrefsDialog(self.parent).exec()
         if machine_width != Machine(self.value("machine")).width:
@@ -139,7 +162,9 @@ class PrefsDialog(QDialog):
     @author Tom Price
     @date   June 2020
     """
-    def __init__(self, parent):
+    __widget:dict[str,PrefsWidgetTypes]
+
+    def __init__(self, parent:GuiMain):
         super().__init__(parent)
         self.__prefs = parent.prefs
 
@@ -151,7 +176,7 @@ class PrefsDialog(QDialog):
         # add form items
         self.__widget = {}
         for var in self.__prefs.variables.keys():
-            self.__widget[var] = self.__make_widget(var)
+            self.__widget[var] = self.__make_widget(cast(PreferencesDictKeys,var))
             self.__form.addRow(self.__make_label(var), self.__widget[var])
 
         # connect dialog box buttons
@@ -163,25 +188,25 @@ class PrefsDialog(QDialog):
         # update buttons from settings
         self.__refresh_form()
 
-    def __make_label(self, var):
+    def __make_label(self, var:str)->QLabel:
         title = re.sub(r"_", r" ", var).title()
         return QLabel(QCoreApplication.translate("Prefs", title))
 
-    def __make_widget(self, var):
+    def __make_widget(self, var:PreferencesDictKeys)->PrefsWidgetTypes:
         cls = self.__prefs.variables[var]
         if cls == bool:
-            return PrefsBoolWidget(self.__prefs, var)
+            return PrefsBoolWidget(self.__prefs, cast(PreferencesDictBoolKeys,var))
         elif cls == Language:
             return PrefsLangWidget(self.__prefs)
         else:
-            return PrefsComboWidget(self.__prefs, var)
+            return PrefsComboWidget(self.__prefs, cast(PreferencesDictObjKeys,var))
 
-    def __refresh_form(self):
+    def __refresh_form(self)->None:
         '''Update GUI to current settings'''
         for widget in self.__widget.values():
             widget.refresh()
 
-    def __reset_and_refresh(self):
+    def __reset_and_refresh(self)->None:
         self.__prefs.reset()
         self.__refresh_form()
 
@@ -192,21 +217,21 @@ class PrefsBoolWidget(QCheckBox):
     @author Tom Price
     @date   July 2020
     """
-    def __init__(self, prefs, var):
+    def __init__(self, prefs:Preferences, var:PreferencesDictBoolKeys):
         super().__init__()
         self.var = var
         self.prefs = prefs
 
-    def connectChange(self):
+    def connectChange(self)->None:
         self.toggled.connect(self.update_setting)
 
-    def update_setting(self):
+    def update_setting(self)->None:
         if self.isChecked():
             self.prefs.settings.setValue(self.var, True)
         else:
             self.prefs.settings.setValue(self.var, False)
 
-    def refresh(self):
+    def refresh(self)->None:
         if self.prefs.value(self.var):
             self.setCheckState(Qt.CheckState.Checked)
         else:
@@ -219,20 +244,20 @@ class PrefsComboWidget(QComboBox):
     @author Tom Price
     @date   July 2020
     """
-    def __init__(self, prefs, var):
+    def __init__(self, prefs:Preferences, var:PreferencesDictObjKeys):
         super().__init__()
         self.var = var
         self.prefs = prefs
         cls = self.prefs.variables[self.var]
         cls.add_items(self)
 
-    def connectChange(self):
+    def connectChange(self)->None:
         self.currentIndexChanged.connect(self.update_setting)
 
-    def update_setting(self):
+    def update_setting(self)->None:
         self.prefs.settings.setValue(self.var, self.currentIndex())
 
-    def refresh(self):
+    def refresh(self)->None:
         self.setCurrentIndex(self.prefs.value(self.var))
 
 
@@ -242,16 +267,18 @@ class PrefsLangWidget(QComboBox):
     @author Tom Price
     @date   July 2020
     """
-    def __init__(self, prefs):
+    def __init__(self, prefs:Preferences):
         super().__init__()
         self.prefs = prefs
         self.prefs.languages.add_items(self)
 
-    def connectChange(self):
+    def connectChange(self)->None:
         self.currentIndexChanged.connect(self.update_setting)
 
-    def update_setting(self):
+    def update_setting(self)->None:
         self.prefs.settings.setValue("language", self.currentData())
 
-    def refresh(self):
+    def refresh(self)->None:
         self.setCurrentIndex(self.findData(self.prefs.value("language")))
+
+PrefsWidgetTypes:TypeAlias = PrefsBoolWidget|PrefsLangWidget|PrefsComboWidget

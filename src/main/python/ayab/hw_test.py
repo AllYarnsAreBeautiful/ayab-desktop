@@ -17,8 +17,7 @@
 #    Copyright 2013 Christian Obersteiner, Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
-from copy import copy
-import serial
+from __future__ import annotations
 from PySide6.QtWidgets import QDialog, QVBoxLayout, QPlainTextEdit, QPushButton, QGroupBox, QHBoxLayout, QCheckBox
 from PySide6.QtGui import QFont
 from PySide6.QtCore import QTimer
@@ -27,14 +26,16 @@ from PySide6.QtCore import QTimer
 from .engine.engine_fsm import State
 from .engine.communication import Token
 from .engine.hw_test_communication_mock import HardwareTestCommunicationMock
-
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from .ayab import GuiMain
 
 class HardwareTestDialog(QDialog):
     """Console for hardware tests."""
 
     commands = ["help", "send", "beep", "read", "auto", "test", "quit"]
 
-    def __init__(self, parent):
+    def __init__(self, parent:GuiMain):
         super().__init__()
         self.setModal(True)
         self.setWindowTitle("Hardware Test")  # TODO: translate

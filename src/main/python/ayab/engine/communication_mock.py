@@ -93,7 +93,7 @@ class CommunicationMock(Communication):
         """Send a row of stitch data."""
         return True
 
-    def update_API6(self) -> tuple:
+    def update_API6(self) -> tuple[bytes,Token,int]:
         """Read and parse data packet."""
         if self.__is_open and self.__is_started:
             reqLine = bytes([Token.reqLine.value, self.__line_count])

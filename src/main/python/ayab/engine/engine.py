@@ -18,6 +18,7 @@
 #    Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
+from __future__ import annotations
 import logging
 from time import sleep
 from PIL import Image
@@ -26,17 +27,18 @@ from PySide6.QtCore import QCoreApplication, Signal
 from PySide6.QtWidgets import QDockWidget
 
 from .. import utils
-from ..signal_sender import SignalSender
 from ..machine import Machine
-from .control import Control
 from .engine_fsm import Operation, State
 from .pattern import Pattern
-from .options import OptionsTab, Alignment, NeedleColor
+from .options import OptionsTab
 from .status import Status, StatusTab
-from .mode import Mode
-from .output import Output, FeedbackHandler
+from .output import FeedbackHandler
 from .dock_gui import Ui_Dock
-
+from typing import TYPE_CHECKING, Literal, Optional, cast
+from ..signal_sender import SignalSender
+if TYPE_CHECKING:   
+    from ..ayab import GuiMain
+from .control import Control
 
 class Engine(SignalSender, QDockWidget):
     """
@@ -46,28 +48,31 @@ class Engine(SignalSender, QDockWidget):
     """
     port_opener = Signal()
 
-    def __init__(self, parent):
+    pattern:Pattern
+    status:StatusTab
+    
+    def __init__(self, parent:GuiMain):
         # set up UI
         super().__init__(parent.signal_receiver)
         self.ui = Ui_Dock()
         self.ui.setupUi(self)
-        self.config = OptionsTab(parent)
+        self.config:OptionsTab = OptionsTab(parent)
         self.config.portname = self.__read_portname()
         self.config.refresh()
         self.status = StatusTab()
         self.setup_ui()
         parent.ui.dock_container_layout.addWidget(self)
 
-        self.pattern = None
+        self.pattern:Pattern = None #type:ignore
         self.control = Control(parent, self)
         self.__feedback = FeedbackHandler(parent)
         self.__logger = logging.getLogger(type(self).__name__)
         self.setWindowTitle("Machine: " + Machine(self.config.machine).name)
 
-    def __del__(self):
+    def __del__(self)->None:
         self.control.stop()
 
-    def setup_ui(self):
+    def setup_ui(self)->None:
         # insert tabs
         tr_ = QCoreApplication.translate
         self.ui.tab_widget.insertTab(0, self.config, tr_("Dock", "Settings"))
@@ -82,32 +87,32 @@ class Engine(SignalSender, QDockWidget):
         # activate UI elements
         self.__activate_ui()
 
-    def __disable_status_tab(self):
+    def __disable_status_tab(self)->None:
         self.ui.tab_widget.setTabEnabled(1, False)
         self.status.ui.label_progress.setText("")
         self.status.ui.label_direction.setText("")
         self.status.active = False
 
-    def __close_status_tab(self):
+    def __close_status_tab(self)->None:
         self.ui.tab_widget.removeTab(1)
         self.status.active = False
 
-    def __activate_ui(self):
+    def __activate_ui(self)->None:
         """Connects UI elements to signal slots."""
         self.__populate_ports()
         self.ui.refresh_ports_button.clicked.connect(self.__populate_ports)
 
-    def __populate_ports(self, port_list=None):
+    def __populate_ports(self, port_list:Optional[list[str]]=None)->None:
         combo_box = self.ui.serial_port_dropdown
         utils.populate_ports(combo_box, port_list)
         # Add Simulation item to indicate operation without machine
         combo_box.addItem(
             QCoreApplication.translate("KnitEngine", "Simulation"))
 
-    def __read_portname(self):
+    def __read_portname(self)->str:
         return self.ui.serial_port_dropdown.currentText()
 
-    def knit_config(self, image):
+    def knit_config(self, image:Image.Image)->None:
         """
         Read and check configuration options from options dock UI.
         """
@@ -126,7 +131,7 @@ class Engine(SignalSender, QDockWidget):
         # validate configuration options
         valid, msg = self.validate()
         if not valid:
-            self.emit_popup(msg)
+            self.emit_popup(cast(str,msg))
             self.emit_bad_config_flag()
 
         # update pattern
@@ -146,13 +151,13 @@ class Engine(SignalSender, QDockWidget):
         # send signal to start knitting
         self.emit_knitting_starter()
 
-    def validate(self):
+    def validate(self)->tuple[Literal[False],str]|tuple[Literal[True],None]:
         if self.config.start_row > self.pattern.pat_height:
             return False, "Start row is larger than the image."
         # else
         return self.config.validate()
 
-    def run(self, operation):
+    def run(self, operation:Operation)->None:
         self.__canceled = False
 
         # setup knitting controller
@@ -191,7 +196,7 @@ class Engine(SignalSender, QDockWidget):
         # "finish.wav" sound only plays if knitting was not canceled
         self.emit_operation_finisher(operation, not self.__canceled)
 
-    def __handle_status(self):
+    def __handle_status(self)->None:
         if self.status.active:
             self.status.refresh()
         # If we do not make a copy of status object to emit to the UI thread
@@ -205,5 +210,5 @@ class Engine(SignalSender, QDockWidget):
         self.emit_progress_bar_updater(data.current_row, self.pattern.pat_height,
                                        data.repeats, data.color_symbol)
 
-    def cancel(self):
+    def cancel(self)->None:
         self.__canceled = True

@@ -18,14 +18,21 @@
 #    Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
+from __future__ import annotations
+
 from enum import Enum, auto
 
 from PySide6.QtCore import QCoreApplication
+from PySide6.QtStateMachine import QStateMachine,QState
 
 from .communication import Communication, Token
 from .communication_mock import CommunicationMock
 from .hw_test_communication_mock import HardwareTestCommunicationMock
 from .output import Output
+from typing import TYPE_CHECKING, Any
+if TYPE_CHECKING:
+    from .control import Control
+    from .engine import Engine
 
 
 class Operation(Enum):
@@ -46,7 +53,7 @@ class State(Enum):
     FINISHED = auto()
 
 
-class StateMachine(object):
+class StateMachine(QStateMachine):
     """
     Each method is a step in the finite state machine that governs serial
 M
@@ -56,13 +63,16 @@ M
     @date   June 2020
     """
 
-    def set_transitions(self, parent):
+    CONNECT:QState
+    VERSION_CHECK:QState
+    def set_transitions(self, parent:Engine)->None:
         """Define transitions between states for Finite State Machine"""
 
         # Events that trigger state changes
-        self.CONNECT.addTransition(parent.port_opener, self.VERSION_CHECK)
+        self.CONNECT.addTransition(parent.port_opener, self.VERSION_CHECK) 
 
-    def _API6_connect(control, operation):
+    @staticmethod
+    def _API6_connect(control:Control, operation:Operation)->Output:
         control.logger.debug("State CONNECT")
         if operation == Operation.KNIT:
             if not control.func_selector():
@@ -74,7 +84,7 @@ M
             if operation == Operation.KNIT:
                 control.com = CommunicationMock()
             else:
-                control.com = HardwareTestCommunicationMock()
+                control.com = HardwareTestCommunicationMock() #type: ignore
         else:
             control.com = Communication()
         if not control.com.open_serial(control.portname):
@@ -86,7 +96,8 @@ M
         control.logger.debug("State VERSION_CHECK")
         return Output.NONE
 
-    def _API6_version_check(control, operation):
+    @staticmethod
+    def _API6_version_check(control:Control, operation:Operation)->Output:
         token, param = control.check_serial_API6()
         if token == Token.cnfInfo:
             if param >= control.FIRST_SUPPORTED_API_VERSION:
@@ -103,7 +114,8 @@ M
         control.com.req_info()
         return Output.CONNECTING_TO_MACHINE
 
-    def _API6_init(control, operation):
+    @staticmethod
+    def _API6_init(control:Control, operation:Operation)->Output:
         token, param = control.check_serial_API6()
         if token == Token.cnfInit:
             # no errors? Move on
@@ -121,10 +133,10 @@ M
                 control.logger.error("Error initializing firmware: " + str(param))
                 return Output.ERROR_INITIALIZING_FIRMWARE
         # else
-        control.com.req_init_API6(control.machine.value)
+        control.com.req_init_API6(control.machine)
         return Output.INITIALIZING_FIRMWARE
-
-    def _API6_request_start(control, operation):
+    @staticmethod
+    def _API6_request_start(control:Control, operation:Operation)->Output:
         token, param = control.check_serial_API6()
         if token == Token.indState:
             if param == 0:
@@ -147,8 +159,8 @@ M
                                      str(param) + " in state " + str(control.status.firmware_state))
                 # TODO: more output to describe error
         return Output.WAIT_FOR_INIT
-
-    def _API6_confirm_start(control, operation):
+    @staticmethod
+    def _API6_confirm_start(control:Control, operation:Operation)->Output:
         token, param = control.check_serial_API6()
         if token == Token.cnfStart:
             if param == 0:
@@ -164,8 +176,8 @@ M
                 return Output.DEVICE_NOT_READY
         # else
         return Output.NONE
-
-    def _API6_run_knit(control, operation):
+    @staticmethod
+    def _API6_run_knit(control:Control, operation:Operation)->Output:
         token, param = control.check_serial_API6()
         if token == Token.reqLine:
             pattern_finished = control.cnf_line_API6(param)
@@ -176,8 +188,8 @@ M
                 return Output.NEXT_LINE
         # else
         return Output.NONE
-
-    def _API6_request_test(control, operation):
+    @staticmethod
+    def _API6_request_test(control:Control, operation:Operation)->Output:
         token, param = control.check_serial_API6()
         if token == Token.indState:
             if param == 0:
@@ -190,8 +202,8 @@ M
                                      str(param) + " in state " + str(control.status.firmware_state))
                 # TODO: more output to describe error
         return Output.NONE
-
-    def _API6_confirm_test(control, operation):
+    @staticmethod
+    def _API6_confirm_test(control:Control, operation:Operation)->Output:
         token, param = control.check_serial_API6()
         if token == Token.cnfTest:
             if param == 0:
@@ -209,19 +221,19 @@ M
                 return Output.DEVICE_NOT_READY
         # else
         return Output.NONE
-
-    def _API6_run_test(control, operation):
+    @staticmethod
+    def _API6_run_test(control:Control, operation:Operation)->Output:
         while True:
             token, param = control.check_serial_API6()
             if token != Token.none:
                 break
         control.logger.debug("Token " + token.name + ", param " + str(param))
         return Output.NONE
-
-    def _API6_finished(control, operation):
+    @staticmethod
+    def _API6_finished(control:Control, operation:Operation)->Output:
         control.logger.debug("State FINISHED")
         try:
-            control.timer.stop()
+            control.timer.stop() #type: ignore
         except Exception:
             pass
         control.state = State.CONNECT
