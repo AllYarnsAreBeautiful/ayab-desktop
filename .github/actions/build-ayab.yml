@@ -1,0 +1,90 @@
+name: "Build AYAB"
+description: "Builds AYAB"
+inputs:
+  who-to-greet: # id of input
+    description: "Who to greet"
+    required: true
+    default: "World"
+outputs:
+  random-number:
+    description: "Random number"
+    value: ${{ steps.random-number-generator.outputs.random-number }}
+runs:
+  using: "composite"
+  steps:
+    - name: Restore cached firmware
+      id: firmware-cache
+      uses: actions/cache@v3
+      with:
+        path: src/main/resources/base/ayab/firmware/*.hex
+        key: firmware-${{ steps.vars.outputs.manifest }}
+        enableCrossOsArchive: true
+        fail-on-cache-miss: true
+    - name: Restore cached gui files (1)
+      id: gui1-cache
+      uses: actions/cache@v3
+      with:
+        path: src/main/python/ayab/*_gui.py
+        key: gui1-${{ hashFiles('src/main/python/ayab/*_gui.ui') }}
+        enableCrossOsArchive: true
+        fail-on-cache-miss: true
+    - name: Restore cached gui files (2)
+      id: gui2-cache
+      uses: actions/cache@v3
+      with:
+        path: src/main/python/ayab/engine/*_gui.py
+        key: gui2-${{ hashFiles('src/main/python/ayab/engine/*_gui.ui') }}
+        enableCrossOsArchive: true
+        fail-on-cache-miss: true
+    - name: Restore cached logo
+      id: logo-cache
+      uses: actions/cache@v3
+      with:
+        path: src/main/python/ayab/ayab_logo_rc.py
+        key: logo-${{ hashFiles('src/main/python/ayab/ayab_logo_rc.qrc') }}
+        enableCrossOsArchive: true
+        fail-on-cache-miss: true
+    - name: Restore cached graphics
+      id: e-cache
+      uses: actions/cache@v3
+      with:
+        path: src/main/python/ayab/engine/*_rc.py
+        key: e-${{ hashFiles('src/main/python/ayab/engine/*_rc.qrc') }}
+        enableCrossOsArchive: true
+        fail-on-cache-miss: true
+    - name: Restore cached translation files
+      id: qm-cache
+      uses: actions/cache@v3
+      with:
+        path: src/main/resources/base/ayab/translations/*.qm
+        key: qm-${{ hashFiles('src/main/resources/base/ayab/translations/ayab-translation-master.tsv') }}
+        enableCrossOsArchive: true
+        fail-on-cache-miss: true
+    - name: Restore cached `base.json` file
+      id: base-cache
+      uses: actions/cache@v3
+      with:
+        path: src/build/settings/base.json
+        key: base-${{ steps.vars.outputs.tag }}
+        enableCrossOsArchive: true
+        fail-on-cache-miss: true
+    - name: Remove unneeded files
+      shell: bash
+      run: |
+        rm src/main/python/ayab/*_gui.ui
+        rm src/main/python/ayab/ayab_logo_rc.qrc
+    - name: Check cached files
+      shell: bash
+      run: |
+        pwd
+        ls -l src/main/python/ayab/
+        ls -l src/main/resources/base/ayab/translations/
+    - name: Set PACKAGE_VERSION
+      run: |
+        echo ${{ steps.vars.outputs.tag }} > src/main/resources/base/ayab/package_version
+        # remove suffix from semver tag, as fbs does not support them
+        version_without_suffix=$(echo ${{ steps.vars.outputs.tag }} | sed -E 's/^v?([0-9]+\.[0-9]+\.[0-9]+).*$/\1/')
+        sed -i -e s/PACKAGE_VERSION/$version_without_suffix/ src/build/settings/base.json
+    - name: Build app
+      shell: pwsh
+      run: python -m fbs freeze --debug
