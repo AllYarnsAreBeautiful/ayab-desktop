@@ -73,6 +73,7 @@ Activate the virtual environment. The command prompt should now display
 To be able to work on GUI elements and translation files, the Qt Dev tools are needed.  
 Navigate to [https://www.qt.io/download-open-source](https://www.qt.io/download-open-source) in a web browser and follow the installation
 instructions. From the available options, select "Custom install" and then "Qt 6.6.3".
+You will also need to download and install Perl from [https://www.perl.org/get.html](https://www.perl.org/get.html).
 </details>
 
 <details>
