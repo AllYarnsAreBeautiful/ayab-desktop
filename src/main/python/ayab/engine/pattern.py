@@ -18,33 +18,36 @@
 #    Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
+from __future__ import annotations
+from typing import cast
 from bitarray import bitarray
 import numpy as np
-
-from .options import Alignment
+import numpy.typing as npt
+from PIL import Image
+from .options import Alignment, OptionsTab
 from .mode import Mode
-from ayab.machine import Machine
+from ..machine import Machine
 
 
 class Pattern(object):
-    def __init__(self, image, config, num_colors=2):
+    def __init__(self, image:Image.Image, config:OptionsTab, num_colors:int=2):
         self.__pattern = image
         self.__num_colors = num_colors
         self.__alignment = Alignment.CENTER
-        self.__pat_start_needle = -1
-        self.__pat_end_needle = -1
-        self.__knit_start_needle = 0
-        self.__mode = config.mode
-        self.__knit_end_needle = config.machine.width
+        self.__pat_start_needle:int = -1
+        self.__pat_end_needle:int = -1
+        self.__knit_start_needle:int = 0
+        self.__mode:Mode = config.mode
+        self.__knit_end_needle:int = config.machine.width
         self.__update_pattern_data()
 
-    def __update_pattern_data(self):
+    def __update_pattern_data(self)->None:
         self.__pat_width = self.__pattern.width
         self.__pat_height = self.__pattern.height
         self.__convert()
         self.__calc_pat_start_end_needles()
 
-    def __convert(self):
+    def __convert(self)->None:
         num_colors = self.__num_colors
         pat_width = self.__pat_width
         pat_height = self.__pat_height
@@ -89,8 +92,8 @@ class Pattern(object):
             pass
 
         # get palette
-        rgb = self.__pattern.getpalette()[slice(0, 3 * self.__num_colors)]
-        col_array = np.reshape(rgb, (self.__num_colors, 3))
+        rgb = self.__pattern.getpalette()[slice(0, 3 * self.__num_colors)] #type: ignore
+        col_array = cast(npt.NDArray[np.int_],np.reshape(rgb, (self.__num_colors, 3)))
         self.palette = list(map(self.array2rgb, col_array))
 
         # Make internal representations of pattern
@@ -107,7 +110,7 @@ class Pattern(object):
                         self.__pattern_expanded[(self.__num_colors * row) +
                                                 color][col] = True
 
-    def __calc_pat_start_end_needles(self):
+    def __calc_pat_start_end_needles(self)->bool:
         # the sequence of needles is printed in right to left by default
         # so the needle count starts at 0 on the right hand side
         if self.__alignment == Alignment.CENTER:
@@ -125,7 +128,7 @@ class Pattern(object):
             return False
         return True
 
-    def set_knit_needles(self, knit_start, knit_stop, machine):
+    def set_knit_needles(self, knit_start:int, knit_stop:int, machine:Machine)->None:
         """
         set the start and stop needle
         """
@@ -135,11 +138,11 @@ class Pattern(object):
         self.__update_pattern_data()
 
     @property
-    def num_colors(self):
+    def num_colors(self)->int:
         return self.__num_colors
 
     @num_colors.setter
-    def num_colors(self, num_colors):
+    def num_colors(self, num_colors:int)->None:
         """
         sets the number of colors used for knitting
         """
@@ -149,11 +152,11 @@ class Pattern(object):
             self.__update_pattern_data()
 
     @property
-    def alignment(self):
+    def alignment(self)->Alignment:
         return self.__alignment
 
     @alignment.setter
-    def alignment(self, alignment):
+    def alignment(self, alignment:Alignment)->None:
         """
         set the position of the pattern
         """
@@ -161,32 +164,32 @@ class Pattern(object):
         self.__update_pattern_data()
 
     @property
-    def pat_start_needle(self):
+    def pat_start_needle(self)->int:
         return self.__pat_start_needle
 
     @property
-    def pat_end_needle(self):
+    def pat_end_needle(self)->int:
         return self.__pat_end_needle
 
     @property
-    def knit_start_needle(self):
+    def knit_start_needle(self)->int:
         return self.__knit_start_needle
 
     @property
-    def knit_end_needle(self):
+    def knit_end_needle(self)->int:
         return self.__knit_end_needle
 
     @property
-    def pat_height(self):
+    def pat_height(self)->int:
         return self.__pat_height
 
     @property
-    def pat_width(self):
+    def pat_width(self)->int:
         return self.__pat_width
 
     @property
-    def pattern_expanded(self):
+    def pattern_expanded(self)->list[bitarray]:
         return self.__pattern_expanded
 
-    def array2rgb(self, a):
+    def array2rgb(self, a:list[int])->int:
         return (a[0] & 0xFF) * 0x10000 + (a[1] & 0xFF) * 0x100 + (a[2] & 0xFF)

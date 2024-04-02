@@ -23,13 +23,13 @@ import unittest
 from PIL import Image
 from bitarray import bitarray
 
-from ayab.signal_receiver import SignalReceiver
-from ayab.engine.control import Control
-from ayab.engine.options import Alignment
-from ayab.engine.mode import Mode, ModeFunc
-from ayab.engine.pattern import Pattern
-from ayab.engine.status import Status
-from ayab.machine import Machine
+from ..signal_receiver import SignalReceiver
+from ..engine.control import Control
+from ..engine.options import Alignment
+from ..engine.mode import Mode, ModeFunc
+from ..engine.pattern import Pattern
+from ..engine.status import Status
+from ..machine import Machine
 
 
 class Parent(object):

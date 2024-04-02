@@ -18,8 +18,8 @@
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 """Provides a graphical interface for users to operate AYAB."""
 
+from __future__ import annotations
 from fbs_runtime.application_context.PySide6 import ApplicationContext
-
 import sys
 import logging
 
@@ -43,8 +43,9 @@ from .knitprogress import KnitProgress
 from .thread import GenericThread
 from .engine import Engine
 from .engine.engine_fsm import Operation
-from .engine.options import Alignment
-from .machine import Machine
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from ..main import AppContext
 
 
 class GuiMain(QMainWindow):
@@ -54,7 +55,7 @@ class GuiMain(QMainWindow):
     GuiMain inherits from QMainWindow and instantiates a window with
     components from `menu_gui.ui`.
     """
-    def __init__(self, app_context):
+    def __init__(self, app_context:AppContext):
         super().__init__()
         self.app_context = app_context
 
@@ -71,10 +72,10 @@ class GuiMain(QMainWindow):
         self.setMenuBar(self.menu)
         # self.statusbar = StatusBar(self)
         # self.setStatusBar(self.statusbar)
-        self.about = About(self)
-        self.scene = Scene(self)
+        self.about:About = About(self)
+        self.scene:Scene = Scene(self)
         self.knitprog = KnitProgress(self)
-        self.engine = Engine(self)
+        self.engine:Engine = Engine(self)
         self.hw_test = HardwareTestDialog(self)
         self.progbar = ProgressBar(self)
         self.flash = FirmwareFlash(self)
@@ -96,7 +97,7 @@ class GuiMain(QMainWindow):
         self.fsm.set_properties(self)
         self.fsm.machine.start()
 
-    def __activate_ui(self):
+    def __activate_ui(self)->None:
         self.ui.open_image_file_button.clicked.connect(
             self.scene.ayabimage.select_file)
         self.ui.filename_lineedit.returnPressed.connect(
@@ -105,7 +106,7 @@ class GuiMain(QMainWindow):
         self.hw_test.finished.connect(
             lambda: self.finish_operation(Operation.TEST, False))
 
-    def __activate_menu(self):
+    def __activate_menu(self)->None:
         self.menu.ui.action_open_image_file.triggered.connect(
             self.scene.ayabimage.select_file)
         self.menu.ui.action_quit.triggered.connect(self.__quit)
@@ -121,16 +122,18 @@ class GuiMain(QMainWindow):
             slot = getattr(self.scene.ayabimage, t)
             action.triggered.connect(slot)
 
-    def __set_prefs(self):
+    def __set_prefs(self)->None:
         self.prefs.open_dialog()
         self.scene.refresh()
 
-    def __quit(self):
+    def __quit(self)->None:
         logging.debug("Quitting")
-        QCoreApplication.instance().quit()
+        instance = QCoreApplication.instance()
+        if instance is not None:
+            instance.quit()
         sys.exit()
 
-    def start_knitting(self):
+    def start_knitting(self)->None:
         """Start the knitting process."""
         self.start_operation()
         # reset knit progress window
@@ -138,19 +141,19 @@ class GuiMain(QMainWindow):
         # start thread for knit engine
         self.knit_thread.start()
 
-    def start_testing(self):
+    def start_testing(self)->None:
         """Start the testing process."""
         self.start_operation()
         # start thread for test engine
         self.test_thread.start()
 
-    def start_operation(self):
+    def start_operation(self)->None:
         """Disable UI elements at start of operation."""
         self.ui.filename_lineedit.setEnabled(False)
         self.ui.open_image_file_button.setEnabled(False)
         self.menu.setEnabled(False)
 
-    def finish_operation(self, operation: Operation, beep: bool):
+    def finish_operation(self, operation: Operation, beep: bool)->None:
         """(Re-)enable UI elements after operation finishes."""
         if operation == Operation.KNIT:
             self.knit_thread.wait()
@@ -164,7 +167,7 @@ class GuiMain(QMainWindow):
         if operation == Operation.KNIT and beep:
             self.audio.play("finish")
 
-    def set_image_dimensions(self):
+    def set_image_dimensions(self)->None:
         """Set dimensions of image."""
         width, height = self.scene.ayabimage.image.size
         self.engine.config.update_needles()  # in case machine width changed
@@ -177,15 +180,15 @@ class GuiMain(QMainWindow):
             ": {} x {}".format(width, height), False)
         self.scene.refresh()
 
-    def reverse_image(self):
+    def reverse_image(self)->None:
         """Flip image horizontally."""
         self.scene.reverse()
 
-    def update_start_row(self, start_row):
+    def update_start_row(self, start_row:int)->None:
         self.progbar.update(start_row)
         self.scene.row_progress = start_row
 
-    def notify(self, text, log=True):
+    def notify(self, text:str, log:bool=True)->None:
         """Update the notification field."""
         if log:
             logging.info("Notification: " + text)

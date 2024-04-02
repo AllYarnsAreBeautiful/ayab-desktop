@@ -18,12 +18,16 @@
 #    Copyright 2014 Sebastian Oliva, Christian Obersteiner, Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
+from __future__ import annotations
 from PySide6.QtCore import QObject, Signal, Qt
 from .engine.status import Status
 from .engine.options import Alignment
 from .engine.engine_fsm import Operation
 from .engine.control import Control
 from .utils import display_blocking_popup
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from .ayab import GuiMain
 
 
 class SignalReceiver(QObject):
@@ -36,13 +40,13 @@ class SignalReceiver(QObject):
     # signals are defined as class attributes which are
     # over-ridden by instance attributes with the same name
     start_row_updater = Signal(int)
-    progress_bar_updater = Signal(int, int, int, 'QString')
+    progress_bar_updater = Signal(int, int, int, str)
     knit_progress_updater = Signal(Status, int, int, bool)
-    notifier = Signal('QString', bool)
+    notifier = Signal(str, bool)
     # statusbar_updater = Signal('QString', bool)
-    popup_displayer = Signal('QString', 'QString')
-    blocking_popup_displayer = Signal('QString', 'QString')
-    audio_player = Signal('QString')
+    popup_displayer = Signal(str, str)
+    blocking_popup_displayer = Signal(str, str)
+    audio_player = Signal(str)
     needles_updater = Signal(int, int)
     alignment_updater = Signal(Alignment)
     image_resizer = Signal()
@@ -55,25 +59,19 @@ class SignalReceiver(QObject):
     hw_test_starter = Signal(Control)
     hw_test_writer = Signal(str)
 
-    def __init__(self):
+    def __init__(self)->None:
         super().__init__()
 
-    def signals(self):
-        """Iterator over names of signals."""
-        return filter(
-            lambda x: type(getattr(self, x)).__name__ == "SignalInstance",
-            SignalReceiver.__dict__.keys())
-
-    def activate_signals(self, parent):
+    def activate_signals(self, parent:GuiMain)->None:
         self.start_row_updater.connect(parent.update_start_row)
         self.progress_bar_updater.connect(parent.progbar.update)
-        self.knit_progress_updater.connect(parent.knitprog.update)
+        self.knit_progress_updater.connect(parent.knitprog.update_progress)
         self.notifier.connect(parent.notify)
         # self.statusbar_updater.connect(parent.statusbar.update)
         self.blocking_popup_displayer.connect(display_blocking_popup)
         self.popup_displayer.connect(display_blocking_popup)
         self.audio_player.connect(parent.audio.play,
-                                  type=Qt.BlockingQueuedConnection)
+                                  type=Qt.ConnectionType.BlockingQueuedConnection)
         self.needles_updater.connect(parent.scene.update_needles)
         self.alignment_updater.connect(parent.scene.update_alignment)
         self.image_resizer.connect(parent.set_image_dimensions)

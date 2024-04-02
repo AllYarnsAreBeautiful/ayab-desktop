@@ -17,15 +17,19 @@
 #    Copyright 2014 Sebastian Oliva, Christian Obersteiner, Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
+from __future__ import annotations
 from PySide6.QtWidgets import QFrame
 from PySide6.QtCore import Qt, QCoreApplication
 
 from .about_gui import Ui_AboutForm
 from . import utils
-
+from . import ayab_logo_rc
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from .ayab import GuiMain
 
 class About(QFrame):
-    def __init__(self, parent):
+    def __init__(self, parent:GuiMain):
         super().__init__()
         self.__version = utils.package_version(parent.app_context)
         self.__ui = Ui_AboutForm()
@@ -37,15 +41,15 @@ class About(QFrame):
             QCoreApplication.translate("MainWindow", "Website") +
             ": <a href='http://ayab-knitting.com'>http://ayab-knitting.com</a>"
         )
-        self.__ui.link_label.setTextFormat(Qt.RichText)
+        self.__ui.link_label.setTextFormat(Qt.TextFormat.RichText)
         self.__ui.link_label.setTextInteractionFlags(
-            Qt.TextBrowserInteraction)
+            Qt.TextInteractionFlag.TextBrowserInteraction)
         self.__ui.link_label.setOpenExternalLinks(True)
         self.__ui.manual_label.setText(
             QCoreApplication.translate("MainWindow", "Manual") +
             ": <a href='http://manual.ayab-knitting.com'>http://manual.ayab-knitting.com</a>"
         )
-        self.__ui.manual_label.setTextFormat(Qt.RichText)
+        self.__ui.manual_label.setTextFormat(Qt.TextFormat.RichText)
         self.__ui.manual_label.setTextInteractionFlags(
-            Qt.TextBrowserInteraction)
+            Qt.TextInteractionFlag.TextBrowserInteraction)
         self.__ui.manual_label.setOpenExternalLinks(True)

@@ -4,36 +4,40 @@
 ## DAK file conversion code from https://pypi.org/project/DAKimport/
 ## .cut and .pal file formats documented at https://www.fileformat.info/format/drhalo/egff.htm
 
+from __future__ import annotations
 import sys
+from typing import Optional, cast
 import numpy as np
-from collections import Counter
+import numpy.typing as npt
 from PIL import Image
 # import png
 
 
-def signExt_b2d(x):
+def signExt_b2d(x:int)->int:
     return (((x & 0xFF) ^ 0x80) - 0x80) & 0xFFFFFFFF
 
-def getByteAt(data, i):
-    return data[i] & 0xFF
+def getByteAt(data:bytes, i:int)->np.uint8:
+    return cast(np.uint8,data[i] & 0xFF)
 
-def getWordAt(data, i):
-    return getByteAt(data, i) + (getByteAt(data, i + 1) << 8)
+def getWordAt(data:bytes, i:int)->np.uint16:
+    return cast(np.uint16,(getByteAt(data, i) + (getByteAt(data, i + 1) << 8)))
 
-def getDWordAt(data, i):
-    return getWordAt(data, i) + (getWordAt(data, i + 2) << 16)
+def getDWordAt(data:bytes, i:int)->np.uint32:
+    return cast(np.uint32,(getWordAt(data, i) + (getWordAt(data, i + 2) << 16)))
 
 ## Pascal-style string
-def getStringAt(data, i):
+def getStringAt(data:bytes, i:int)->str:
     size = getByteAt(data, i)
     return data[i + 1:i + size + 1].decode()
 
 
 class Color:
 
-    def __init__(self, code = 0x10, n = None, symbol = "", name = "",
-        r = np.uint8(), g = np.uint8(), b = np.uint8(), binary = None):
-        if binary != None:
+    n:Optional[np.uint8]
+    symbol:np.uint8
+    def __init__(self, code:np.uint8 = cast(np.uint8,0x10), n:Optional[np.uint8] = None, symbol:np.uint8 = cast(np.uint8,0), name:str = "",
+        r:np.uint8 = np.uint8(), g:np.uint8 = np.uint8(), b:np.uint8 = np.uint8(), binary:Optional[bytes] = None):
+        if binary is not None:
             self.code = getByteAt(binary, 0)
             self.n = getByteAt(binary, 3)
             self.symbol = getByteAt(binary, 1)
@@ -49,12 +53,12 @@ class Color:
             self.name = name
             self.rgb = bytearray([r, g, b])
 
-    def string(self):
+    def string(self)->str:
         return ("{0}, {1}, '{2}', '{3}', {4}") \
         .format(
             hex(self.code),
             str(self.n),
-            chr(self.symbol),
+            chr(cast(int,self.symbol)),
             self.name,
             hex(int.from_bytes(self.rgb, 'big')))
 
@@ -63,14 +67,19 @@ class Color:
 
 class PatternConverter:
 
-    def __init__(self, debug = True):
-        self.filename = None
-        self.height = None
-        self.width = None
-        self.color_pattern = bytearray()
+    width:np.uint16
+    height:np.uint16
+    def __init__(self, debug:bool = True):
+        self.reinit(debug)
+
+    def reinit(self, debug:bool = True)->None:
+        self.filename:Optional[str] = None
+        self.height = np.uint16(0)
+        self.width = np.uint16(0)
+        self.color_pattern = np.empty([0,0],np.uint8)
         # self.stitch_pattern = bytearray()
         # self.extension = bytearray()
-        self.colors = {}
+        self.colors:dict[int,Color] = {}
         # self.stitches = {}
         # self.max_row_colors = 0
         # self.col1 = 0
@@ -78,8 +87,8 @@ class PatternConverter:
         # self.status = 0
         self.debug = False
 
-    def read_file(self, filename):
-        self.__init__()
+    def read_file(self, filename:str)->bytes:
+        self.reinit()
         self.filename = filename
         if self.debug:
             print("filename {}".format(self.filename))
@@ -93,13 +102,13 @@ class PatternConverter:
             print("input size {} bytes".format(hex(size)))
         return data
 
-    def check_header(self, header, ok_headers):
+    def check_header(self, header:bytes, ok_headers:tuple[bytes,...])->None:
         if self.debug:
-            print("header {}".format(header))
+            print(f"header {header.decode()}")
         if header not in ok_headers:
             self.exit("file header not recognized", -4) ## FIXME translate
 
-    def check_dims(self, data, w_pos, h_pos, w_max, h_max):
+    def check_dims(self, data:bytes, w_pos:int, h_pos:int, w_max:int, h_max:int)->None:
         self.width = getWordAt(data, w_pos)
         self.height = getWordAt(data, h_pos)
         if self.debug:
@@ -113,14 +122,14 @@ class PatternConverter:
     #     for column in range(self.width)] for num in element] for row in range(self.height)]
     #     return png.from_array(rgb, mode = 'RGB')
 
-    def output_im(self):
+    def output_im(self)->Image.Image:
         rgb = np.array([[self.colors[self.color_pattern[self.height - row - 1, column]].rgb \
         for column in range(self.width)] for row in range(self.height)], np.uint8)
         if self.debug:
             print(rgb, file=sys.stderr)
         return Image.fromarray(rgb, mode = 'RGB')
 
-    def exit(self, msg, return_code):
+    def exit(self, msg:str, return_code:int)->None:
         print(msg)
         # self.status = return_code
         # sys.exit(self.status)
@@ -151,11 +160,11 @@ class PatternConverter:
 
 class STPBlock:
 
-    def __init__(self, buffer, start, xorkey = None):
+    def __init__(self, buffer:bytes, start:int, xorkey:Optional[bytearray] = None):
         self.height = getWordAt(buffer, start)
         self.size = getWordAt(buffer, start + 2)
-        if xorkey != None:
-            self.data = bytearray(self.size)
+        if xorkey is not None:
+            self.data:bytes = bytearray(self.size)
             for i in range(self.size):
                 self.data[i] = buffer[start + 4 + i] ^ xorkey[i]
         else:
@@ -166,7 +175,7 @@ class STPBlock:
 
 class DAKPatternConverter(PatternConverter):
 
-    def find_col1(self, buffer, start):
+    def find_col1(self, buffer:bytes, start:int)->int:
         pos = start
         for i in range(0x47):
             if buffer[pos] & 0x50 == 0x50:
@@ -176,7 +185,7 @@ class DAKPatternConverter(PatternConverter):
         return 0x20 ## default value for col1
 
     ## block of color data after pattern block = 1775 bytes = 0x47 * 0x19
-    def read_colors(self, buffer, start):
+    def read_colors(self, buffer:bytes, start:int)->None:
         self.colors = {}
         pos = start
         for i in range(0x47):
@@ -209,7 +218,7 @@ class DAKPatternConverter(PatternConverter):
 class PatPatternConverter(DAKPatternConverter):
 
     ## read DAK .pat file and return a PIL.Image object
-    def pattern2im(self, filename):
+    def pattern2im(self, filename:str)->Image.Image:
         ## constants
         dst_pos = 0x10
         pattern_start = 0x165
@@ -229,14 +238,14 @@ class PatPatternConverter(DAKPatternConverter):
         pos = pattern_start
         # all_colors = set()
         for row in range(self.height):
-            row_colors = set()
+            #row_colors = set()
             column = 0
             while column < self.width:
                 run = 1
                 color = getByteAt(pattern_data, pos)
                 pos += 1
                 if color & 0x80:
-                    run = color & 0x7F
+                    run = cast(int,color & 0x7F)
                     color = getByteAt(pattern_data, pos)
                     pos += 1
                 # all_colors.add(color)
@@ -300,17 +309,17 @@ class PatPatternConverter(DAKPatternConverter):
         if pos == pattern_size or len(self.colors) == 0:
             # if self.col1 == 0:
                 # self.col1 = Counter(color_array).most_common(1)[0][0]
-            color = 0
+            color = np.uint8(0)
             for i in range(0x80):
                 a = getByteAt(pattern_data, i + 3)
                 if a != 0xFF:
                     color += 1
-                    pos = 3 * (a & 0xF)
+                    pos = cast(int,3 * (a & 0xF))
                     # b = 3 * (self.getByteAt(i + 0x84) & 0xF)
                     new_color = Color(
-                        0x10 + 0x40 * ((self.col1 & 0xFF) == i),
+                        np.uint8(0x10 + 0x40 * (0==i)), #((self.col1 & 0xFF) == i), #this is just always 0? (0 & 0xFF) is 0
                         color,
-                        chr(i),
+                        np.uint8(i),
                         "",
                         getByteAt(pattern_data, 0x107 + pos),
                         getByteAt(pattern_data, 0x106 + pos),
@@ -332,11 +341,11 @@ class PatPatternConverter(DAKPatternConverter):
 class StpPatternConverter(DAKPatternConverter):
 
     ## read DAK .stp file and return a PIL.Image object
-    def pattern2im(self, filename):
+    def pattern2im(self, filename:str)->Image.Image:
 
-        def __calc_key(data):
+        def __calc_key(data:bytes)->bytearray:
 
-            def __appendKeystring(next_string, max_size):
+            def __appendKeystring(next_string:str, max_size:int)->str:
                 return (keystring + next_string)[0:max_size]
 
             key1 = (getDWordAt(data, 0x35) >> 1)
@@ -392,7 +401,7 @@ class StpPatternConverter(DAKPatternConverter):
                 xorkey[i] = temp1 ^ temp2
             return xorkey
 
-        def __decrypt_next_block(pos):
+        def __decrypt_next_block(pos:int)->tuple[list[STPBlock],int]:
             blocks = []
             while True:
                 block = STPBlock(input_data, pos, xorkey)
@@ -402,7 +411,7 @@ class StpPatternConverter(DAKPatternConverter):
                     return blocks, pos
 
         # decode run length encoding of color and stitch patterns
-        def __decode_runs(data, blocks, offset):
+        def __decode_runs(data:bytes, blocks:list[STPBlock], offset:int)->npt.NDArray[np.uint8]:
             output = np.zeros((self.height, self.width), np.uint8)
             block_num = 0
             block_data = blocks[0].data
@@ -414,11 +423,11 @@ class StpPatternConverter(DAKPatternConverter):
                     pos = 0
                 column = 0
                 while column < self.width:
-                    run = 1
+                    run = np.uint8(1)
                     symbol = getByteAt(block_data, pos)
                     pos += 1
                     if symbol & 0x80:
-                        run = symbol & 0x7F
+                        run = symbol & np.uint8(0x7F)
                         symbol = getByteAt(block_data, pos)
                         pos += 1
                     # if offset:
@@ -472,7 +481,7 @@ class StpPatternConverter(DAKPatternConverter):
 class CutPatternConverter(PatternConverter):
 
     ## read .cut file and optional .pal file, return a PIL.Image object
-    def pattern2im(self, filename, palfilename=None):
+    def pattern2im(self, filename:str, palfilename:Optional[str]=None)->Image.Image:
         ## header lengths
         pattern_start = 6
         color_start = 40
@@ -487,7 +496,7 @@ class CutPatternConverter(PatternConverter):
         #
         ## decode run length encoding of color pattern
         self.color_pattern = np.zeros((self.height, self.width,), np.uint8)
-        all_colors = set()
+        all_colors:set[np.uint8] = set()
         pos = pattern_start
         for row in range(self.height):
             eol = False
@@ -527,7 +536,7 @@ class CutPatternConverter(PatternConverter):
             ## greyscale
             self.colors = {}
             for c in all_colors:
-                self.colors[c] = Color(n=c, r=c, g=c, b=c)
+                self.colors[int(c)] = Color(n=c, r=c, g=c, b=c)
         else:
             # decode palette file
             color_data = self.read_file(palfilename)
@@ -540,7 +549,7 @@ class CutPatternConverter(PatternConverter):
             color_maxblue = getWordAt(color_data, 18)
             block = 0
             offset = 0
-            for c in range(color_maxindex):
+            for cs in range(color_maxindex):
                 if (offset + 3 > 512):
                     offset = 0
                     block += 512
@@ -548,7 +557,8 @@ class CutPatternConverter(PatternConverter):
                 r = getByteAt(color_data, index)
                 g = getByteAt(color_data, index + 1)
                 b = getByteAt(color_data, index + 2)
-                self.colors.add(Color(n=c, r=r, g=g, b=b))
+                
+                self.colors[cs] = (Color(n=np.uint8(cs), r=r, g=g, b=b))
                 offset += 3
         #
         ## return self.status

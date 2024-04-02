@@ -18,6 +18,7 @@
 #    Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
+from __future__ import annotations
 import logging
 from math import ceil
 
@@ -31,6 +32,9 @@ from .utils import display_blocking_popup
 from .machine import Machine
 from .pattern_import import PatPatternConverter, StpPatternConverter, CutPatternConverter
 
+from typing import TYPE_CHECKING, Callable, Optional
+if TYPE_CHECKING:
+    from .ayab import GuiMain
 
 class AyabImage(SignalSender):
     """
@@ -40,14 +44,15 @@ class AyabImage(SignalSender):
     @author Tom Price
     @date   July 2020
     """
-    def __init__(self, parent):
+    def __init__(self, parent:GuiMain):
         super().__init__(parent.signal_receiver)
         self.__parent = parent
-        self.image = None
-        self.filename = None
+        self.image:Image.Image = None #type: ignore
+        self.filename:Optional[str] = None
+        self.reversed = False
         self.filename_input = self.__parent.ui.filename_lineedit
 
-    def select_file(self):
+    def select_file(self)->None:
         filename = self.filename_input.text()
         if filename == '':
             filepath = self.__parent.app_context.get_resource("patterns")
@@ -62,7 +67,7 @@ class AyabImage(SignalSender):
             self.filename_input.setText(selected_file)
             self.__load(str(selected_file))
 
-    def __load(self, filename):
+    def __load(self, filename:str)->None:
         '''Load an image into the graphics scene.'''
         # TODO Check maximum width of image
         try:
@@ -83,7 +88,7 @@ class AyabImage(SignalSender):
             self.__parent.scene.row_progress = 0
             self.__parent.engine.config.refresh()
 
-    def __open(self, filename):
+    def __open(self, filename:str)->None:
         # check for files that need conversion
         suffix = filename[-4:].lower()
         if (suffix == ".pat"):
@@ -98,63 +103,63 @@ class AyabImage(SignalSender):
         self.emit_got_image_flag()
         self.emit_image_resizer()
 
-    def invert(self):
+    def invert(self)->None:
         self.apply_transform(Transform.invert)
 
-    def repeat(self):
+    def repeat(self)->None:
         machine_width = Machine(self.__parent.prefs.value("machine")).width
         v = QInputDialog.getInt(self.__parent,
                                 "Repeat",
                                 "Vertical",
                                 value=1,
-                                min=1)
+                                minValue=1)
         h = QInputDialog.getInt(self.__parent,
                                 "Repeat",
                                 "Horizontal",
                                 value=1,
-                                min=1,
-                                max=ceil(machine_width / self.image.width))
+                                minValue=1,
+                                maxValue=ceil(machine_width / self.image.width))
         self.apply_transform(Transform.repeat, v[0], h[0])
 
-    def stretch(self):
+    def stretch(self)->None:
         machine_width = Machine(self.__parent.prefs.value("machine")).width
         v = QInputDialog.getInt(self.__parent,
                                 "Stretch",
                                 "Vertical",
                                 value=1,
-                                min=1)
+                                minValue=1)
         h = QInputDialog.getInt(self.__parent,
                                 "Stretch",
                                 "Horizontal",
                                 value=1,
-                                min=1,
-                                max=ceil(machine_width / self.image.width))
+                                minValue=1,
+                                maxValue=ceil(machine_width / self.image.width))
         self.apply_transform(Transform.stretch, v[0], h[0])
 
-    def reflect(self):
+    def reflect(self)->None:
         m = Mirrors()
-        if (m.result == QDialog.Accepted):
+        if (m.result == QDialog.DialogCode.Accepted):
             self.apply_transform(Transform.reflect, m.mirrors)
 
-    def hflip(self):
+    def hflip(self)->None:
         self.apply_transform(Transform.hflip)
 
-    def vflip(self):
+    def vflip(self)->None:
         self.apply_transform(Transform.vflip)
 
-    def rotate_left(self):
+    def rotate_left(self)->None:
         self.apply_transform(Transform.rotate_left)
 
-    def rotate_right(self):
+    def rotate_right(self)->None:
         self.apply_transform(Transform.rotate_right)
 
-    def zoom_in(self):
+    def zoom_in(self)->None:
         self.__parent.scene.set_zoom(+1)
 
-    def zoom_out(self):
+    def zoom_out(self)->None:
         self.__parent.scene.set_zoom(-1)
 
-    def apply_transform(self, transform, *args):
+    def apply_transform(self, transform:Callable[...,Image.Image], *args:tuple[int,int]|list[int]|int)->None:
         """Executes an image transform specified by function and args."""
         self.image = transform(self.image, args)
         try:

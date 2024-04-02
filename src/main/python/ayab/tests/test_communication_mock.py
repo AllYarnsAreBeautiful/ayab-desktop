@@ -20,9 +20,9 @@
 
 import unittest
 
-from ayab.engine.communication import Token
-from ayab.engine.communication_mock import CommunicationMock
-from ayab.machine import Machine
+from ..engine.communication import Token
+from ..engine.communication_mock import CommunicationMock
+from ..machine import Machine
 
 
 class TestCommunicationMock(unittest.TestCase):
