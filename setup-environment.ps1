@@ -11,23 +11,23 @@ pyside6-genpyi all
 
 # convert Qt `.ui` files to Python code
 pyside6-uic src/main/python/ayab/about_gui.ui -o src/main/python/ayab/about_gui.py
-perl -pi -e "s/^(.*def setupUi.*):$/\$1->None:/s" src/main/python/ayab/about_gui.py
+perl -pi -e "s/^(.*def setupUi.*):$/\1->None:/s" src/main/python/ayab/about_gui.py
 pyside6-uic src/main/python/ayab/firmware_flash_gui.ui -o src/main/python/ayab/firmware_flash_gui.py
-perl -pi -e "s/^(.*def setupUi.*):$/\$1->None:/s" src/main/python/ayab/firmware_flash_gui.py
+perl -pi -e "s/^(.*def setupUi.*):$/\1->None:/s" src/main/python/ayab/firmware_flash_gui.py
 pyside6-uic src/main/python/ayab/main_gui.ui -o src/main/python/ayab/main_gui.py
-perl -pi -e "s/^(.*def setupUi.*):$/\$1->None:/s" src/main/python/ayab/main_gui.py
+perl -pi -e "s/^(.*def setupUi.*):$/\1->None:/s" src/main/python/ayab/main_gui.py
 pyside6-uic src/main/python/ayab/menu_gui.ui -o src/main/python/ayab/menu_gui.py
-perl -pi -e "s/^(.*def setupUi.*):$/\$1->None:/s" src/main/python/ayab/menu_gui.py
+perl -pi -e "s/^(.*def setupUi.*):$/\1->None:/s" src/main/python/ayab/menu_gui.py
 pyside6-uic src/main/python/ayab/mirrors_gui.ui -o src/main/python/ayab/mirrors_gui.py
-perl -pi -e "s/^(.*def setupUi.*):$/\$1->None:/s" src/main/python/ayab/mirrors_gui.py
+perl -pi -e "s/^(.*def setupUi.*):$/\1->None:/s" src/main/python/ayab/mirrors_gui.py
 pyside6-uic src/main/python/ayab/prefs_gui.ui -o src/main/python/ayab/prefs_gui.py
-perl -pi -e "s/^(.*def setupUi.*):$/\$1->None:/s" src/main/python/ayab/prefs_gui.py
+perl -pi -e "s/^(.*def setupUi.*):$/\1->None:/s" src/main/python/ayab/prefs_gui.py
 pyside6-uic src/main/python/ayab/engine/dock_gui.ui -o src/main/python/ayab/engine/dock_gui.py
-perl -pi -e "s/^(.*def setupUi.*):$/\$1->None:/s" src/main/python/ayab/engine/dock_gui.py
+perl -pi -e "s/^(.*def setupUi.*):$/\1->None:/s" src/main/python/ayab/engine/dock_gui.py
 pyside6-uic src/main/python/ayab/engine/options_gui.ui -o src/main/python/ayab/engine/options_gui.py
-perl -pi -e "s/^(.*def setupUi.*):$/\$1->None:/s" src/main/python/ayab/engine/options_gui.py
+perl -pi -e "s/^(.*def setupUi.*):$/\1->None:/s" src/main/python/ayab/engine/options_gui.py
 pyside6-uic src/main/python/ayab/engine/status_gui.ui -o src/main/python/ayab/engine/status_gui.py
-perl -pi -e "s/^(.*def setupUi.*):$/\$1->None:/s" src/main/python/ayab/engine/status_gui.py
+perl -pi -e "s/^(.*def setupUi.*):$/\1->None:/s" src/main/python/ayab/engine/status_gui.py
 
 
 # generate PySide6 resource filea
