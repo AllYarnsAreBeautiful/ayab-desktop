@@ -44,7 +44,7 @@ class Machine(Enum):
             return 200
 
     @property
-    def name(self): -> str:
+    def name(self) -> str:
         if self == Machine.KH910_KH950:
             return "KH-910, KH-950i"
         if self == Machine.KH900_KH930_KH940_KH965:
