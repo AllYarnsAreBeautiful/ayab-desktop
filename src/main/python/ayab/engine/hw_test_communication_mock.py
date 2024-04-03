@@ -18,8 +18,7 @@
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
 import re
-from time import sleep
-from PyQt5.QtCore import QObject, pyqtSignal
+from PySide6.QtCore import QObject
 
 from .communication import Token
 from .communication_mock import CommunicationMock
@@ -27,11 +26,11 @@ from .communication_mock import CommunicationMock
 
 class HardwareTestCommunicationMock(QObject, CommunicationMock):
     """Simulate device for hardware tests."""
+
     def __init__(self):
         super().__init__()
         self.__tokens = [
-            Token[key] for key in Token._member_map_.keys()
-            if re.search("Cmd$", key)
+            Token[key] for key in Token._member_map_.keys() if re.search("Cmd$", key)
         ]
 
     def setup(self):
@@ -50,8 +49,9 @@ class HardwareTestCommunicationMock(QObject, CommunicationMock):
             self.__handle_unrecognizedCmd()
         else:
             cmd = self.__tokens[i].name
-            self.__output(Token.testRes,
-                          "Called " + re.sub("CMD$", "", cmd.upper()) + "\n")
+            self.__output(
+                Token.testRes, "Called " + re.sub("CMD$", "", cmd.upper()) + "\n"
+            )
             dispatch = getattr(self, "_handle_" + cmd)
             dispatch(msg)
 
@@ -110,7 +110,7 @@ class HardwareTestCommunicationMock(QObject, CommunicationMock):
         except ValueError:
             self.__bad_arg(msg[1])
             return
-        if (solenoidNumber < 0 or solenoidNumber > 15):
+        if solenoidNumber < 0 or solenoidNumber > 15:
             self.__bad_arg(msg[1])
             return
         # else
@@ -119,7 +119,7 @@ class HardwareTestCommunicationMock(QObject, CommunicationMock):
         except ValueError:
             self.__bad_arg(msg[2])
             return
-        if (solenoidValue < 0 or solenoidValue > 1):
+        if solenoidValue < 0 or solenoidValue > 1:
             self.__bad_arg(msg[2])
             return
         # arguments ignored

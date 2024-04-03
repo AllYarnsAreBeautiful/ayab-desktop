@@ -18,9 +18,17 @@
 #    Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
+from __future__ import annotations
 import logging
 
-from PyQt5.QtCore import QStateMachine, QState, QObject
+from PySide6.QtCore import QObject
+from PySide6.QtStateMachine import QStateMachine, QState
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .ayab import GuiMain
+
+c = QObject()
 
 
 class gui_fsm(object):
@@ -31,7 +39,8 @@ class gui_fsm(object):
     @author Tom Price
     @date   June 2020
     """
-    def __init__(self):
+
+    def __init__(self) -> None:
         """Define Finite State Machine"""
 
         # Finite State Machine
@@ -48,56 +57,62 @@ class gui_fsm(object):
         # Set machine state
         self.machine.setInitialState(self.NO_IMAGE)
 
-    def set_transitions(self, parent):
+    def set_transitions(self, parent: GuiMain) -> None:
         """Define transitions between states for Finite State Machine"""
 
         # Events that trigger state changes
-        self.NO_IMAGE.addTransition(parent.signal_receiver.got_image_flag,
-                                    self.CONFIGURING)
-        self.NO_IMAGE.addTransition(parent.menu.ui.action_test_AYAB_device.triggered, self.TESTING_NO_IMAGE)
-        self.TESTING_NO_IMAGE.addTransition(parent.test_thread.finished,
-                                            self.NO_IMAGE)
-        self.CONFIGURING.addTransition(parent.ui.knit_button.clicked,
-                                       self.CHECKING)
-        self.CONFIGURING.addTransition(parent.menu.ui.action_knit.triggered, self.CHECKING)
-        self.CONFIGURING.addTransition(parent.menu.ui.action_test_AYAB_device.triggered, self.TESTING)
-        self.CHECKING.addTransition(parent.signal_receiver.got_image_flag,
-                                    self.CONFIGURING)
-        self.CHECKING.addTransition(parent.signal_receiver.new_image_flag,
-                                    self.CONFIGURING)
-        self.CHECKING.addTransition(parent.signal_receiver.bad_config_flag,
-                                    self.CONFIGURING)
-        self.CHECKING.addTransition(parent.signal_receiver.knitting_starter,
-                                    self.KNITTING)
-        self.KNITTING.addTransition(parent.knit_thread.finished,
-                                    self.CONFIGURING)
-        self.TESTING.addTransition(parent.test_thread.finished,
-                                   self.CONFIGURING)
+        self.NO_IMAGE.addTransition(
+            parent.signal_receiver.got_image_flag, self.CONFIGURING
+        )
+        self.NO_IMAGE.addTransition(
+            parent.menu.ui.action_test_AYAB_device.triggered, self.TESTING_NO_IMAGE
+        )
+        self.TESTING_NO_IMAGE.addTransition(parent.test_thread.finished, self.NO_IMAGE)
+        self.CONFIGURING.addTransition(parent.ui.knit_button.clicked, self.CHECKING)
+        self.CONFIGURING.addTransition(
+            parent.menu.ui.action_knit.triggered, self.CHECKING
+        )
+        self.CONFIGURING.addTransition(
+            parent.menu.ui.action_test_AYAB_device.triggered, self.TESTING
+        )
+        self.CHECKING.addTransition(
+            parent.signal_receiver.got_image_flag, self.CONFIGURING
+        )
+        self.CHECKING.addTransition(
+            parent.signal_receiver.new_image_flag, self.CONFIGURING
+        )
+        self.CHECKING.addTransition(
+            parent.signal_receiver.bad_config_flag, self.CONFIGURING
+        )
+        self.CHECKING.addTransition(
+            parent.signal_receiver.knitting_starter, self.KNITTING
+        )
+        self.KNITTING.addTransition(parent.knit_thread.finished, self.CONFIGURING)
+        self.TESTING.addTransition(parent.test_thread.finished, self.CONFIGURING)
 
         # Actions triggered by state changes
-        self.NO_IMAGE.entered.connect(
-            lambda: logging.debug("Entered state NO_IMAGE"))
+        self.NO_IMAGE.entered.connect(lambda: logging.debug("Entered state NO_IMAGE"))
         self.TESTING_NO_IMAGE.entered.connect(
-            lambda: logging.debug("Entered state TESTING_NO_IMAGE"))
+            lambda: logging.debug("Entered state TESTING_NO_IMAGE")
+        )
         self.CONFIGURING.entered.connect(
-            lambda: logging.debug("Entered state CONFIGURING"))
-        self.CHECKING.entered.connect(
-            lambda: logging.debug("Entered state CHECKING"))
-        self.KNITTING.entered.connect(
-            lambda: logging.debug("Entered state KNITTING"))
-        self.TESTING.entered.connect(
-            lambda: logging.debug("Entered state TESTING"))
+            lambda: logging.debug("Entered state CONFIGURING")
+        )
+        self.CHECKING.entered.connect(lambda: logging.debug("Entered state CHECKING"))
+        self.KNITTING.entered.connect(lambda: logging.debug("Entered state KNITTING"))
+        self.TESTING.entered.connect(lambda: logging.debug("Entered state TESTING"))
 
         self.NO_IMAGE.exited.connect(parent.engine.config.refresh)
         self.TESTING_NO_IMAGE.entered.connect(parent.start_testing)
         self.CONFIGURING.entered.connect(parent.menu.add_image_actions)
         self.CONFIGURING.entered.connect(parent.progbar.reset)
         self.CHECKING.entered.connect(
-            lambda: parent.engine.knit_config(parent.scene.ayabimage.image))
+            lambda: parent.engine.knit_config(parent.scene.ayabimage.image)
+        )
         self.KNITTING.entered.connect(parent.start_knitting)
         self.TESTING.entered.connect(parent.start_testing)
 
-    def set_properties(self, parent):
+    def set_properties(self, parent: GuiMain) -> None:
         """
         Define properties for GUI elements linked to
         states in Finite State Machine
@@ -115,8 +130,7 @@ class gui_fsm(object):
 
         # Knit button
         self.NO_IMAGE.assignProperty(parent.ui.knit_button, "enabled", "False")
-        self.CONFIGURING.assignProperty(parent.ui.knit_button, "enabled",
-                                        "True")
+        self.CONFIGURING.assignProperty(parent.ui.knit_button, "enabled", "True")
         self.KNITTING.assignProperty(parent.ui.knit_button, "enabled", "False")
         self.TESTING.assignProperty(parent.ui.knit_button, "enabled", "False")
 
@@ -127,16 +141,14 @@ class gui_fsm(object):
         self.TESTING.assignProperty(parent.menu.ui.action_knit, "enabled", "False")
 
         # Cancel button
-        self.NO_IMAGE.assignProperty(parent.ui.cancel_button, "enabled",
-                                     "False")
-        self.CONFIGURING.assignProperty(parent.ui.cancel_button, "enabled",
-                                        "False")
-        self.KNITTING.assignProperty(parent.ui.cancel_button, "enabled",
-                                     "True")
-        self.TESTING.assignProperty(parent.ui.cancel_button, "enabled",
-                                    "False")
+        self.NO_IMAGE.assignProperty(parent.ui.cancel_button, "enabled", "False")
+        self.CONFIGURING.assignProperty(parent.ui.cancel_button, "enabled", "False")
+        self.KNITTING.assignProperty(parent.ui.cancel_button, "enabled", "True")
+        self.TESTING.assignProperty(parent.ui.cancel_button, "enabled", "False")
         # Cancel Knitting menu action
         self.NO_IMAGE.assignProperty(parent.menu.ui.action_cancel, "enabled", "False")
-        self.CONFIGURING.assignProperty(parent.menu.ui.action_cancel, "enabled", "False")
+        self.CONFIGURING.assignProperty(
+            parent.menu.ui.action_cancel, "enabled", "False"
+        )
         self.KNITTING.assignProperty(parent.menu.ui.action_cancel, "enabled", "True")
         self.TESTING.assignProperty(parent.menu.ui.action_cancel, "enabled", "False")

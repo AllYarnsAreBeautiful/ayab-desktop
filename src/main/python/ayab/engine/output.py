@@ -18,9 +18,14 @@
 #    Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
+from __future__ import annotations
 from enum import Enum, auto
 
-from ayab.signal_sender import SignalSender
+from ..signal_sender import SignalSender
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from ..ayab import GuiMain
 
 
 class Output(Enum):
@@ -44,49 +49,54 @@ class FeedbackHandler(SignalSender):
     @author Tom Price
     @date   July 2020
     """
-    def __init__(self, parent):
+
+    def __init__(self, parent: GuiMain):
         super().__init__(parent.signal_receiver)
 
-    def handle(self, result):
+    def handle(self, result: Output) -> None:
         method = "_" + result.name.lower()
         if hasattr(self, method):
             dispatch = getattr(self, method)
             dispatch()
 
-    def _none(self):
+    def _none(self) -> None:
         self.emit_notification("", False)
 
-    def _connecting_to_machine(self):
+    def _connecting_to_machine(self) -> None:
         self.emit_notification("Connecting to machine...", False)
 
-    def _initializing_firmware(self):
+    def _initializing_firmware(self) -> None:
         self.emit_notification("Initializing firmware")
 
-    def _error_initializing_firmware(self):
+    def _error_initializing_firmware(self) -> None:
         self.emit_notification("Error initializing firmware")
 
-    def _wait_for_init(self):
+    def _wait_for_init(self) -> None:
         self.emit_notification(
-            "Please start machine. (Set the carriage to mode KC-I " +
-            "or KC-II and move the carriage over the left turn mark).")
+            "Please start machine. (Set the carriage to mode KC-I "
+            + "or KC-II and move the carriage over the left turn mark)."
+        )
 
-    def _error_wrong_api(self):
-        self.emit_popup("Wrong Arduino firmware version. Please check " +
-                        "that you have flashed the latest version.")
+    def _error_wrong_api(self) -> None:
+        self.emit_popup(
+            "Wrong Arduino firmware version. Please check "
+            + "that you have flashed the latest version."
+        )
         # + " (" + str(self.__control.API_VERSION) + ")")
 
-    def _please_knit(self):
+    def _please_knit(self) -> None:
         self.emit_notification("Please knit.")
         self.emit_audio_player("start")
 
-    def _device_not_ready(self):
+    def _device_not_ready(self) -> None:
         self.emit_notification("", False)
         self.emit_blocking_popup("Device not ready, try again.")
 
-    def _next_line(self):
+    def _next_line(self) -> None:
         self.emit_audio_player("nextline")
 
-    def _knitting_finished(self):
+    def _knitting_finished(self) -> None:
         self.emit_notification(
-            "Image transmission finished. Please knit until you " +
-            "hear the double beep sound.")
+            "Image transmission finished. Please knit until you "
+            + "hear the double beep sound."
+        )

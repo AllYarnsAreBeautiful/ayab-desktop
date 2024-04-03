@@ -21,10 +21,10 @@ on:
 jobs:
   setup:
     name: Create cache
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
-        python-version: [3.8]
+        python-version: [3.11]
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
@@ -76,18 +76,18 @@ jobs:
       uses: actions/cache@v3
       with:
         path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.build.txt') }}
     - name: Install Python modules
       run: |
         python -m pip install --upgrade pip
         python -m pip install --upgrade setuptools
-        python -m pip install -r requirements.txt
+        python -m pip install -r requirements.build.txt
     - name: Cache Python modules
       if:   steps.pip-cache.outputs.cache-hit != 'true'
       uses: actions/cache/save@v3
       with:
         path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.build.txt') }}
     - name: Use cached gui files (1)
       id:   gui1-cache
       uses: actions/cache@v3
@@ -131,8 +131,8 @@ jobs:
                 (steps.e-cache.outputs.cache-hit    != 'true') ||
                 (steps.qm-cache.outputs.cache-hit   != 'true') }}
       run: |
-        sudo apt install -y qt5-default qttools5-dev-tools
-        bash setup-environment.ps1
+        sudo apt install -y qt6-base-dev qt6-tools-dev-tools qt6-l10n-tools
+        PATH=/usr/lib/qt6/bin:$PATH bash setup-environment.ps1
     - name: Cache gui files (1)
       if:   ${{ (steps.gui1-cache.outputs.cache-hit != 'true') }}
       uses: actions/cache/save@v3
@@ -172,7 +172,7 @@ jobs:
 
   deploy:
     name: Create and deploy source code documentation
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
@@ -199,7 +199,7 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        python-version: [3.8]
+        python-version: [3.11]
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
@@ -225,7 +225,7 @@ jobs:
         choco install vcredist-all # fixes dependency on msvcr100.dll
         python -m pip install --upgrade pip
         python -m pip install --upgrade setuptools
-        python -m pip install -r requirements.txt
+        python -m pip install -r requirements.build.txt
         python -m pip install -r windows-build\windows_build_requirements.txt
     - name: Restore cached firmware
       id:   firmware-cache
@@ -335,10 +335,10 @@ jobs:
   build-macos:
     name: Create and upload Mac OSX release
     needs: setup
-    runs-on: macos-latest
+    runs-on: macos-14
     strategy:
       matrix:
-        python-version: [3.8]
+        python-version: [3.11]
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
@@ -356,11 +356,20 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
+      shell: zsh {0}
       run: |
         brew install avrdude
-        python -m pip install --upgrade pip
-        python -m pip install --upgrade setuptools
-        python -m pip install -r requirements.txt
+        brew install qt
+        python -m pip install delocate
+        python -m pip download --only-binary=:all: --platform macosx_10_09_x86_64 numpy==1.26.4
+        python -m pip download --only-binary=:all: --platform macosx_11_0_arm64 numpy==1.26.4
+        mkdir tmp-wheel/
+        delocate-fuse numpy*arm* numpy*x86* -w tmp-wheel/
+        python -m pip download --only-binary=:all: --platform macosx_10_10_x86_64 Pillow==10.0.0
+        python -m pip download --only-binary=:all: --platform macosx_11_0_arm64 Pillow==10.0.0
+        delocate-fuse Pillow*arm* Pillow*x86* -w tmp-wheel/
+        python -m pip install tmp-wheel/*.whl
+        python -m pip install --no-binary charset_normalizer -r requirements.build.txt
     - name: Restore cached firmware
       id:   firmware-cache
       uses: actions/cache@v3
@@ -421,10 +430,13 @@ jobs:
         ls -l src/main/python/ayab/
         ls -l src/main/resources/base/ayab/translations/
     - name: Build app
-      run: python -m fbs freeze --debug
+      run: |
+        python -m fbs freeze --debug
+        codesign -s - --force --all-architectures --timestamp --deep ./target/AYAB-mac.app
     - name: Create installer
       run: |
         python -m fbs installer
+        codesign -s - --force --all-architectures --timestamp --deep ./target/AYAB.dmg
         mv target/AYAB.dmg target/AYAB-${{ steps.vars.outputs.tag }}.dmg
     - name: Upload asset
       uses: ncipollo/release-action@v1
@@ -449,10 +461,10 @@ jobs:
   build-appimage:
     name: Create and upload Linux AppImage release
     needs: setup
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
-        python-version: [3.8]
+        python-version: [3.11]
     steps:
     - name: Checkout repo into AppDir
       uses: actions/checkout@v3
@@ -468,7 +480,7 @@ jobs:
         echo "tag=$(git describe --tags)" >> $GITHUB_OUTPUT
         echo "python=python${{matrix.python-version}}" >> $GITHUB_OUTPUT
         echo "manifest=$(cat src/main/resources/base/ayab/firmware/manifest.txt)" >> $GITHUB_OUTPUT
-        echo "python-appimage=python${{matrix.python-version}}.18-cp38-cp38-manylinux2014_x86_64.AppImage" >> $GITHUB_OUTPUT
+        echo "python-appimage=python${{matrix.python-version}}.8-cp311-cp311-manylinux_2_28_x86_64.AppImage" >> $GITHUB_OUTPUT
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4
       with:
@@ -489,7 +501,7 @@ jobs:
         ./AppRun -m pip install --upgrade setuptools
         # hack to fix setup.py script with faulty include
         ./AppRun -m pip install --global-option=build_ext --global-option="-I$(pwd)/opt/${{steps.vars.outputs.python}}/include/${{steps.vars.outputs.python}}" simpleaudio
-        ./AppRun -m pip install -r requirements.txt
+        ./AppRun -m pip install -r requirements.build.txt
     - name: Add AppDir subdirectories to PATH
       run: |
         echo "usr/bin" >> $GITHUB_PATH

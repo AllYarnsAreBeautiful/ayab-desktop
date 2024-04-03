@@ -15,15 +15,21 @@
 #    You should have received a copy of the GNU General Public License
 #    along with AYAB.  If not, see <http://www.gnu.org/licenses/>.
 #
-#    Copyright 2014 Sebastian Oliva, Christian Obersteiner, Andreas Müller, Christian Gerbrandt
+#    Copyright 2014 Sebastian Oliva, Christian Obersteiner,
+#       Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
-from PyQt5.QtCore import QObject, pyqtSignal, Qt
+from __future__ import annotations
+from PySide6.QtCore import QObject, Signal, Qt
 from .engine.status import Status
 from .engine.options import Alignment
 from .engine.engine_fsm import Operation
 from .engine.control import Control
 from .utils import display_blocking_popup
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .ayab import GuiMain
 
 
 class SignalReceiver(QObject):
@@ -33,47 +39,43 @@ class SignalReceiver(QObject):
     @author Tom Price
     @date   July 2020
     """
+
     # signals are defined as class attributes which are
     # over-ridden by instance attributes with the same name
-    start_row_updater = pyqtSignal(int)
-    progress_bar_updater = pyqtSignal(int, int, int, 'QString')
-    knit_progress_updater = pyqtSignal(Status, int, int, bool)
-    notifier = pyqtSignal('QString', bool)
-    # statusbar_updater = pyqtSignal('QString', bool)
-    popup_displayer = pyqtSignal('QString', 'QString')
-    blocking_popup_displayer = pyqtSignal('QString', 'QString')
-    audio_player = pyqtSignal('QString')
-    needles_updater = pyqtSignal(int, int)
-    alignment_updater = pyqtSignal(Alignment)
-    image_resizer = pyqtSignal()
-    image_reverser = pyqtSignal()
-    got_image_flag = pyqtSignal()
-    new_image_flag = pyqtSignal()
-    bad_config_flag = pyqtSignal()
-    knitting_starter = pyqtSignal()
-    operation_finisher = pyqtSignal(Operation, bool)
-    hw_test_starter = pyqtSignal(Control)
-    hw_test_writer = pyqtSignal(str)
+    start_row_updater = Signal(int)
+    progress_bar_updater = Signal(int, int, int, str)
+    knit_progress_updater = Signal(Status, int, int, bool)
+    notifier = Signal(str, bool)
+    # statusbar_updater = Signal('QString', bool)
+    popup_displayer = Signal(str, str)
+    blocking_popup_displayer = Signal(str, str)
+    audio_player = Signal(str)
+    needles_updater = Signal(int, int)
+    alignment_updater = Signal(Alignment)
+    image_resizer = Signal()
+    image_reverser = Signal()
+    got_image_flag = Signal()
+    new_image_flag = Signal()
+    bad_config_flag = Signal()
+    knitting_starter = Signal()
+    operation_finisher = Signal(Operation, bool)
+    hw_test_starter = Signal(Control)
+    hw_test_writer = Signal(str)
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
-    def signals(self):
-        """Iterator over names of signals."""
-        return filter(
-            lambda x: type(getattr(self, x)).__name__ == "pyqtBoundSignal",
-            SignalReceiver.__dict__.keys())
-
-    def activate_signals(self, parent):
+    def activate_signals(self, parent: GuiMain) -> None:
         self.start_row_updater.connect(parent.update_start_row)
         self.progress_bar_updater.connect(parent.progbar.update)
-        self.knit_progress_updater.connect(parent.knitprog.update)
+        self.knit_progress_updater.connect(parent.knitprog.update_progress)
         self.notifier.connect(parent.notify)
         # self.statusbar_updater.connect(parent.statusbar.update)
         self.blocking_popup_displayer.connect(display_blocking_popup)
         self.popup_displayer.connect(display_blocking_popup)
-        self.audio_player.connect(parent.audio.play,
-                                  type=Qt.BlockingQueuedConnection)
+        self.audio_player.connect(
+            parent.audio.play, type=Qt.ConnectionType.BlockingQueuedConnection
+        )
         self.needles_updater.connect(parent.scene.update_needles)
         self.alignment_updater.connect(parent.scene.update_alignment)
         self.image_resizer.connect(parent.set_image_dimensions)

@@ -17,24 +17,36 @@
 #    Copyright 2013-2020 Sebastian Oliva, Christian Obersteiner,
 #    Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
+from __future__ import annotations
 
 import logging
 from enum import Enum
 
-from PyQt5.QtCore import QRect
-from PyQt5.QtGui import QImage, QPixmap, QPen, QBrush, QColor
-from PyQt5.QtWidgets import QGraphicsScene, QGraphicsRectItem, QGraphicsView
+from PySide6.QtCore import QRect
+from PySide6.QtGui import QImage, QPixmap, QPen, QBrush, QColor, QWheelEvent
+from PySide6.QtWidgets import (
+    QGraphicsScene,
+    QGraphicsRectItem,
+    QGraphicsView,
+    QComboBox,
+)
 
-from .image import AyabImage, Transform
+from .image import AyabImage
+from .transforms import Transform
 from .engine.options import Alignment
 from .machine import Machine
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .ayab import GuiMain
 
 
 class AspectRatio(Enum):
     DEFAULT = 0
     FAIRISLE = 1
 
-    def add_items(box):
+    @staticmethod
+    def add_items(box: QComboBox) -> None:
         box.addItem("1:1")
         box.addItem("4:5")
 
@@ -46,38 +58,38 @@ class Scene(QGraphicsView):
     @date   June 2020
     """
 
-    def __init__(self, parent):
+    def __init__(self, parent: GuiMain):
         super().__init__(parent.ui.graphics_splitter)
         self.setGeometry(QRect(0, 0, 700, 686))
-        self.ayabimage = AyabImage(parent)
+        self.ayabimage: AyabImage = AyabImage(parent)
         self.__prefs = parent.prefs
         default = self.__prefs.value("default_alignment")
         self.ayabimage.reversed = False
         if self.__prefs.value("default_knit_side_image"):
             self.reverse()
-        self.__alignment = Alignment(default)
-        machine_width = Machine(self.__prefs.value("machine")).width
-        self.__start_needle = (machine_width // 2) - 20
-        self.__stop_needle = (machine_width - 1) // 2 + 20
-        self.__row_progress = 0
+        self.__alignment: Alignment = Alignment(default)
+        machine_width: int = Machine(self.__prefs.value("machine")).width
+        self.__start_needle: int = (machine_width // 2) - 20
+        self.__stop_needle: int = (machine_width - 1) // 2 + 20
+        self.__row_progress: int = 0
 
         # zoom behavior
-        self.setDragMode(QGraphicsView.ScrollHandDrag)
-        self.__zoom = 3
+        self.setDragMode(QGraphicsView.DragMode.ScrollHandDrag)
+        self.__zoom: float = 3
 
-    def reverse(self):
-        '''Mirrors the image'''
+    def reverse(self) -> None:
+        """Mirrors the image"""
         self.ayabimage.reversed = not self.ayabimage.reversed
         self.ayabimage.image = Transform.hflip(self.ayabimage.image)
         self.refresh()
 
-    def refresh(self):
-        '''Updates the graphics scene'''
+    def refresh(self) -> None:
+        """Updates the graphics scene"""
         qscene = QGraphicsScene()
 
         width, height = self.ayabimage.image.size
         data = self.ayabimage.image.convert("RGBA").tobytes("raw", "RGBA")
-        qim = QImage(data, width, height, QImage.Format_RGBA8888)
+        qim = QImage(data, width, height, QImage.Format.Format_RGBA8888)
         pixmap = QPixmap.fromImage(qim)
 
         # add pattern and locate according to alignment
@@ -86,7 +98,13 @@ class Scene(QGraphicsView):
         if self.__alignment == Alignment.LEFT:
             pos = self.__start_needle - machine_width / 2
         elif self.__alignment == Alignment.CENTER:
-            pos = (self.__start_needle + self.__stop_needle + 1 - pixmap.width() - machine_width) / 2
+            pos = (
+                self.__start_needle
+                + self.__stop_needle
+                + 1
+                - pixmap.width()
+                - machine_width
+            ) / 2
         elif self.__alignment == Alignment.RIGHT:
             pos = self.__stop_needle + 1 - machine_width / 2 - pixmap.width()
         else:
@@ -96,16 +114,10 @@ class Scene(QGraphicsView):
 
         # draw "machine"
         rect_orange = QGraphicsRectItem(
-            -machine_width / 2 - 0.5,
-            -5.5,
-            machine_width / 2 + 0.5,
-            5)
+            -machine_width / 2 - 0.5, -5.5, machine_width / 2 + 0.5, 5
+        )
         rect_orange.setBrush(QBrush(QColor("orange")))
-        rect_green = QGraphicsRectItem(
-            0,
-            -5.5,
-            machine_width / 2 + 0.5,
-            5)
+        rect_green = QGraphicsRectItem(0, -5.5, machine_width / 2 + 0.5, 5)
         rect_green.setBrush(QBrush(QColor("green")))
 
         qscene.addItem(rect_orange)
@@ -117,80 +129,91 @@ class Scene(QGraphicsView):
                 self.__start_needle - machine_width / 2 - 0.5,
                 -5.5,
                 0,
-                pixmap.height() + 5.5))
+                pixmap.height() + 5.5,
+            )
+        )
         qscene.addItem(
             QGraphicsRectItem(
                 self.__stop_needle - machine_width / 2 + 1.5,
                 -5.5,
                 0,
-                pixmap.height() + 5.5))
+                pixmap.height() + 5.5,
+            )
+        )
 
         # Draw knitting progress
         qscene.addItem(
             QGraphicsRectItem(
-                - machine_width / 2 - 1,
+                -machine_width / 2 - 1,
                 pixmap.height() - self.__row_progress - 0.5,
                 self.__start_needle,
-                0))
+                0,
+            )
+        )
         qscene.addItem(
             QGraphicsRectItem(
                 self.__stop_needle - machine_width / 2 + 1,
                 pixmap.height() - self.__row_progress - 0.5,
                 machine_width - self.__stop_needle,
-                0))
+                0,
+            )
+        )
         grey = QGraphicsRectItem(
             self.__start_needle - machine_width / 2,
             pixmap.height(),
             self.__stop_needle - self.__start_needle + 1,
-            -self.__row_progress)
+            -self.__row_progress,
+        )
         grey.setPen(QPen(QColor(127, 127, 127, 127), 0))
         grey.setBrush(QBrush(QColor(127, 127, 127, 127)))
         qscene.addItem(grey)
 
         self.resetTransform()
-        self.scale(self.zoom, self.zoom * (1.0 - 0.2 * self.__prefs.value("aspect_ratio")))
+        self.scale(
+            self.zoom, self.zoom * (1.0 - 0.2 * self.__prefs.value("aspect_ratio"))
+        )
         self.setScene(qscene)
 
     @property
-    def row_progress(self):
+    def row_progress(self) -> int:
         return self.__row_progress
 
     @row_progress.setter
-    def row_progress(self, row_progress):
+    def row_progress(self, row_progress: int) -> None:
         self.__row_progress = row_progress
         self.refresh()
 
-    def update_needles(self, start_needle, stop_needle):
-        '''Update the position of the start/stop needle visualization'''
+    def update_needles(self, start_needle: int, stop_needle: int) -> None:
+        """Update the position of the start/stop needle visualization"""
         self.__start_needle = start_needle
         self.__stop_needle = stop_needle
         self.refresh()
 
     @property
-    def alignment(self):
+    def our_alignment(self) -> Alignment:
         return self.__alignment
 
-    def update_alignment(self, alignment):
-        '''Update the alignment of the image between start/stop needle'''
+    def update_alignment(self, alignment: Alignment) -> None:
+        """Update the alignment of the image between start/stop needle"""
         self.__alignment = Alignment(alignment)
         self.refresh()
 
-    def wheelEvent(self, event):
-        '''Zoom the pattern upon mouse wheel event'''
-        self.zoom = event
+    def wheelEvent(self, event: QWheelEvent) -> None:
+        """Zoom the pattern upon mouse wheel event"""
+        self.zoom = event  # type: ignore
 
     @property
-    def zoom(self):
+    def zoom(self) -> float:
         return self.__zoom
 
     @zoom.setter
-    def zoom(self, event):
-        '''Use mouse wheel events to zoom the graphical image'''
+    def zoom(self, event: QWheelEvent) -> None:
+        """Use mouse wheel events to zoom the graphical image"""
         if self.ayabimage.image is not None:
             # angleDelta.y is 120 or -120 when scrolling
             self.set_zoom(event.angleDelta().y() / 120)
 
-    def set_zoom(self, zoom):
+    def set_zoom(self, zoom: float) -> None:
         self.__zoom += zoom * 0.5
         self.__zoom = max(1, self.__zoom)
         self.__zoom = min(7, self.__zoom)

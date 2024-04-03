@@ -18,7 +18,18 @@
 #    Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
-from PyQt5.QtCore import QCoreApplication
+from __future__ import annotations
+
+from PySide6.QtCore import QCoreApplication
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from .signal_receiver import SignalReceiver
+    from .utils import MessageTypes
+    from .engine.status import ColorSymbolType, Status
+    from .engine.engine_fsm import Operation
+    from .engine.options import Alignment
+    from .engine.control import Control
 
 
 class SignalSender(object):
@@ -28,26 +39,94 @@ class SignalSender(object):
     @author Tom Price
     @date   July 2020
     """
-    def __init__(self, signal_receiver, *args, **kwargs):
+
+    def __init__(
+        self, signal_receiver: SignalReceiver, *args: Any, **kwargs: Any
+    ) -> None:
         self.__signal_receiver = signal_receiver
-        for s in self.__signal_receiver.signals():
-            setattr(self, "emit_" + s, self.__make_emit_method(s))
         super().__init__(*args, **kwargs)
 
-    def __make_emit_method(self, signal):
-        return lambda *args: getattr(self.__signal_receiver, signal).emit(*args)
+    def emit_start_row_updater(self, start_row: int) -> None:
+        self.__signal_receiver.start_row_updater.emit(start_row)
 
-    def emit_blocking_popup(self, message="", message_type="info"):
+    def emit_progress_bar_updater(
+        self, row: int, total: int, repeats: int, color_symbol: ColorSymbolType
+    ) -> None:
+        self.__signal_receiver.progress_bar_updater.emit(
+            row, total, repeats, color_symbol
+        )
+
+    def emit_knit_progress_updater(
+        self, status: Status, row_multiplier: int, midline: int, auto_mirror: bool
+    ) -> None:
+        self.__signal_receiver.knit_progress_updater.emit(
+            status, row_multiplier, midline, auto_mirror
+        )
+
+    def emit_notifier(self, text: str, log: bool) -> None:
+        self.__signal_receiver.notifier.emit(text, log)
+
+    def emit_popup_displayer(self, message: str, message_type: MessageTypes) -> None:
+        self.__signal_receiver.popup_displayer.emit(message, message_type)
+
+    def emit_blocking_popup_displayer(
+        self, message: str, message_type: MessageTypes
+    ) -> None:
+        self.__signal_receiver.blocking_popup_displayer.emit(message, message_type)
+
+    def emit_audio_player(self, sound: str) -> None:
+        self.__signal_receiver.audio_player.emit(sound)
+
+    def emit_needles_updater(self, start_needle: int, stop_needle: int) -> None:
+        self.__signal_receiver.needles_updater.emit(start_needle, stop_needle)
+
+    def emit_alignment_updater(self, alignment: Alignment) -> None:
+        self.__signal_receiver.alignment_updater.emit(Alignment)
+
+    def emit_image_resizer(self) -> None:
+        self.__signal_receiver.image_resizer.emit()
+
+    def emit_image_reverser(self) -> None:
+        self.__signal_receiver.image_reverser.emit()
+
+    def emit_got_image_flag(self) -> None:
+        self.__signal_receiver.got_image_flag.emit()
+
+    def emit_new_image_flag(self) -> None:
+        self.__signal_receiver.new_image_flag.emit()
+
+    def emit_bad_config_flag(self) -> None:
+        self.__signal_receiver.bad_config_flag.emit()
+
+    def emit_knitting_starter(self) -> None:
+        self.__signal_receiver.knitting_starter.emit()
+
+    def emit_operation_finisher(self, operation: Operation, beep: bool) -> None:
+        self.__signal_receiver.operation_finisher.emit(operation, beep)
+
+    def emit_hw_test_starter(self, control: Control) -> None:
+        self.__signal_receiver.hw_test_starter.emit(control)
+
+    def emit_hw_test_writer(self, msg: str) -> None:
+        self.__signal_receiver.hw_test_writer.emit(msg)
+
+    # Meta Emitters
+    def emit_blocking_popup(
+        self, message: str = "", message_type: MessageTypes = "info"
+    ) -> None:
         """Sends the blocking_popup_displayer signal."""
         self.emit_blocking_popup_displayer(
-            QCoreApplication.translate("AyabPlugin", message), message_type)
+            QCoreApplication.translate("AyabPlugin", message), message_type
+        )
 
-    def emit_popup(self, message="", message_type="info"):
+    def emit_popup(
+        self, message: str = "", message_type: MessageTypes = "info"
+    ) -> None:
         """Sends the popup_displayer signal."""
         self.emit_popup_displayer(
-            QCoreApplication.translate("AyabPlugin", message), message_type)
+            QCoreApplication.translate("AyabPlugin", message), message_type
+        )
 
-    def emit_notification(self, message="", log=True):
+    def emit_notification(self, message: str = "", log: bool = True) -> None:
         """Sends the notifier signal."""
-        self.emit_notifier(QCoreApplication.translate("AyabPlugin", message),
-                           log)
+        self.emit_notifier(QCoreApplication.translate("AyabPlugin", message), log)

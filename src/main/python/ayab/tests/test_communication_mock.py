@@ -20,9 +20,9 @@
 
 import unittest
 
-from ayab.engine.communication import Token
-from ayab.engine.communication_mock import CommunicationMock
-from ayab.machine import Machine
+from ..engine.communication import Token
+from ..engine.communication_mock import CommunicationMock
+from ..machine import Machine
 
 
 class TestCommunicationMock(unittest.TestCase):
@@ -42,18 +42,26 @@ class TestCommunicationMock(unittest.TestCase):
         assert self.comm_dummy.update_API6() == (None, Token.none, 0)
 
     def test_req_start_API6(self):
-        start_val, end_val, continuous_reporting, disable_hardware_beep = 0, 10, True, False
+        start_val, end_val, continuous_reporting, disable_hardware_beep = (
+            0,
+            10,
+            True,
+            False,
+        )
         expected_result = (bytes([Token.cnfStart.value, 0]), Token.cnfStart, 0)
-        self.comm_dummy.req_start_API6(start_val, end_val,
-                                       continuous_reporting,
-                                       disable_hardware_beep)
+        self.comm_dummy.req_start_API6(
+            start_val, end_val, continuous_reporting, disable_hardware_beep
+        )
         bytes_read = self.comm_dummy.update_API6()
         assert bytes_read == expected_result
 
     def test_req_info(self):
         # expecting 1.0.0-mock
-        expected_result = (bytes([Token.cnfInfo.value, 6, 1,
-                                  0, 0, 109, 111, 99, 107, 0]), Token.cnfInfo, 6)
+        expected_result = (
+            bytes([Token.cnfInfo.value, 6, 1, 0, 0, 109, 111, 99, 107, 0]),
+            Token.cnfInfo,
+            6,
+        )
         self.comm_dummy.req_info()
         bytes_read = self.comm_dummy.update_API6()
         assert bytes_read == expected_result
@@ -64,9 +72,11 @@ class TestCommunicationMock(unittest.TestCase):
         bytes_read = self.comm_dummy.update_API6()
         assert bytes_read == expected_result
         # indState shall be sent automatically, also
-        expected_result = (bytes(
-            [Token.indState.value, 0, 1, 0xFF, 0xFF, 0xFF, 0xFF, 1, 0,
-             1]), Token.indState, 0)
+        expected_result = (
+            bytes([Token.indState.value, 0, 1, 0xFF, 0xFF, 0xFF, 0xFF, 1, 0, 1]),
+            Token.indState,
+            0,
+        )
         bytes_read = self.comm_dummy.update_API6()
         assert bytes_read == expected_result
 
@@ -81,19 +91,22 @@ class TestCommunicationMock(unittest.TestCase):
         color = 0
         flags = 0x12
         lineData = [0x23, 0x24]
-        crc8 = 0x24
-        assert self.comm_dummy.cnf_line_API6(lineNumber, color, flags,
-                                             lineData)
+        # crc8 = 0x24
+        assert self.comm_dummy.cnf_line_API6(lineNumber, color, flags, lineData)
 
     def test_req_line_API6(self):
         self.comm_dummy.open_serial()
-        start_val, end_val, continuous_reporting, disable_hardware_beep = 0, 10, True, False
-        self.comm_dummy.req_start_API6(start_val, end_val,
-                                       continuous_reporting,
-                                       disable_hardware_beep)
+        start_val, end_val, continuous_reporting, disable_hardware_beep = (
+            0,
+            10,
+            True,
+            False,
+        )
+        self.comm_dummy.req_start_API6(
+            start_val, end_val, continuous_reporting, disable_hardware_beep
+        )
         self.comm_dummy.update_API6()  # cnfStart
 
         for i in range(0, 256):
             bytes_read = self.comm_dummy.update_API6()
-            assert bytes_read == (bytearray([Token.reqLine.value,
-                                             i]), Token.reqLine, i)
+            assert bytes_read == (bytearray([Token.reqLine.value, i]), Token.reqLine, i)

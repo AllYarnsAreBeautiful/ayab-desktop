@@ -14,14 +14,18 @@
 #    You should have received a copy of the GNU General Public License
 #    along with AYAB.  If not, see <http://www.gnu.org/licenses/>.
 #
-#    Copyright 2014 Sebastian Oliva, Christian Obersteiner, Andreas Müller, Christian Gerbrandt
+#    Copyright 2014 Sebastian Oliva, Christian Obersteiner,
+#       Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
+from __future__ import annotations
+
 from enum import Enum
+from typing import Any, Literal, Optional, TypeAlias
 from bitarray import bitarray
 
-from PyQt5.QtCore import QCoreApplication
-from PyQt5.QtWidgets import QWidget
+from PySide6.QtCore import QCoreApplication
+from PySide6.QtWidgets import QWidget
 
 from .status_gui import Ui_StatusTab
 
@@ -31,7 +35,7 @@ class Direction(Enum):
     Left = 1
     Right = 2
 
-    def reverse(self):
+    def reverse(self) -> Direction:
         if self == Direction.Left:
             return Direction.Right
         # else
@@ -41,7 +45,7 @@ class Direction(Enum):
         return Direction.Unknown
 
     @property
-    def symbol(self):
+    def symbol(self) -> Literal["\u2190", "\u2192", ""]:
         if self == Direction.Left:
             return "\u2190"
         # else
@@ -51,7 +55,7 @@ class Direction(Enum):
         return ""
 
     @property
-    def text(self):
+    def text(self) -> Literal["Left", "Right", ""]:
         if self == Direction.Left:
             return "Left"
         # else
@@ -68,7 +72,7 @@ class Carriage(Enum):
     Garter = 3
 
     @property
-    def symbol(self):
+    def symbol(self) -> Literal["K", "L", "G", ""]:
         if self == Carriage.Knit:
             return "K"
         elif self == Carriage.Lace:
@@ -79,7 +83,7 @@ class Carriage(Enum):
             return ""
 
     @property
-    def text(self):
+    def text(self) -> str:
         if self == Carriage.Knit:
             text = "Knit"
         elif self == Carriage.Lace:
@@ -92,6 +96,9 @@ class Carriage(Enum):
         return text
 
 
+ColorSymbolType: TypeAlias = Literal["", "A", "B", "C", "D", "E", "F"]
+
+
 class Status(object):
     """
     Data object for updating the status tab, progress bar, and knit progress window.
@@ -99,31 +106,51 @@ class Status(object):
     @author Tom Price
     @date   July 2020
     """
-    def __init__(self):
+
+    active: bool
+    # data fields
+    alt_color: Optional[int]
+    bits: bitarray
+    color: int
+    color_symbol: ColorSymbolType
+    current_row: int
+    firmware_state: int
+    line_number: int
+    mirror: bool
+    repeats: int
+    total_rows: int
+    # carriage info
+    carriage_direction: Direction
+    carriage_position: int
+    carriage_type: Carriage
+    hall_l: int
+    hall_r: int
+
+    def __init__(self) -> None:
         super().__init__()
         self.reset()
 
-    def reset(self):
+    def reset(self) -> None:
         self.active = True
         # data fields
-        self.firmware_state = -1
-        self.current_row = -1
-        self.line_number = -1
-        self.total_rows = -1
-        self.repeats = -1
-        self.color_symbol = ""
-        self.color = -1
         self.alt_color = None
         self.bits = bitarray()
+        self.color = -1
+        self.color_symbol = ""
+        self.current_row = -1
+        self.firmware_state = -1
+        self.line_number = -1
         self.mirror = False
+        self.repeats = -1
+        self.total_rows = -1
         # carriage info
+        self.carriage_direction = Direction.Unknown
+        self.carriage_position = -1
+        self.carriage_type = Carriage.Unknown
         self.hall_l = 0
         self.hall_r = 0
-        self.carriage_type = Carriage.Unknown
-        self.carriage_position = -1
-        self.carriage_direction = Direction.Unknown
 
-    def copy(self, status):
+    def copy(self, status: Status) -> None:
         self.active = status.active
         self.firmware_state = status.firmware_state
         self.current_row = status.current_row
@@ -139,12 +166,12 @@ class Status(object):
         self.carriage_position = status.carriage_position
         self.carriage_direction = status.carriage_direction
 
-    def parse_device_state_API6(self, state, msg):
+    def parse_device_state_API6(self, state: Any, msg: bytes) -> None:
         if not (self.active):
             return
 
         # else
-        firmware_state = msg[2]
+        # firmware_state = msg[2]
 
         hall_l = int((msg[3] << 8) + msg[4])
         hall_r = int((msg[5] << 8) + msg[6])
@@ -185,15 +212,16 @@ class StatusTab(Status, QWidget):
     @author Tom Price
     @date   July 2020
     """
-    def __init__(self):
+
+    def __init__(self) -> None:
         super().__init__()
         self.ui = Ui_StatusTab()
         self.ui.setupUi(self)
 
-    def refresh(self):
+    def refresh(self) -> None:
         pass  # TODO
 
-    def write_carriage_info(self, status):
+    def write_carriage_info(self, status: Status) -> None:
         if not (self.active):
             return
         # else

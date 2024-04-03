@@ -18,12 +18,18 @@
 #    Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
-import logging
+from __future__ import annotations
+
 from enum import Enum
 
-from PyQt5.QtCore import QCoreApplication
+from PySide6.QtCore import QCoreApplication
+from PySide6.QtWidgets import QComboBox
 
-from ayab.utils import odd, even
+from ..utils import odd, even
+from typing import TYPE_CHECKING, Callable, TypeAlias
+
+if TYPE_CHECKING:
+    from .control import Control
 
 
 class Mode(Enum):
@@ -33,29 +39,32 @@ class Mode(Enum):
     HEARTOFPLUTO_RIBBER = 3
     CIRCULAR_RIBBER = 4
 
-    def row_multiplier(self, ncolors):
+    def row_multiplier(self, ncolors: int) -> int:
         if self.name == "SINGLEBED":
             return 1
-        if (self.name == "CLASSIC_RIBBER" and ncolors > 2) \
-            or self.name == "CIRCULAR_RIBBER":
+        if (
+            self.name == "CLASSIC_RIBBER" and ncolors > 2
+        ) or self.name == "CIRCULAR_RIBBER":
             # every second line is blank
             return 2 * ncolors
-        if self.name == "MIDDLECOLORSTWICE_RIBBER" \
-            or self.name == "HEARTOFPLUTO_RIBBER":
+        if (
+            self.name == "MIDDLECOLORSTWICE_RIBBER"
+            or self.name == "HEARTOFPLUTO_RIBBER"
+        ):
             # only middle lines doubled
             return 2 * ncolors - 2
         else:
             # one line per color
             return ncolors
 
-    def good_ncolors(self, ncolors):
+    def good_ncolors(self, ncolors: int) -> int:
         if self.name == "SINGLEBED" or self.name == "CIRCULAR_RIBBER":
             return ncolors == 2
         else:
             # no maximum
             return ncolors >= 2
 
-    def knit_func(self, ncolors):
+    def knit_func(self, ncolors: int) -> str:
         method = "_" + self.name.lower()
         if self.name == "CLASSIC_RIBBER":
             method += ["_2col", "_multicol"][ncolors > 2]
@@ -63,20 +72,26 @@ class Mode(Enum):
 
     # FIXME this function is supposed to select needles
     # to knit the background color alongside the pattern
-    def flanking_needles(self, color, ncolors):
+    def flanking_needles(self, color: int, ncolors: int) -> bool:
         # return (color == 0 and self.name == "CLASSIC_RIBBER") \
         #     or (color == ncolors - 1
         #         and (self.name == "MIDDLECOLORSTWICE_RIBBER"
         #             or self.name == "HEARTOFPLUTO_RIBBER"))
         return color == 0  # and self.name != "CIRCULAR_RIBBER"
 
-    def add_items(box):
+    @staticmethod
+    def add_items(box: QComboBox) -> None:
         tr_ = QCoreApplication.translate
         box.addItem(tr_("KnitMode", "Singlebed"))
         box.addItem(tr_("KnitMode", "Ribber: Classic"))
         box.addItem(tr_("KnitMode", "Ribber: Middle-Colors-Twice"))
         box.addItem(tr_("KnitMode", "Ribber: Heart of Pluto"))
         box.addItem(tr_("KnitMode", "Ribber: Circular"))
+
+
+if TYPE_CHECKING:
+    ModeTuple: TypeAlias = tuple[int, int, bool, bool]
+    ModeFuncType: TypeAlias = Callable[[Control, int], ModeTuple]
 
 
 class ModeFunc(object):
@@ -88,7 +103,8 @@ class ModeFunc(object):
     """
 
     # singlebed, 2 color
-    def _singlebed(control, line_number):
+    @staticmethod
+    def _singlebed(control: Control, line_number: int) -> ModeTuple:
         line_number += control.start_row
 
         # when knitting infinitely, keep the requested
@@ -110,12 +126,13 @@ class ModeFunc(object):
         blank_line = False
 
         # Check if the last line of the pattern was requested
-        last_line = (control.pat_row == control.pat_height - 1)
+        last_line = control.pat_row == control.pat_height - 1
 
         return color, row_index, blank_line, last_line
 
     # doublebed, 2 color
-    def _classic_ribber_2col(control, line_number):
+    @staticmethod
+    def _classic_ribber_2col(control: Control, line_number: int) -> ModeTuple:
         line_number += 2 * control.start_row
 
         # calculate line number index for colors
@@ -136,18 +153,17 @@ class ModeFunc(object):
 
         color = [0, 1, 1, 0][i]  # 0 = A, 1 = B
 
-        row_index = (line_number +
-                     [0, 0, 1, -1][i]) % control.len_pat_expanded
+        row_index = (line_number + [0, 0, 1, -1][i]) % control.len_pat_expanded
 
         blank_line = False
 
-        last_line = (control.pat_row
-                     == control.pat_height - 1) and (i == 1 or i == 3)
+        last_line = (control.pat_row == control.pat_height - 1) and (i == 1 or i == 3)
 
         return color, row_index, blank_line, last_line
 
     # doublebed, multicolor
-    def _classic_ribber_multicol(control, line_number):
+    @staticmethod
+    def _classic_ribber_multicol(control: Control, line_number: int) -> ModeTuple:
 
         # halve line_number because every second line is BLANK
         blank_line = odd(line_number)
@@ -164,8 +180,7 @@ class ModeFunc(object):
 
         row_index = control.pat_row * control.num_colors + color
 
-        last_line = (row_index
-                     == control.len_pat_expanded - 1) and blank_line
+        last_line = (row_index == control.len_pat_expanded - 1) and blank_line
 
         if not blank_line:
             control.logger.debug("COLOR " + str(color))
@@ -173,7 +188,8 @@ class ModeFunc(object):
         return color, row_index, blank_line, last_line
 
     # Ribber, Middle-Colors-Twice
-    def _middlecolorstwice_ribber(control, line_number):
+    @staticmethod
+    def _middlecolorstwice_ribber(control: Control, line_number: int) -> ModeTuple:
 
         # doublebed middle-colors-twice multicolor
         # 0-00 1-11 2-22 3-33 4-44 5-55 .. (pat_row)
@@ -187,11 +203,10 @@ class ModeFunc(object):
 
         line_number += control.passes_per_row * control.start_row
 
-        control.pat_row, r = divmod(line_number,
-                                         control.passes_per_row)
+        control.pat_row, r = divmod(line_number, control.passes_per_row)
 
-        first_col = (r == 0)
-        last_col = (r == control.passes_per_row - 1)
+        first_col = r == 0
+        last_col = r == control.passes_per_row - 1
 
         if first_col or last_col:
             color = (last_col + control.pat_row) % 2
@@ -205,14 +220,14 @@ class ModeFunc(object):
 
         blank_line = not first_col and not last_col and odd(line_number)
 
-        last_line = (control.pat_row
-                     == control.pat_height - 1) and last_col
+        last_line = (control.pat_row == control.pat_height - 1) and last_col
 
         return color, row_index, blank_line, last_line
 
     # doublebed, multicolor <3 of pluto
     # rotates middle colors
-    def _heartofpluto_ribber(control, line_number):
+    @staticmethod
+    def _heartofpluto_ribber(control: Control, line_number: int) -> ModeTuple:
 
         # doublebed <3 of pluto multicolor
         # 0000 1111 2222 3333 4444 5555 .. (pat_row)
@@ -226,30 +241,30 @@ class ModeFunc(object):
 
         line_number += control.passes_per_row * control.start_row
 
-        control.pat_row, r = divmod(line_number,
-                                         control.passes_per_row)
+        control.pat_row, r = divmod(line_number, control.passes_per_row)
 
         if control.inf_repeat:
             control.pat_row %= control.pat_height
 
-        first_col = (r == 0)
-        last_col = (r == control.passes_per_row - 1)
+        first_col = r == 0
+        last_col = r == control.passes_per_row - 1
 
-        color = control.num_colors - 1 - (
-            (line_number + 1) % (2 * control.num_colors)) // 2
+        color = (
+            control.num_colors - 1 - ((line_number + 1) % (2 * control.num_colors)) // 2
+        )
 
         row_index = control.num_colors * control.pat_row + color
 
         blank_line = not first_col and not last_col and even(line_number)
 
-        last_line = (control.pat_row
-                     == control.pat_height - 1) and last_col
+        last_line = (control.pat_row == control.pat_height - 1) and last_col
 
         return color, row_index, blank_line, last_line
 
     # Ribber, Circular
     # not restricted to 2 colors
-    def _circular_ribber(control, line_number):
+    @staticmethod
+    def _circular_ribber(control: Control, line_number: int) -> ModeTuple:
 
         # A B  A B  A B  .. (color)
         # 0-0- 1-1- 2-2- .. (pat_row)
@@ -270,7 +285,6 @@ class ModeFunc(object):
 
         row_index = h
 
-        last_line = (row_index
-                     == control.len_pat_expanded - 1) and blank_line
+        last_line = (row_index == control.len_pat_expanded - 1) and blank_line
 
         return color, row_index, blank_line, last_line

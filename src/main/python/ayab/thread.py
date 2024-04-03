@@ -14,24 +14,28 @@
 #    You should have received a copy of the GNU General Public License
 #    along with AYAB.  If not, see <http://www.gnu.org/licenses/>.
 #
-#    Copyright 2014 Sebastian Oliva, Christian Obersteiner, Andreas Müller, Christian Gerbrandt
+#    Copyright 2014 Sebastian Oliva, Christian Obersteiner,
+#       Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
-from PyQt5.QtCore import QThread
+from __future__ import annotations
+from PySide6.QtCore import QThread
+from typing import Callable, Any
 
 
 class GenericThread(QThread):
-    '''A generic thread wrapper for functions on threads.'''
-    def __init__(self, function, *args, **kwargs):
+    """A generic thread wrapper for functions on threads."""
+
+    def __init__(self, function: Callable[..., Any], *args: Any, **kwargs: Any):
         QThread.__init__(self)
         self.function = function
         self.args = args
         self.kwargs = kwargs
 
-    def __del__(self):
+    def __del__(self) -> None:
         self.wait()
 
-    def run(self):
+    def run(self) -> None:
         try:
             self.function(*self.args, **self.kwargs)
         except Exception:

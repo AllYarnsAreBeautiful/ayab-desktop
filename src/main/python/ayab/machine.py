@@ -17,9 +17,10 @@
 #    Copyright 2013 Christian Obersteiner, Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
-# from PyQt5.QtCore import QCoreApplication
-
+from __future__ import annotations
 from enum import Enum
+from typing import Literal
+from PySide6.QtWidgets import QComboBox
 
 
 class Machine(Enum):
@@ -28,13 +29,14 @@ class Machine(Enum):
     @author Tom Price
     @date   July 2020
     """
+
     KH910_KH950 = 0
     KH900_KH930_KH940_KH965 = 1
     KH270 = 2
 
     @property
     # number of needles on machine
-    def width(self):
+    def width(self) -> Literal[112, 200]:
         if self == Machine.KH270:
             # The last needles don't pattern.
             return 112
@@ -42,7 +44,7 @@ class Machine(Enum):
             return 200
 
     @property
-    def name(self):
+    def name(self): -> str:
         if self == Machine.KH910_KH950:
             return "KH-910, KH-950i"
         if self == Machine.KH900_KH930_KH940_KH965:
@@ -51,7 +53,8 @@ class Machine(Enum):
             return "KH-270"
         return ""
 
-    def add_items(box):
+    @staticmethod
+    def add_items(box: QComboBox) -> None:
         """Add items to alignment combo box."""
         box.addItem("KH-910, KH-950i")
         box.addItem("KH-900, KH-930, KH-940, KH-965i")

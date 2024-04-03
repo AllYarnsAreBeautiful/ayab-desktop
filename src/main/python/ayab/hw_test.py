@@ -17,16 +17,27 @@
 #    Copyright 2013 Christian Obersteiner, Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
-from copy import copy
-import serial
-from PyQt5.QtWidgets import QDialog, QVBoxLayout, QPlainTextEdit, QButtonGroup, QPushButton, QGroupBox, QHBoxLayout, QCheckBox
-from PyQt5.QtGui import QFont
-from PyQt5.QtCore import QTimer
+from __future__ import annotations
+from PySide6.QtWidgets import (
+    QDialog,
+    QVBoxLayout,
+    QPlainTextEdit,
+    QPushButton,
+    QGroupBox,
+    QHBoxLayout,
+    QCheckBox,
+)
+from PySide6.QtGui import QFont
+from PySide6.QtCore import QTimer
 
-#from .cmd_buttons import CmdButtons
+# from .cmd_buttons import CmdButtons
 from .engine.engine_fsm import State
 from .engine.communication import Token
 from .engine.hw_test_communication_mock import HardwareTestCommunicationMock
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .ayab import GuiMain
 
 
 class HardwareTestDialog(QDialog):
@@ -34,7 +45,7 @@ class HardwareTestDialog(QDialog):
 
     commands = ["help", "send", "beep", "read", "auto", "test", "quit"]
 
-    def __init__(self, parent):
+    def __init__(self, parent: GuiMain):
         super().__init__()
         self.setModal(True)
         self.setWindowTitle("Hardware Test")  # TODO: translate
@@ -58,8 +69,10 @@ class HardwareTestDialog(QDialog):
             widget = getattr(self, name)
             self.__button_row.addWidget(widget)
             widget.clicked.connect(
-                lambda state, widget=widget, button=button:
-                self.__button_pushed(widget, button))
+                lambda state, widget=widget, button=button: self.__button_pushed(
+                    widget, button
+                )
+            )
         self._auto_button.setCheckable(True)  # toggles on/off
         self._test_button.setCheckable(True)  # toggles on/off
         self.__command_box.setLayout(self.__button_row)
@@ -73,15 +86,18 @@ class HardwareTestDialog(QDialog):
             self.__solenoid.append(QCheckBox(str(s)))
             self.__solenoid_row.addWidget(self.__solenoid[s])
             self.__solenoid[s].toggled.connect(
-                lambda state, idx = s: self.__set_solenoid(idx))
+                lambda state, idx=s: self.__set_solenoid(idx)
+            )
         self.__solenoids.setLayout(self.__solenoid_row)
         self.__layout.addWidget(self.__solenoids)
         self.setLayout(self.__layout)
 
         # TODO: customize appearance of solenoid checkboxes
-        self.setStyleSheet("""
+        self.setStyleSheet(
+            """
         QCheckBox {}
-        """)
+        """
+        )
 
     def open(self, control):
         self.__control = control
@@ -102,13 +118,13 @@ class HardwareTestDialog(QDialog):
     def hideEvent(self, event):
         self.__timer.stop()
         self.__console.setPlainText("")
-        self.__control.state == State.FINISHED
+        assert self.__control.state == State.FINISHED
         self.accept()
 
     def reject(self):
         # send quitCmd
         payload = bytearray()
-        token = getattr(Token, "quitCmd").value
+        token = Token.quitCmd.value
         payload.append(token)
         self.__control.com.write_API6(payload)
         self.__control.state = State.FINISHED

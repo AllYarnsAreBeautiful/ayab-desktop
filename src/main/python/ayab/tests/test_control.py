@@ -18,18 +18,17 @@
 #    Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
-import pytest
 import unittest
 from PIL import Image
 from bitarray import bitarray
 
-from ayab.signal_receiver import SignalReceiver
-from ayab.engine.control import Control
-from ayab.engine.options import Alignment
-from ayab.engine.mode import Mode, ModeFunc
-from ayab.engine.pattern import Pattern
-from ayab.engine.status import Status
-from ayab.machine import Machine
+from ..signal_receiver import SignalReceiver
+from ..engine.control import Control
+from ..engine.options import Alignment
+from ..engine.mode import Mode, ModeFunc
+from ..engine.pattern import Pattern
+from ..engine.status import Status
+from ..machine import Machine
 
 
 class Parent(object):
@@ -41,6 +40,7 @@ class Parent(object):
 class Engine(object):
     def __init__(self):
         self.status = Status()
+
 
 class Config(object):
     def __init__(self, machine, mode=Mode.SINGLEBED):
@@ -54,12 +54,12 @@ class TestControl(unittest.TestCase):
 
     def test__singlebed(self):
         control = Control(self.parent, self.parent.engine)
-        control.pattern = Pattern(Image.new('P', (1, 3)), Config(Machine(0)), 2)
+        control.pattern = Pattern(Image.new("P", (1, 3)), Config(Machine(0)), 2)
         control.num_colors = 2
         control.start_row = 0
         control.inf_repeat = False
         control.pat_height = control.pattern.pat_height
-        control.func = getattr(ModeFunc, "_singlebed")
+        control.func = ModeFunc._singlebed
         assert control.func(control, 0) == (0, 0, False, False)
         assert control.func(control, 1) == (0, 2, False, False)
         assert control.func(control, 2) == (0, 4, False, True)
@@ -71,13 +71,15 @@ class TestControl(unittest.TestCase):
 
     def test__classic_ribber_2col(self):
         control = Control(self.parent, self.parent.engine)
-        control.pattern = Pattern(Image.new('P', (1, 5)), Config(Machine(0), Mode.CLASSIC_RIBBER), 2)
+        control.pattern = Pattern(
+            Image.new("P", (1, 5)), Config(Machine(0), Mode.CLASSIC_RIBBER), 2
+        )
         control.num_colors = 2
         control.start_row = 0
         control.inf_repeat = False
         control.pat_height = control.pattern.pat_height
         control.len_pat_expanded = control.pat_height * control.num_colors
-        control.func = getattr(ModeFunc, "_classic_ribber_2col")
+        control.func = ModeFunc._classic_ribber_2col
         assert control.func(control, 0) == (0, 0, False, False)
         assert control.func(control, 1) == (1, 1, False, False)
         assert control.func(control, 2) == (1, 3, False, False)
@@ -98,13 +100,15 @@ class TestControl(unittest.TestCase):
 
     def test__classic_ribber_multicol(self):
         control = Control(self.parent, self.parent.engine)
-        control.pattern = Pattern(Image.new('P', (1, 3)), Config(Machine(0), Mode.CLASSIC_RIBBER), 3)
+        control.pattern = Pattern(
+            Image.new("P", (1, 3)), Config(Machine(0), Mode.CLASSIC_RIBBER), 3
+        )
         control.num_colors = 3
         control.start_row = 0
         control.inf_repeat = False
         control.pat_height = control.pattern.pat_height
         control.len_pat_expanded = control.pat_height * control.num_colors
-        control.func = getattr(ModeFunc, "_classic_ribber_multicol")
+        control.func = ModeFunc._classic_ribber_multicol
         assert control.func(control, 0) == (0, 0, False, False)
         assert control.func(control, 1) == (0, 0, True, False)
         assert control.func(control, 2) == (1, 1, False, False)
@@ -130,16 +134,17 @@ class TestControl(unittest.TestCase):
 
     def test__middlecolorstwice_ribber(self):
         control = Control(self.parent, self.parent.engine)
-        control.pattern = Pattern(Image.new('P', (1, 5)), Config(Machine(0), Mode.MIDDLECOLORSTWICE_RIBBER), 3)
+        control.pattern = Pattern(
+            Image.new("P", (1, 5)), Config(Machine(0), Mode.MIDDLECOLORSTWICE_RIBBER), 3
+        )
         control.mode = Mode.MIDDLECOLORSTWICE_RIBBER
         control.num_colors = 3
         control.start_row = 0
         control.inf_repeat = False
         control.pat_height = control.pattern.pat_height
         control.len_pat_expanded = control.pat_height * control.num_colors
-        control.passes_per_row = control.mode.row_multiplier(
-            control.num_colors)
-        control.func = getattr(ModeFunc, "_middlecolorstwice_ribber")
+        control.passes_per_row = control.mode.row_multiplier(control.num_colors)
+        control.func = ModeFunc._middlecolorstwice_ribber
         assert control.func(control, 0) == (0, 0, False, False)
         assert control.func(control, 1) == (2, 2, True, False)
         assert control.func(control, 2) == (2, 2, False, False)
@@ -171,16 +176,17 @@ class TestControl(unittest.TestCase):
 
     def test__heartofpluto_ribber(self):
         control = Control(self.parent, self.parent.engine)
-        control.pattern = Pattern(Image.new('P', (1, 5)), Config(Machine(0), Mode.HEARTOFPLUTO_RIBBER), 3)
+        control.pattern = Pattern(
+            Image.new("P", (1, 5)), Config(Machine(0), Mode.HEARTOFPLUTO_RIBBER), 3
+        )
         control.mode = Mode.HEARTOFPLUTO_RIBBER
         control.num_colors = 3
         control.start_row = 0
         control.inf_repeat = False
         control.pat_height = control.pattern.pat_height
         control.len_pat_expanded = control.pat_height * control.num_colors
-        control.passes_per_row = control.mode.row_multiplier(
-            control.num_colors)
-        control.func = getattr(ModeFunc, "_heartofpluto_ribber")
+        control.passes_per_row = control.mode.row_multiplier(control.num_colors)
+        control.func = ModeFunc._heartofpluto_ribber
         assert control.func(control, 0) == (2, 2, False, False)
         assert control.func(control, 1) == (1, 1, False, False)
         assert control.func(control, 2) == (1, 1, True, False)
@@ -212,13 +218,15 @@ class TestControl(unittest.TestCase):
 
     def test__circular_ribber(self):
         control = Control(self.parent, self.parent.engine)
-        control.pattern = Pattern(Image.new('P', (1, 3)), Config(Machine(0), Mode.CIRCULAR_RIBBER), 3)
+        control.pattern = Pattern(
+            Image.new("P", (1, 3)), Config(Machine(0), Mode.CIRCULAR_RIBBER), 3
+        )
         control.num_colors = 3
         control.start_row = 0
         control.inf_repeat = False
         control.pat_height = control.pattern.pat_height
         control.len_pat_expanded = control.pat_height * control.num_colors
-        control.func = getattr(ModeFunc, "_circular_ribber")
+        control.func = ModeFunc._circular_ribber
         assert control.func(control, 0) == (0, 0, False, False)
         assert control.func(control, 1) == (0, 0, True, False)
         assert control.func(control, 2) == (1, 1, False, False)
@@ -250,8 +258,8 @@ class TestControl(unittest.TestCase):
 
         # 40 pixel image set to the left
         control.mode = Mode.SINGLEBED
-        im = Image.new('P', (40, 3), 0)
-        im1 = Image.new('P', (40, 1), 1)
+        im = Image.new("P", (40, 3), 0)
+        im1 = Image.new("P", (40, 1), 1)
         im.paste(im1, (0, 0))
         pattern = Pattern(im, Config(Machine(0), Mode.SINGLEBED), 2)
         pattern.alignment = Alignment.LEFT
@@ -264,7 +272,7 @@ class TestControl(unittest.TestCase):
         control.end_pixel = 40
         bits0 = bitarray()
         bits0.frombytes(
-            b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+            b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
         )
         assert control.select_needles_API6(0, 0, False) == bits0
 
@@ -292,8 +300,7 @@ class TestControl(unittest.TestCase):
         assert Mode.SINGLEBED.knit_func(2) == "_singlebed"
         assert Mode.CLASSIC_RIBBER.knit_func(2) == "_classic_ribber_2col"
         assert Mode.CLASSIC_RIBBER.knit_func(3) == "_classic_ribber_multicol"
-        assert Mode.MIDDLECOLORSTWICE_RIBBER.knit_func(
-            3) == "_middlecolorstwice_ribber"
+        assert Mode.MIDDLECOLORSTWICE_RIBBER.knit_func(3) == "_middlecolorstwice_ribber"
         assert Mode.HEARTOFPLUTO_RIBBER.knit_func(4) == "_heartofpluto_ribber"
         assert Mode.CIRCULAR_RIBBER.knit_func(2) == "_circular_ribber"
 

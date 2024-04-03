@@ -14,12 +14,18 @@
 #    You should have received a copy of the GNU General Public License
 #    along with AYAB.  If not, see <http://www.gnu.org/licenses/>.
 #
-#    Copyright 2014 Sebastian Oliva, Christian Obersteiner, Andreas Müller, Christian Gerbrandt
+#    Copyright 2014 Sebastian Oliva, Christian Obersteiner,
+#       Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
-from PyQt5.QtWidgets import QMenuBar
+from __future__ import annotations
+from PySide6.QtWidgets import QMenuBar
 
 from .menu_gui import Ui_MenuBar
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .ayab import GuiMain
 
 
 class Menu(QMenuBar):
@@ -29,31 +35,32 @@ class Menu(QMenuBar):
     @author Tom Price
     @date   July 2020
     """
-    def __init__(self, parent):
+
+    def __init__(self, parent: GuiMain):
         super().__init__(parent)
         self.ui = Ui_MenuBar()
         self.ui.setupUi(self)
         self.setup()
 
-    def setup(self):
+    def setup(self) -> None:
         self.addAction(self.ui.menu_tools.menuAction())
         self.addAction(self.ui.menu_preferences.menuAction())
         self.addAction(self.ui.menu_help.menuAction())
 
-    def depopulate(self):
+    def depopulate(self) -> None:
         try:
-            self.removeAction(self.menu_image_actions.menuAction())
+            self.removeAction(self.ui.menu_image_actions.menuAction())
         except Exception:
             pass
         self.removeAction(self.ui.menu_tools.menuAction())
         self.removeAction(self.ui.menu_preferences.menuAction())
         self.removeAction(self.ui.menu_help.menuAction())
 
-    def repopulate(self):
+    def repopulate(self) -> None:
         self.addAction(self.ui.menu_image_actions.menuAction())
         self.setup()
 
-    def add_image_actions(self):
+    def add_image_actions(self) -> None:
         # This workaround is necessary because
         # self.menu_image_actions.menuAction().setEnabled(True)
         # does not seems to work (at least, not on Ubuntu 16.04)
