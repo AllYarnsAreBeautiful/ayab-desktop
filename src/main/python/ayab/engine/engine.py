@@ -23,8 +23,9 @@ import logging
 from time import sleep
 from PIL import Image
 
-from PySide6.QtCore import QCoreApplication, Signal
-from PySide6.QtWidgets import QDockWidget
+from PySide6.QtGui import QHelpEvent
+from PySide6.QtCore import QCoreApplication, QEvent, Signal
+from PySide6.QtWidgets import QDockWidget, QToolTip
 
 from .. import utils
 from ..machine import Machine
@@ -90,6 +91,9 @@ class Engine(SignalSender, QDockWidget):
         # activate UI elements
         self.__activate_ui()
 
+        # set tooltip
+        self.setToolTip(tr_("Dock", "Set machine using Preferences menu")) # FIXME needs translation
+
     def __disable_status_tab(self) -> None:
         self.ui.tab_widget.setTabEnabled(1, False)
         self.status.ui.label_progress.setText("")
@@ -113,6 +117,19 @@ class Engine(SignalSender, QDockWidget):
 
     def __read_portname(self) -> str:
         return self.ui.serial_port_dropdown.currentText()
+
+    def event(self, event: QEvent) -> bool:
+        if event.type() == QEvent.Type.ToolTip:
+            help_event = QHelpEvent(event)
+            pos = help_event.pos()
+            if pos.y() < 20:
+                # Show ToolTip only when cursor is over window title
+                QToolTip.showText(help_event.globalPos(), self.toolTip())
+            else:
+                QToolTip.hideText()
+                event.ignore()
+            return True
+        return super().event(event)
 
     def knit_config(self, image: Image.Image) -> None:
         """
