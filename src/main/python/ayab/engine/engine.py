@@ -120,11 +120,9 @@ class Engine(SignalSender, QDockWidget):
 
     def event(self, event: QEvent) -> bool:
         if event.type() == QEvent.Type.ToolTip:
-            help_event = QHelpEvent(event)
-            pos = help_event.pos()
-            if pos.y() < 20:
+            if event.pos().y() < 20: # type: ignore
                 # Show ToolTip only when cursor is over window title
-                QToolTip.showText(help_event.globalPos(), self.toolTip())
+                QToolTip.showText(event.globalPos(), self.toolTip()) # type: ignore
             else:
                 QToolTip.hideText()
                 event.ignore()
