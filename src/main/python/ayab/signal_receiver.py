@@ -80,6 +80,7 @@ class SignalReceiver(QObject):
         self.alignment_updater.connect(parent.scene.update_alignment)
         self.image_resizer.connect(parent.set_image_dimensions)
         self.image_reverser.connect(parent.reverse_image)
+        self.got_image_flag.connect(parent.got_image)
         self.operation_finisher.connect(parent.finish_operation)
         self.hw_test_starter.connect(parent.hw_test.open)
         self.hw_test_writer.connect(parent.hw_test.output)
