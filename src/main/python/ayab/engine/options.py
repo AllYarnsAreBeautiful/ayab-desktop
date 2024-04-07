@@ -220,7 +220,7 @@ class OptionsTab(SignalSender, QWidget):
 
     def set_image_dimensions(self, width: int, height: int) -> None:
         """
-        Called by Main UI on loading or transformation of an image
+        Called by main GUI on loading or transformation of an image
         to set start and stop needles to image width.
         Updates the maximum value of the Start Row UI element.
         """
@@ -228,6 +228,17 @@ class OptionsTab(SignalSender, QWidget):
         self.ui.start_needle_edit.setValue(left_side)
         self.ui.stop_needle_edit.setValue(width - left_side)
         self.ui.start_row_edit.setMaximum(height)
+
+    def reset_image(self) -> None:
+        """
+        Called by main GUI on loading image
+        to reset number of colors to 2
+        and reset initial row to initial row.
+        """
+        self.num_colors = 2
+        self.start_row = 0
+        self.ui.color_edit.setValue(self.num_colors)
+        self.ui.start_row_edit.setValue(self.start_row)
 
     def validate(self) -> tuple[Literal[False], str] | tuple[Literal[True], None]:
         """Validate configuration options."""
