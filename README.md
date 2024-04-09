@@ -84,6 +84,7 @@ install brew (not needed if git already installed):
 install git via brew (not needed if git already installed) :
 
     brew install git
+    brew install esptool
 
 install Xcode command line tools:
 
@@ -91,7 +92,7 @@ install Xcode command line tools:
 
 get ayab-desktop for eKnitter from github:
 
-    git clone -b ComViaIp https://github.com/yekomS/ayab-desktop ayab-desktop-eknitter
+    git clone -b eKnitter https://github.com/yekomS/ayab-desktop ayab-desktop-eknitter
 
 change to ayab-desktop-eknitter directory:
 
@@ -165,4 +166,3 @@ once all tools are installed, you can start ayab-desktop for eKnitter:
     cd ayab-desktop-eknitter
     conda activate venv
     python -m fbs run
-

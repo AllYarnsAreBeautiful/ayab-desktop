@@ -139,7 +139,7 @@ class FirmwareFlash(QFrame):
             if firmware.get("version") == firmware_key:
                 firmware_name = firmware.get("file")
 
-        if "eknitter" in controller_name and "COM" in port:
+        if "eknitter" in controller_name:
             command = self.generate_command_eknitter(base_dir, os_name, port, controller_name, firmware_name)
         else:
             command = self.generate_command_with_options(base_dir, os_name, port, controller_name, firmware_name)
@@ -148,15 +148,14 @@ class FirmwareFlash(QFrame):
             p = Popen(command,
                     stdout=PIPE, stderr=STDOUT, shell=True)
 
-            rc = p.poll()
-            while rc != 0:
-                while True:
-                    line = p.stdout.readline()
-                    self.__logger.debug(line)
-                    if not line:
-                        break
-                rc = p.poll()
+            while True:
+                output = p.stdout.readline()
+                if p.poll() is not None:
+                    break           
+                if output:
+                    self.__logger.debug(output.decode())
 
+            rc = p.poll()           
             if rc == 0:
                 self.__logger.info("Flashing Done!")
                 self.display_blocking_pop_up("Flashing Done!")
@@ -178,8 +177,9 @@ class FirmwareFlash(QFrame):
         elif os_name == "Linux":
             exe_route = self.__parent_ui.app_context.get_resource("ayab/firmware/esp32/linux-amd64/esptool")
         elif os_name == "Darwin":  # macOS
-            exe_route = self.__parent_ui.app_context.get_resource("ayab/firmware/esp32/macos/esptool")
-        
+            #exe_route = self.__parent_ui.app_context.get_resource("ayab/firmware/esp32/macos/esptool")
+            exe_route = "esptool.py"
+
         binary_file = os.path.join(self.__parent_ui.app_context.get_resource("ayab/firmware"), controller_name, firmware_name)
 
         serial_port = port
