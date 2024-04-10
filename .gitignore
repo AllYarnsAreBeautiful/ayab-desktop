@@ -7,6 +7,7 @@ venv*/
 ayab.egg-info
 dist
 __pycache__
+.mypy_cache/
 # File is changed by CI
 package_version
 # Makefile directories
