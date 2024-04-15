@@ -178,21 +178,24 @@ class Engine(SignalSender, QDockWidget):
             if self.__canceled or self.control.state == State.FINISHED:
                 break
 
-        self.control.stop()
-
+        # TODO: provide translations for these messages
         if operation == Operation.KNIT:
             if self.__canceled:
+                self.control.state = State.CANCEL_KNIT
                 self.emit_notification("Knitting canceled.")
                 self.__logger.info("Knitting canceled.")
+                self.control.operate(operation)
             else:
-                # operation == Operation.TEST:
                 self.__logger.info("Finished knitting.")
             # small delay to finish printing to knit progress window
             # before "finish.wav" sound plays
             sleep(1)
         else:
-            # TODO: provide translations for these messages
+            # operation == Operation.TEST:
             self.__logger.info("Finished testing.")
+
+        # stop serial communication
+        self.control.stop()
 
         # send signal to finish operation
         # "finish.wav" sound only plays if knitting was not canceled
