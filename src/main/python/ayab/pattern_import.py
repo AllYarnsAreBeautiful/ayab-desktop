@@ -558,39 +558,42 @@ class CutPatternConverter(PatternConverter):
             row_end = pos + 2 + getWordAt(pattern_data, pos)
             pos += 2
             while not eol:
-                byte = getByteAt(pattern_data, pos)
-                pos += 1
-                run = byte & 0x7F
-                if run == 0:  # EOL
-                    eol = True
-                    if pos != row_end:
-                        self.exit(
+                self.parse_color(pattern_data, pos, all_colors, row, column, row_end)
+        return pos
+
+    def parse_color(self, pattern_data: bytes, pos: int, all_colors: set[np.uint8], row: int, column: int, row_end: int):
+        byte = getByteAt(pattern_data, pos)
+        pos += 1
+        run = byte & 0x7F
+        if run == 0:  # EOL
+            eol = True
+            if pos != row_end:
+                self.exit(
                             ".cut file misspecified at row " + str(row), -5
                         )  # FIXME translate
-                else:
-                    if byte & 0x80:
-                        color = getByteAt(pattern_data, pos)
-                        pos += 1
-                        all_colors.add(color)
-                        for _stitch in range(run):
-                            if column > self.width:
-                                self.exit(
+        else:
+            if byte & 0x80:
+                color = getByteAt(pattern_data, pos)
+                pos += 1
+                all_colors.add(color)
+                for _stitch in range(run):
+                    if column > self.width:
+                        self.exit(
                                     "row " + str(row) + " is too long", -5
                                 )  # FIXME translate
-                            self.color_pattern[row, column] = color
-                            column += 1
-                    else:
-                        for _stitch in range(run):
-                            if column > self.width:
-                                self.exit(
+                    self.color_pattern[row, column] = color
+                    column += 1
+            else:
+                for _stitch in range(run):
+                    if column > self.width:
+                        self.exit(
                                     "row " + str(row) + " is too long", -5
                                 )  # FIXME translate
-                            color = getByteAt(pattern_data, pos)
-                            pos += 1
-                            all_colors.add(color)
-                            self.color_pattern[row, column] = color
-                            column += 1
-        return pos
+                    color = getByteAt(pattern_data, pos)
+                    pos += 1
+                    all_colors.add(color)
+                    self.color_pattern[row, column] = color
+                    column += 1
 
     #  read .cut file and optional .pal file, return a PIL.Image object
     def pattern2im(
