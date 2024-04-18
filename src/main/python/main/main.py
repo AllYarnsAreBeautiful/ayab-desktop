@@ -10,13 +10,19 @@ from PySide6.QtCore import Qt, QCoreApplication, QTranslator, QLocale, QSettings
 
 from typing import TYPE_CHECKING, cast
 
-from main.ayab.ayab import GuiMain
-from main.ayab import utils
 
 if TYPE_CHECKING:  # TODO: why does mypy not resolve the absolute import correctly?
+    from main.ayab.ayab import GuiMain
+    from main.ayab import utils
     # from https://github.com/python/typing/discussions/1102#discussioncomment-2376328
     cached_property = property
 else:
+    try:
+        from main.ayab.ayab import GuiMain
+        from main.ayab import utils
+    except: #'fbs run' needs weird things.
+        from ayab.ayab import GuiMain
+        from ayab import utils
     from fbs_runtime.application_context.PySide6 import cached_property
 
 

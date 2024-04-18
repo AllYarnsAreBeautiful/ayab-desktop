@@ -1,6 +1,6 @@
 # To run tests
 
-From `src/main/main`
+From `src/main/python/main`
 
 Run:
 
