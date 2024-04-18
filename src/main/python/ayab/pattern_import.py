@@ -376,12 +376,12 @@ class PatPatternConverter(DAKPatternConverter):
         # return self.status
         return self.output_im()
 
-    def extract_color(self, pattern_data:bytes, color:np.uint8, i:int):
+    def extract_color(self, pattern_data: bytes, color: np.uint8, i: int) -> None:
         a = getByteAt(pattern_data, i + 3)
         if a != 0xFF:
             color += 1
             pos = cast(int, 3 * (a & 0xF))
-                    # b = 3 * (self.getByteAt(i + 0x84) & 0xF)
+            # b = 3 * (self.getByteAt(i + 0x84) & 0xF)
             new_color = Color(
                         np.uint8(0x10 + 0x40 * (0 == i)),
                         # ((self.col1 & 0xFF) == i),
@@ -561,7 +561,7 @@ class CutPatternConverter(PatternConverter):
                 eol = self.parse_color(pattern_data, pos, all_colors, row, column, row_end)
         return pos
 
-    def parse_color(self, pattern_data: bytes, pos: int, all_colors: set[np.uint8], row: int, column: int, row_end: int):
+    def parse_color(self, pattern_data: bytes, pos: int, all_colors: set[np.uint8], row: int, column: int, row_end: int) -> bool:
         byte = getByteAt(pattern_data, pos)
         pos += 1
         run = byte & 0x7F
