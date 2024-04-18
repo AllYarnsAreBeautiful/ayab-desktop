@@ -92,26 +92,26 @@ jobs:
         id: gui1-cache
         uses: actions/cache@v3
         with:
-          path: src/main/main/ayab/*_gui.py
-          key: gui1-${{ hashFiles('src/main/main/ayab/*_gui.ui') }}
+          path: src/main/python/main/ayab/*_gui.py
+          key: gui1-${{ hashFiles('src/main/python/main/ayab/*_gui.ui') }}
       - name: Use cached gui files (2)
         id: gui2-cache
         uses: actions/cache@v3
         with:
-          path: src/main/main/ayab/engine/*_gui.py
-          key: gui2-${{ hashFiles('src/main/main/ayab/engine/*_gui.ui') }}
+          path: src/main/python/main/ayab/engine/*_gui.py
+          key: gui2-${{ hashFiles('src/main/python/main/ayab/engine/*_gui.ui') }}
       - name: Use cached logo
         id: logo-cache
         uses: actions/cache@v3
         with:
-          path: src/main/main/ayab/ayab_logo_rc.py
-          key: logo-${{ hashFiles('src/main/main/ayab/ayab_logo_rc.qrc') }}
+          path: src/main/python/main/ayab/ayab_logo_rc.py
+          key: logo-${{ hashFiles('src/main/python/main/ayab/ayab_logo_rc.qrc') }}
       - name: Use cached graphics
         id: e-cache
         uses: actions/cache@v3
         with:
-          path: src/main/main/ayab/engine/*_rc.py
-          key: e-${{ hashFiles('src/main/main/ayab/engine/*_rc.qrc') }}
+          path: src/main/python/main/ayab/engine/*_rc.py
+          key: e-${{ hashFiles('src/main/python/main/ayab/engine/*_rc.qrc') }}
       - name: Use cached translation files
         id: qm-cache
         uses: actions/cache@v3
@@ -137,26 +137,26 @@ jobs:
         if: ${{ (steps.gui1-cache.outputs.cache-hit != 'true') }}
         uses: actions/cache/save@v3
         with:
-          path: src/main/main/ayab/*_gui.py
-          key: gui1-${{ hashFiles('src/main/main/ayab/*_gui.ui') }}
+          path: src/main/python/main/ayab/*_gui.py
+          key: gui1-${{ hashFiles('src/main/python/main/ayab/*_gui.ui') }}
       - name: Cache gui files (2)
         if: ${{ (steps.gui2-cache.outputs.cache-hit != 'true') }}
         uses: actions/cache/save@v3
         with:
-          path: src/main/main/ayab/*_gui.py
-          key: gui2-${{ hashFiles('src/main/main/ayab/engine/*_gui.ui') }}
+          path: src/main/python/main/ayab/*_gui.py
+          key: gui2-${{ hashFiles('src/main/python/main/ayab/engine/*_gui.ui') }}
       - name: Cache logo
         if: ${{ (steps.logo-cache.outputs.cache-hit != 'true') }}
         uses: actions/cache/save@v3
         with:
-          path: src/main/main/ayab/ayab_logo_rc.py
-          key: logo-${{ hashFiles('src/main/main/ayab/ayab_logo_rc.qrc') }}
+          path: src/main/python/main/ayab/ayab_logo_rc.py
+          key: logo-${{ hashFiles('src/main/python/main/ayab/ayab_logo_rc.qrc') }}
       - name: Cache graphics
         if: ${{ (steps.e-cache.outputs.cache-hit != 'true') }}
         uses: actions/cache/save@v3
         with:
-          path: src/main/main/ayab/engine/*_rc.py
-          key: e-${{ hashFiles('src/main/main/ayab/engine/*_rc.qrc') }}
+          path: src/main/python/main/ayab/engine/*_rc.py
+          key: e-${{ hashFiles('src/main/python/main/ayab/engine/*_rc.qrc') }}
       - name: Cache translation files
         if: ${{ (steps.qm-cache.outputs.cache-hit != 'true') }}
         uses: actions/cache/save@v3
@@ -239,32 +239,32 @@ jobs:
         id: gui1-cache
         uses: actions/cache@v3
         with:
-          path: src/main/main/ayab/*_gui.py
-          key: gui1-${{ hashFiles('src/main/main/ayab/*_gui.ui') }}
+          path: src/main/python/main/ayab/*_gui.py
+          key: gui1-${{ hashFiles('src/main/python/main/ayab/*_gui.ui') }}
           enableCrossOsArchive: true
           fail-on-cache-miss: true
       - name: Restore cached gui files (2)
         id: gui2-cache
         uses: actions/cache@v3
         with:
-          path: src/main/main/ayab/engine/*_gui.py
-          key: gui2-${{ hashFiles('src/main/main/ayab/engine/*_gui.ui') }}
+          path: src/main/python/main/ayab/engine/*_gui.py
+          key: gui2-${{ hashFiles('src/main/python/main/ayab/engine/*_gui.ui') }}
           enableCrossOsArchive: true
           fail-on-cache-miss: true
       - name: Restore cached logo
         id: logo-cache
         uses: actions/cache@v3
         with:
-          path: src/main/main/ayab/ayab_logo_rc.py
-          key: logo-${{ hashFiles('src/main/main/ayab/ayab_logo_rc.qrc') }}
+          path: src/main/python/main/ayab/ayab_logo_rc.py
+          key: logo-${{ hashFiles('src/main/python/main/ayab/ayab_logo_rc.qrc') }}
           enableCrossOsArchive: true
           fail-on-cache-miss: true
       - name: Restore cached graphics
         id: e-cache
         uses: actions/cache@v3
         with:
-          path: src/main/main/ayab/engine/*_rc.py
-          key: e-${{ hashFiles('src/main/main/ayab/engine/*_rc.qrc') }}
+          path: src/main/python/main/ayab/engine/*_rc.py
+          key: e-${{ hashFiles('src/main/python/main/ayab/engine/*_rc.qrc') }}
           enableCrossOsArchive: true
           fail-on-cache-miss: true
       - name: Restore cached translation files
@@ -286,16 +286,16 @@ jobs:
       - name: Remove unneeded files
         shell: bash
         run: |
-          rm src/main/main/ayab/*_gui.ui
-          rm src/main/main/ayab/ayab_logo_rc.qrc
+          rm src/main/python/main/ayab/*_gui.ui
+          rm src/main/python/main/ayab/ayab_logo_rc.qrc
       - name: Change line endings to CRLF
         shell: bash
         run: |
-          for f in $(ls /main/main/ayab/*_gui.py)
+          for f in $(ls /main/python/main/ayab/*_gui.py)
           do
             unix2dos $f
           done
-          for f in $(ls /main/main/ayab/engine/*_gui.py)
+          for f in $(ls /main/python/main/ayab/engine/*_gui.py)
           do
             unix2dos $f
           done
@@ -303,7 +303,7 @@ jobs:
         shell: bash
         run: |
           pwd
-          ls -l src/main/main/ayab/
+          ls -l src/main/python/main/ayab/
           ls -l src/main/resources/base/ayab/translations/
       - name: Build app
         shell: pwsh
@@ -381,29 +381,29 @@ jobs:
         id: gui1-cache
         uses: actions/cache@v3
         with:
-          path: src/main/main/ayab/*_gui.py
-          key: gui1-${{ hashFiles('src/main/main/ayab/*_gui.ui') }}
+          path: src/main/python/main/ayab/*_gui.py
+          key: gui1-${{ hashFiles('src/main/python/main/ayab/*_gui.ui') }}
           fail-on-cache-miss: true
       - name: Restore cached gui files (2)
         id: gui2-cache
         uses: actions/cache@v3
         with:
-          path: src/main/main/ayab/engine/*_gui.py
-          key: gui2-${{ hashFiles('src/main/main/ayab/engine/*_gui.ui') }}
+          path: src/main/python/main/ayab/engine/*_gui.py
+          key: gui2-${{ hashFiles('src/main/python/main/ayab/engine/*_gui.ui') }}
           fail-on-cache-miss: true
       - name: Restore cached logo
         id: logo-cache
         uses: actions/cache@v3
         with:
-          path: src/main/main/ayab/ayab_logo_rc.py
-          key: logo-${{ hashFiles('src/main/main/ayab/ayab_logo_rc.qrc') }}
+          path: src/main/python/main/ayab/ayab_logo_rc.py
+          key: logo-${{ hashFiles('src/main/python/main/ayab/ayab_logo_rc.qrc') }}
           fail-on-cache-miss: true
       - name: Restore cached graphics
         id: e-cache
         uses: actions/cache@v3
         with:
-          path: src/main/main/ayab/engine/*_rc.py
-          key: e-${{ hashFiles('src/main/main/ayab/engine/*_rc.qrc') }}
+          path: src/main/python/main/ayab/engine/*_rc.py
+          key: e-${{ hashFiles('src/main/python/main/ayab/engine/*_rc.qrc') }}
           fail-on-cache-miss: true
       - name: Restore cached translation files
         id: qm-cache
@@ -422,12 +422,12 @@ jobs:
           fail-on-cache-miss: true
       - name: Remove unneeded files
         run: |
-          rm src/main/main/ayab/*_gui.ui
-          rm src/main/main/ayab/ayab_logo_rc.qrc
+          rm src/main/python/main/ayab/*_gui.ui
+          rm src/main/python/main/ayab/ayab_logo_rc.qrc
       - name: Check cached files
         run: |
           pwd
-          ls -l src/main/main/ayab/
+          ls -l src/main/python/main/ayab/
           ls -l src/main/resources/base/ayab/translations/
       - name: Build app
         run: |
@@ -517,29 +517,29 @@ jobs:
         id: gui1-cache
         uses: actions/cache@v3
         with:
-          path: src/main/python/ayab/*_gui.py
-          key: gui1-${{ hashFiles('src/main/python/ayab/*_gui.ui') }}
+          path: src/main/python/main/ayab/*_gui.py
+          key: gui1-${{ hashFiles('src/main/python/main/ayab/*_gui.ui') }}
           fail-on-cache-miss: true
       - name: Restore cached gui files (2)
         id: gui2-cache
         uses: actions/cache@v3
         with:
-          path: src/main/python/ayab/engine/*_gui.py
-          key: gui2-${{ hashFiles('src/main/python/ayab/engine/*_gui.ui') }}
+          path: src/main/python/main/ayab/engine/*_gui.py
+          key: gui2-${{ hashFiles('src/main/python/main/ayab/engine/*_gui.ui') }}
           fail-on-cache-miss: true
       - name: Restore cached logo
         id: logo-cache
         uses: actions/cache@v3
         with:
-          path: src/main/python/ayab/ayab_logo_rc.py
-          key: logo-${{ hashFiles('src/main/python/ayab/ayab_logo_rc.qrc') }}
+          path: src/main/python/main/ayab/ayab_logo_rc.py
+          key: logo-${{ hashFiles('src/main/python/main/ayab/ayab_logo_rc.qrc') }}
           fail-on-cache-miss: true
       - name: Restore cached graphics
         id: e-cache
         uses: actions/cache@v3
         with:
-          path: src/main/python/ayab/engine/*_rc.py
-          key: e-${{ hashFiles('src/main/python/ayab/engine/*_rc.qrc') }}
+          path: src/main/python/main/ayab/engine/*_rc.py
+          key: e-${{ hashFiles('src/main/python/main/ayab/engine/*_rc.qrc') }}
           fail-on-cache-miss: true
       - name: Restore cached translation files
         id: qm-cache
@@ -559,23 +559,23 @@ jobs:
       - name: Move cached files
         run: |
           mv src/main/resources/base/ayab/firmware/*.hex squashfs-root/src/main/resources/base/ayab/firmware/
-          mv src/main/python/ayab/*_gui.py squashfs-root/src/main/python/ayab/
-          mv src/main/python/ayab/engine/*_gui.py squashfs-root/src/main/python/ayab/engine/
-          mv src/main/python/ayab/ayab_logo_rc.py squashfs-root/src/main/python/ayab/
-          mv src/main/python/ayab/engine/lowercase_e_rc.py squashfs-root/src/main/python/ayab/engine
-          mv src/main/python/ayab/engine/lowercase_e_reversed_rc.py squashfs-root/src/main/python/ayab/engine
+          mv src/main/python/main/ayab/*_gui.py squashfs-root/src/main/python/main/ayab/
+          mv src/main/python/main/ayab/engine/*_gui.py squashfs-root/src/main/python/main/ayab/engine/
+          mv src/main/python/main/ayab/ayab_logo_rc.py squashfs-root/src/main/python/main/ayab/
+          mv src/main/python/main/ayab/engine/lowercase_e_rc.py squashfs-root/src/main/python/main/ayab/engine
+          mv src/main/python/main/ayab/engine/lowercase_e_reversed_rc.py squashfs-root/src/main/python/main/ayab/engine
           mv src/main/resources/base/ayab/translations/*.qm squashfs-root/src/main/resources/base/ayab/translations/
           mv src/build/settings/base.json squashfs-root/src/build/settings/base.json
       - name: Remove unneeded files
         run: |
-          rm squashfs-root/src/main/python/ayab/*_gui.ui
-          rm squashfs-root/src/main/python/ayab/ayab_logo_rc.qrc
-          rm squashfs-root/src/main/python/ayab/engine/lowercase_e_rc.qrc
-          rm squashfs-root/src/main/python/ayab/engine/lowercase_e_reversed_rc.qrc
+          rm squashfs-root/src/main/python/main/ayab/*_gui.ui
+          rm squashfs-root/src/main/python/main/ayab/ayab_logo_rc.qrc
+          rm squashfs-root/src/main/python/main/ayab/engine/lowercase_e_rc.qrc
+          rm squashfs-root/src/main/python/main/ayab/engine/lowercase_e_reversed_rc.qrc
       - name: Check cached files
         run: |
           pwd
-          ls -l squashfs-root/src/main/python/ayab/
+          ls -l squashfs-root/src/main/python/main/ayab/
           ls -l squashfs-root/src/main/resources/base/ayab/translations/
       - name: Replace AppRun
         run: |
