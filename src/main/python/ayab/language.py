@@ -26,7 +26,7 @@ from PySide6.QtWidgets import QComboBox
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from ..main import AppContext
+    from main import AppContext
 
 
 class Language(object):
