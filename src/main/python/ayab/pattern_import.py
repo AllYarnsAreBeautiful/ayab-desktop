@@ -367,12 +367,22 @@ class PatPatternConverter(DAKPatternConverter):
             # self.col1 = Counter(color_array).most_common(1)[0][0]
             color = np.uint8(0)
             for i in range(0x80):
-                a = getByteAt(pattern_data, i + 3)
-                if a != 0xFF:
-                    color += 1
-                    pos = cast(int, 3 * (a & 0xF))
+                self.extract_color(pattern_data, color, i)
+        # if self.debug:
+        # print(f"col1 {hex(self.col1)}")
+        #
+        #  no information on stitch types
+        #  done
+        # return self.status
+        return self.output_im()
+
+    def extract_color(self, pattern_data:bytes, color:np.uint8, i:int):
+        a = getByteAt(pattern_data, i + 3)
+        if a != 0xFF:
+            color += 1
+            pos = cast(int, 3 * (a & 0xF))
                     # b = 3 * (self.getByteAt(i + 0x84) & 0xF)
-                    new_color = Color(
+            new_color = Color(
                         np.uint8(0x10 + 0x40 * (0 == i)),
                         # ((self.col1 & 0xFF) == i),
                         color,
@@ -382,16 +392,9 @@ class PatPatternConverter(DAKPatternConverter):
                         getByteAt(pattern_data, 0x106 + pos),
                         getByteAt(pattern_data, 0x105 + pos),
                     )
-                    self.colors[i] = new_color
-                    if self.debug:
-                        print(f"new_color {new_color.string()}")
-        # if self.debug:
-        # print(f"col1 {hex(self.col1)}")
-        #
-        #  no information on stitch types
-        #  done
-        # return self.status
-        return self.output_im()
+            self.colors[i] = new_color
+            if self.debug:
+                print(f"new_color {new_color.string()}")
 
 
 #  end of PatPatternConverter class definition
