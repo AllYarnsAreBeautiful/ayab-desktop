@@ -10,8 +10,8 @@ from PySide6.QtCore import Qt, QCoreApplication, QTranslator, QLocale, QSettings
 
 from typing import TYPE_CHECKING, cast
 
-from ayab.ayab import GuiMain
-from ayab import utils
+from main.ayab.ayab import GuiMain
+from main.ayab import utils
 
 if TYPE_CHECKING:  # TODO: why does mypy not resolve the absolute import correctly?
     # from https://github.com/python/typing/discussions/1102#discussioncomment-2376328
