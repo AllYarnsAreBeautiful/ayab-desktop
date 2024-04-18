@@ -220,7 +220,7 @@ class PrefsDialog(QDialog):
         self.__refresh_form()
 
     def __make_label(self, var: str) -> QLabel:
-        title = re.sub(r"_", r" ", var).title()
+        title = str.replace(var,"_"," ").title()
         return QLabel(QCoreApplication.translate("Prefs", title))
 
     def __make_widget(self, var: PreferencesDictKeys) -> PrefsWidgetTypes:

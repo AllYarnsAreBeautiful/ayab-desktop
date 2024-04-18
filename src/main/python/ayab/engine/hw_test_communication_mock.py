@@ -99,6 +99,7 @@ class HardwareTestCommunicationMock(QObject, CommunicationMock):
         self.__autoTestOn = msg[1]
 
     def _handle_quitCmd(self, msg):
+        # mock
         pass
 
     def _handle_setCmd(self, msg):
@@ -124,10 +125,12 @@ class HardwareTestCommunicationMock(QObject, CommunicationMock):
             return
         # arguments ignored
 
-    def __handle_unrecognizedCmd():
+    def __handle_unrecognizedCmd(self):
+        # mock
         pass
 
     def __beep(self):
+        # mock
         pass
 
     def __read_EOL_sensors(self):

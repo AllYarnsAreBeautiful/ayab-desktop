@@ -25,6 +25,7 @@ from ..engine.status import Status, Carriage, Direction
 
 class TestStatus(unittest.TestCase):
     def setUp(self):
+        # no setup
         pass
 
     def test_parse_device_state_API6(self):

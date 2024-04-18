@@ -110,8 +110,9 @@ class PatternConverter:
         self.filename = filename
         if self.debug:
             print(f"filename {self.filename}")
-        file = open(self.filename, "rb")
-        if file is None:
+        try:
+            file = open(self.filename, "rb")
+        except OSError:
             self.exit("file not found", -3)  # FIXME translate
         data = file.read()
         file.close()
