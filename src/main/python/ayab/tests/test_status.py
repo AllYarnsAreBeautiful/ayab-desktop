@@ -25,12 +25,13 @@ from ..engine.status import Status, Carriage, Direction
 
 class TestStatus(unittest.TestCase):
     def setUp(self):
+        # no setup
         pass
 
     def test_parse_device_state_API6(self):
         p = Status()
         p.active = True
-        msg = [0, 99, 1, 2, 3, 4, 5, 0, 7.9, 1]
+        msg = bytes([0, 99, 1, 2, 3, 4, 5, 0, 7, 1])
         p.parse_device_state_API6(1, msg)
         assert p.hall_l == 0x203
         assert p.hall_r == 0x405

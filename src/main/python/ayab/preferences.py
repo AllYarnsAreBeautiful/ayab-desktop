@@ -25,7 +25,6 @@ The method of configuration may differ depending on the OS.
 """
 
 from __future__ import annotations
-import re
 
 from PySide6.QtCore import Qt, QSettings, QCoreApplication
 from PySide6.QtWidgets import QDialog, QFormLayout, QLabel, QCheckBox, QComboBox
@@ -220,7 +219,7 @@ class PrefsDialog(QDialog):
         self.__refresh_form()
 
     def __make_label(self, var: str) -> QLabel:
-        title = re.sub(r"_", r" ", var).title()
+        title = str.replace(var, "_", " ").title()
         return QLabel(QCoreApplication.translate("Prefs", title))
 
     def __make_widget(self, var: PreferencesDictKeys) -> PrefsWidgetTypes:
