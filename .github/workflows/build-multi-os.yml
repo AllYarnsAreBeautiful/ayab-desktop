@@ -442,7 +442,7 @@ jobs:
         run: |
           mkdir git
           shopt -s extglob dotglob
-          mv !(git) git
+          cp !(git) git
           shopt -u dotglob
       - name: Download AppImage of Python designed for manylinux
         run: wget -c https://github.com/niess/python-appimage/releases/download/${{steps.vars.outputs.python}}/${{steps.vars.outputs.python-appimage}}
