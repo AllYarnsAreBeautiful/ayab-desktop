@@ -434,11 +434,16 @@ jobs:
       - name: Checkout repo into AppDir
         uses: actions/checkout@v3
         with:
-          path: git
           submodules: recursive
           fetch-depth: 0
-      - uses: ./git/.github/actions/init-environment
+      - uses: ./.github/actions/init-environment
         id: vars
+      - name: Relocate
+        run: |
+          mkdir git
+          shopt -s extglob dotglob
+          mv !(git) git
+          shopt -u dotglob
       - name: Download AppImage of Python designed for manylinux
         run: wget -c https://github.com/niess/python-appimage/releases/download/${{steps.vars.outputs.python}}/${{steps.vars.outputs.python-appimage}}
       - name: Extract the AppImage
