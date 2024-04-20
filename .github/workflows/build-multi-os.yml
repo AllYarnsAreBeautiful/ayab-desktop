@@ -56,23 +56,11 @@ jobs:
         run: |
           sudo apt update
           sudo apt-get install -y avrdude libasound2-dev
-      - name: Restore pip cache
-        id: pip-cache
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.build.txt') }}
       - name: Install Python modules
         run: |
           python -m pip install --upgrade pip
           python -m pip install --upgrade setuptools
           python -m pip install -r requirements.build.txt
-      - name: Cache Python modules
-        if: steps.pip-cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v3
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.build.txt') }}
       - name: Use cached gui files (1)
         id: gui1-cache
         uses: actions/cache@v3
