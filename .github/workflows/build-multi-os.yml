@@ -269,7 +269,7 @@ jobs:
           ls -l src/main/resources/base/ayab/translations/
       - name: Build app
         shell: pwsh
-        run: python -m fbs freeze --debug
+        run: python -m fbs freeze
       - name: Create installer
         shell: pwsh
         run: |
@@ -384,7 +384,7 @@ jobs:
           ls -l src/main/resources/base/ayab/translations/
       - name: Build app
         run: |
-          python -m fbs freeze --debug
+          python -m fbs freeze
           codesign -s - --force --all-architectures --timestamp --deep ./target/AYAB-mac.app
       - name: Create installer
         run: |
