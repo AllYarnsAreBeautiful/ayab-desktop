@@ -30,13 +30,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           submodules: recursive
-      - name: Set variables
-        id: vars
-        run: |
-          echo "sha-short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-          echo "tag=$(git describe --tags)" >> $GITHUB_OUTPUT
-          echo "draft=$(git describe --tags | sed -e 's/^test.*/true/;s/^v.*/false/')" >> $GITHUB_OUTPUT
-          echo "manifest=$(cat src/main/resources/base/ayab/firmware/manifest.txt)" >> $GITHUB_OUTPUT
+      - uses: ./.github/actions/init-environment
       - name: Get firmware version matching manifest
         run: |
           echo ${{ steps.vars.outputs.manifest }}
@@ -57,16 +51,6 @@ jobs:
         with:
           path: src/main/resources/base/ayab/firmware/*.hex
           key: firmware-${{ steps.vars.outputs.manifest }}
-      - name: Set PACKAGE_VERSION
-        run: |
-          echo ${{ steps.vars.outputs.tag }} > src/main/resources/base/ayab/package_version
-          # remove suffix from semver tag, as fbs does not support them
-          version_without_suffix=$(echo ${{ steps.vars.outputs.tag }} | sed -E 's/^v?([0-9]+\.[0-9]+\.[0-9]+).*$/\1/')
-          sed -i -e s/PACKAGE_VERSION/$version_without_suffix/ src/build/settings/base.json
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python-version }}
       - name: Install dependencies
         run: |
           sudo apt update
@@ -205,19 +189,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           submodules: recursive
-      - name: Set variables
-        id: vars
-        shell: bash
-        run: |
-          echo "sha-short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-          echo "tag=$(git describe --tags)" >> $GITHUB_OUTPUT
-          echo "draft=$(git describe --tags | sed -e 's/^test.*/true/;s/^v.*/false/')" >> $GITHUB_OUTPUT
-          echo "manifest=$(cat src/main/resources/base/ayab/firmware/manifest.txt)" >> $GITHUB_OUTPUT
-      - name: Set up Python ${{ matrix.python-version }}
-        id: py
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python-version }}
+      - uses: ./.github/actions/init-environment
       - name: Install dependencies
         shell: pwsh
         run: |
@@ -344,17 +316,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           submodules: recursive
-      - name: Set variables
-        id: vars
-        shell: bash
-        run: |
-          echo "sha-short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-          echo "tag=$(git describe --tags)" >> $GITHUB_OUTPUT
-          echo "manifest=$(cat src/main/resources/base/ayab/firmware/manifest.txt)" >> $GITHUB_OUTPUT
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python-version }}
+      - uses: ./.github/actions/init-environment
       - name: Install dependencies
         shell: zsh {0}
         run: |
@@ -472,19 +434,7 @@ jobs:
           path: git
           submodules: recursive
           fetch-depth: 0
-      - name: Set variables
-        id: vars
-        run: |
-          cd git
-          echo "sha-short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-          echo "tag=$(git describe --tags)" >> $GITHUB_OUTPUT
-          echo "python=python${{matrix.python-version}}" >> $GITHUB_OUTPUT
-          echo "manifest=$(cat src/main/resources/base/ayab/firmware/manifest.txt)" >> $GITHUB_OUTPUT
-          echo "python-appimage=python${{matrix.python-version}}.9-cp311-cp311-manylinux_2_28_x86_64.AppImage" >> $GITHUB_OUTPUT
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python-version }}
+      - uses: ./.github/actions/init-environment
       - name: Download AppImage of Python designed for manylinux
         run: wget -c https://github.com/niess/python-appimage/releases/download/${{steps.vars.outputs.python}}/${{steps.vars.outputs.python-appimage}}
       - name: Extract the AppImage
