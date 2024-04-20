@@ -31,6 +31,7 @@ jobs:
         with:
           submodules: recursive
       - uses: ./.github/actions/init-environment
+        id: vars
       - name: Get firmware version matching manifest
         run: |
           echo ${{ steps.vars.outputs.manifest }}
@@ -190,6 +191,7 @@ jobs:
         with:
           submodules: recursive
       - uses: ./.github/actions/init-environment
+        id: vars
       - name: Install dependencies
         shell: pwsh
         run: |
@@ -317,6 +319,7 @@ jobs:
         with:
           submodules: recursive
       - uses: ./.github/actions/init-environment
+        id: vars
       - name: Install dependencies
         shell: zsh {0}
         run: |
@@ -435,6 +438,7 @@ jobs:
           submodules: recursive
           fetch-depth: 0
       - uses: ./.github/actions/init-environment
+        id: vars
       - name: Download AppImage of Python designed for manylinux
         run: wget -c https://github.com/niess/python-appimage/releases/download/${{steps.vars.outputs.python}}/${{steps.vars.outputs.python-appimage}}
       - name: Extract the AppImage

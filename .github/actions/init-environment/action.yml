@@ -1,4 +1,13 @@
 name: Init Environment
+outputs:
+  sha-short:
+    value: ${{steps.vars.outputs.sha-short}}
+  tag:
+    value: ${{steps.vars.outputs.tag}}
+  draft:
+    value: ${{steps.vars.outputs.draft}}
+  manifest:
+    value: ${{steps.vars.outputs.manifest}}
 runs:
   using: "composite"
   steps:
