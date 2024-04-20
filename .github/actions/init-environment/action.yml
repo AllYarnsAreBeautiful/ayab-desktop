@@ -8,6 +8,10 @@ outputs:
     value: ${{steps.vars.outputs.draft}}
   manifest:
     value: ${{steps.vars.outputs.manifest}}
+  python:
+    value: ${{steps.vars.outputs.python}}
+  python-appimage:
+    value: ${{steps.vars.outputs.python-appimage}}
 runs:
   using: "composite"
   steps:
@@ -19,6 +23,8 @@ runs:
         echo "tag=$(git describe --tags)" >> $GITHUB_OUTPUT
         echo "draft=$(git describe --tags | sed -e 's/^test.*/true/;s/^v.*/false/')" >> $GITHUB_OUTPUT
         echo "manifest=$(cat src/main/resources/base/ayab/firmware/manifest.txt)" >> $GITHUB_OUTPUT
+        echo "python=python${{matrix.python-version}}" >> $GITHUB_OUTPUT
+        echo "python-appimage=python${{matrix.python-version}}.9-cp311-cp311-manylinux_2_28_x86_64.AppImage" >> $GITHUB_OUTPUT
     - name: Set PACKAGE_VERSION
       shell: bash
       run: |
@@ -31,3 +37,4 @@ runs:
       uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
+        cache: "pip"
