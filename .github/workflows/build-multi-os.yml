@@ -437,7 +437,7 @@ jobs:
           path: git
           submodules: recursive
           fetch-depth: 0
-      - uses: ./.github/actions/init-environment
+      - uses: ./git/.github/actions/init-environment
         id: vars
       - name: Download AppImage of Python designed for manylinux
         run: wget -c https://github.com/niess/python-appimage/releases/download/${{steps.vars.outputs.python}}/${{steps.vars.outputs.python-appimage}}
