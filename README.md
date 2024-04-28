@@ -166,3 +166,7 @@ once all tools are installed, you can start ayab-desktop for eKnitter:
     cd ayab-desktop-eknitter
     conda activate venv
     python -m fbs run
+
+you can update the latest changes
+
+    git pull origin eKnitter
