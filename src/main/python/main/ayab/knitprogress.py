@@ -49,11 +49,11 @@ class KnitProgress(QTableWidget):
             QHeaderView.ResizeMode.ResizeToContents
         )
         self.verticalHeader().setVisible(False)
-        self.blank = QTableWidgetItem()
-        self.blank.setSizeHint(QSize(0, 0))
         self.setColumnCount(6)
         for r in range(6):
-            self.setHorizontalHeaderItem(r, self.blank)
+            blank = QTableWidgetItem()
+            blank.setSizeHint(QSize(0, 0))
+            self.setHorizontalHeaderItem(r, blank)
         self.previousStatus: Optional[Status] = None
         self.scene = parent.scene
 
