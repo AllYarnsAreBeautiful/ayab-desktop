@@ -265,7 +265,7 @@ class Control(SignalSender):
     def select_needles_API6(
         self, color: int, row_index: int, blank_line: bool
     ) -> bitarray:
-        bits = bitarray([False] * self.machine.width, endian="little")
+        bits = bitarray(self.machine.width, endian="little")
 
         # select needles flanking the pattern
         # if necessary to knit the background color
