@@ -174,6 +174,8 @@ class Communication(object):
           color (int): The yarn color to be sent.
           flags (int): The flags sent to the controller.
           line_data (bytes): The bytearray to be sent to needles.
+              The leftmost needle is controlled by the least-significant bit of
+              the first byte.
         """
         if self.__ser is None:
             return
