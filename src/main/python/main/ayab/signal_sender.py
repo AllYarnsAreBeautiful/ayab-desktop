@@ -81,7 +81,7 @@ class SignalSender(object):
         self.__signal_receiver.needles_updater.emit(start_needle, stop_needle)
 
     def emit_alignment_updater(self, alignment: Alignment) -> None:
-        self.__signal_receiver.alignment_updater.emit(Alignment)
+        self.__signal_receiver.alignment_updater.emit(alignment)
 
     def emit_image_resizer(self) -> None:
         self.__signal_receiver.image_resizer.emit()
