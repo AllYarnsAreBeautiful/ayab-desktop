@@ -59,7 +59,7 @@ class Pattern(object):
             [0 for i in range(self.__num_colors)] for j in range(self.__pat_height)
         ]  # unused
         self.__pattern_expanded = [
-            bitarray([False] * self.__pat_width)
+            bitarray(self.__pat_width)
             for j in range(self.__num_colors * self.__pat_height)
         ]
 
