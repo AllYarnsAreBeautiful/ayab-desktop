@@ -120,7 +120,6 @@ class KnitProgress(QTableWidget):
         columns.append(carriage.symbol + " " + direction.symbol)
 
         # graph line of stitches
-        status.bits.reverse()
         midline = len(status.bits) - midline
 
         table_text = (
