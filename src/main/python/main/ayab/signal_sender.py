@@ -50,10 +50,10 @@ class SignalSender(object):
         self.__signal_receiver.start_row_updater.emit(start_row)
 
     def emit_progress_bar_updater(
-        self, row: int, total: int, repeats: int, color_symbol: ColorSymbolType
+        self, status: Status
     ) -> None:
         self.__signal_receiver.progress_bar_updater.emit(
-            row, total, repeats, color_symbol
+            status
         )
 
     def emit_knit_progress_updater(
