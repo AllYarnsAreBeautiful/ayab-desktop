@@ -72,14 +72,17 @@ class HardwareTestCommunicationMock(QObject, CommunicationMock):
 
     def _handle_helpCmd(self, msg):
         self.__output(Token.testRes, "The following commands are available:\n")
-        self.__output(Token.testRes, "SET solenoid [0..15] [0/1]\n")
-        self.__output(Token.testRes, "READ encoders and EOL sensors\n")
-        self.__output(Token.testRes, "AUTO [0/1] continuous reads\n")
-        self.__output(Token.testRes, "TEST [0/1] toggle solenoids\n")
-        self.__output(Token.testRes, "SEND a test message\n")
-        self.__output(Token.testRes, "BEEP test buzzer\n")
-        self.__output(Token.testRes, "HELP show commands\n")
-        self.__output(Token.testRes, "QUIT\n")
+        self.__output(Token.testRes, "setSingle [0..15] [1/0]\n")
+        self.__output(Token.testRes, "setAll [0..FFFF]\n")
+        self.__output(Token.testRes, "readEOLsensors\n")
+        self.__output(Token.testRes, "readEncoders\n")
+        self.__output(Token.testRes, "beep\n")
+        self.__output(Token.testRes, "autoRead\n")
+        self.__output(Token.testRes, "autoTest\n")
+        self.__output(Token.testRes, "send\n")
+        self.__output(Token.testRes, "stop\n")
+        self.__output(Token.testRes, "quit\n")
+        self.__output(Token.testRes, "help\n")
 
     def _handle_sendCmd(self, msg):
         self.__output(Token.testRes, "\x31\x32\x33\n")
