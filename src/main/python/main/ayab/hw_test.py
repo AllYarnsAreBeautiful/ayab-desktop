@@ -43,7 +43,19 @@ if TYPE_CHECKING:
 class HardwareTestDialog(QDialog):
     """Console for hardware tests."""
 
-    commands = ["help", "send", "beep", "read", "auto", "test", "quit"]
+    commands = [
+        "help",
+        "send",
+        "beep",
+        "setSingle",
+        "setAll",
+        "readEOLsensors",
+        "readEncoders",
+        "autoRead",
+        "autoTest",
+        "stop",
+        "quit",
+    ]
 
     def __init__(self, parent: GuiMain):
         super().__init__()
@@ -73,8 +85,8 @@ class HardwareTestDialog(QDialog):
                     widget, button
                 )
             )
-        self._auto_button.setCheckable(True)  # toggles on/off
-        self._test_button.setCheckable(True)  # toggles on/off
+        self._autoRead_button.setCheckable(True)  # toggles on/off
+        self._autoTest_button.setCheckable(True)  # toggles on/off
         self.__command_box.setLayout(self.__button_row)
         self.__layout.addWidget(self.__command_box)
 
@@ -129,8 +141,8 @@ class HardwareTestDialog(QDialog):
         self.__control.com.write_API6(payload)
         self.__control.state = State.FINISHED
         # reset dialog
-        self._auto_button.setChecked(False)
-        self._test_button.setChecked(False)
+        self._autoRead_button.setChecked(False)
+        self._autoTest_button.setChecked(False)
         for s in range(16):
             self.__solenoid[s].setChecked(False)
         self.hide()
