@@ -47,13 +47,13 @@ class HardwareTestDialog(QDialog):
         "help",
         "send",
         "beep",
-        "setSingle",
-        "setAll",
+        # "setSingle",     # called when checking solenoids
+        # "setAll",        # no UI to handle argument
         "readEOLsensors",
         "readEncoders",
         "autoRead",
         "autoTest",
-        "stop",
+        # "stop",          # called when unchecking autoRead/autoTest
         "quit",
     ]
 
@@ -77,7 +77,7 @@ class HardwareTestDialog(QDialog):
         self.__button_row = QHBoxLayout()
         for button in self.commands:
             name = "_" + button + "_button"
-            setattr(self, name, QPushButton(button.title()))
+            setattr(self, name, QPushButton(button))
             widget = getattr(self, name)
             self.__button_row.addWidget(widget)
             widget.clicked.connect(
@@ -152,21 +152,20 @@ class HardwareTestDialog(QDialog):
             self.reject()
         else:
             payload = bytearray()
-            token = getattr(Token, button + "Cmd").value
-            payload.append(token)
-            if button in ["auto", "test"]:
-                val = widget.isChecked()
-                payload.append(val)
-                self.output("\n> " + button + " " + str(int(val)) + "\n")
+            if widget.isCheckable() and not widget.isChecked():
+                payload.append(Token.stopCmd.value)
+                self.output("\n> stop\n")
             else:
+                token = getattr(Token, button + "Cmd").value
+                payload.append(token)
                 self.output("\n> " + button + "\n")
             self.__control.com.write_API6(payload)
 
     def __set_solenoid(self, idx: int) -> None:
         val = self.__solenoid[idx].isChecked()
-        self.output("\n> set " + str(idx) + " " + str(int(val)) + "\n")
+        self.output("\n> setSingle " + str(idx) + " " + str(int(val)) + "\n")
         payload = bytearray()
-        payload.append(Token.setCmd.value)
+        payload.append(Token.setSingleCmd.value)
         payload.append(idx)
         payload.append(val)
         self.__control.com.write_API6(payload)
