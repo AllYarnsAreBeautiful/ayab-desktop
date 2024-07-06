@@ -77,14 +77,15 @@ class HardwareTestDialog(QDialog):
         self.__button_row = QHBoxLayout()
         for button in self.commands:
             name = "_" + button + "_button"
-            setattr(self, name, QPushButton(button))
-            widget = getattr(self, name)
+            widget: QPushButton = QPushButton(button)
+            widget.setAutoDefault(False)
             self.__button_row.addWidget(widget)
             widget.clicked.connect(
                 lambda widget=widget, button=button: self.__button_pushed(
                     widget, button
                 )
             )
+            setattr(self, name, widget)
         self._autoRead_button.setCheckable(True)  # toggles on/off
         self._autoTest_button.setCheckable(True)  # toggles on/off
         self.__command_box.setLayout(self.__button_row)
@@ -155,6 +156,8 @@ class HardwareTestDialog(QDialog):
             if widget.isCheckable() and not widget.isChecked():
                 payload.append(Token.stopCmd.value)
                 self.output("\n> stop\n")
+                self._autoRead_button.setChecked(False)
+                self._autoTest_button.setChecked(False)
             else:
                 token = getattr(Token, button + "Cmd").value
                 payload.append(token)

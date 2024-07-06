@@ -19,6 +19,7 @@
 
 import re
 from PySide6.QtCore import QObject
+from PySide6.QtWidgets import QApplication
 
 from .communication import Token
 from .communication_mock import CommunicationMock
@@ -49,9 +50,7 @@ class HardwareTestCommunicationMock(QObject, CommunicationMock):
             self.__handle_unrecognizedCmd()
         else:
             cmd = self.__tokens[i].name
-            self.__output(
-                Token.testRes, "Called " + re.sub("CMD$", "", cmd.upper()) + "\n"
-            )
+            self.__output(Token.testRes, "Called " + re.sub("Cmd$", "", cmd) + "\n")
             dispatch = getattr(self, "_handle_" + cmd)
             dispatch(msg)
 
@@ -90,22 +89,29 @@ class HardwareTestCommunicationMock(QObject, CommunicationMock):
     def _handle_beepCmd(self, msg):
         self.__beep()
 
-    def _handle_readCmd(self, msg):
+    def _handle_readEOLsensorsCmd(self, msg):
         self.__read_EOL_sensors()
+        self.__output(Token.testRes, "\n")
+
+    def _handle_readEncodersCmd(self, msg):
         self.__read_encoders()
         self.__output(Token.testRes, "\n")
 
-    def _handle_autoCmd(self, msg):
-        self.__autoReadOn = msg[1]
+    def _handle_autoReadCmd(self, msg):
+        self.__autoReadOn = True
 
-    def _handle_testCmd(self, msg):
-        self.__autoTestOn = msg[1]
+    def _handle_autoTestCmd(self, msg):
+        self.__autoTestOn = True
+
+    def _handle_stopCmd(self, msg):
+        self.__autoReadOn = False
+        self.__autoTestOn = False
 
     def _handle_quitCmd(self, msg):
         # mock
         pass
 
-    def _handle_setCmd(self, msg):
+    def _handle_setSingleCmd(self, msg):
         if len(msg) < 3:
             return
         # else
@@ -133,8 +139,7 @@ class HardwareTestCommunicationMock(QObject, CommunicationMock):
         pass
 
     def __beep(self):
-        # mock
-        pass
+        QApplication.beep()
 
     def __read_EOL_sensors(self):
         self.__output(Token.testRes, "  EOL_L: 0")
