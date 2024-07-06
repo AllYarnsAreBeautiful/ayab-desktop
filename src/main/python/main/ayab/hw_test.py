@@ -69,7 +69,7 @@ class HardwareTestDialog(QDialog):
             widget = getattr(self, name)
             self.__button_row.addWidget(widget)
             widget.clicked.connect(
-                lambda state, widget=widget, button=button: self.__button_pushed(
+                lambda widget=widget, button=button: self.__button_pushed(
                     widget, button
                 )
             )
