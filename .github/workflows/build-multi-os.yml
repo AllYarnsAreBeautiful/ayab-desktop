@@ -313,15 +313,23 @@ jobs:
         run: |
           brew install avrdude
           brew install qt
-          python -m pip install delocate
-          python -m pip download --only-binary=:all: --platform macosx_10_09_x86_64 numpy==1.26.4
-          python -m pip download --only-binary=:all: --platform macosx_11_0_arm64 numpy==1.26.4
           mkdir tmp-wheel/
+          python -m pip install delocate
+
+          # Find platform values on e.g. https://pypi.org/project/numpy/1.26.4/#files
+
+          python -m pip download --only-binary=:all: --platform macosx_10_09_x86_64 "$(grep numpy requirements.build.txt)"
+          python -m pip download --only-binary=:all: --platform macosx_11_0_arm64 "$(grep numpy requirements.build.txt)"
           delocate-fuse numpy*arm* numpy*x86* -w tmp-wheel/
-          python -m pip download --only-binary=:all: --platform macosx_10_10_x86_64 Pillow==10.0.0
-          python -m pip download --only-binary=:all: --platform macosx_11_0_arm64 Pillow==10.0.0
+
+          python -m pip download --only-binary=:all: --platform macosx_10_10_x86_64 "$(grep Pillow requirements.build.txt)"
+          python -m pip download --only-binary=:all: --platform macosx_11_0_arm64 "$(grep Pillow requirements.build.txt)"
           delocate-fuse Pillow*arm* Pillow*x86* -w tmp-wheel/
-          python -m pip install tmp-wheel/*.whl
+
+          python -m pip download --only-binary=:all: --platform=macosx_10_9_universal2 "$(grep bitarray requirements.build.txt)"
+
+          python -m pip install tmp-wheel/*.whl bitarray*.whl
+
           python -m pip install --no-binary charset_normalizer -r requirements.build.txt
       - name: Restore cached firmware
         id: firmware-cache
