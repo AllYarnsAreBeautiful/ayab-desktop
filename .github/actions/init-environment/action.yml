@@ -14,6 +14,8 @@ outputs:
     value: ${{steps.vars.outputs.python-minor}}
   python-appimage:
     value: ${{steps.vars.outputs.python-appimage}}
+  firmware-url:
+    value: ${{steps.firmware.outputs.firmware-url}}
 runs:
   using: "composite"
   steps:
@@ -22,7 +24,6 @@ runs:
       uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
-        cache: "pip"
     - name: Set variables
       id: vars
       shell: bash
@@ -36,6 +37,24 @@ runs:
         echo "manifest=$(cat src/main/resources/base/ayab/firmware/manifest.txt)" >> $GITHUB_OUTPUT
         echo "python-minor=$(echo '${{steps.py.outputs.python-version}}' | sed -e 's/\.[^.]*$//')" >> $GITHUB_OUTPUT
         echo "python-appimage=python${{steps.py.outputs.python-version}}-cp311-cp311-manylinux_2_28_x86_64.AppImage" >> $GITHUB_OUTPUT
+    - name: Get firmware version matching manifest
+      id: firmware
+      shell: bash
+      run: |
+        echo ${{ steps.vars.outputs.manifest }}
+        available=$(curl -s https://github.com/AllYarnsAreBeautiful/ayab-firmware/releases | grep -oE '/tag/[^\"]+' | sed -E 's/\/tag\///')
+        echo $available
+        match=$(for x in $available; do echo $x; done | grep ^${{ steps.vars.outputs.manifest }} | sort -r | head -1)
+        echo $match
+        if [[ $match ]]
+        then
+          cd src/main/resources/base/ayab/firmware/
+          url=https://github.com/AllYarnsAreBeautiful/ayab-firmware/releases/download/$match/ayab_monolithic_uno.hex
+          echo "firmware-url=${url}" >> $GITHUB_OUTPUT
+        else
+          echo "Error: could not find firmware release matching manifest"
+          exit 1
+        fi
     - name: Set PACKAGE_VERSION
       shell: bash
       run: |
