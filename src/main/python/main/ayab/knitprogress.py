@@ -19,8 +19,8 @@
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
 from __future__ import annotations
-from PySide6.QtCore import QCoreApplication, QRect, QSize, Qt
-from PySide6.QtWidgets import QTableWidget, QTableWidgetItem, QLabel, QHeaderView
+from PySide6.QtCore import QCoreApplication, QRect, Qt
+from PySide6.QtWidgets import QTableWidget, QTableWidgetItem, QHeaderView
 from PySide6.QtGui import QBrush, QColor
 from typing import TYPE_CHECKING, Optional, cast, List
 
