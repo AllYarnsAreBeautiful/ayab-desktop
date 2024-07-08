@@ -49,12 +49,6 @@ class KnitProgress(QTableWidget):
         self.verticalHeader().setSectionResizeMode(
             QHeaderView.ResizeMode.ResizeToContents
         )
-        # self.verticalHeader().setVisible(False)
-        self.setColumnCount(6)
-        for r in range(6):
-            blank = QTableWidgetItem()
-            blank.setSizeHint(QSize(0, 0))
-            self.setHorizontalHeaderItem(r, blank)
         self.previousStatus: Optional[Status] = None
         self.scene = parent.scene
 
@@ -62,7 +56,6 @@ class KnitProgress(QTableWidget):
         self.clearContents()
         self.clearSelection()
         self.setRowCount(0)
-        # self.horizontalHeader().setSectionHidden(5, False)
         self.setCurrentCell(-1, -1)
         self.color = True
 
@@ -164,9 +157,7 @@ class KnitProgress(QTableWidget):
                 header.setForeground(QBrush(QColor(f"#{self.green:06x}")))
                 header.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
                 self.setHorizontalHeaderItem(i,header)
-                # self.horizontalHeaderItem(i).setText((i)-(midline+info_columns))
         n_cols = len(columns)
-        print(n_cols)
         if n_cols < 4:
             self.hideColumn(5)
         self.resizeColumnsToContents()
@@ -190,5 +181,4 @@ class KnitProgress(QTableWidget):
         else:
             if bg_color is not None:
                 stitch.setBackground(QBrush(QColor(f"#{bg_color:06x}")))
-            # text += "dotted;"
         return stitch
