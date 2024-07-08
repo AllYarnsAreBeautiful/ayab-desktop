@@ -172,8 +172,8 @@ class KnitProgress(QTableWidget):
     def __stitch(self, color: int, bit: bool, alt_color: Optional[int] = None, bg_color: Optional[int] = None) -> QTableWidgetItem:
         stitch = QTableWidgetItem()
         if bit:
-            bgColor = QColor(f"#{color:06x}")
-            stitch.setBackground(bgColor)
+            background_color = QColor(f"#{color:06x}")
+            stitch.setBackground(background_color)
         elif alt_color is not None:
             stitch.setBackground(QBrush(QColor(f"#{alt_color:06x}")))
         else:
