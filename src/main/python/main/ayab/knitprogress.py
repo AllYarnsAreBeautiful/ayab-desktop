@@ -89,39 +89,13 @@ class KnitProgress(QTableWidget):
 
         if status.current_row < 0:
             return
-        # else
-        tr_ = QCoreApplication.translate
-        row, swipe = divmod(status.line_number, row_multiplier)
 
         columns: List[QTableWidgetItem] = []
-        info_text = ""
-        info_header = QTableWidgetItem()
-        # row "Row [1]"
-        info_text= (tr_("KnitProgress", "Row") + " " + str(status.current_row))
-
-        # pass, see Mode object. "Pass [1,2,3]"
-        if row_multiplier == 1:
-            info_text= info_text+(" "+tr_("KnitProgress", "Pass") + " " + str(swipe + 1))
-
-        # color "Color [A,B,C,D]" 
         if status.color_symbol == "":
             self.color = False
         else:
             self.color = True
-            info_text = info_text + " " + tr_("KnitProgress", "Color") + " " + status.color_symbol
-            bgColor = QColor(f"#{status.color:06x}")
-            # Ensure text is readable
-            if bgColor.lightness() > 128:
-                bgColor.setHsl(bgColor.hslHue(),bgColor.hslSaturation(),128)
-            info_header.setForeground(QBrush(bgColor))
-
-        # Carriage & Direction "[K,L,G] [<-,->]"
-        carriage = status.carriage_type
-        direction = status.carriage_direction
-        info_text= info_text +(" "+carriage.symbol + " " + direction.symbol)
-
-        print(info_text)
-        info_header.setText(info_text)
+        info_header = self.format_row_header_text(status, row_multiplier)
 
         # graph line of stitches
         midline = len(status.bits) - midline
@@ -167,9 +141,33 @@ class KnitProgress(QTableWidget):
         # update bar in Scene
         self.scene.row_progress = status.current_row
 
-    def __item(self, text: str) -> QTableWidgetItem:
-        item = QTableWidgetItem(text)
-        return item
+    def format_row_header_text(self, status: Status, row_multiplier: int) -> QTableWidgetItem:
+        tr_ = QCoreApplication.translate
+        info_header = QTableWidgetItem()
+        info_text = ""
+        row, swipe = divmod(status.line_number, row_multiplier)
+        # row "Row [1]"
+        info_text= (tr_("KnitProgress", "Row") + " " + str(status.current_row))
+
+        # pass, see Mode object. "Pass [1,2,3]"
+        if row_multiplier == 1:
+            info_text= info_text+(" "+tr_("KnitProgress", "Pass") + " " + str(swipe + 1))
+
+        # color "Color [A,B,C,D]" 
+        if self.color is True:
+            info_text = info_text + " " + tr_("KnitProgress", "Color") + " " + status.color_symbol
+            background_color = QColor(f"#{status.color:06x}")
+            # Ensure text is readable
+            if background_color.lightness() > 128:
+                background_color.setHsl(background_color.hslHue(),background_color.hslSaturation(),128)
+            info_header.setForeground(QBrush(background_color))
+
+        # Carriage & Direction "[K,L,G] [<-,->]"
+        carriage = status.carriage_type
+        direction = status.carriage_direction
+        info_text= info_text +(" "+carriage.symbol + " " + direction.symbol)
+        info_header.setText(info_text)
+        return info_header
 
     def __stitch(self, color: int, bit: bool, alt_color: Optional[int] = None, bg_color: Optional[int] = None) -> QTableWidgetItem:
         stitch = QTableWidgetItem()
