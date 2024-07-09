@@ -209,14 +209,34 @@ class Communication(object):
         return msg, Token.unknown, 0
 
     def read_API6(self) -> Optional[bytes]:
-        """Read data from serial as SLIP packet."""
-        if self.__ser:
-            data = self.__ser.read(1000)
+        """Read data from serial, return the next SLIP packet"""
+
+        if self.__ser is None:
+            return None
+
+        # If we already have messages pending from previous serial reads,
+        # do not bother waiting on the serial port. The data will be safely
+        # buffered by the OS until we have consumed the messages already
+        # received.
+        if len(self.rx_msg_list) == 0:
+            # This will block until the timeout configured in the Serial constructor
+            # if no data is available (to avoid busy-waiting), but return as soon as
+            # a single byte is available to read.
+            data = self.__ser.read(1)
+
+            # More bytes may have become available simultaneously: grab them now.
+            if self.__ser.in_waiting > 0:
+                data = data + self.__ser.read(self.__ser.in_waiting)
+
+            # Send everything we received to the SLIP decoder and enqueue any messages
+            # it extracted from the data so far.
             if len(data) > 0:
                 self.rx_msg_list.extend(self.__driver.receive(data))
-            if len(self.rx_msg_list) > 0:
-                return self.rx_msg_list.pop(0)  # FIFO
-        # else
+
+        # Now, return the oldest message we have in the queue.
+        if len(self.rx_msg_list) > 0:
+            return self.rx_msg_list.pop(0)  # FIFO
+
         return None
 
     def write_API6(self, cmd: bytearray) -> None:
