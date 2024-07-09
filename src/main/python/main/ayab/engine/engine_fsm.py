@@ -244,11 +244,9 @@ class StateMachine(QStateMachine):
 
     @staticmethod
     def _API6_run_test(control: Control, operation: Operation) -> Output:
-        while True:
-            token, param = control.check_serial_API6()
-            if token != Token.none:
-                break
-        control.logger.debug("Token " + token.name + ", param " + str(param))
+        # Any incoming testRes messages are processed in check_serial_API6,
+        # there is nothing more to do here.
+        control.check_serial_API6()
         return Output.NONE
 
     @staticmethod
