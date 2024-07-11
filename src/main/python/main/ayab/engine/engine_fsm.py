@@ -205,21 +205,9 @@ class StateMachine(QStateMachine):
 
     @staticmethod
     def _API6_request_test(control: Control, operation: Operation) -> Output:
-        token, param = control.check_serial_API6()
-        if token == Token.indState:
-            if param == 0:
-                control.com.req_test_API6()
-                control.state = State.CONFIRM_TEST
-                control.logger.debug("State CONFIRM_TEST")
-            else:
-                # any value of param other than 0 is some kind of error code
-                control.logger.debug(
-                    "Test init failed with error code "
-                    + str(param)
-                    + " in state "
-                    + str(control.status.firmware_state)
-                )
-                # TODO: more output to describe error
+        control.com.req_test_API6()
+        control.state = State.CONFIRM_TEST
+        control.logger.debug("State CONFIRM_TEST")
         return Output.NONE
 
     @staticmethod
