@@ -48,7 +48,7 @@ jobs:
             exit 1
           fi
       - name: Cache firmware
-        uses: actions/cache/save@v3
+        uses: actions/cache/save@v4
         with:
           path: src/main/resources/base/ayab/firmware/*.hex
           key: firmware-${{ steps.vars.outputs.manifest }}
@@ -63,37 +63,37 @@ jobs:
           python -m pip install -r requirements.build.txt
       - name: Use cached gui files (1)
         id: gui1-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: src/main/python/main/ayab/*_gui.py
           key: gui1-${{ hashFiles('src/main/python/main/ayab/*_gui.ui') }}
       - name: Use cached gui files (2)
         id: gui2-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: src/main/python/main/ayab/engine/*_gui.py
           key: gui2-${{ hashFiles('src/main/python/main/ayab/engine/*_gui.ui') }}
       - name: Use cached logo
         id: logo-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: src/main/python/main/ayab/ayab_logo_rc.py
           key: logo-${{ hashFiles('src/main/python/main/ayab/ayab_logo_rc.qrc') }}
       - name: Use cached graphics
         id: e-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: src/main/python/main/ayab/engine/*_rc.py
           key: e-${{ hashFiles('src/main/python/main/ayab/engine/*_rc.qrc') }}
       - name: Use cached translation files
         id: qm-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: src/main/resources/base/ayab/translations/*.qm
           key: qm-${{ hashFiles('src/main/resources/base/ayab/translations/ayab-translation-master.tsv') }}
       - name: Use cached `base.json` file
         id: base-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: src/build/settings/base.json
           key: base-${{ steps.vars.outputs.tag }}
@@ -109,37 +109,37 @@ jobs:
           bash setup-environment.ps1
       - name: Cache gui files (1)
         if: ${{ (steps.gui1-cache.outputs.cache-hit != 'true') }}
-        uses: actions/cache/save@v3
+        uses: actions/cache/save@v4
         with:
           path: src/main/python/main/ayab/*_gui.py
           key: gui1-${{ hashFiles('src/main/python/main/ayab/*_gui.ui') }}
       - name: Cache gui files (2)
         if: ${{ (steps.gui2-cache.outputs.cache-hit != 'true') }}
-        uses: actions/cache/save@v3
+        uses: actions/cache/save@v4
         with:
           path: src/main/python/main/ayab/*_gui.py
           key: gui2-${{ hashFiles('src/main/python/main/ayab/engine/*_gui.ui') }}
       - name: Cache logo
         if: ${{ (steps.logo-cache.outputs.cache-hit != 'true') }}
-        uses: actions/cache/save@v3
+        uses: actions/cache/save@v4
         with:
           path: src/main/python/main/ayab/ayab_logo_rc.py
           key: logo-${{ hashFiles('src/main/python/main/ayab/ayab_logo_rc.qrc') }}
       - name: Cache graphics
         if: ${{ (steps.e-cache.outputs.cache-hit != 'true') }}
-        uses: actions/cache/save@v3
+        uses: actions/cache/save@v4
         with:
           path: src/main/python/main/ayab/engine/*_rc.py
           key: e-${{ hashFiles('src/main/python/main/ayab/engine/*_rc.qrc') }}
       - name: Cache translation files
         if: ${{ (steps.qm-cache.outputs.cache-hit != 'true') }}
-        uses: actions/cache/save@v3
+        uses: actions/cache/save@v4
         with:
           path: src/main/resources/base/ayab/translations/*.qm
           key: qm-${{ hashFiles('src/main/resources/base/ayab/translations/ayab-translation-master.tsv') }}
       - name: Cache `base.json` file
         if: ${{ (steps.base-cache.outputs.cache-hit != 'true') }}
-        uses: actions/cache/save@v3
+        uses: actions/cache/save@v4
         with:
           path: src/build/settings/base.json
           key: base-${{ steps.vars.outputs.tag }}
@@ -192,7 +192,7 @@ jobs:
           python -m pip install -r windows-build\windows_build_requirements.txt
       - name: Restore cached firmware
         id: firmware-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: src/main/resources/base/ayab/firmware/*.hex
           key: firmware-${{ steps.vars.outputs.manifest }}
@@ -200,7 +200,7 @@ jobs:
           fail-on-cache-miss: true
       - name: Restore cached gui files (1)
         id: gui1-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: src/main/python/main/ayab/*_gui.py
           key: gui1-${{ hashFiles('src/main/python/main/ayab/*_gui.ui') }}
@@ -208,7 +208,7 @@ jobs:
           fail-on-cache-miss: true
       - name: Restore cached gui files (2)
         id: gui2-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: src/main/python/main/ayab/engine/*_gui.py
           key: gui2-${{ hashFiles('src/main/python/main/ayab/engine/*_gui.ui') }}
@@ -216,7 +216,7 @@ jobs:
           fail-on-cache-miss: true
       - name: Restore cached logo
         id: logo-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: src/main/python/main/ayab/ayab_logo_rc.py
           key: logo-${{ hashFiles('src/main/python/main/ayab/ayab_logo_rc.qrc') }}
@@ -224,7 +224,7 @@ jobs:
           fail-on-cache-miss: true
       - name: Restore cached graphics
         id: e-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: src/main/python/main/ayab/engine/*_rc.py
           key: e-${{ hashFiles('src/main/python/main/ayab/engine/*_rc.qrc') }}
@@ -232,7 +232,7 @@ jobs:
           fail-on-cache-miss: true
       - name: Restore cached translation files
         id: qm-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: src/main/resources/base/ayab/translations/*.qm
           key: qm-${{ hashFiles('src/main/resources/base/ayab/translations/ayab-translation-master.tsv') }}
@@ -240,7 +240,7 @@ jobs:
           fail-on-cache-miss: true
       - name: Restore cached `base.json` file
         id: base-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: src/build/settings/base.json
           key: base-${{ steps.vars.outputs.tag }}
@@ -332,49 +332,49 @@ jobs:
           python -m pip install --no-binary charset_normalizer -r requirements.build.txt
       - name: Restore cached firmware
         id: firmware-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: src/main/resources/base/ayab/firmware/*.hex
           key: firmware-${{ steps.vars.outputs.manifest }}
           fail-on-cache-miss: true
       - name: Restore cached gui files (1)
         id: gui1-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: src/main/python/main/ayab/*_gui.py
           key: gui1-${{ hashFiles('src/main/python/main/ayab/*_gui.ui') }}
           fail-on-cache-miss: true
       - name: Restore cached gui files (2)
         id: gui2-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: src/main/python/main/ayab/engine/*_gui.py
           key: gui2-${{ hashFiles('src/main/python/main/ayab/engine/*_gui.ui') }}
           fail-on-cache-miss: true
       - name: Restore cached logo
         id: logo-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: src/main/python/main/ayab/ayab_logo_rc.py
           key: logo-${{ hashFiles('src/main/python/main/ayab/ayab_logo_rc.qrc') }}
           fail-on-cache-miss: true
       - name: Restore cached graphics
         id: e-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: src/main/python/main/ayab/engine/*_rc.py
           key: e-${{ hashFiles('src/main/python/main/ayab/engine/*_rc.qrc') }}
           fail-on-cache-miss: true
       - name: Restore cached translation files
         id: qm-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: src/main/resources/base/ayab/translations/*.qm
           key: qm-${{ hashFiles('src/main/resources/base/ayab/translations/ayab-translation-master.tsv') }}
           fail-on-cache-miss: true
       - name: Restore cached `base.json` file
         id: base-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: src/build/settings/base.json
           key: base-${{ steps.vars.outputs.tag }}
@@ -462,49 +462,49 @@ jobs:
           echo "opt/${{steps.vars.outputs.python}}/bin" >> $GITHUB_PATH
       - name: Restore cached firmware
         id: firmware-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: src/main/resources/base/ayab/firmware/*.hex
           key: firmware-${{ steps.vars.outputs.manifest }}
           fail-on-cache-miss: true
       - name: Restore cached gui files (1)
         id: gui1-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: src/main/python/main/ayab/*_gui.py
           key: gui1-${{ hashFiles('src/main/python/main/ayab/*_gui.ui') }}
           fail-on-cache-miss: true
       - name: Restore cached gui files (2)
         id: gui2-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: src/main/python/main/ayab/engine/*_gui.py
           key: gui2-${{ hashFiles('src/main/python/main/ayab/engine/*_gui.ui') }}
           fail-on-cache-miss: true
       - name: Restore cached logo
         id: logo-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: src/main/python/main/ayab/ayab_logo_rc.py
           key: logo-${{ hashFiles('src/main/python/main/ayab/ayab_logo_rc.qrc') }}
           fail-on-cache-miss: true
       - name: Restore cached graphics
         id: e-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: src/main/python/main/ayab/engine/*_rc.py
           key: e-${{ hashFiles('src/main/python/main/ayab/engine/*_rc.qrc') }}
           fail-on-cache-miss: true
       - name: Restore cached translation files
         id: qm-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: src/main/resources/base/ayab/translations/*.qm
           key: qm-${{ hashFiles('src/main/resources/base/ayab/translations/ayab-translation-master.tsv') }}
           fail-on-cache-miss: true
       - name: Restore cached `base.json` file
         id: base-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: src/build/settings/base.json
           key: base-${{ steps.vars.outputs.tag }}
