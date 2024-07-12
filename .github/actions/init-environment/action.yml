@@ -34,7 +34,7 @@ runs:
         sed -i -e s/PACKAGE_VERSION/$version_without_suffix/ src/build/settings/base.json
     - name: Set up Python ${{ matrix.python-version }}
       id: py
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
         cache: "pip"

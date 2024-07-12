@@ -27,7 +27,7 @@ jobs:
         python-version: [3.11]
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: recursive
       - uses: ./.github/actions/init-environment
@@ -149,7 +149,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: recursive
       - name: Install dependencies for doxygen
@@ -160,7 +160,7 @@ jobs:
           mkdir -p docs/html
           touch docs/html/.nojekyll
       - name: Deploy to pages
-        uses: DenverCoder1/doxygen-github-pages-action@v1.3.0
+        uses: DenverCoder1/doxygen-github-pages-action@v1.3.1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: gh-pages
@@ -176,7 +176,7 @@ jobs:
         python-version: [3.11]
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: recursive
       - uses: ./.github/actions/init-environment
@@ -290,7 +290,7 @@ jobs:
           artifacts: target/AYAB-${{ steps.vars.outputs.tag }}.exe
           artifactContentType: application/exe
           replacesArtifacts: true
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: AYAB-${{ steps.vars.outputs.tag }}.exe
           path: target/AYAB-${{ steps.vars.outputs.tag }}.exe
@@ -304,7 +304,7 @@ jobs:
         python-version: [3.11]
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: recursive
       - uses: ./.github/actions/init-environment
@@ -413,7 +413,7 @@ jobs:
           artifacts: target/AYAB-${{ steps.vars.outputs.tag }}.dmg
           artifactContentType: application/dmg
           replacesArtifacts: true
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: AYAB-${{ steps.vars.outputs.tag }}.dmg
           path: target/AYAB-${{ steps.vars.outputs.tag }}.dmg
@@ -428,7 +428,7 @@ jobs:
         python-version: [3.11]
     steps:
       - name: Checkout repo into AppDir
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: recursive
           fetch-depth: 0
@@ -582,7 +582,7 @@ jobs:
           artifacts: AYAB-${{ steps.vars.outputs.tag }}-x86_64.AppImage
           artifactContentType: application/AppImage
           replacesArtifacts: true
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: AYAB-${{ steps.vars.outputs.tag }}-x86_64.AppImage
           path: AYAB-${{ steps.vars.outputs.tag }}-x86_64.AppImage
