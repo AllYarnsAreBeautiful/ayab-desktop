@@ -48,7 +48,7 @@ People *love* thorough bug reports. I'm not even kidding.
 - Python code is linted with flake8
 
 ## License
-By contributing, you agree that your contributions will be licensed under its GPL-3.0 License.
+By contributing, you agree that your contributions will be licensed under the GPL-3.0 License.
 
 ## References
 This document was adapted from the open-source contribution guidelines for [Transcriptase](https://gist.github.com/briandk/3d2e8b3ec8daf5a27a62)
