@@ -19,19 +19,18 @@ After cloning the repo and installing the development dependencies, you should r
         Linux
     </summary>
 
-For flashing the firmware, avrdude has to be available on your system.  
-To be able to work on GUI elements and translation files, you will also need Qt Dev & Localization Tools.
+For flashing the firmware, avrdude has to be available on your system.
+To build or run the application, you will also need the system libraries required by Qt 6; installing the Qt 6 development tools is a concise (if heavy-handed) way of bringing in these dependencies.
+
 #### Debian/Ubuntu
 ```bash
     sudo apt install python3.11 python3.11-dev python3.11-venv
-    sudo apt install libasound2-dev avrdude qt6-tools-dev-tools build-essential qt6-l10n-tools
-    export PATH=/usr/lib/qt6/bin:$PATH
+    sudo apt install libasound2-dev avrdude qt6-tools-dev-tools build-essential
 ```
 #### openSUSE
 ```bash
     sudo zypper install python311 python311-pip python311-virtualenv python311-devel
-    sudo zypper install libasound2 alsa-devel avrdude qt6-tools qt6-tools-linguist
-    export PATH=/usr/lib/qt6/bin:$PATH 
+    sudo zypper install libasound2 alsa-devel avrdude qt6-tools-dev-tools build-essential
 ```
 #### All Distributions
 
@@ -70,9 +69,6 @@ Activate the virtual environment. The command prompt should now display
 ```
 (You may skip the virtual environment setup below.)
 
-To be able to work on GUI elements and translation files, the Qt Dev tools are needed.  
-Navigate to [https://www.qt.io/download-open-source](https://www.qt.io/download-open-source) in a web browser and follow the installation
-instructions. From the available options, select "Custom install" and then "Qt 6.6.3".
 You will also need to download and install Perl from [https://www.perl.org/get.html](https://www.perl.org/get.html).
 </details>
 
@@ -88,10 +84,6 @@ You can install Git using Homebrew:
 You will also need the Xcode command line tools:
 ```bash
     xcode-select --install
-```
-To be able to work on GUI elements and translation files, the Qt Dev tools are needed also:
-```bash
-    brew install qt
 ```
 Install python from [the official universal2 installer](https://www.python.org/ftp/python/3.11.8/python-3.11.8-macos11.pkg). (Conda does not produce universal binaries)  
 
@@ -127,7 +119,6 @@ Next, convert the PySide6 `.ui` files and generate the translation files:
 ```bash
     bash ./setup-environment.ps1
 ```
-If you get errors about missing `lrelease`, you can skip this (if you do not need the translation files). To do so, comment out lines [23:26] of `setup-environment.ps1`.
 
 Finally, you can start AYAB with
 ```bash
