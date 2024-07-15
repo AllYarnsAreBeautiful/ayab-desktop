@@ -23,9 +23,11 @@ from PySide6.QtCore import QCoreApplication, QRect, Qt
 from PySide6.QtWidgets import QTableWidget, QTableWidgetItem, QHeaderView
 from PySide6.QtGui import QBrush, QColor
 from typing import TYPE_CHECKING, Optional, cast, List
+from math import floor
 
 if TYPE_CHECKING:
     from .ayab import GuiMain
+    from .preferences import Preferences
     from .engine.status import Status
 
 
@@ -44,10 +46,11 @@ class KnitProgress(QTableWidget):
         super().__init__(parent.ui.graphics_splitter)
         self.clear()
         self.setRowCount(0)
+        self.__prefs: Preferences = parent.prefs
         self.setGeometry(QRect(0, 0, 700, 220))
         self.setContentsMargins(1, 1, 1, 1)
         self.verticalHeader().setSectionResizeMode(
-            QHeaderView.ResizeMode.ResizeToContents
+            QHeaderView.ResizeMode.Fixed
         )
         self.previousStatus: Optional[Status] = None
         self.scene = parent.scene
@@ -95,81 +98,116 @@ class KnitProgress(QTableWidget):
             self.color = False
         else:
             self.color = True
-        info_header = self.format_row_header_text(status, row_multiplier)
 
-        # graph line of stitches
+        midline = self.load_columns_from_status(status, midline, columns)
+
+        # For the top row (row idx 0), we show the row header as "To Be Selected",
+        # When we show a new row, we recover the header info and recombine it with its row (now row idx 2)
+        self.make_row_with_spacer()
+
+        self.instantiate_row_from_columns(midline, columns)
+        if self.columnCount() != len(columns):
+            self.setColumnCount(len(columns))
+        n_cols = len(columns)
+        if n_cols < 4:
+            self.hideColumn(5)
+
+        self.previousStatus = status
+        self.previous_row_mulitplier = row_multiplier
+
+        # update bar in Scene
+        self.scene.row_progress = status.current_row
+
+    def load_columns_from_status(self, status: Status, midline: int, columns: List[QTableWidgetItem]) -> int:
         midline = len(status.bits) - midline
 
         for c in range(0, midline):
             columns.append(self.__stitch(
-                status.color, cast(bool, status.bits[c]), status.alt_color, self.orange
+                QColor(f"#{status.color:06x}"), cast(bool, status.bits[c]), status.alt_color, self.__alternate_bg_colors(midline-c, self.orange)
             ))
 
         # if we are only working on the right side, midline is negative.
-        green_start= midline
-        if green_start < 0: 
-            green_start=0
+        green_start = midline
+        if green_start < 0:
+            green_start = 0
         for c in range(green_start, len(status.bits)):
             columns.append(self.__stitch(
-                status.color, cast(bool, status.bits[c]), status.alt_color, self.green
+                QColor(f"#{status.color:06x}"), cast(bool, status.bits[c]), status.alt_color, self.__alternate_bg_colors(c-green_start, self.green)
             ))
 
-        self.insertRow(0)
-        if self.columnCount() != len(columns):
-            self.setColumnCount(len(columns))
-        self.setVerticalHeaderItem(0,info_header)
+        return midline
+
+    def instantiate_row_from_columns(self, midline: int, columns: List[QTableWidgetItem]) -> None:
+        self.setVerticalHeaderItem(0, QTableWidgetItem("To Be Selected"))
         for i, col in enumerate(columns):
             self.setItem(0, i, col)
+            self.setColumnWidth(i, cast(int, self.__prefs.settings.value("lower_display_stitch_width")))
+            # when width is under 20, the column numbers are unreadable.
+            if self.columnWidth(i) < 20:
+                self.horizontalHeader().setVisible(False)
+                continue
+            self.horizontalHeader().setVisible(True)
             if i < midline:
                 header = QTableWidgetItem(f"{(midline)-(i)}")
                 header.font().setBold(True)
                 header.setForeground(QBrush(QColor(f"#{self.orange:06x}")))
                 header.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-                self.setHorizontalHeaderItem(i,header)
+                self.setHorizontalHeaderItem(i, header)
+                self.horizontalHeader().setMinimumSectionSize(0)
             else:
                 header = QTableWidgetItem(f"{(i+1)-(midline)}")
                 header.setForeground(QBrush(QColor(f"#{self.green:06x}")))
                 header.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-                self.setHorizontalHeaderItem(i,header)
-        n_cols = len(columns)
-        if n_cols < 4:
-            self.hideColumn(5)
-        self.resizeColumnsToContents()
+                self.setHorizontalHeaderItem(i, header)
 
-        self.previousStatus = status
+    def make_row_with_spacer(self) -> None:
+        self.removeRow(1)
+        self.insertRow(0)
+        self.insertRow(1)
+        if self.rowCount() > 2:
+            self.setVerticalHeaderItem(2, self.format_row_header_text(self.previousStatus, self.previous_row_mulitplier))
+        self.verticalHeader().setSectionResizeMode(1, QHeaderView.ResizeMode.Fixed)
+        self.verticalHeader().setMinimumSectionSize(0)
+        self.verticalHeader().resizeSection(1, 5)
 
-        # update bar in Scene
-        self.scene.row_progress = status.current_row
-
-    def format_row_header_text(self, status: Status, row_multiplier: int) -> QTableWidgetItem:
+    def format_row_header_text(self, status: Optional[Status], row_multiplier: int) -> QTableWidgetItem:
+        if status is None:
+            return QTableWidgetItem("")
         tr_ = QCoreApplication.translate
         info_header = QTableWidgetItem()
         info_text = ""
         row, swipe = divmod(status.line_number, row_multiplier)
         # row "Row [1]"
-        info_text= (tr_("KnitProgress", "Row") + " " + str(status.current_row))
+        info_text = (tr_("KnitProgress", "Row") + " " + str(status.current_row))
 
         # pass, see Mode object. "Pass [1,2,3]"
         if row_multiplier == 1:
-            info_text= info_text+(" "+tr_("KnitProgress", "Pass") + " " + str(swipe + 1))
+            info_text = info_text+(" "+tr_("KnitProgress", "Pass") + " " + str(swipe + 1))
 
-        # color "Color [A,B,C,D]" 
+        # color "Color [A,B,C,D]"
         if self.color is True:
             info_text = info_text + " " + tr_("KnitProgress", "Color") + " " + status.color_symbol
             background_color = QColor(f"#{status.color:06x}")
             # Ensure text is readable
             if background_color.lightness() > 128:
-                background_color.setHsl(background_color.hslHue(),background_color.hslSaturation(),128)
+                background_color.setHsl(background_color.hslHue(), background_color.hslSaturation(), 128)
             info_header.setForeground(QBrush(background_color))
 
         # Carriage & Direction "[K,L,G] [<-,->]"
         carriage = status.carriage_type
         direction = status.carriage_direction
-        info_text= info_text +(" "+carriage.symbol + " " + direction.symbol)
+        info_text = info_text + (" "+carriage.symbol + " " + direction.symbol)
         info_header.setText(info_text)
         return info_header
 
-    def __stitch(self, color: int, bit: bool, alt_color: Optional[int] = None, bg_color: Optional[int] = None) -> QTableWidgetItem:
+    def __alternate_bg_colors(self, position: int, color: int, frequency: int = 10) -> QColor:
+        background_color = QColor(f"#{color:06x}")
+        bg_color_alternate = floor(position/frequency) % 2
+        if bg_color_alternate > 0:
+            background_color.setHsl(floor(background_color.hslHue()*.85), floor(background_color.hslSaturation()*.85), background_color.lightness())
+        return background_color
+
+    def __stitch(self, color: QColor, bit: bool, alt_color: Optional[int] = None, bg_color: Optional[QColor] = None) -> QTableWidgetItem:
         stitch = QTableWidgetItem()
         if bit:
             background_color = QColor(f"#{color:06x}")
@@ -178,5 +216,5 @@ class KnitProgress(QTableWidget):
             stitch.setBackground(QBrush(QColor(f"#{alt_color:06x}")))
         else:
             if bg_color is not None:
-                stitch.setBackground(QBrush(QColor(f"#{bg_color:06x}")))
+                stitch.setBackground(QBrush(bg_color))
         return stitch
