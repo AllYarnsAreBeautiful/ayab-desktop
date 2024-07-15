@@ -41,7 +41,7 @@ class ProgressBar(object):
         self.total = -1
         self.repeats = -1
         self.color = ""
-        self.backgroundColor = 0xFFFFFF
+        self.background_color = 0xFFFFFF
         self.__row_label.setText("")
         self.__color_label.setText("")
         self.__status_label.setText("")
