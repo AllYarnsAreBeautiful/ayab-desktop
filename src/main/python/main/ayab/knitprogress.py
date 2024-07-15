@@ -123,7 +123,7 @@ class KnitProgress(QTableWidget):
 
         for c in range(0, midline):
             columns.append(self.__stitch(
-                QColor(f"#{status.color:06x}"), cast(bool, status.bits[c]), status.alt_color, self.__alternate_bg_colors(midline-c, self.orange)
+                status.color, cast(bool, status.bits[c]), status.alt_color, self.__alternate_bg_colors(midline-c, self.orange)
             ))
 
         # if we are only working on the right side, midline is negative.
@@ -132,7 +132,7 @@ class KnitProgress(QTableWidget):
             green_start = 0
         for c in range(green_start, len(status.bits)):
             columns.append(self.__stitch(
-                QColor(f"#{status.color:06x}"), cast(bool, status.bits[c]), status.alt_color, self.__alternate_bg_colors(c-green_start, self.green)
+                status.color, cast(bool, status.bits[c]), status.alt_color, self.__alternate_bg_colors(c-green_start, self.green)
             ))
 
         return midline
@@ -207,7 +207,7 @@ class KnitProgress(QTableWidget):
             background_color.setHsl(floor(background_color.hslHue()*.85), floor(background_color.hslSaturation()*.85), background_color.lightness())
         return background_color
 
-    def __stitch(self, color: QColor, bit: bool, alt_color: Optional[int] = None, bg_color: Optional[QColor] = None) -> QTableWidgetItem:
+    def __stitch(self, color: int, bit: bool, alt_color: Optional[int] = None, bg_color: Optional[QColor] = None) -> QTableWidgetItem:
         stitch = QTableWidgetItem()
         if bit:
             background_color = QColor(f"#{color:06x}")
