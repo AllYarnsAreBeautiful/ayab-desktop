@@ -20,10 +20,11 @@
 
 from __future__ import annotations
 from typing import TYPE_CHECKING
+from PySide6.QtGui import QColor
 
 if TYPE_CHECKING:
     from .ayab import GuiMain
-    from .engine.status import ColorSymbolType
+    from .engine.status import Status
 
 
 class ProgressBar(object):
@@ -40,23 +41,22 @@ class ProgressBar(object):
         self.total = -1
         self.repeats = -1
         self.color = ""
+        self.background_color = 0xFFFFFF
         self.__row_label.setText("")
         self.__color_label.setText("")
         self.__status_label.setText("")
 
     def update(
         self,
-        row: int,
-        total: int = 0,
-        repeats: int = 0,
-        color_symbol: ColorSymbolType = "",
+        status: Status
     ) -> bool:
-        if row < 0:
+        if status.current_row < 0:
             return False
-        self.row = row
-        self.total = total
-        self.repeats = repeats
-        self.color = color_symbol
+        self.row = status.current_row
+        self.total = status.total_rows
+        self.repeats = status.repeats
+        self.color = status.color_symbol
+        self.background_color = status.color
         self.refresh()
         return True
 
@@ -69,6 +69,12 @@ class ProgressBar(object):
             color_text = ""
         else:
             color_text = "Color " + self.color
+            bg_color = QColor.fromRgb(self.background_color)
+            if bg_color.lightness() < 128:
+                fg_color = 0xffffff
+            else: fg_color = 0x000000
+            self.__color_label.setStyleSheet("QLabel {background-color: "+f"#{self.background_color:06x}"+f";color:#{fg_color:06x}"+";}")
+
         self.__color_label.setText(color_text)
 
         # Update labels

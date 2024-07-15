@@ -176,9 +176,7 @@ class GuiMain(QMainWindow):
         width, height = self.scene.ayabimage.image.size
         self.engine.config.update_needles()  # in case machine width changed
         self.engine.config.set_image_dimensions(width, height)
-        self.progbar.row = self.scene.row_progress + 1
-        self.progbar.total = height
-        self.progbar.refresh()
+        self.progbar.update(self.engine.status)
         self.notify(
             QCoreApplication.translate("Scene", "Image dimensions")
             + f": {width} x {height}",
@@ -191,8 +189,9 @@ class GuiMain(QMainWindow):
         self.scene.reverse()
 
     def update_start_row(self, start_row: int) -> None:
-        self.progbar.update(start_row)
         self.scene.row_progress = start_row
+        self.engine.status.current_row = start_row
+        self.progbar.update(self.engine.status)
 
     def notify(self, text: str, log: bool = True) -> None:
         """Update the notification field."""

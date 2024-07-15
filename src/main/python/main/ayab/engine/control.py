@@ -243,6 +243,7 @@ class Control(SignalSender):
             return True  # pattern finished
 
     def __update_status(self, line_number: int, color: int, bits: bitarray) -> None:
+        self.status.total_rows = self.pat_height
         self.status.current_row = self.pat_row + 1
         self.status.line_number = line_number
         if self.inf_repeat:

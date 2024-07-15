@@ -165,6 +165,8 @@ class Status(object):
         self.carriage_type = status.carriage_type
         self.carriage_position = status.carriage_position
         self.carriage_direction = status.carriage_direction
+        self.total_rows = status.total_rows
+        self.mirror = status.mirror
 
     def parse_device_state_API6(self, state: Any, msg: bytes) -> None:
         if not (self.active):

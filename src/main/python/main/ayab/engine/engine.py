@@ -142,9 +142,9 @@ class Engine(SignalSender, QDockWidget):
         self.pattern.alignment = self.config.alignment
 
         # update progress bar
-        self.emit_progress_bar_updater(
-            self.config.start_row + 1, self.pattern.pat_height, 0, ""
-        )
+        data = Status()
+        data.copy(self.status)
+        self.emit_progress_bar_updater(data)
 
         # switch to status tab
         # if self.config.continuous_reporting:
@@ -214,9 +214,7 @@ class Engine(SignalSender, QDockWidget):
             self.control.midline,
             self.config.auto_mirror,
         )
-        self.emit_progress_bar_updater(
-            data.current_row, self.pattern.pat_height, data.repeats, data.color_symbol
-        )
+        self.emit_progress_bar_updater(data)
 
     def cancel(self) -> None:
         self.__canceled = True

@@ -27,7 +27,7 @@ The method of configuration may differ depending on the OS.
 from __future__ import annotations
 
 from PySide6.QtCore import Qt, QSettings, QCoreApplication
-from PySide6.QtWidgets import QDialog, QFormLayout, QLabel, QCheckBox, QComboBox
+from PySide6.QtWidgets import QDialog, QFormLayout, QLabel, QCheckBox, QComboBox, QSpinBox
 
 from .prefs_gui import Ui_Prefs
 from .signal_sender import SignalSender
@@ -67,11 +67,12 @@ PreferencesDictBoolKeys: TypeAlias = Literal[
     "quiet_mode",
     "disable_hardware_beep",
 ]
+PreferencesDictIntKeys: TypeAlias = Literal["lower_display_stitch_width"]
 PreferencesDictObjKeys: TypeAlias = Literal[
     "aspect_ratio", "default_alignment", "default_knitting_mode", "machine"
 ]
 PreferencesDictKeys: TypeAlias = Literal[
-    PreferencesDictBoolKeys, PreferencesDictObjKeys, "language"
+    PreferencesDictBoolKeys, PreferencesDictObjKeys, PreferencesDictIntKeys, "language"
 ]
 
 PreferencesDict = TypedDict(
@@ -87,6 +88,7 @@ PreferencesDict = TypedDict(
         "quiet_mode": type[bool],
         "disable_hardware_beep": type[bool],
         "language": type[Language],
+        "lower_display_stitch_width": type[int]
     },
 )
 
@@ -116,13 +118,14 @@ class Preferences(SignalSender):
         "quiet_mode": bool,
         "disable_hardware_beep": bool,
         "language": Language,
+        "lower_display_stitch_width": int
     }
 
     def __init__(self, parent: GuiMain):
         super().__init__(parent.signal_receiver)
         self.parent = parent
         self.languages = Language(self.parent.app_context)
-        self.settings = QSettings()
+        self.settings: QSettings = QSettings()
         self.settings.setFallbacksEnabled(False)
         self.refresh()
 
@@ -148,23 +151,23 @@ class Preferences(SignalSender):
         else:
             return self.default_value(var)
 
-    def convert(self, var: PreferencesDictKeys) -> Callable[[T], Any]:
+    def convert(self, var: PreferencesDictKeys) -> Callable[[object], Any]:
         try:
             cls = self.variables[var]
         except KeyError:
             return str
         # else
         if cls == bool:
-            return cast(Callable[[T], Any], str2bool)
+            return cast(Callable[[object], Any], str2bool)
         # else
         if cls == Language:
             return str
         # else
-        return cast(Callable[[T], Any], int)
+        return cast(Callable[[object], Any], int)
 
     def default_value(
         self, var: PreferencesDictKeys
-    ) -> Optional[bool | str | Literal[0]]:
+    ) -> Optional[bool | str | int | Literal[0]]:
         try:
             cls = self.variables[var]
         except KeyError:
@@ -175,6 +178,8 @@ class Preferences(SignalSender):
         # else
         if cls == Language:
             return self.languages.default_language()
+        if cls == int:
+            return 20
         # else
         return 0
 
@@ -226,6 +231,8 @@ class PrefsDialog(QDialog):
         cls = self.__prefs.variables[var]
         if cls == bool:
             return PrefsBoolWidget(self.__prefs, cast(PreferencesDictBoolKeys, var))
+        elif cls == int:
+            return PrefsIntWidget(self.__prefs, cast(PreferencesDictIntKeys, var))
         elif cls == Language:
             return PrefsLangWidget(self.__prefs)
         else:
@@ -250,7 +257,7 @@ class PrefsBoolWidget(QCheckBox):
 
     def __init__(self, prefs: Preferences, var: PreferencesDictBoolKeys):
         super().__init__()
-        self.var = var
+        self.var: PreferencesDictBoolKeys = var
         self.prefs = prefs
 
     def connectChange(self) -> None:
@@ -269,6 +276,29 @@ class PrefsBoolWidget(QCheckBox):
             self.setCheckState(Qt.CheckState.Unchecked)
 
 
+class PrefsIntWidget(QSpinBox):
+    """Spinbox for Integer preferences setting.
+
+    @author Sam Bonfante
+    @date   July 2024
+    """
+
+    def __init__(self, prefs: Preferences, var: PreferencesDictIntKeys):
+        super().__init__()
+        self.var: PreferencesDictIntKeys = var
+        self.prefs = prefs
+        self.setMinimum(2)
+
+    def connectChange(self) -> None:
+        self.valueChanged.connect(self.update_setting)
+
+    def update_setting(self, new_value: int) -> None:
+        self.prefs.settings.setValue(self.var, new_value)
+
+    def refresh(self) -> None:
+        self.setValue(self.prefs.value(self.var))
+
+
 class PrefsComboWidget(QComboBox):
     """ComboBox for categorical preferences setting.
 
@@ -278,7 +308,7 @@ class PrefsComboWidget(QComboBox):
 
     def __init__(self, prefs: Preferences, var: PreferencesDictObjKeys):
         super().__init__()
-        self.var = var
+        self.var: PreferencesDictObjKeys = var
         self.prefs = prefs
         cls = self.prefs.variables[self.var]
         cls.add_items(self)
@@ -315,4 +345,4 @@ class PrefsLangWidget(QComboBox):
         self.setCurrentIndex(self.findData(self.prefs.value("language")))
 
 
-PrefsWidgetTypes: TypeAlias = PrefsBoolWidget | PrefsLangWidget | PrefsComboWidget
+PrefsWidgetTypes: TypeAlias = PrefsBoolWidget | PrefsLangWidget | PrefsComboWidget | PrefsIntWidget
