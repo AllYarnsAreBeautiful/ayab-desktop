@@ -56,7 +56,7 @@ class ProgressBar(object):
         self.total = status.total_rows
         self.repeats = status.repeats
         self.color = status.color_symbol
-        self.backgroundColor = status.color
+        self.background_color = status.color
         self.refresh()
         return True
 
@@ -69,11 +69,11 @@ class ProgressBar(object):
             color_text = ""
         else:
             color_text = "Color " + self.color
-            bgColor = QColor.fromRgb(self.backgroundColor)
-            if bgColor.lightness() < 128:
-                fgColor = 0xffffff
-            else: fgColor = 0x000000
-            self.__color_label.setStyleSheet("QLabel {background-color: "+f"#{self.backgroundColor:06x}"+f";color:#{fgColor:06x}"+";}")
+            bg_color = QColor.fromRgb(self.background_color)
+            if bg_color.lightness() < 128:
+                fg_color = 0xffffff
+            else: fg_color = 0x000000
+            self.__color_label.setStyleSheet("QLabel {background-color: "+f"#{self.background_color:06x}"+f";color:#{fg_color:06x}"+";}")
 
         self.__color_label.setText(color_text)
 
