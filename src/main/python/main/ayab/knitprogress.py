@@ -20,7 +20,7 @@
 
 from __future__ import annotations
 from PySide6.QtCore import QCoreApplication, QRect, Qt
-from PySide6.QtWidgets import QTableWidget, QTableWidgetItem, QHeaderView
+from PySide6.QtWidgets import QTableWidget, QTableWidgetItem, QHeaderView, QAbstractItemView
 from PySide6.QtGui import QBrush, QColor
 from typing import TYPE_CHECKING, Optional, cast, List
 from math import floor
@@ -52,8 +52,14 @@ class KnitProgress(QTableWidget):
         self.verticalHeader().setSectionResizeMode(
             QHeaderView.ResizeMode.Fixed
         )
+        self.verticalHeader().setSectionsClickable(False)
         self.horizontalHeader().setMinimumSectionSize(0)
         self.horizontalHeader().setDefaultSectionSize(self.__prefs.value("lower_display_stitch_width"))
+        self.horizontalHeader().setSectionsClickable(False)
+        self.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectItems)
+        self.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
+        self.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
+
         self.previousStatus: Optional[Status] = None
         self.scene = parent.scene
 
