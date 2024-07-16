@@ -34,6 +34,13 @@
         </property>
         <item>
          <layout class="QHBoxLayout" name="horizontal_layout">
+          <item>
+           <widget class="QLabel" name="label_selection">
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
           <item alignment="Qt::AlignHCenter|Qt::AlignVCenter">
            <widget class="QLabel" name="label_current_color">
             <property name="font">

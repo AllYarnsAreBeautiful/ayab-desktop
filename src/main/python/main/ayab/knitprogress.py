@@ -47,6 +47,7 @@ class KnitProgress(QTableWidget):
         self.clear()
         self.setRowCount(0)
         self.__prefs: Preferences = parent.prefs
+        self.__progbar = parent.progbar
         self.setGeometry(QRect(0, 0, 700, 220))
         self.setContentsMargins(1, 1, 1, 1)
         self.verticalHeader().setSectionResizeMode(
@@ -62,6 +63,7 @@ class KnitProgress(QTableWidget):
 
         self.previousStatus: Optional[Status] = None
         self.scene = parent.scene
+        self.currentItemChanged.connect(self.onStitchSelect)
 
     def start(self) -> None:
         self.clearContents()
@@ -149,19 +151,18 @@ class KnitProgress(QTableWidget):
         self.setVerticalHeaderItem(0, QTableWidgetItem("To Be Selected"))
         for i, col in enumerate(columns):
             self.setItem(0, i, col)
-            self.setColumnWidth(i, cast(int, self.__prefs.settings.value("lower_display_stitch_width")))
+            self.setColumnWidth(i, self.__prefs.value("lower_display_stitch_width"))
             # when width is under 20, the column numbers are unreadable.
             if self.columnWidth(i) < 20:
                 self.horizontalHeader().setVisible(False)
-                continue
-            self.horizontalHeader().setVisible(True)
+            else:
+                self.horizontalHeader().setVisible(True)
             if i < midline:
                 header = QTableWidgetItem(f"{(midline)-(i)}")
                 header.font().setBold(True)
                 header.setForeground(QBrush(QColor(f"#{self.orange:06x}")))
                 header.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
                 self.setHorizontalHeaderItem(i, header)
-                self.horizontalHeader().setMinimumSectionSize(0)
             else:
                 header = QTableWidgetItem(f"{(i+1)-(midline)}")
                 header.setForeground(QBrush(QColor(f"#{self.green:06x}")))
@@ -226,3 +227,11 @@ class KnitProgress(QTableWidget):
             if bg_color is not None:
                 stitch.setBackground(QBrush(bg_color))
         return stitch
+
+    def onStitchSelect(self, current: QTableWidgetItem) -> None:
+        if self.horizontalHeaderItem(current.column()).foreground().color().red() == 187:
+            side = "Green"
+        else:
+            side = "Orange"
+        selectionString = f"Selection: {self.verticalHeaderItem(current.row()).text()} , stitch {side}-{self.horizontalHeaderItem(current.column()).text()}"
+        self.__progbar.setSelectionLabel(selectionString)

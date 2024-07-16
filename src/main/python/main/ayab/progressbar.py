@@ -34,6 +34,7 @@ class ProgressBar(object):
         self.__row_label = parent.ui.label_current_row
         self.__color_label = parent.ui.label_current_color
         self.__status_label = parent.engine.status.ui.label_progress
+        self.__selection_label = parent.ui.label_selection
         self.reset()
 
     def reset(self) -> None:
@@ -45,6 +46,7 @@ class ProgressBar(object):
         self.__row_label.setText("")
         self.__color_label.setText("")
         self.__status_label.setText("")
+        self.__selection_label.setText("")
 
     def update(
         self,
@@ -59,6 +61,9 @@ class ProgressBar(object):
         self.background_color = status.color
         self.refresh()
         return True
+
+    def setSelectionLabel(self, text: str) -> None:
+        self.__selection_label.setText(text)
 
     def refresh(self) -> None:
         """Updates the color and row in progress bar"""
