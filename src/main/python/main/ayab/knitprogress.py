@@ -52,6 +52,8 @@ class KnitProgress(QTableWidget):
         self.verticalHeader().setSectionResizeMode(
             QHeaderView.ResizeMode.Fixed
         )
+        self.horizontalHeader().setMinimumSectionSize(0)
+        self.horizontalHeader().setDefaultSectionSize(self.__prefs.value("lower_display_stitch_width"))
         self.previousStatus: Optional[Status] = None
         self.scene = parent.scene
 
