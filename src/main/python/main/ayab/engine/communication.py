@@ -242,10 +242,11 @@ class Communication(object):
 
         return None
 
-    def write_API6(self, cmd: bytearray) -> None:
-        # SLIP protocol, no CRC8
-        if self.__ser:
-            self.__ser.write(cmd)
+    def write_API6(self, msg: bytes | bytearray) -> None:
+        if self.__ser is None:
+            return
+        data = self.__driver.send(bytes(msg))
+        self.__ser.write(data)
 
 
 # CRC algorithm after Maxim/Dallas
