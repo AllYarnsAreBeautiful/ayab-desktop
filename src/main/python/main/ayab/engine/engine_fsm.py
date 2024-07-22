@@ -240,8 +240,4 @@ class StateMachine(QStateMachine):
     @staticmethod
     def _API6_finished(control: Control, operation: Operation) -> Output:
         control.logger.debug("State FINISHED")
-        try:
-            control.timer.stop()  # type: ignore
-        except Exception:
-            pass
         return Output.NONE
