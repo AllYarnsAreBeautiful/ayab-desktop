@@ -244,5 +244,4 @@ class StateMachine(QStateMachine):
             control.timer.stop()  # type: ignore
         except Exception:
             pass
-        control.state = State.CONNECT
         return Output.NONE
