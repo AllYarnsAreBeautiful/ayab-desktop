@@ -20,29 +20,24 @@
 """Standalone audio player."""
 
 from __future__ import annotations
-import logging
 from os import path
 
 import simpleaudio as sa
-import wave
 
-from PySide6.QtCore import QObject, QThread
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from .ayab import GuiMain
 
 
-class AudioWorker(QObject):
-    def __init__(self, parent: GuiMain):
-        super().__init__()
-        self.__dir = parent.app_context.get_resource("assets")
-        self.__prefs = parent.prefs
+class AudioPlayer:
+    def __init__(self, gui: GuiMain):
+        self.__dir = gui.app_context.get_resource("assets")
+        self.__prefs = gui.prefs
         self.__cache: dict[str, sa.WaveObject] = {}
 
-    def play(self, sound: str, blocking: bool = False) -> None:
-        """Play audio and wait until finished."""
-        # thread remains open in quiet mode but sound does not play
+    def play(self, sound: str) -> None:
+        """Play audio."""
         if self.__prefs.value("quiet_mode"):
             return
         # else
@@ -50,43 +45,18 @@ class AudioWorker(QObject):
         if wave_obj is None:
             return
         # else
-        play_obj = wave_obj.play()
-        if blocking:
-            # wait until sound has finished before returning
-            play_obj.wait_done()
+        wave_obj.play()
 
-    def __wave(self, sound: str) -> Optional[sa.WaveObject]:
+    def __wave(self, sound: str) -> sa.WaveObject | None:
         """Get and cache audio."""
         if sound not in self.__cache:
-            self.__cache[sound] = self.__load_wave(sound)
+            wave_object = self.__load_wave(sound)
+            if wave_object is None:
+                return None
+            self.__cache[sound] = wave_object
         return self.__cache[sound]
 
-    def __load_wave(self, sound: str) -> Optional[sa.WaveObject]:
+    def __load_wave(self, sound: str) -> sa.WaveObject | None:
         """Get audio from file."""
-        filename = sound + ".wav"
-        try:
-            wave_read = wave.open(path.join(self.__dir, filename), "rb")
-        except FileNotFoundError:
-            logging.warning("File " + filename + " not found.")
-            return None
-        except OSError:
-            logging.warning("Error loading " + filename + ".")
-            return None
-        else:
-            return sa.WaveObject.from_wave_read(wave_read)
-
-
-class AudioPlayer(QThread):
-    """Audio controller in its own thread."""
-
-    def __init__(self, parent: GuiMain):
-        super().__init__(parent)
-        self.__worker = AudioWorker(parent)
-        self.__worker.moveToThread(self)
-        self.start()
-
-    def __del__(self) -> None:
-        self.wait()
-
-    def play(self, sound: str) -> None:
-        self.__worker.play(sound, blocking=False)
+        filename = path.join(self.__dir, sound + ".wav")
+        return sa.WaveObject.from_wave_file(filename)
