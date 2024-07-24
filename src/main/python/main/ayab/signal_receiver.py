@@ -20,7 +20,7 @@
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
 from __future__ import annotations
-from PySide6.QtCore import QObject, Signal, Qt
+from PySide6.QtCore import QObject, Signal
 from .engine.status import Status
 from .engine.options import Alignment
 from .engine.engine_fsm import Operation
@@ -73,9 +73,7 @@ class SignalReceiver(QObject):
         # self.statusbar_updater.connect(parent.statusbar.update)
         self.blocking_popup_displayer.connect(display_blocking_popup)
         self.popup_displayer.connect(display_blocking_popup)
-        self.audio_player.connect(
-            parent.audio.play, type=Qt.ConnectionType.BlockingQueuedConnection
-        )
+        self.audio_player.connect(parent.audio.play)
         self.needles_updater.connect(parent.scene.update_needles)
         self.alignment_updater.connect(parent.scene.update_alignment)
         self.image_resizer.connect(parent.set_image_dimensions)
