@@ -6,7 +6,7 @@ from os import path
 import logging
 from distutils.dir_util import copy_tree
 
-from PySide6.QtCore import Qt, QCoreApplication, QTranslator, QLocale, QSettings
+from PySide6.QtCore import QCoreApplication, QTranslator, QLocale, QSettings
 
 from typing import TYPE_CHECKING, cast
 
@@ -28,15 +28,6 @@ else:
 
 class AppContext(ApplicationContext):  # type: ignore # 1. Subclass ApplicationContext
     REPO = "AllYarnsAreBeautiful/ayab-desktop"
-
-    def __init__(self) -> None:
-        self.configure_application()
-        super().__init__()
-
-    def configure_application(self) -> None:
-        # Remove Help Button
-        if hasattr(Qt, "AA_DisableWindowContextHelpButton"):
-            QCoreApplication.setAttribute(Qt.AA_DisableWindowContextHelpButton, True)
 
     def run(self) -> int:  # 2. Implement run()
         self.make_user_directory()
