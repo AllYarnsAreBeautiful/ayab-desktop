@@ -231,7 +231,10 @@ class KnitProgress(QTableWidget):
                 stitch.setBackground(QBrush(bg_color))
         return stitch
 
-    def onStitchSelect(self, current: QTableWidgetItem) -> None:
+    def onStitchSelect(self, current: QTableWidgetItem | None) -> None:
+        if current is None:
+            self.__progbar.set_selection_label("")
+            return
         if self.horizontalHeaderItem(current.column()).foreground().color().red() == 187:
             side = "Green"
         else:
