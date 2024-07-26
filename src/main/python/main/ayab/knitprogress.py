@@ -118,12 +118,12 @@ class KnitProgress(QTableWidget):
         # When we show a new row, we recover the header info and recombine it with its row (now row idx 2)
         self.make_row_with_spacer()
 
-        self.instantiate_row_from_columns(midline, columns)
         if self.columnCount() != len(columns):
             self.setColumnCount(len(columns))
         n_cols = len(columns)
         if n_cols < 4:
             self.hideColumn(5)
+        self.instantiate_row_from_columns(midline, columns)
 
         self.previousStatus = status
         self.previous_row_mulitplier = row_multiplier
