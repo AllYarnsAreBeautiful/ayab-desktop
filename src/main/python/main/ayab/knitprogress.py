@@ -176,6 +176,7 @@ class KnitProgress(QTableWidget):
         self.removeRow(1)
         self.insertRow(0)
         self.insertRow(1)
+        self.setVerticalHeaderItem(1, QTableWidgetItem(""))
         if self.rowCount() > 2:
             self.setVerticalHeaderItem(2, self.format_row_header_text(self.previousStatus, self.previous_row_mulitplier))
         self.verticalHeader().setSectionResizeMode(1, QHeaderView.ResizeMode.Fixed)
