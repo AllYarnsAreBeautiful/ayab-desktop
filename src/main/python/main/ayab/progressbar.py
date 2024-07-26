@@ -62,7 +62,7 @@ class ProgressBar(object):
         self.refresh()
         return True
 
-    def setSelectionLabel(self, text: str) -> None:
+    def set_selection_label(self, text: str) -> None:
         self.__selection_label.setText(text)
 
     def refresh(self) -> None:

@@ -233,5 +233,5 @@ class KnitProgress(QTableWidget):
             side = "Green"
         else:
             side = "Orange"
-        selectionString = f"Selection: {self.verticalHeaderItem(current.row()).text()} , stitch {side}-{self.horizontalHeaderItem(current.column()).text()}"
-        self.__progbar.setSelectionLabel(selectionString)
+        selection_string = f"Selection: {self.verticalHeaderItem(current.row()).text()} , stitch {side}-{self.horizontalHeaderItem(current.column()).text()}"
+        self.__progbar.set_selection_label(selection_string)
