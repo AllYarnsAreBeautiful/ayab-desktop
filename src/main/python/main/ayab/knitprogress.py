@@ -57,6 +57,9 @@ class KnitProgress(QTableWidget):
         self.horizontalHeader().setMinimumSectionSize(0)
         self.horizontalHeader().setDefaultSectionSize(self.__prefs.value("lower_display_stitch_width"))
         self.horizontalHeader().setSectionsClickable(False)
+        self.horizontalHeader().setSectionResizeMode(
+            QHeaderView.ResizeMode.Fixed
+        )
         self.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectItems)
         self.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
         self.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
