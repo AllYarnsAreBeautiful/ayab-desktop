@@ -64,9 +64,6 @@ class Scene(QGraphicsView):
         self.ayabimage: AyabImage = AyabImage(parent)
         self.__prefs = parent.prefs
         default = self.__prefs.value("default_alignment")
-        self.ayabimage.reversed = False
-        if self.__prefs.value("default_knit_side_image"):
-            self.reverse()
         self.__alignment: Alignment = Alignment(default)
         machine_width: int = Machine(self.__prefs.value("machine")).width
         self.__start_needle: int = (machine_width // 2) - 20
@@ -77,7 +74,11 @@ class Scene(QGraphicsView):
         self.setDragMode(QGraphicsView.DragMode.ScrollHandDrag)
         self.__zoom: float = 3
 
-        self.refresh()
+        self.ayabimage.reversed = False
+        if self.__prefs.value("default_knit_side_image"):
+            self.reverse()  # calls refresh(), so no need to call it again
+        else:
+            self.refresh()
 
     def reverse(self) -> None:
         """Mirrors the image"""
