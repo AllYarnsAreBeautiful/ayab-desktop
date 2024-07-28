@@ -64,9 +64,6 @@ class Scene(QGraphicsView):
         self.ayabimage: AyabImage = AyabImage(parent)
         self.__prefs = parent.prefs
         default = self.__prefs.value("default_alignment")
-        self.ayabimage.reversed = False
-        if self.__prefs.value("default_knit_side_image"):
-            self.reverse()
         self.__alignment: Alignment = Alignment(default)
         machine_width: int = Machine(self.__prefs.value("machine")).width
         self.__start_needle: int = (machine_width // 2) - 20
@@ -77,40 +74,26 @@ class Scene(QGraphicsView):
         self.setDragMode(QGraphicsView.DragMode.ScrollHandDrag)
         self.__zoom: float = 3
 
+        self.ayabimage.reversed = False
+        if self.__prefs.value("default_knit_side_image"):
+            self.reverse()  # calls refresh(), so no need to call it again
+        else:
+            self.refresh()
+
     def reverse(self) -> None:
         """Mirrors the image"""
-        self.ayabimage.reversed = not self.ayabimage.reversed
-        self.ayabimage.image = Transform.hflip(self.ayabimage.image)
+
+        if self.ayabimage.image is not None:
+            self.ayabimage.reversed = not self.ayabimage.reversed
+            self.ayabimage.image = Transform.hflip(self.ayabimage.image)
+
         self.refresh()
 
     def refresh(self) -> None:
         """Updates the graphics scene"""
         qscene = QGraphicsScene()
 
-        width, height = self.ayabimage.image.size
-        data = self.ayabimage.image.convert("RGBA").tobytes("raw", "RGBA")
-        qim = QImage(data, width, height, QImage.Format.Format_RGBA8888)
-        pixmap = QPixmap.fromImage(qim)
-
-        # add pattern and locate according to alignment
-        pattern = qscene.addPixmap(pixmap)
         machine_width = Machine(self.__prefs.value("machine")).width
-        if self.__alignment == Alignment.LEFT:
-            pos = self.__start_needle - machine_width / 2
-        elif self.__alignment == Alignment.CENTER:
-            pos = (
-                self.__start_needle
-                + self.__stop_needle
-                + 1
-                - pixmap.width()
-                - machine_width
-            ) / 2
-        elif self.__alignment == Alignment.RIGHT:
-            pos = self.__stop_needle + 1 - machine_width / 2 - pixmap.width()
-        else:
-            logging.warning("invalid alignment")
-            return
-        pattern.setPos(pos, 0)
 
         # draw "machine"
         rect_orange = QGraphicsRectItem(
@@ -123,50 +106,75 @@ class Scene(QGraphicsView):
         qscene.addItem(rect_orange)
         qscene.addItem(rect_green)
 
-        # draw limiting lines (start/stop needle)
-        qscene.addItem(
-            QGraphicsRectItem(
-                self.__start_needle - machine_width / 2 - 0.5,
-                -5.5,
-                0,
-                pixmap.height() + 5.5,
-            )
-        )
-        qscene.addItem(
-            QGraphicsRectItem(
-                self.__stop_needle - machine_width / 2 + 1.5,
-                -5.5,
-                0,
-                pixmap.height() + 5.5,
-            )
-        )
+        if self.ayabimage.image is not None:
+            width, height = self.ayabimage.image.size
+            data = self.ayabimage.image.convert("RGBA").tobytes("raw", "RGBA")
+            qim = QImage(data, width, height, QImage.Format.Format_RGBA8888)
+            pixmap = QPixmap.fromImage(qim)
 
-        # Draw knitting progress
-        qscene.addItem(
-            QGraphicsRectItem(
-                -machine_width / 2 - 1,
-                pixmap.height() - self.__row_progress - 0.5,
-                self.__start_needle,
-                0,
+            # add pattern and locate according to alignment
+            pattern = qscene.addPixmap(pixmap)
+            if self.__alignment == Alignment.LEFT:
+                pos = self.__start_needle - machine_width / 2
+            elif self.__alignment == Alignment.CENTER:
+                pos = (
+                    self.__start_needle
+                    + self.__stop_needle
+                    + 1
+                    - pixmap.width()
+                    - machine_width
+                ) / 2
+            elif self.__alignment == Alignment.RIGHT:
+                pos = self.__stop_needle + 1 - machine_width / 2 - pixmap.width()
+            else:
+                logging.warning("invalid alignment")
+                return
+            pattern.setPos(pos, 0)
+
+            # draw limiting lines (start/stop needle)
+            qscene.addItem(
+                QGraphicsRectItem(
+                    self.__start_needle - machine_width / 2 - 0.5,
+                    -5.5,
+                    0,
+                    pixmap.height() + 5.5,
+                )
             )
-        )
-        qscene.addItem(
-            QGraphicsRectItem(
-                self.__stop_needle - machine_width / 2 + 1,
-                pixmap.height() - self.__row_progress - 0.5,
-                machine_width - self.__stop_needle,
-                0,
+            qscene.addItem(
+                QGraphicsRectItem(
+                    self.__stop_needle - machine_width / 2 + 1.5,
+                    -5.5,
+                    0,
+                    pixmap.height() + 5.5,
+                )
             )
-        )
-        grey = QGraphicsRectItem(
-            self.__start_needle - machine_width / 2,
-            pixmap.height(),
-            self.__stop_needle - self.__start_needle + 1,
-            -self.__row_progress,
-        )
-        grey.setPen(QPen(QColor(127, 127, 127, 127), 0))
-        grey.setBrush(QBrush(QColor(127, 127, 127, 127)))
-        qscene.addItem(grey)
+
+            # Draw knitting progress
+            qscene.addItem(
+                QGraphicsRectItem(
+                    -machine_width / 2 - 1,
+                    pixmap.height() - self.__row_progress - 0.5,
+                    self.__start_needle,
+                    0,
+                )
+            )
+            qscene.addItem(
+                QGraphicsRectItem(
+                    self.__stop_needle - machine_width / 2 + 1,
+                    pixmap.height() - self.__row_progress - 0.5,
+                    machine_width - self.__stop_needle,
+                    0,
+                )
+            )
+            grey = QGraphicsRectItem(
+                self.__start_needle - machine_width / 2,
+                pixmap.height(),
+                self.__stop_needle - self.__start_needle + 1,
+                -self.__row_progress,
+            )
+            grey.setPen(QPen(QColor(127, 127, 127, 127), 0))
+            grey.setBrush(QBrush(QColor(127, 127, 127, 127)))
+            qscene.addItem(grey)
 
         self.resetTransform()
         self.scale(
@@ -209,9 +217,8 @@ class Scene(QGraphicsView):
     @zoom.setter
     def zoom(self, event: QWheelEvent) -> None:
         """Use mouse wheel events to zoom the graphical image"""
-        if self.ayabimage.image is not None:
-            # angleDelta.y is 120 or -120 when scrolling
-            self.set_zoom(event.angleDelta().y() / 120)
+        # angleDelta.y is 120 or -120 when scrolling
+        self.set_zoom(event.angleDelta().y() / 120)
 
     def set_zoom(self, zoom: float) -> None:
         self.__zoom += zoom * 0.5
