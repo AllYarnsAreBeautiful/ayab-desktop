@@ -46,6 +46,7 @@ from typing import (
     TypeVar,
     TypedDict,
     cast,
+    overload,
 )
 
 if TYPE_CHECKING:
@@ -140,6 +141,13 @@ class Preferences(SignalSender):
                 self.settings.setValue(
                     var, self.default_value(cast(PreferencesDictKeys, var))
                 )
+
+    @overload
+    def value(self, var: PreferencesDictBoolKeys) -> bool: ...
+    @overload
+    def value(self, var: PreferencesDictIntKeys | PreferencesDictObjKeys) -> int: ...
+    @overload
+    def value(self, var: Literal["language"]) -> str: ...
 
     def value(self, var: PreferencesDictKeys) -> Any:
         if var in self.settings.allKeys():

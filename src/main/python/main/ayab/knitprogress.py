@@ -20,7 +20,7 @@
 
 from __future__ import annotations
 from PySide6.QtCore import QCoreApplication, QRect, Qt
-from PySide6.QtWidgets import QTableWidget, QTableWidgetItem, QHeaderView
+from PySide6.QtWidgets import QTableWidget, QTableWidgetItem, QHeaderView, QAbstractItemView
 from PySide6.QtGui import QBrush, QColor
 from typing import TYPE_CHECKING, Optional, cast, List
 from math import floor
@@ -47,13 +47,26 @@ class KnitProgress(QTableWidget):
         self.clear()
         self.setRowCount(0)
         self.__prefs: Preferences = parent.prefs
+        self.__progbar = parent.progbar
         self.setGeometry(QRect(0, 0, 700, 220))
         self.setContentsMargins(1, 1, 1, 1)
         self.verticalHeader().setSectionResizeMode(
             QHeaderView.ResizeMode.Fixed
         )
+        self.verticalHeader().setSectionsClickable(False)
+        self.horizontalHeader().setMinimumSectionSize(0)
+        self.horizontalHeader().setDefaultSectionSize(self.__prefs.value("lower_display_stitch_width"))
+        self.horizontalHeader().setSectionsClickable(False)
+        self.horizontalHeader().setSectionResizeMode(
+            QHeaderView.ResizeMode.Fixed
+        )
+        self.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectItems)
+        self.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
+        self.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
+
         self.previousStatus: Optional[Status] = None
         self.scene = parent.scene
+        self.currentItemChanged.connect(self.onStitchSelect)
 
     def start(self) -> None:
         self.clearContents()
@@ -105,12 +118,12 @@ class KnitProgress(QTableWidget):
         # When we show a new row, we recover the header info and recombine it with its row (now row idx 2)
         self.make_row_with_spacer()
 
-        self.instantiate_row_from_columns(midline, columns)
         if self.columnCount() != len(columns):
             self.setColumnCount(len(columns))
         n_cols = len(columns)
         if n_cols < 4:
             self.hideColumn(5)
+        self.instantiate_row_from_columns(midline, columns)
 
         self.previousStatus = status
         self.previous_row_mulitplier = row_multiplier
@@ -141,19 +154,18 @@ class KnitProgress(QTableWidget):
         self.setVerticalHeaderItem(0, QTableWidgetItem("To Be Selected"))
         for i, col in enumerate(columns):
             self.setItem(0, i, col)
-            self.setColumnWidth(i, cast(int, self.__prefs.settings.value("lower_display_stitch_width")))
+            self.setColumnWidth(i, self.__prefs.value("lower_display_stitch_width"))
             # when width is under 20, the column numbers are unreadable.
             if self.columnWidth(i) < 20:
                 self.horizontalHeader().setVisible(False)
-                continue
-            self.horizontalHeader().setVisible(True)
+            else:
+                self.horizontalHeader().setVisible(True)
             if i < midline:
                 header = QTableWidgetItem(f"{(midline)-(i)}")
                 header.font().setBold(True)
                 header.setForeground(QBrush(QColor(f"#{self.orange:06x}")))
                 header.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
                 self.setHorizontalHeaderItem(i, header)
-                self.horizontalHeader().setMinimumSectionSize(0)
             else:
                 header = QTableWidgetItem(f"{(i+1)-(midline)}")
                 header.setForeground(QBrush(QColor(f"#{self.green:06x}")))
@@ -164,6 +176,7 @@ class KnitProgress(QTableWidget):
         self.removeRow(1)
         self.insertRow(0)
         self.insertRow(1)
+        self.setVerticalHeaderItem(1, QTableWidgetItem(""))
         if self.rowCount() > 2:
             self.setVerticalHeaderItem(2, self.format_row_header_text(self.previousStatus, self.previous_row_mulitplier))
         self.verticalHeader().setSectionResizeMode(1, QHeaderView.ResizeMode.Fixed)
@@ -218,3 +231,14 @@ class KnitProgress(QTableWidget):
             if bg_color is not None:
                 stitch.setBackground(QBrush(bg_color))
         return stitch
+
+    def onStitchSelect(self, current: QTableWidgetItem | None) -> None:
+        if current is None:
+            self.__progbar.set_selection_label("")
+            return
+        if self.horizontalHeaderItem(current.column()).foreground().color().red() == 187:
+            side = "Right"
+        else:
+            side = "Left"
+        selection_string = f"Selection: {self.verticalHeaderItem(current.row()).text()} , stitch {side}-{self.horizontalHeaderItem(current.column()).text()}"
+        self.__progbar.set_selection_label(selection_string)
