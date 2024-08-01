@@ -1,5 +1,7 @@
 name: Init Environment
 outputs:
+  do-release:
+    value: ${{steps.vars.outputs.do-release}}
   sha-short:
     value: ${{steps.vars.outputs.sha-short}}
   tag:
@@ -25,6 +27,9 @@ runs:
       id: vars
       shell: bash
       run: |
+        if [[ "$GITHUB_REF" =~ ^refs/tags/v?[0-9]+\.[0-9]+\.[0-9]+-?[-a-zA-Z0-9]*$ ]]; then
+            echo "do-release=true" >> $GITHUB_OUTPUT
+        fi
         echo "sha-short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
         echo "tag=$(git describe --tags)" >> $GITHUB_OUTPUT
         echo "draft=$(git describe --tags | sed -e 's/^test.*/true/;s/^v.*/false/')" >> $GITHUB_OUTPUT
@@ -37,4 +42,4 @@ runs:
         echo ${{ steps.vars.outputs.tag }} > src/main/resources/base/ayab/package_version
         # remove suffix from semver tag, as fbs does not support them
         version_without_suffix=$(echo ${{ steps.vars.outputs.tag }} | sed -E 's/^v?([0-9]+\.[0-9]+\.[0-9]+).*$/\1/')
-        sed -i -e s/PACKAGE_VERSION/$version_without_suffix/ src/build/settings/base.json
+        sed -i -e "s/PACKAGE_VERSION/$version_without_suffix/" src/build/settings/base.json
