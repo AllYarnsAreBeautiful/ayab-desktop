@@ -47,13 +47,10 @@ class HardwareTestDialog(QDialog):
         "help",
         "send",
         "beep",
-        # "setSingle",     # called when checking solenoids
-        # "setAll",        # no UI to handle argument
         "readEOLsensors",
         "readEncoders",
         "autoRead",
         "autoTest",
-        # "stop",          # called when unchecking autoRead/autoTest
         "quit",
     ]
 
