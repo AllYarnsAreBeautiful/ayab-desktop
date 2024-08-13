@@ -2,9 +2,6 @@
 <ui version="4.0">
  <class>MenuBar</class>
  <widget class="QMenuBar" name="menubar">
-  <property name="nativeMenuBar">
-   <bool>False</bool>
-  </property>
   <widget class="QMenu" name="menu_file">
    <property name="title">
     <string>File</string>
@@ -68,6 +65,9 @@
    <property name="shortcut">
     <string notr="true">Ctrl+Q</string>
    </property>
+   <property name="menuRole">
+    <enum>QAction::QuitRole</enum>
+   </property>
   </action>
   <action name="action_load_AYAB_firmware">
    <property name="text">
@@ -98,6 +98,9 @@
   <action name="action_about">
    <property name="text">
     <string>Help – About</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::AboutRole</enum>
    </property>
   </action>
   <action name="action_help">
@@ -191,6 +194,9 @@
    </property>
    <property name="shortcut">
     <string notr="true">Ctrl+P</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::PreferencesRole</enum>
    </property>
   </action>
  </widget>

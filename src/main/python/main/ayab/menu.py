@@ -19,6 +19,7 @@
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
 from __future__ import annotations
+from PySide6.QtCore import QOperatingSystemVersion
 from PySide6.QtWidgets import QMenuBar
 
 from .menu_gui import Ui_MenuBar
@@ -38,6 +39,11 @@ class Menu(QMenuBar):
 
     def __init__(self, parent: GuiMain):
         super().__init__(parent)
+
+        # Use native menubar on macOS, not elsewhere (i.e. Linux)
+        if QOperatingSystemVersion.currentType() != QOperatingSystemVersion.OSType.MacOS:
+            self.setNativeMenuBar(False)
+
         self.ui = Ui_MenuBar()
         self.ui.setupUi(self)
         self.setup()
