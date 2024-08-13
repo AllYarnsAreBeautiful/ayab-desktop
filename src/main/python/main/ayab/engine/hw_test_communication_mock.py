@@ -19,6 +19,7 @@
 
 import re
 from PySide6.QtCore import QObject
+from PySide6.QtWidgets import QApplication
 
 from .communication import Token
 from .communication_mock import CommunicationMock
@@ -49,9 +50,7 @@ class HardwareTestCommunicationMock(QObject, CommunicationMock):
             self.__handle_unrecognizedCmd()
         else:
             cmd = self.__tokens[i].name
-            self.__output(
-                Token.testRes, "Called " + re.sub("CMD$", "", cmd.upper()) + "\n"
-            )
+            self.__output(Token.testRes, "Called " + re.sub("Cmd$", "", cmd) + "\n")
             dispatch = getattr(self, "_handle_" + cmd)
             dispatch(msg)
 
@@ -72,14 +71,17 @@ class HardwareTestCommunicationMock(QObject, CommunicationMock):
 
     def _handle_helpCmd(self, msg):
         self.__output(Token.testRes, "The following commands are available:\n")
-        self.__output(Token.testRes, "SET solenoid [0..15] [0/1]\n")
-        self.__output(Token.testRes, "READ encoders and EOL sensors\n")
-        self.__output(Token.testRes, "AUTO [0/1] continuous reads\n")
-        self.__output(Token.testRes, "TEST [0/1] toggle solenoids\n")
-        self.__output(Token.testRes, "SEND a test message\n")
-        self.__output(Token.testRes, "BEEP test buzzer\n")
-        self.__output(Token.testRes, "HELP show commands\n")
-        self.__output(Token.testRes, "QUIT\n")
+        self.__output(Token.testRes, "setSingle [0..15] [1/0]\n")
+        self.__output(Token.testRes, "setAll [0..FFFF]\n")
+        self.__output(Token.testRes, "readEOLsensors\n")
+        self.__output(Token.testRes, "readEncoders\n")
+        self.__output(Token.testRes, "beep\n")
+        self.__output(Token.testRes, "autoRead\n")
+        self.__output(Token.testRes, "autoTest\n")
+        self.__output(Token.testRes, "send\n")
+        self.__output(Token.testRes, "stop\n")
+        self.__output(Token.testRes, "quit\n")
+        self.__output(Token.testRes, "help\n")
 
     def _handle_sendCmd(self, msg):
         self.__output(Token.testRes, "\x31\x32\x33\n")
@@ -87,22 +89,29 @@ class HardwareTestCommunicationMock(QObject, CommunicationMock):
     def _handle_beepCmd(self, msg):
         self.__beep()
 
-    def _handle_readCmd(self, msg):
+    def _handle_readEOLsensorsCmd(self, msg):
         self.__read_EOL_sensors()
+        self.__output(Token.testRes, "\n")
+
+    def _handle_readEncodersCmd(self, msg):
         self.__read_encoders()
         self.__output(Token.testRes, "\n")
 
-    def _handle_autoCmd(self, msg):
-        self.__autoReadOn = msg[1]
+    def _handle_autoReadCmd(self, msg):
+        self.__autoReadOn = True
 
-    def _handle_testCmd(self, msg):
-        self.__autoTestOn = msg[1]
+    def _handle_autoTestCmd(self, msg):
+        self.__autoTestOn = True
+
+    def _handle_stopCmd(self, msg):
+        self.__autoReadOn = False
+        self.__autoTestOn = False
 
     def _handle_quitCmd(self, msg):
         # mock
         pass
 
-    def _handle_setCmd(self, msg):
+    def _handle_setSingleCmd(self, msg):
         if len(msg) < 3:
             return
         # else
@@ -130,8 +139,7 @@ class HardwareTestCommunicationMock(QObject, CommunicationMock):
         pass
 
     def __beep(self):
-        # mock
-        pass
+        QApplication.beep()
 
     def __read_EOL_sensors(self):
         self.__output(Token.testRes, "  EOL_L: 0")

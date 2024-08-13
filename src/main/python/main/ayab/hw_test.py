@@ -43,7 +43,16 @@ if TYPE_CHECKING:
 class HardwareTestDialog(QDialog):
     """Console for hardware tests."""
 
-    commands = ["help", "send", "beep", "read", "auto", "test", "quit"]
+    commands = [
+        "help",
+        "send",
+        "beep",
+        "readEOLsensors",
+        "readEncoders",
+        "autoRead",
+        "autoTest",
+        "quit",
+    ]
 
     def __init__(self, parent: GuiMain):
         super().__init__()
@@ -65,16 +74,17 @@ class HardwareTestDialog(QDialog):
         self.__button_row = QHBoxLayout()
         for button in self.commands:
             name = "_" + button + "_button"
-            setattr(self, name, QPushButton(button.title()))
-            widget = getattr(self, name)
+            widget: QPushButton = QPushButton(button)
+            widget.setAutoDefault(False)
             self.__button_row.addWidget(widget)
             widget.clicked.connect(
-                lambda state, widget=widget, button=button: self.__button_pushed(
+                lambda widget=widget, button=button: self.__button_pushed(
                     widget, button
                 )
             )
-        self._auto_button.setCheckable(True)  # toggles on/off
-        self._test_button.setCheckable(True)  # toggles on/off
+            setattr(self, name, widget)
+        self._autoRead_button.setCheckable(True)  # toggles on/off
+        self._autoTest_button.setCheckable(True)  # toggles on/off
         self.__command_box.setLayout(self.__button_row)
         self.__layout.addWidget(self.__command_box)
 
@@ -129,8 +139,8 @@ class HardwareTestDialog(QDialog):
         self.__control.com.write_API6(payload)
         self.__control.state = State.FINISHED
         # reset dialog
-        self._auto_button.setChecked(False)
-        self._test_button.setChecked(False)
+        self._autoRead_button.setChecked(False)
+        self._autoTest_button.setChecked(False)
         for s in range(16):
             self.__solenoid[s].setChecked(False)
         self.hide()
@@ -140,21 +150,22 @@ class HardwareTestDialog(QDialog):
             self.reject()
         else:
             payload = bytearray()
-            token = getattr(Token, button + "Cmd").value
-            payload.append(token)
-            if button in ["auto", "test"]:
-                val = widget.isChecked()
-                payload.append(val)
-                self.output("\n> " + button + " " + str(int(val)) + "\n")
+            if widget.isCheckable() and not widget.isChecked():
+                payload.append(Token.stopCmd.value)
+                self.output("\n> stop\n")
+                self._autoRead_button.setChecked(False)
+                self._autoTest_button.setChecked(False)
             else:
+                token = getattr(Token, button + "Cmd").value
+                payload.append(token)
                 self.output("\n> " + button + "\n")
             self.__control.com.write_API6(payload)
 
     def __set_solenoid(self, idx: int) -> None:
         val = self.__solenoid[idx].isChecked()
-        self.output("\n> set " + str(idx) + " " + str(int(val)) + "\n")
+        self.output("\n> setSingle " + str(idx) + " " + str(int(val)) + "\n")
         payload = bytearray()
-        payload.append(Token.setCmd.value)
+        payload.append(Token.setSingleCmd.value)
         payload.append(idx)
         payload.append(val)
         self.__control.com.write_API6(payload)
