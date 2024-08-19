@@ -10,3 +10,4 @@ simpleaudio-patched==1.0.5
 numpy==1.26.4
 charset-normalizer<3.0.0
 semver==3.0.2
+wakepy==0.10.1
