@@ -70,7 +70,7 @@ class Engine(SignalSender, QDockWidget):
         self.control = Control(parent, self)
         self.__feedback = FeedbackHandler(parent)
         self.__logger = logging.getLogger(type(self).__name__)
-        self.setWindowTitle("Machine: " + Machine(self.config.machine).name)
+        self.refresh_settings_change()
 
     def __del__(self) -> None:
         self.control.stop()
@@ -89,6 +89,10 @@ class Engine(SignalSender, QDockWidget):
 
         # activate UI elements
         self.__activate_ui()
+
+    def refresh_settings_change(self) -> None:
+        self.config.refresh()
+        self.setWindowTitle("Machine: " + Machine(self.config.machine).name)
 
     def __disable_status_tab(self) -> None:
         self.ui.tab_widget.setTabEnabled(1, False)
