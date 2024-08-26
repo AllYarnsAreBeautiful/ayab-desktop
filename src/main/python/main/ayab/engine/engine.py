@@ -61,7 +61,7 @@ class Engine(SignalSender, QDockWidget):
         self.ui.setupUi(self)
         self.config: OptionsTab = OptionsTab(parent)
         self.config.portname = self.__read_portname()
-        self.config.refresh()
+        self.reload_settings()
         self.status = StatusTab()
         self.setup_ui()
         parent.ui.dock_container_layout.addWidget(self)
@@ -70,7 +70,6 @@ class Engine(SignalSender, QDockWidget):
         self.control = Control(parent, self)
         self.__feedback = FeedbackHandler(parent)
         self.__logger = logging.getLogger(type(self).__name__)
-        self.refresh_settings_change()
 
     def __del__(self) -> None:
         self.control.stop()
@@ -90,7 +89,7 @@ class Engine(SignalSender, QDockWidget):
         # activate UI elements
         self.__activate_ui()
 
-    def refresh_settings_change(self) -> None:
+    def reload_settings(self) -> None:
         self.config.refresh()
         self.setWindowTitle("Machine: " + Machine(self.config.machine).name)
 

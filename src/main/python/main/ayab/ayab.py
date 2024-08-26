@@ -129,7 +129,7 @@ class GuiMain(QMainWindow):
     def __set_prefs(self) -> None:
         self.prefs.open_dialog()
         self.scene.refresh()
-        self.engine.refresh_settings_change()
+        self.engine.reload_settings()
 
     def __quit(self) -> None:
         logging.debug("Quitting")
