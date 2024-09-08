@@ -313,7 +313,7 @@ jobs:
         run: |
           brew install avrdude
           mkdir tmp-wheel/
-          python -m pip install delocate
+          python -m pip install delocate==0.11.0
 
           # Find platform values on e.g. https://pypi.org/project/numpy/1.26.4/#files
 
