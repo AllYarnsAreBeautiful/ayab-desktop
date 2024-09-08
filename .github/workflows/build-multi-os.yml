@@ -310,7 +310,6 @@ jobs:
       - uses: ./.github/actions/init-environment
         id: vars
       - name: Install dependencies
-        shell: zsh {0}
         run: |
           brew install avrdude
           mkdir tmp-wheel/
