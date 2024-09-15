@@ -5,6 +5,10 @@ This is the GUI interface for AYAB.
 For information on how to install the release version of the software, see
 [http://manual.ayab-knitting.com](http://manual.ayab-knitting.com)
 
+## Branching Model
+
+**Development of the latest and upcoming features happens on the 'main' branch.** For each major release, a dedicated maintenance branch is created to manage bug fixes, security patches, and backporting for that specific release. These branches follow the naming convention <version>-maint (e.g. *0.95-maint*). This approach allows us to continue forward development while ensuring stability and long-term support for previous versions.
+
 ## Running from Source & Development
 
 The AYAB desktop software runs using Python 3.11.  
