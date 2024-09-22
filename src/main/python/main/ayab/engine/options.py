@@ -82,6 +82,7 @@ class OptionsTab(SignalSender, QWidget):
     def __init__(self, parent: GuiMain):
         super().__init__(parent.signal_receiver)
         self.prefs = parent.prefs
+        self.auto_mirror = False
         self.ui = Ui_Options()
         self.__setup_ui()
         self.__activate_ui()
@@ -113,7 +114,7 @@ class OptionsTab(SignalSender, QWidget):
         self.ui.alignment_combo_box.currentIndexChanged.connect(
             lambda: self.emit_alignment_updater(self.__read_alignment())
         )
-        self.ui.auto_mirror_checkbox.clicked.connect(self.__reverse_image)
+        self.ui.auto_mirror_checkbox.clicked.connect(self.__auto_mirror_changed)
 
     def update_needles(self) -> None:
         """Sends the needles_updater signal."""
@@ -122,14 +123,15 @@ class OptionsTab(SignalSender, QWidget):
         stop_needle = NeedleColor.read_stop_needle(self.ui, self.machine)
         self.emit_needles_updater(start_needle, stop_needle)
 
-    def __reverse_image(self) -> None:
-        if self.ui.auto_mirror_checkbox.isChecked():
+    def __auto_mirror_changed(self) -> None:
+        image_reversed = self.ui.auto_mirror_checkbox.isChecked()
+        if image_reversed:
             self.ui.auto_mirror_icon.setPixmap(QPixmap(":/garamond-lowercase-e.png"))
         else:
             self.ui.auto_mirror_icon.setPixmap(
                 QPixmap(":/garamond-lowercase-e-reversed.png")
             )
-        self.emit_image_reverser()
+        self.emit_image_reverser(image_reversed)
 
     def __read_start_row(self) -> int:
         return int(self.ui.start_row_edit.value()) - 1
@@ -185,6 +187,7 @@ class OptionsTab(SignalSender, QWidget):
                 QPixmap(":/garamond-lowercase-e-reversed.png")
             )
         # self.ui.continuous_reporting_checkbox
+        self.emit_image_reverser(self.auto_mirror)
 
     def as_dict(self) -> OptionsTabDict:
         return OptionsTabDict(

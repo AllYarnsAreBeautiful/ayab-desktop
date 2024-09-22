@@ -23,7 +23,7 @@ import logging
 from enum import Enum
 
 from PySide6.QtCore import QRect
-from PySide6.QtGui import QImage, QPixmap, QPen, QBrush, QColor, QWheelEvent
+from PySide6.QtGui import QImage, QPixmap, QPen, QBrush, QColor, QWheelEvent, QTransform
 from PySide6.QtWidgets import (
     QGraphicsScene,
     QGraphicsRectItem,
@@ -32,7 +32,6 @@ from PySide6.QtWidgets import (
 )
 
 from .image import AyabImage
-from .transforms import Transform
 from .engine.options import Alignment
 from .machine import Machine
 from typing import TYPE_CHECKING
@@ -69,23 +68,17 @@ class Scene(QGraphicsView):
         self.__start_needle: int = (machine_width // 2) - 20
         self.__stop_needle: int = (machine_width - 1) // 2 + 20
         self.__row_progress: int = 0
+        self.image_reversed = False
 
         # zoom behavior
         self.setDragMode(QGraphicsView.DragMode.ScrollHandDrag)
         self.__zoom: float = 3
 
-        self.ayabimage.reversed = False
-        if self.__prefs.value("default_knit_side_image"):
-            self.reverse()  # calls refresh(), so no need to call it again
-        else:
-            self.refresh()
+        self.refresh()
 
-    def reverse(self) -> None:
-        """Mirrors the image"""
-
-        if self.ayabimage.image is not None:
-            self.ayabimage.reversed = not self.ayabimage.reversed
-            self.ayabimage.image = Transform.hflip(self.ayabimage.image)
+    def set_image_reversed(self, image_reversed: bool) -> None:
+        """Sets the image reversed flag"""
+        self.image_reversed = image_reversed
 
         self.refresh()
 
@@ -110,6 +103,8 @@ class Scene(QGraphicsView):
             width, height = self.ayabimage.image.size
             data = self.ayabimage.image.convert("RGBA").tobytes("raw", "RGBA")
             qim = QImage(data, width, height, QImage.Format.Format_RGBA8888)
+            if self.image_reversed:
+                qim = qim.transformed(QTransform.fromScale(-1, 1))
             pixmap = QPixmap.fromImage(qim)
 
             # add pattern and locate according to alignment
