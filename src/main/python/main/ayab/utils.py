@@ -25,7 +25,6 @@ from typing import Any, Callable, Literal, Optional, TypeAlias, cast
 import numpy as np
 import numpy.typing as npt
 import serial.tools.list_ports
-import requests
 
 from PySide6.QtWidgets import QMessageBox, QComboBox
 
@@ -112,11 +111,3 @@ def package_version(app_context: Any) -> str:
     with open(filename_version) as version_file:
         version = version_file.read().strip()
     return version
-
-
-def latest_version(repo: str) -> str:
-    r = requests.get("https://api.github.com/repos/" + repo + "/releases/latest")
-    obj = r.json()
-    if obj["draft"] is False and obj["prerelease"] is False:
-        return cast(str, obj["tag_name"])
-    return ""
