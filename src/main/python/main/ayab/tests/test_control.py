@@ -43,9 +43,10 @@ class Engine(object):
 
 
 class Config(object):
-    def __init__(self, machine, mode=Mode.SINGLEBED):
+    def __init__(self, machine, mode=Mode.SINGLEBED, auto_mirror=False):
         self.machine = machine
         self.mode = mode
+        self.auto_mirror = auto_mirror
 
 
 class TestControl(unittest.TestCase):

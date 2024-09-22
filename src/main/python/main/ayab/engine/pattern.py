@@ -31,7 +31,9 @@ from ..machine import Machine
 
 class Pattern(object):
     def __init__(self, image: Image.Image, config: OptionsTab, num_colors: int = 2):
-        self.__pattern = image
+        self.__pattern = (
+            image.transpose(Image.FLIP_LEFT_RIGHT) if config.auto_mirror else image
+        )
         self.__num_colors = num_colors
         self.__alignment = Alignment.CENTER
         self.__pat_start_needle: int = -1

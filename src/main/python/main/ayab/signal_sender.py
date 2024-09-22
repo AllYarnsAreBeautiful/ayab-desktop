@@ -86,8 +86,8 @@ class SignalSender(object):
     def emit_image_resizer(self) -> None:
         self.__signal_receiver.image_resizer.emit()
 
-    def emit_image_reverser(self) -> None:
-        self.__signal_receiver.image_reverser.emit()
+    def emit_image_reverser(self, image_reversed: bool) -> None:
+        self.__signal_receiver.image_reverser.emit(image_reversed)
 
     def emit_got_image_flag(self) -> None:
         self.__signal_receiver.got_image_flag.emit()
