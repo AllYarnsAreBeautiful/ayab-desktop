@@ -32,9 +32,9 @@ def getDWordAt(data: bytes, i: int) -> np.uint32:
 
 
 # Pascal-style string
-def getStringAt(data: bytes, i: int) -> str:
+def getStringAt(data: bytes, i: int) -> bytes:
     size = getByteAt(data, i)
-    return data[i + 1 : i + size + 1].decode()
+    return data[i + 1 : i + size + 1]
 
 
 class Color:
@@ -51,7 +51,7 @@ class Color:
         code: np.uint8 = code,
         n: Optional[np.uint8] = None,
         symbol: np.uint8 = symbol,
-        name: str = "",
+        name: bytes = b"",
         r: np.uint8 = r,
         g: np.uint8 = g,
         b: np.uint8 = b,
@@ -75,7 +75,7 @@ class Color:
     def string(self) -> str:
         return (
             f"{hex(self.code)}, {str(self.n)}, '{chr(cast(int, self.symbol))}',"
-            + " '{self.name}', {hex(int.from_bytes(self.rgb, \"big\"))}"
+            + f" {self.name!r}, {hex(int.from_bytes(self.rgb, 'big'))}"
         )
 
 
@@ -103,7 +103,7 @@ class PatternConverter:
         # self.col1 = 0
         # self.col2 = 0x3C #  '<'
         # self.status = 0
-        self.debug = False
+        self.debug = True
 
     def read_file(self, filename: str) -> bytes:
         self.reinit()
@@ -383,15 +383,15 @@ class PatPatternConverter(DAKPatternConverter):
             pos = cast(int, 3 * (a & 0xF))
             # b = 3 * (self.getByteAt(i + 0x84) & 0xF)
             new_color = Color(
-                        np.uint8(0x10 + 0x40 * (0 == i)),
-                        # ((self.col1 & 0xFF) == i),
-                        color,
-                        np.uint8(i),
-                        "",
-                        getByteAt(pattern_data, 0x107 + pos),
-                        getByteAt(pattern_data, 0x106 + pos),
-                        getByteAt(pattern_data, 0x105 + pos),
-                    )
+                np.uint8(0x10 + 0x40 * (0 == i)),
+                # ((self.col1 & 0xFF) == i),
+                color,
+                np.uint8(i),
+                b"",
+                getByteAt(pattern_data, 0x107 + pos),
+                getByteAt(pattern_data, 0x106 + pos),
+                getByteAt(pattern_data, 0x105 + pos),
+            )
             self.colors[i] = new_color
             if self.debug:
                 print(f"new_color {new_color.string()}")
@@ -447,7 +447,7 @@ class StpPatternConverter(DAKPatternConverter):
         return self.output_im()
 
     def __calc_key(self, data: bytes) -> bytearray:
-        def __appendKeystring(next_string: str, max_size: int) -> str:
+        def __appendKeystring(next_string: bytes, max_size: int) -> bytes:
             return (keystring + next_string)[0:max_size]
 
         key1 = getDWordAt(data, 0x35) >> 1
@@ -459,18 +459,18 @@ class StpPatternConverter(DAKPatternConverter):
             print(f"first key number {key1}")
         salt1 = getWordAt(data, 0x39)
         salt2 = int((getDWordAt(data, 0x35) & 0xFFFF) > 0)
-        keystring = getStringAt(data, 0x60)
+        keystring: bytes = getStringAt(data, 0x60)
         keystring = __appendKeystring(getStringAt(data, 0x41), 0x6E)
-        keystring = __appendKeystring(str(getWordAt(data, 0x3D)), 0x7D)
-        keystring = __appendKeystring(str(getByteAt(data, 0x20)), 0x8C)
+        keystring = __appendKeystring(str(getWordAt(data, 0x3D)).encode(), 0x7D)
+        keystring = __appendKeystring(str(getByteAt(data, 0x20)).encode(), 0x8C)
         keystring = __appendKeystring(getStringAt(data, 0x41), 0xAA)
-        keystring = __appendKeystring(str(getByteAt(data, 0x20)), 0xB9)
-        keystring = __appendKeystring(str(getWordAt(data, 0x3D)), 0xC8)
+        keystring = __appendKeystring(str(getByteAt(data, 0x20)).encode(), 0xB9)
+        keystring = __appendKeystring(str(getWordAt(data, 0x3D)).encode(), 0xC8)
         if self.debug:
-            print(f"first key string '{keystring}'")
+            print(f"first key string {keystring!r}")
         key2 = key1
         for i in range(len(keystring)):
-            b = ord(keystring[i]) // 2
+            b = keystring[i] // 2
             switch = (i + 1) % 3
             if switch == 0:
                 temp = (salt2 + b) // 7
@@ -485,20 +485,20 @@ class StpPatternConverter(DAKPatternConverter):
                 key2 += b * 4
         if self.debug:
             print(f"second key number {key2}")
-        keystring = str(key2 * 3)
-        keystring = __appendKeystring(str(key2), 0x1E)
-        keystring = __appendKeystring(str(key2 * 4), 0x2D)
-        keystring = __appendKeystring(str(key2 * 2), 0x3C)
-        keystring = __appendKeystring(str(key2 * 5), 0x4B)
-        keystring = __appendKeystring(str(key2 * 6), 0x5A)
-        keystring = __appendKeystring(str(key2 * 8), 0x69)
-        keystring = __appendKeystring(str(key2 * 7), 0x78)
+        keystring = str(key2 * 3).encode()
+        keystring = __appendKeystring(str(key2).encode(), 0x1E)
+        keystring = __appendKeystring(str(key2 * 4).encode(), 0x2D)
+        keystring = __appendKeystring(str(key2 * 2).encode(), 0x3C)
+        keystring = __appendKeystring(str(key2 * 5).encode(), 0x4B)
+        keystring = __appendKeystring(str(key2 * 6).encode(), 0x5A)
+        keystring = __appendKeystring(str(key2 * 8).encode(), 0x69)
+        keystring = __appendKeystring(str(key2 * 7).encode(), 0x78)
         if self.debug:
-            print(f"second key string '{keystring}'")
+            print(f"second key string {keystring!r}")
         xorkey = bytearray(self.max_xor_len)
         for i in range(self.max_xor_len):
             index = (i + 1) % len(keystring)
-            temp1 = ord(keystring[index]) & 0xFF
+            temp1 = keystring[index] & 0xFF
             temp2 = key2 % (i + 1) & 0xFF
             xorkey[i] = temp1 ^ temp2
         return xorkey
@@ -558,18 +558,28 @@ class CutPatternConverter(PatternConverter):
             row_end = pos + 2 + getWordAt(pattern_data, pos)
             pos += 2
             while not eol:
-                eol = self.parse_color(pattern_data, pos, all_colors, row, column, row_end)
+                eol = self.parse_color(
+                    pattern_data, pos, all_colors, row, column, row_end
+                )
         return pos
 
-    def parse_color(self, pattern_data: bytes, pos: int, all_colors: set[np.uint8], row: int, column: int, row_end: int) -> bool:
+    def parse_color(
+        self,
+        pattern_data: bytes,
+        pos: int,
+        all_colors: set[np.uint8],
+        row: int,
+        column: int,
+        row_end: int,
+    ) -> bool:
         byte = getByteAt(pattern_data, pos)
         pos += 1
         run = byte & 0x7F
         if run == 0:  # EOL
             if pos != row_end:
                 self.exit(
-                            ".cut file misspecified at row " + str(row), -5
-                        )  # FIXME translate
+                    ".cut file misspecified at row " + str(row), -5
+                )  # FIXME translate
             return True
         if byte & 0x80:
             color = getByteAt(pattern_data, pos)
@@ -577,17 +587,13 @@ class CutPatternConverter(PatternConverter):
             all_colors.add(color)
             for _stitch in range(run):
                 if column > self.width:
-                    self.exit(
-                                "row " + str(row) + " is too long", -5
-                            )  # FIXME translate
+                    self.exit("row " + str(row) + " is too long", -5)  # FIXME translate
                 self.color_pattern[row, column] = color
                 column += 1
             return False
         for _stitch in range(run):
             if column > self.width:
-                self.exit(
-                            "row " + str(row) + " is too long", -5
-                        )  # FIXME translate
+                self.exit("row " + str(row) + " is too long", -5)  # FIXME translate
             color = getByteAt(pattern_data, pos)
             pos += 1
             all_colors.add(color)
