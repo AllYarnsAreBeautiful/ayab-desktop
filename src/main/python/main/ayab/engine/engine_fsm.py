@@ -17,6 +17,7 @@
 #    Copyright 2013-2020 Sebastian Oliva, Christian Obersteiner,
 #    Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
+#   Copyright 2024 Marcus Hoose (eKnitter.com)
 
 from __future__ import annotations
 
@@ -27,6 +28,7 @@ from PySide6.QtStateMachine import QStateMachine, QState
 
 from .communication import Communication, Token
 from .communication_mock import CommunicationMock
+from .communication_ip import CommunicationIP
 from .hw_test_communication_mock import HardwareTestCommunicationMock
 from .output import Output
 from typing import TYPE_CHECKING
@@ -88,6 +90,8 @@ class StateMachine(QStateMachine):
                 control.com = CommunicationMock()
             else:
                 control.com = HardwareTestCommunicationMock()  # type: ignore
+        elif "." in control.portname:
+            control.com = CommunicationIP()
         else:
             control.com = Communication()
         if not control.com.open_serial(control.portname):

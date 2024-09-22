@@ -17,6 +17,7 @@
 #    Copyright 2013-2020 Sebastian Oliva, Christian Obersteiner,
 #    Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
+#   Copyright 2024 Marcus Hoose (eKnitter.com)
 
 from __future__ import annotations
 import logging
@@ -177,7 +178,13 @@ class Control(SignalSender):
         api = msg[1]
         log = "API v" + str(api)
         if api >= 5:
-            log += ", FW v" + str(msg[2]) + "." + str(msg[3]) + "." + str(msg[4])
+            if len(msg) < 5:
+                if len(msg) < 4:
+                    log += ", FW v?" 
+                else:
+                    log += ", FW v" + str(msg[2]) + "." + str(msg[3])
+            else:
+                log += ", FW v" + str(msg[2]) + "." + str(msg[3]) + "." + str(msg[4])
             suffix = msg[5:21]
             suffix_null_index = suffix.find(0)
             suffix_str = suffix[: suffix_null_index + 1].decode()

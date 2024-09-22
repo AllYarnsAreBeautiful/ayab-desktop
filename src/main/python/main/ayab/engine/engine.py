@@ -17,6 +17,7 @@
 #    Copyright 2013-2020 Sebastian Oliva, Christian Obersteiner,
 #    Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
+#   Copyright 2024 Marcus Hoose (eKnitter.com)
 
 from __future__ import annotations
 import logging
@@ -33,6 +34,7 @@ from .options import OptionsTab
 from .status import Status, StatusTab
 from .output import FeedbackHandler
 from .dock_gui import Ui_Dock
+from .udp_monitor import UDPMonitor
 from typing import TYPE_CHECKING, Literal, Optional, cast
 from ..signal_sender import SignalSender
 
@@ -40,7 +42,7 @@ if TYPE_CHECKING:
     from ..ayab import GuiMain
 from .control import Control
 
-
+udpMonitor = UDPMonitor()
 class Engine(SignalSender, QDockWidget):
     """
     Top-level class for the slave thread that communicates with the shield.
@@ -56,6 +58,8 @@ class Engine(SignalSender, QDockWidget):
     def __init__(self, parent: GuiMain):
         # set up UI
         super().__init__(parent.signal_receiver)
+        logging.info("StartUDPMonitor")
+        udpMonitor.start()
         self.ui = Ui_Dock()
         self.ui.setupUi(self)
         self.config: OptionsTab = OptionsTab(parent)
@@ -69,6 +73,11 @@ class Engine(SignalSender, QDockWidget):
         self.control = Control(parent, self)
         self.__feedback = FeedbackHandler(parent)
         self.__logger = logging.getLogger(type(self).__name__)
+        self.setWindowTitle("Machine: " + Machine(self.config.machine).name)
+
+    def close(self) -> None:
+        logging.info("StopUDPMonitor")
+        udpMonitor.stop()
 
     def __del__(self) -> None:
         self.control.stop()
@@ -110,6 +119,11 @@ class Engine(SignalSender, QDockWidget):
     def __populate_ports(self, port_list: Optional[list[str]] = None) -> None:
         combo_box = self.ui.serial_port_dropdown
         utils.populate_ports(combo_box, port_list)
+        ip_list = udpMonitor.getIPlist()
+        print(ip_list)
+        for item in ip_list:
+        # TODO: should display the info of the device.
+            combo_box.addItem(item)
         # Add Simulation item to indicate operation without machine
         combo_box.addItem(QCoreApplication.translate("KnitEngine", "Simulation"))
 
@@ -174,7 +188,8 @@ class Engine(SignalSender, QDockWidget):
             output = self.control.operate(operation)
             if output != self.control.notification:
                 self.__feedback.handle(output)
-                self.control.notification = output
+                if output.name != "CONNECTING_TO_MACHINE":
+                	self.control.notification = output
             if operation == Operation.KNIT:
                 self.__handle_status()
             if self.__canceled or self.control.state == State.FINISHED:
