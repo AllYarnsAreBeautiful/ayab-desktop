@@ -25,6 +25,7 @@ from PIL import Image
 
 from PySide6.QtCore import QCoreApplication, Signal
 from PySide6.QtWidgets import QDockWidget
+from wakepy import keep
 
 from .. import utils
 from ..machine import Machine
@@ -64,6 +65,7 @@ class Engine(SignalSender, QDockWidget):
         self.reload_settings()
         self.status = StatusTab()
         self.setup_ui()
+        self.preferences = parent.prefs
         parent.ui.dock_container_layout.addWidget(self)
 
         self.pattern: Pattern = None  # type:ignore
@@ -169,37 +171,51 @@ class Engine(SignalSender, QDockWidget):
         self.config.portname = self.__read_portname()
         self.control.start(self.pattern, self.config, operation)
 
-        while True:
-            # continue operating
-            # typically each step involves some communication with the device
-            output = self.control.operate(operation)
-            if output != self.control.notification:
-                self.__feedback.handle(output)
-                self.control.notification = output
+        keep_mode = None
+        if self.preferences.value("keep_awake"):
+            self.__logger.debug("Keeping screen awake activated")
+            # Activate the keep mode only if the preference is activated
+            keep_mode = keep.presenting(on_fail="pass")
+            keep_mode.__enter__()
+
+        try:
+            while True:
+                # continue operating
+                # typically each step involves some communication with the device
+                output = self.control.operate(operation)
+                if output != self.control.notification:
+                    self.__feedback.handle(output)
+                    self.control.notification = output
+                if operation == Operation.KNIT:
+                    self.__handle_status()
+                if self.__canceled or self.control.state == State.FINISHED:
+                    break
+
+            self.control.stop()
+
             if operation == Operation.KNIT:
-                self.__handle_status()
-            if self.__canceled or self.control.state == State.FINISHED:
-                break
-
-        self.control.stop()
-
-        if operation == Operation.KNIT:
-            if self.__canceled:
-                self.emit_notification("Knitting canceled.")
-                self.__logger.info("Knitting canceled.")
+                if self.__canceled:
+                    self.emit_notification("Knitting canceled.")
+                    self.__logger.info("Knitting canceled.")
+                else:
+                    # operation == Operation.TEST:
+                    self.__logger.info("Finished knitting.")
+                # small delay to finish printing to knit progress window
+                # before "finish.wav" sound plays
+                sleep(1)
             else:
-                # operation == Operation.TEST:
-                self.__logger.info("Finished knitting.")
-            # small delay to finish printing to knit progress window
-            # before "finish.wav" sound plays
-            sleep(1)
-        else:
-            # TODO: provide translations for these messages
-            self.__logger.info("Finished testing.")
+                # TODO: provide translations for these messages
+                self.__logger.info("Finished testing.")
 
-        # send signal to finish operation
-        # "finish.wav" sound only plays if knitting was not canceled
-        self.emit_operation_finisher(operation, not self.__canceled)
+            # send signal to finish operation
+            # "finish.wav" sound only plays if knitting was not canceled
+            self.emit_operation_finisher(operation, not self.__canceled)
+
+        finally:
+            # stop the screen keeper no matter what append
+            if keep_mode is not None:
+                self.__logger.debug("Keeping screen awake stopped")
+                keep_mode.__exit__(None,None,None)
 
     def __handle_status(self) -> None:
         if self.status.active:

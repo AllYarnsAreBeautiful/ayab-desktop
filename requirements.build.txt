@@ -9,3 +9,4 @@ simpleaudio==1.0.4
 numpy==1.26.4
 charset-normalizer<3.0.0
 requests==2.31.0
+wakepy==0.9.1

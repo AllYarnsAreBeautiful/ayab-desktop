@@ -67,6 +67,7 @@ PreferencesDictBoolKeys: TypeAlias = Literal[
     "default_knit_side_image",
     "quiet_mode",
     "disable_hardware_beep",
+    "keep_awake",
 ]
 PreferencesDictIntKeys: TypeAlias = Literal["lower_display_stitch_width"]
 PreferencesDictObjKeys: TypeAlias = Literal[
@@ -89,7 +90,8 @@ PreferencesDict = TypedDict(
         "quiet_mode": type[bool],
         "disable_hardware_beep": type[bool],
         "language": type[Language],
-        "lower_display_stitch_width": type[int]
+        "lower_display_stitch_width": type[int],
+        "keep_awake": type[bool]
     },
 )
 
@@ -119,7 +121,8 @@ class Preferences(SignalSender):
         "quiet_mode": bool,
         "disable_hardware_beep": bool,
         "language": Language,
-        "lower_display_stitch_width": int
+        "lower_display_stitch_width": int,
+        "keep_awake": bool
     }
 
     def __init__(self, parent: GuiMain):

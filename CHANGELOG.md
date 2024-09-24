@@ -40,6 +40,7 @@ Pre-releases are marked with a suffix, e.g. `1.0.0-rc1`, which stands for "relea
 - GUI: 10 second timeout for firmware flash (#206).
 - GUI: Feedback while flashing firmware (#145).
 - GUI: Stretch and reflect to image actions submenu (#131,#261).
+- GUI: Keep the screen awake during the knitting progress (#698)
 
 ### Fixed
 
