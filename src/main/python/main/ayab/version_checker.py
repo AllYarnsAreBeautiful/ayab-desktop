@@ -1,6 +1,7 @@
 import json
 import logging
 from PySide6.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkReply
+import semver
 
 from . import utils
 
@@ -24,6 +25,21 @@ class VersionChecker:
         )
         self._version_check_reply.finished.connect(self.version_check_finished)
 
+    def is_newer(self, latest_version: str) -> bool:
+        try:
+            v_current: semver.Version = semver.Version.parse(self._current_version)
+        except Exception:
+            self.logger.warning("Error while parsing current version", exc_info=True)
+            return False
+
+        try:
+            v_latest: semver.Version = semver.Version.parse(latest_version)
+        except Exception:
+            self.logger.warning("Error while parsing latest version", exc_info=True)
+            return False
+
+        return v_latest > v_current
+
     def version_check_finished(self) -> None:
         try:
             if self._version_check_reply is None:  # should never happen, pleases mypy
@@ -39,17 +55,16 @@ class VersionChecker:
             data = self._version_check_reply.readAll()
             obj = json.loads(data.data())
             if not obj.get("draft", True) and not obj.get("prerelease", True):
-                tag = obj.get("tag_name")
-                pkg = self._current_version
+                latest_version = obj.get("tag_name")
                 url = obj.get("html_url")
-                if tag is not None and tag != pkg and url is not None:
+                if latest_version is not None and url is not None and self.is_newer(latest_version):
                     utils.display_blocking_popup(
                         f"""<p>
                         A new version of the AYAB desktop software
                         has been released!<br>
                         You are using version
                         <strong>{self._current_version}</strong>;
-                        you can download version <strong>{tag}</strong>
+                        you can download version <strong>{latest_version}</strong>
                         using this link:
                         <br/>
                         <a href='{url}'>{url}</a>

@@ -8,3 +8,4 @@ bitarray==2.9.2
 simpleaudio==1.0.4
 numpy==1.26.4
 charset-normalizer<3.0.0
+semver==3.0.2
