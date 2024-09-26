@@ -106,8 +106,11 @@ def contrast_color(color: int) -> int:
 
 
 def package_version(app_context: Any) -> str:
-    version = "package_version"
-    filename_version = app_context.get_resource("ayab/package_version")
-    with open(filename_version) as version_file:
-        version = version_file.read().strip()
-    return version
+    try:
+        filename_version = app_context.get_resource("ayab/package_version")
+        with open(filename_version) as version_file:
+            return version_file.read().strip()
+    except FileNotFoundError:
+        # Return a fake version number for local development,
+        # to disable update checking
+        return "999.99.9"
