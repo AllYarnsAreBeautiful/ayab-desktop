@@ -1,5 +1,6 @@
 import json
 import logging
+from PySide6.QtCore import QCoreApplication
 from PySide6.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkReply
 import semver
 
@@ -83,16 +84,19 @@ class VersionChecker:
                         "Found newer version %s at %s", latest_version, url
                     )
                     utils.display_blocking_popup(
-                        f"""<p>
-                        A new version of the AYAB desktop software
-                        has been released!<br>
-                        You are using version
-                        <strong>{self._current_version}</strong>;
-                        you can download version <strong>{latest_version}</strong>
-                        using this link:
-                        <br/>
-                        <a href='{url}'>{url}</a>
-                        </p>"""
+                        QCoreApplication.translate(
+                            "VersionChecker",
+                            "A new version of the AYAB desktop software "
+                            "has been released!<br>You are using version "
+                            "<strong>{current_version}</strong>; "
+                            "you can download version "
+                            "<strong>{latest_version}</strong> "
+                            "using this link:",
+                        ).format(
+                            current_version=self._current_version,
+                            latest_version=latest_version,
+                        )
+                        + f"<br/><a href='{url}'>{url}</a>"
                     )
         finally:
             # make sure to free resources once done
