@@ -67,47 +67,47 @@ $(function() {
 <div class="title">AYAB Testing Guide </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><h1><a class="anchor" id="autotoc_md49"></a>
+<div class="textblock"><h1><a class="anchor" id="autotoc_md50"></a>
 Find a build</h1>
 <p>The full list of builds is on the <a href="https://github.com/AllYarnsAreBeautiful/ayab-desktop/releases">releases</a> page. If you're looking for a specific build, you should be able to find it there.</p>
 <p>If you're just interested in poking around, choose the most recent build.</p>
 <p>When you click on a build you should see a list of files under the <b>Assets</b> section. Click on the correct file for your operating system. If you're on a mac, you want the **.dmg**, if you're on windows you want the **.exe**. Open the file you downloaded and install it the way you normally would. If you're on Linux you'll have to build from source.</p>
-<h2><a class="anchor" id="autotoc_md50"></a>
+<h2><a class="anchor" id="autotoc_md51"></a>
 Extra Linux setup</h2>
 <p>Follow <a href="https://github.com/AllYarnsAreBeautiful/ayab-firmware/tree/v1.0-dev">instructions in the firmware repository</a>, and compile the firmware, making the compiled hex file available in your AYAB desktop directory at <code>src/main/resources/base/ayab/firmware/firmware.hex</code>. If you've compiled with PlatformIO in VSCode, you can find the hex file at <code>.pio/build/uno/firmware.hex</code> in your AYAB firmware directory. This step needs to be done if you want to use the AYAB desktop utility to flash the firmware - you can of course always flash it through PlatformIO, as well.</p>
-<h2><a class="anchor" id="autotoc_md51"></a>
+<h2><a class="anchor" id="autotoc_md52"></a>
 Extra Mac setup</h2>
 <p>If your Mac shows an error that <code>“AYAB” cannot be opened because the developer cannot be verified.</code> you need to update security settings to allow this app.</p>
 <p>Open the Apple menu (the apple on the top left corner of your screen), and click <b>System Settings</b>.</p>
 <p>Click <b>Privacy &amp; Security</b>.</p>
 <p>Scroll down to the Security section and where you see <code>"AYAB" was blocked from use because it is not from an identified developer.</code> click on the <b>Open Anyway</b> button. It will ask for your password.</p>
 <p>Try opening the app again.</p>
-<h1><a class="anchor" id="autotoc_md52"></a>
+<h1><a class="anchor" id="autotoc_md53"></a>
 Open the app</h1>
 <p>Launch the app the way you normally would. It's going to give you a popup that there's a new version of the firmware available, you can ignore that.</p>
 <p>Click <b>Ok</b> to dismiss the dialog.</p>
-<h1><a class="anchor" id="autotoc_md53"></a>
+<h1><a class="anchor" id="autotoc_md54"></a>
 Install the firmware</h1>
 <p>These releases have the corresponding firmware bundled in. You no longer need to specify which machine you have for the firmware. This is with the exception of Linux, where you need to compile and drop in the firmware to upload it through AYAB Desktop (or upload it through other means - described above in the Extra Linux setup section).</p>
 <p>Connect your AYAB hardware to your computer.</p>
 <p>Go to <b>Tools</b> then <b>Load AYAB Firmware</b>.</p>
 <p>Under the <b>Controller</b> section, select <b>uno</b>.</p>
 <p>Under the <b>Firmware Version</b> section select the only option there and click <b>Flash</b></p>
-<h1><a class="anchor" id="autotoc_md54"></a>
+<h1><a class="anchor" id="autotoc_md55"></a>
 Select machine type</h1>
 <p>In this version of the desktop software, you need to tell it which machine you're working with.</p>
 <p>Go to <b>Preferences</b> in the top bar, then select <b>SetPreferences</b> and set your machine type and any other defaults you want.</p>
-<h1><a class="anchor" id="autotoc_md55"></a>
+<h1><a class="anchor" id="autotoc_md56"></a>
 Test</h1>
 <p>If you're checking on an existing bug, the issue should have some information about how to recreate the issue.</p>
 <p>If you're just poking around, use the AYAB software the way you normally would; knit some swatches.</p>
-<h1><a class="anchor" id="autotoc_md56"></a>
+<h1><a class="anchor" id="autotoc_md57"></a>
 File bugs</h1>
 <p>If, during your testing, you find something that doesn't seem right, let us know!</p>
 <p>You will need a github account for this so if you don't have one, <a href="https://github.com/signup">go create one</a>.</p>
 <p>First, look through the <a href="https://github.com/AllYarnsAreBeautiful/ayab-desktop/issues">existing issues</a> and see if someone else has already reported the problem. If your bug hasn't been reported then you should <a href="https://github.com/AllYarnsAreBeautiful/ayab-desktop/issues/new?assignees=&amp;labels=&amp;projects=&amp;template=bug_report.md&amp;title=%5BBUG%5D">create a new issue</a>.</p>
 <p>We have a report template that should be fairly straightforward. Try to make the title descriptive and give us as much information as possible so that we can figure out what's going on. The development team will be notified when you create a new issue and we may be in touch to ask for more information.</p>
-<h1><a class="anchor" id="autotoc_md57"></a>
+<h1><a class="anchor" id="autotoc_md58"></a>
 Get help</h1>
 <p>If you get stuck in this process or you have questions, come say hi in the #testing channel of our <a href="https://discord.gg/svgGGTfc">Discord</a>! </p>
 </div></div><!-- contents -->
