@@ -25,6 +25,7 @@ class VersionChecker:
         latest_relase_url = f"https://api.github.com/repos/{self.REPO}/releases/latest"
         self.logger.debug("Getting %s", latest_relase_url)
         self._network_manager = QNetworkAccessManager()
+        self._network_manager.setAutoDeleteReplies(True)
         self._version_check_reply = self._network_manager.get(
             QNetworkRequest(latest_relase_url)
         )
@@ -96,5 +97,4 @@ class VersionChecker:
         finally:
             # make sure to free resources once done
             self.logger.debug("Cleaning up")
-            self._version_check_reply = None
             self._network_manager = None
