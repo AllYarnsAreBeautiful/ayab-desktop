@@ -19,9 +19,14 @@ class VersionChecker:
         self._current_version = current_version
 
     def start_background_check(self) -> None:
+        self.logger.debug(
+            "Starting update check, current version is %s", self._current_version
+        )
+        latest_relase_url = f"https://api.github.com/repos/{self.REPO}/releases/latest"
+        self.logger.debug("Getting %s", latest_relase_url)
         self._network_manager = QNetworkAccessManager()
         self._version_check_reply = self._network_manager.get(
-            QNetworkRequest(f"https://api.github.com/repos/{self.REPO}/releases/latest")
+            QNetworkRequest(latest_relase_url)
         )
         self._version_check_reply.finished.connect(self.version_check_finished)
 
@@ -45,6 +50,16 @@ class VersionChecker:
             if self._version_check_reply is None:  # should never happen, pleases mypy
                 return
 
+            self.logger.debug(
+                "HTTP status: %s, response length: %s",
+                self._version_check_reply.attribute(
+                    QNetworkRequest.Attribute.HttpStatusCodeAttribute
+                ),
+                self._version_check_reply.attribute(
+                    QNetworkRequest.Attribute.OriginalContentLengthAttribute
+                ),
+            )
+
             if self._version_check_reply.error() != QNetworkReply.NetworkError.NoError:
                 self.logger.warning(
                     "Network error while checking for new versions: %s",
@@ -57,7 +72,15 @@ class VersionChecker:
             if not obj.get("draft", True) and not obj.get("prerelease", True):
                 latest_version = obj.get("tag_name")
                 url = obj.get("html_url")
-                if latest_version is not None and url is not None and self.is_newer(latest_version):
+                self.logger.debug("Latest version is %s at %s", latest_version, url)
+                if (
+                    latest_version is not None
+                    and url is not None
+                    and self.is_newer(latest_version)
+                ):
+                    self.logger.info(
+                        "Found newer version %s at %s", latest_version, url
+                    )
                     utils.display_blocking_popup(
                         f"""<p>
                         A new version of the AYAB desktop software
@@ -72,5 +95,6 @@ class VersionChecker:
                     )
         finally:
             # make sure to free resources once done
+            self.logger.debug("Cleaning up")
             self._version_check_reply = None
             self._network_manager = None
