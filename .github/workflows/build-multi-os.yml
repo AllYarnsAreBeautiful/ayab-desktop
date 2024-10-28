@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        python-version: [3.11]
+        python-version: [3.11.9]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -173,7 +173,7 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        python-version: [3.11]
+        python-version: [3.11.9]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -301,7 +301,7 @@ jobs:
     runs-on: macos-14
     strategy:
       matrix:
-        python-version: [3.11]
+        python-version: [3.11.9]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -424,7 +424,8 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        python-version: [3.11]
+        # Using Python 3.11.10 specifically for Linux builds due to python-appimage availability
+        python-version: [3.11.10]
     steps:
       - name: Checkout repo into AppDir
         uses: actions/checkout@v4
@@ -440,7 +441,7 @@ jobs:
           cp -r !(git) git
           shopt -u dotglob
       - name: Download AppImage of Python designed for manylinux
-        run: wget -c https://github.com/niess/python-appimage/releases/download/${{steps.vars.outputs.python}}/${{steps.vars.outputs.python-appimage}}
+        run: wget -c https://github.com/niess/python-appimage/releases/download/python${{steps.vars.outputs.python-minor}}/${{steps.vars.outputs.python-appimage}}
       - name: Extract the AppImage
         run: |
           chmod +x ${{steps.vars.outputs.python-appimage}}
@@ -454,12 +455,12 @@ jobs:
           ./AppRun -m pip install --upgrade pip
           ./AppRun -m pip install --upgrade setuptools
           # hack to fix setup.py script with faulty include
-          ./AppRun -m pip install --global-option=build_ext --global-option="-I$(pwd)/opt/${{steps.vars.outputs.python}}/include/${{steps.vars.outputs.python}}" simpleaudio
+          ./AppRun -m pip install --global-option=build_ext --global-option="-I$(pwd)/opt/${{steps.vars.outputs.python-minor}}/include/${{steps.vars.outputs.python-minor}}" simpleaudio
           ./AppRun -m pip install -r requirements.build.txt
       - name: Add AppDir subdirectories to PATH
         run: |
           echo "usr/bin" >> $GITHUB_PATH
-          echo "opt/${{steps.vars.outputs.python}}/bin" >> $GITHUB_PATH
+          echo "opt/${{steps.vars.outputs.python-minor}}/bin" >> $GITHUB_PATH
       - name: Restore cached firmware
         id: firmware-cache
         uses: actions/cache@v4
