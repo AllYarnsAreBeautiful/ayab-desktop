@@ -21,8 +21,8 @@
 
 from __future__ import annotations
 from os import path
-
-import simpleaudio as sa
+from PySide6.QtCore import QUrl
+from PySide6.QtMultimedia import QSoundEffect
 
 from typing import TYPE_CHECKING
 
@@ -34,7 +34,7 @@ class AudioPlayer:
     def __init__(self, gui: GuiMain):
         self.__dir = gui.app_context.get_resource("assets")
         self.__prefs = gui.prefs
-        self.__cache: dict[str, sa.WaveObject] = {}
+        self.__cache: dict[str, QSoundEffect] = {}
 
     def play(self, sound: str) -> None:
         """Play audio."""
@@ -59,4 +59,7 @@ class AudioPlayer:
     def __load_wave(self, sound: str) -> sa.WaveObject | None:
         """Get audio from file."""
         filename = path.join(self.__dir, sound + ".wav")
-        return sa.WaveObject.from_wave_file(filename)
+        print(f"LOAD WAVE: {filename}")
+        effect = QSoundEffect()
+        effect.setSource(QUrl.fromLocalFile(filename))
+        return effect
