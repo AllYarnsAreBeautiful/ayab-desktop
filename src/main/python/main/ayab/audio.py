@@ -59,7 +59,6 @@ class AudioPlayer:
     def __load_wave(self, sound: str) -> sa.WaveObject | None:
         """Get audio from file."""
         filename = path.join(self.__dir, sound + ".wav")
-        print(f"LOAD WAVE: {filename}")
         effect = QSoundEffect()
         effect.setSource(QUrl.fromLocalFile(filename))
         return effect
