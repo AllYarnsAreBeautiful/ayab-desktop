@@ -26,7 +26,7 @@ from typing import TYPE_CHECKING, Any
 if TYPE_CHECKING:
     from .signal_receiver import SignalReceiver
     from .utils import MessageTypes
-    from .engine.status import ColorSymbolType, Status
+    from .engine.status import Status
     from .engine.engine_fsm import Operation
     from .engine.options import Alignment
     from .engine.control import Control
@@ -49,12 +49,8 @@ class SignalSender(object):
     def emit_start_row_updater(self, start_row: int) -> None:
         self.__signal_receiver.start_row_updater.emit(start_row)
 
-    def emit_progress_bar_updater(
-        self, status: Status
-    ) -> None:
-        self.__signal_receiver.progress_bar_updater.emit(
-            status
-        )
+    def emit_progress_bar_updater(self, status: Status) -> None:
+        self.__signal_receiver.progress_bar_updater.emit(status)
 
     def emit_knit_progress_updater(
         self, status: Status, row_multiplier: int, midline: int, auto_mirror: bool
@@ -101,8 +97,8 @@ class SignalSender(object):
     def emit_knitting_starter(self) -> None:
         self.__signal_receiver.knitting_starter.emit()
 
-    def emit_operation_finisher(self, operation: Operation, beep: bool) -> None:
-        self.__signal_receiver.operation_finisher.emit(operation, beep)
+    def emit_operation_finisher(self, operation: Operation) -> None:
+        self.__signal_receiver.operation_finisher.emit(operation)
 
     def emit_hw_test_starter(self, control: Control) -> None:
         self.__signal_receiver.hw_test_starter.emit(control)
