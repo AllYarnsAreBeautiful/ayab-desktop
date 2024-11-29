@@ -100,6 +100,7 @@ class FeedbackHandler(SignalSender):
         self.emit_audio_player("nextline")
 
     def _knitting_finished(self) -> None:
+        self.emit_audio_player("finish")
         self.emit_notification(
             "Image transmission finished. Please knit until you "
             + "hear the double beep sound."
