@@ -47,7 +47,7 @@ class AudioPlayer:
         # else
         wave_obj.play()
 
-    def __wave(self, sound: str) -> sa.WaveObject | None:
+    def __wave(self, sound: str) -> QSoundEffect | None:
         """Get and cache audio."""
         if sound not in self.__cache:
             wave_object = self.__load_wave(sound)
@@ -56,7 +56,7 @@ class AudioPlayer:
             self.__cache[sound] = wave_object
         return self.__cache[sound]
 
-    def __load_wave(self, sound: str) -> sa.WaveObject | None:
+    def __load_wave(self, sound: str) -> QSoundEffect | None:
         """Get audio from file."""
         filename = path.join(self.__dir, sound + ".wav")
         effect = QSoundEffect()
