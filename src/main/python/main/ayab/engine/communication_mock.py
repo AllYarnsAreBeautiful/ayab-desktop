@@ -23,20 +23,17 @@ Mock Class of Communication for Test/Simulation purposes
 import logging
 from time import sleep
 
-from PySide6.QtWidgets import QMessageBox
-
 from .communication import Communication, Token
 
 
 class CommunicationMock(Communication):
     """Class Handling the mock communication protocol."""
 
-    def __init__(self, delay=True, step=False) -> None:
+    def __init__(self, delay=True) -> None:
         """Initialize communication."""
         logging.basicConfig(level=logging.DEBUG)
         self.logger = logging.getLogger(type(self).__name__)
         self.__delay = delay
-        self.__step = step
         self.reset()
 
     def __del__(self) -> None:
@@ -122,20 +119,6 @@ class CommunicationMock(Communication):
                 self.rx_msg_list.append(reqLine)
                 if self.__delay:
                     sleep(1)  # wait for knitting progress dialog to update
-                # step through output line by line
-                if self.__step:
-                    # pop up box waits for user input before moving on to next line
-                    msg = QMessageBox()
-                    msg.setIcon(QMessageBox.Icon.Information)
-                    msg.setText("Line number = " + str(self.__line_count))
-                    msg.setStandardButtons(
-                        QMessageBox.StandardButton.Ok
-                        | QMessageBox.StandardButton.Cancel
-                    )
-                    ret = None
-                    ret = msg.exec_()
-                    while ret is None:
-                        pass
             else:
                 self.__started_row = True
         if len(self.rx_msg_list) > 0:
