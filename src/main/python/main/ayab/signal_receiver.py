@@ -44,7 +44,7 @@ class SignalReceiver(QObject):
     # over-ridden by instance attributes with the same name
     start_row_updater = Signal(int)
     progress_bar_updater = Signal(Status)
-    knit_progress_updater = Signal(Status, int, int, bool)
+    knit_progress_updater = Signal(Status)
     notifier = Signal(str, bool)
     # statusbar_updater = Signal('QString', bool)
     popup_displayer = Signal(str, str)
