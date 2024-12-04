@@ -259,21 +259,21 @@ class TestControl(unittest.TestCase):
 
         # 40 pixel image set to the left
         control.mode = Mode.SINGLEBED
-        im = Image.new("P", (40, 3), 0)
-        im1 = Image.new("P", (40, 1), 1)
+        im = Image.new("P", (40, 3), 1)
+        im1 = Image.new("P", (40, 1), 0)
         im.paste(im1, (0, 0))
         pattern = Pattern(im, Config(Machine(0), Mode.SINGLEBED), 2)
         pattern.alignment = Alignment.LEFT
+        assert pattern.pat_start_needle == 0
+        assert pattern.pat_end_needle == 40
         control.pattern = pattern
-        assert pattern.pat_start_needle == 160
-        assert pattern.pat_end_needle == 200
-        control.start_needle = 160
-        control.end_needle = 200
+        control.start_needle = 0
+        control.end_needle = 40
         control.start_pixel = 0
         control.end_pixel = 40
         bits0 = bitarray()
         bits0.frombytes(
-            b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+            b"\xff\xff\xff\xff\xff\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
         )
         assert control.select_needles_API6(0, 0, False) == bits0
 
