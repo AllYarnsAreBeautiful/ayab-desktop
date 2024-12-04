@@ -110,13 +110,15 @@ class Status(object):
     active: bool
     # data fields
     alt_color: Optional[int]
+    machine_width: int
+    knit_start_needle: int
+    passes_per_row: int
     bits: bitarray
     color: int
     color_symbol: ColorSymbolType
     current_row: int
     firmware_state: int
     line_number: int
-    mirror: bool
     repeats: int
     total_rows: int
     # carriage info
@@ -133,6 +135,9 @@ class Status(object):
     def reset(self) -> None:
         self.active = True
         # data fields
+        self.machine_width = -1
+        self.knit_start_needle = -1
+        self.passes_per_row = 1
         self.alt_color = None
         self.bits = bitarray()
         self.color = -1
@@ -140,7 +145,6 @@ class Status(object):
         self.current_row = -1
         self.firmware_state = -1
         self.line_number = -1
-        self.mirror = False
         self.repeats = -1
         self.total_rows = -1
         # carriage info
@@ -159,14 +163,16 @@ class Status(object):
         self.color_symbol = status.color_symbol
         self.color = status.color
         self.alt_color = status.alt_color
+        self.total_rows = status.total_rows
+        self.machine_width = status.machine_width
+        self.knit_start_needle = status.knit_start_needle
+        self.passes_per_row = status.passes_per_row
         self.bits = status.bits
         self.hall_l = status.hall_l
         self.hall_r = status.hall_r
         self.carriage_type = status.carriage_type
         self.carriage_position = status.carriage_position
         self.carriage_direction = status.carriage_direction
-        self.total_rows = status.total_rows
-        self.mirror = status.mirror
 
     def parse_device_state_API6(self, state: Any, msg: bytes) -> None:
         if not (self.active):

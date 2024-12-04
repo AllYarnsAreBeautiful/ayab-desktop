@@ -52,12 +52,8 @@ class SignalSender(object):
     def emit_progress_bar_updater(self, status: Status) -> None:
         self.__signal_receiver.progress_bar_updater.emit(status)
 
-    def emit_knit_progress_updater(
-        self, status: Status, row_multiplier: int, midline: int, auto_mirror: bool
-    ) -> None:
-        self.__signal_receiver.knit_progress_updater.emit(
-            status, row_multiplier, midline, auto_mirror
-        )
+    def emit_knit_progress_updater(self, status: Status) -> None:
+        self.__signal_receiver.knit_progress_updater.emit(status)
 
     def emit_notifier(self, text: str, log: bool) -> None:
         self.__signal_receiver.notifier.emit(text, log)
