@@ -58,7 +58,7 @@ class SignalReceiver(QObject):
     new_image_flag = Signal()
     bad_config_flag = Signal()
     knitting_starter = Signal()
-    operation_finisher = Signal(Operation, bool)
+    operation_finisher = Signal(Operation)
     hw_test_starter = Signal(Control)
     hw_test_writer = Signal(str)
 

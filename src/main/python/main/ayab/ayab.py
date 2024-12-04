@@ -106,9 +106,7 @@ class GuiMain(QMainWindow):
             self.scene.ayabimage.select_file
         )
         self.ui.cancel_button.clicked.connect(self.engine.cancel)
-        self.hw_test.finished.connect(
-            lambda: self.finish_operation(Operation.TEST, False)
-        )
+        self.hw_test.finished.connect(lambda: self.finish_operation(Operation.TEST))
 
     def __activate_menu(self) -> None:
         self.menu.ui.action_open_image_file.triggered.connect(
@@ -158,7 +156,7 @@ class GuiMain(QMainWindow):
         self.ui.open_image_file_button.setEnabled(False)
         self.menu.setEnabled(False)
 
-    def finish_operation(self, operation: Operation, beep: bool) -> None:
+    def finish_operation(self, operation: Operation) -> None:
         """(Re-)enable UI elements after operation finishes."""
         if operation == Operation.KNIT:
             self.knit_thread.wait()
@@ -168,9 +166,6 @@ class GuiMain(QMainWindow):
         self.ui.filename_lineedit.setEnabled(True)
         self.ui.open_image_file_button.setEnabled(True)
         self.menu.setEnabled(True)
-
-        if operation == Operation.KNIT and beep:
-            self.audio.play("finish")
 
     def set_image_dimensions(self) -> None:
         """Set dimensions of image."""
