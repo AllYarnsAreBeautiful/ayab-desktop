@@ -73,11 +73,22 @@ class CommunicationMock(Communication):
         self.rx_msg_list.append(cnfInfo)
 
     def req_init_API6(self, machine_val):
-        """Send machine type."""
+        """Send machine type and initial state report"""
         cnfInit = bytes([Token.cnfInit.value, 0])
         self.rx_msg_list.append(cnfInit)
         indState = bytes(
-            [Token.indState.value, 0, 1, 0xFF, 0xFF, 0xFF, 0xFF, 1, 0x00, 1]
+            [
+                Token.indState.value,
+                0,  # success
+                1,  # fsm state
+                0xFF,
+                0xFF,  # left sensor value
+                0xFF,
+                0xFF,  # right sensor value
+                0xFF,  # carriage type (unknown)
+                0,  # position
+                1,  # direction
+            ]
         )
         self.rx_msg_list.append(indState)
 
