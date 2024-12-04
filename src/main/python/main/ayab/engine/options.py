@@ -228,7 +228,9 @@ class OptionsTab(SignalSender, QWidget):
         Updates the maximum value of the Start Row UI element.
         """
         left_side = width // 2
+        self.ui.start_needle_color.setCurrentIndex(0)  # orange
         self.ui.start_needle_edit.setValue(left_side)
+        self.ui.stop_needle_color.setCurrentIndex(1)  # green
         self.ui.stop_needle_edit.setValue(width - left_side)
         self.ui.start_row_edit.setMaximum(height)
 
