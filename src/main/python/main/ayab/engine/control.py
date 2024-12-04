@@ -61,7 +61,6 @@ class Control(SignalSender):
     initial_position: int
     len_pat_expanded: int
     line_block: int
-    midline: int
     mode: Mode
     mode_func: ModeFuncType
     num_colors: int
@@ -110,10 +109,6 @@ class Control(SignalSender):
             )
             self.start_pixel = self.start_needle - self.pattern.pat_start_needle
             self.end_pixel = self.end_needle - self.pattern.pat_start_needle
-            if self.FLANKING_NEEDLES and self.mode != Mode.SINGLEBED:
-                self.midline = self.pattern.knit_end_needle - self.machine.width // 2
-            else:
-                self.midline = self.end_needle - self.machine.width // 2
             self.initial_carriage = Carriage.Unknown
             self.initial_position = -1
             self.initial_direction = Direction.Unknown
@@ -154,6 +149,16 @@ class Control(SignalSender):
             self.status.color_symbol = ""  # "A/B"
         else:
             self.status.alt_color = None
+
+        self.status.machine_width = self.machine.width
+
+        if self.FLANKING_NEEDLES and self.mode != Mode.SINGLEBED:
+            self.status.knit_start_needle = self.pattern.knit_start_needle
+        else:
+            # in single-bed mode, only the pattern bits are emitted, no extra needles
+            self.status.knit_start_needle = self.start_needle
+
+        self.status.passes_per_row = self.passes_per_row
 
     def check_serial_API6(self) -> tuple[Token, int]:
         msg, token, param = self.com.update_API6()

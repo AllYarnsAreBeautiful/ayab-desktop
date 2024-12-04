@@ -204,15 +204,10 @@ class Engine(SignalSender, QDockWidget):
         # that holds up this thread until the knit progress window has finished
         # updating, Otherwise if the knit progress window lags the status
         # will change before the information is written to the UI.
-        data = Status()
-        data.copy(self.status)
-        self.emit_knit_progress_updater(
-            data,
-            self.control.passes_per_row,
-            self.control.midline,
-            self.config.auto_mirror,
-        )
-        self.emit_progress_bar_updater(data)
+        status_copy = Status()
+        status_copy.copy(self.status)
+        self.emit_knit_progress_updater(status_copy)
+        self.emit_progress_bar_updater(status_copy)
 
     def cancel(self) -> None:
         self.__canceled = True
