@@ -186,7 +186,10 @@ class Communication(object):
         data.append(Token.cnfLine.value)
         data.append(line_number)
         data.append(color)
-        data.append(flags)
+
+        # Python ints are at least a byte
+        # The API wants bits
+        data.append(0b1 if flags else 0b0)
         data.extend(line_data)
         hash = 0
         hash = add_crc(hash, data)
