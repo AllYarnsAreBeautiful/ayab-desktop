@@ -33,6 +33,7 @@ class Output(Enum):
     ERROR_INVALID_SETTINGS = auto()
     ERROR_SERIAL_PORT = auto()
     CONNECTING_TO_MACHINE = auto()
+    DISCONNECTING_FROM_MACHINE = auto()
     INITIALIZING_FIRMWARE = auto()
     WAIT_FOR_INIT = auto()
     ERROR_WRONG_API = auto()
@@ -64,6 +65,9 @@ class FeedbackHandler(SignalSender):
 
     def _connecting_to_machine(self) -> None:
         self.emit_notification("Connecting to machine...", False)
+
+    def _disconnecting_from_machine(self) -> None:
+        self.emit_notification("Disconnecting from machine...")
 
     def _initializing_firmware(self) -> None:
         self.emit_notification("Initializing firmware")
