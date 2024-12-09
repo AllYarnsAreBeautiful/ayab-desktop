@@ -51,6 +51,7 @@ class State(Enum):
     REQUEST_TEST = auto()
     CONFIRM_TEST = auto()
     RUN_TEST = auto()
+    FINISHING = auto()
     FINISHED = auto()
 
 
@@ -196,8 +197,8 @@ class StateMachine(QStateMachine):
         if token == Token.reqLine:
             pattern_finished = control.cnf_line_API6(param)
             if pattern_finished:
-                control.state = State.FINISHED
-                return Output.KNITTING_FINISHED
+                control.state = State.FINISHING
+                return Output.NEXT_LINE
             else:
                 return Output.NEXT_LINE
         # else
@@ -235,6 +236,16 @@ class StateMachine(QStateMachine):
         # Any incoming testRes messages are processed in check_serial_API6,
         # there is nothing more to do here.
         control.check_serial_API6()
+        return Output.NONE
+
+    @staticmethod
+    def _API6_finishing(control: Control, operation: Operation) -> Output:
+        token, param = control.check_serial_API6()
+        if token == Token.reqLine:
+            control.cnf_final_line_API6(param)
+            control.state = State.FINISHED
+            return Output.KNITTING_FINISHED
+        # else
         return Output.NONE
 
     @staticmethod
