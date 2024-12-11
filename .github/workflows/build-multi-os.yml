@@ -470,8 +470,6 @@ jobs:
           sudo apt-get install -y avrdude libasound2-dev
           ./AppRun -m pip install --upgrade pip
           ./AppRun -m pip install --upgrade setuptools
-          # hack to fix setup.py script with faulty include
-          ./AppRun -m pip install --global-option=build_ext --global-option="-I$(pwd)/opt/${{steps.vars.outputs.python-minor}}/include/${{steps.vars.outputs.python-minor}}" simpleaudio
           ./AppRun -m pip install -r requirements.build.txt
       - name: Add AppDir subdirectories to PATH
         run: |
