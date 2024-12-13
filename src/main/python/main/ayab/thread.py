@@ -17,6 +17,7 @@
 #    Copyright 2014 Sebastian Oliva, Christian Obersteiner,
 #       Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
+#   Copyright 2024 Marcus Hoose (eKnitter.com)
 
 from __future__ import annotations
 from PySide6.QtCore import QThread
@@ -33,7 +34,10 @@ class GenericThread(QThread):
         self.kwargs = kwargs
 
     def __del__(self) -> None:
-        self.wait()
+        try:
+            self.wait()
+        except Exception:
+            return
 
     def run(self) -> None:
         try:
