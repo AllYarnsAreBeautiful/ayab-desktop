@@ -31,6 +31,8 @@ from .hw_test_communication_mock import HardwareTestCommunicationMock
 from .output import Output
 from typing import TYPE_CHECKING
 
+import time
+
 if TYPE_CHECKING:
     from .control import Control
     from .engine import Engine
@@ -68,6 +70,15 @@ class StateMachine(QStateMachine):
 
     CONNECT: QState
     VERSION_CHECK: QState
+
+    lastRetry = 0
+
+    @staticmethod
+    def retry(method, args=(), timeout=0.1):
+        current_time = time.time()
+        if (current_time - StateMachine.lastRetry) > timeout:
+            StateMachine.lastRetry = current_time
+            method(*args)
 
     def set_transitions(self, parent: Engine) -> None:
         """Define transitions between states for Finite State Machine"""
@@ -118,7 +129,7 @@ class StateMachine(QStateMachine):
                 )
                 return Output.ERROR_WRONG_API
         # else
-        control.com.req_info()
+        StateMachine.retry(control.com.req_info)
         return Output.CONNECTING_TO_MACHINE
 
     @staticmethod
@@ -140,7 +151,7 @@ class StateMachine(QStateMachine):
                 control.logger.error("Error initializing firmware: " + str(param))
                 return Output.ERROR_INITIALIZING_FIRMWARE
         # else
-        control.com.req_init_API6(control.machine)
+        StateMachine.retry(control.com.req_init_API6, (control.machine,))
         return Output.INITIALIZING_FIRMWARE
 
     @staticmethod
