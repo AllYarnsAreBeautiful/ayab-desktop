@@ -70,27 +70,27 @@ $(function() {
 <div class="textblock"><p>Linux</p>
 <p>This is the GUI interface for AYAB.</p>
 <p>For information on how to install the release version of the software, see <a href="http://manual.ayab-knitting.com">http://manual.ayab-knitting.com</a></p>
-<h1><a class="anchor" id="autotoc_md39"></a>
+<h1><a class="anchor" id="autotoc_md11"></a>
 Branching Model</h1>
 <p><b>Development of the latest and upcoming features happens on the 'main' branch.</b> For each major release, a dedicated maintenance branch is created to manage bug fixes, security patches, and backporting for that specific release. These branches follow the naming convention &lt;version&gt;-maint (e.g. <em>0.95-maint</em>). This approach allows us to continue forward development while ensuring stability and long-term support for previous versions.</p>
-<h1><a class="anchor" id="autotoc_md40"></a>
+<h1><a class="anchor" id="autotoc_md12"></a>
 Running from Source &amp; Development</h1>
 <p>The AYAB desktop software runs using Python 3.11. <br  />
  The Python module dependencies are split across <b>runtime dependencies</b>, which are in <em>requirements.build.txt</em> and <b>development dependencies</b>, found in <em>requirements.txt</em>.</p>
 <p>This repository uses <a href="https://pre-commit.com/">pre-commit</a> hooks. After cloning the repo and installing the development dependencies, you should run <code>pre-commit install</code> to set up the git hook scripts. </p>
-<h2><a class="anchor" id="autotoc_md41"></a>
+<h2><a class="anchor" id="autotoc_md13"></a>
 Platform-Specific Setup</h2>
 <p>&lt;details&gt;</p>
 <p>For flashing the firmware, avrdude has to be available on your system. To build or run the application, you will also need the system libraries required by Qt 6; installing the Qt 6 development tools is a concise (if heavy-handed) way of bringing in these dependencies.</p>
-<h3><a class="anchor" id="autotoc_md42"></a>
+<h3><a class="anchor" id="autotoc_md14"></a>
 Debian/Ubuntu</h3>
 <div class="fragment"><div class="line">sudo apt install python3.11 python3.11-dev python3.11-venv</div>
 <div class="line">sudo apt install libasound2-dev avrdude qt6-tools-dev-tools build-essential</div>
-</div><!-- fragment --> <h3><a class="anchor" id="autotoc_md43"></a>
+</div><!-- fragment --> <h3><a class="anchor" id="autotoc_md15"></a>
 openSUSE</h3>
 <div class="fragment"><div class="line">sudo zypper install python311 python311-pip python311-virtualenv python311-devel</div>
 <div class="line">sudo zypper install libasound2 alsa-devel avrdude qt6-tools-dev-tools build-essential</div>
-</div><!-- fragment --> <h3><a class="anchor" id="autotoc_md44"></a>
+</div><!-- fragment --> <h3><a class="anchor" id="autotoc_md16"></a>
 All Distributions</h3>
 <p>To be able to communicate with your Arduino, it might be necessary to add the rights for USB communication by adding your user to some groups. </p><div class="fragment"><div class="line">sudo usermod -aG tty [userName]</div>
 <div class="line">sudo usermod -aG dialout [userName]</div>
@@ -113,7 +113,7 @@ All Distributions</h3>
 </p>
 <p>If you encounter the pip <code>SSL:TLSV1_ALERT_PROTOCOL_VERSION</code> problem: </p><div class="fragment"><div class="line">curl https://bootstrap.pypa.io/get-pip.py | python</div>
 </div><!-- fragment --><p> &lt;/details&gt;</p>
-<h2><a class="anchor" id="autotoc_md45"></a>
+<h2><a class="anchor" id="autotoc_md17"></a>
 Universal Setup Steps</h2>
 <p>Once platform-specific setup is complete, download the git repository: </p><div class="fragment"><div class="line">git clone https://github.com/AllYarnsAreBeautiful/ayab-desktop</div>
 <div class="line">cd ayab-desktop</div>
@@ -124,9 +124,9 @@ Universal Setup Steps</h2>
 <div class="line">pip install -r requirements.txt</div>
 </div><!-- fragment --><p>Next, convert the PySide6 <code>.ui</code> files and generate the translation files: </p><div class="fragment"><div class="line">bash ./setup-environment.ps1</div>
 </div><!-- fragment --><p>Finally, you can start AYAB with </p><div class="fragment"><div class="line">fbs run</div>
-</div><!-- fragment --><h1><a class="anchor" id="autotoc_md46"></a>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md18"></a>
 CI/CD on GitHub</h1>
-<h2><a class="anchor" id="autotoc_md47"></a>
+<h2><a class="anchor" id="autotoc_md19"></a>
 Triggering a new build</h2>
 <p>A new build is triggered when a new tag is created, either starting with</p>
 <ul>
@@ -135,7 +135,7 @@ Triggering a new build</h2>
 </ul>
 <p>Convention for the test-tag is to suffix the current date in the YYMMdd format. If there is already an existing test build for a single day, attach a letter. The test tags and releases will be manually removed from time for a better overview.</p>
 <p>The tag can be pushed from your local environment, or via the <a href="https://github.com/AllYarnsAreBeautiful/ayab-desktop/releases/new">"Draft a new Release"</a> button on the GitHub website.</p>
-<h2><a class="anchor" id="autotoc_md48"></a>
+<h2><a class="anchor" id="autotoc_md20"></a>
 Choosing the firmware release to be bundled with the build</h2>
 <p>The CI automatically downloads a given firmware release from the <a href="https://github.com/AllYarnsAreBeautiful/ayab-firmware">ayab-firmware repo</a> and packs it into the Desktop release. The name of the firmware release is chosen in <a href="https://github.com/AllYarnsAreBeautiful/ayab-desktop/blob/1.0.0-dev/src/main/resources/base/ayab/firmware/manifest.txt">this manifest file</a> in the ayab-desktop repo.</p>
 <p>Whenever building from source, you should ensure that the firmware is available as a compiled hex file is available at <code>main/resources/base/ayab/firmware/firmware.hex</code>. You can either compile the firmware and upload it through other means (e.g. VSCode with PlatformIO), or compile and then drop it into the right path in the desktop directory, making it available for the flash through AYAB desktop. </p>

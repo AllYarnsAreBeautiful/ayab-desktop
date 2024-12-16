@@ -2,29 +2,29 @@ Linux
 
 This is the GUI interface for AYAB.
 
-For information on how to install the release version of the software, see \href{http://manual.ayab-knitting.com}{\texttt{ http\+://manual.\+ayab-\/knitting.\+com}}\hypertarget{md_README_autotoc_md39}{}\doxysection{Branching Model}\label{md_README_autotoc_md39}
-{\bfseries{Development of the latest and upcoming features happens on the \textquotesingle{}main\textquotesingle{} branch.}} For each major release, a dedicated maintenance branch is created to manage bug fixes, security patches, and backporting for that specific release. These branches follow the naming convention $<$version$>$-\/maint (e.\+g. {\itshape 0.\+95-\/maint}). This approach allows us to continue forward development while ensuring stability and long-\/term support for previous versions.\hypertarget{md_README_autotoc_md40}{}\doxysection{Running from Source \& Development}\label{md_README_autotoc_md40}
+For information on how to install the release version of the software, see \href{http://manual.ayab-knitting.com}{\texttt{ http\+://manual.\+ayab-\/knitting.\+com}}\hypertarget{md_README_autotoc_md11}{}\doxysection{Branching Model}\label{md_README_autotoc_md11}
+{\bfseries{Development of the latest and upcoming features happens on the \textquotesingle{}main\textquotesingle{} branch.}} For each major release, a dedicated maintenance branch is created to manage bug fixes, security patches, and backporting for that specific release. These branches follow the naming convention $<$version$>$-\/maint (e.\+g. {\itshape 0.\+95-\/maint}). This approach allows us to continue forward development while ensuring stability and long-\/term support for previous versions.\hypertarget{md_README_autotoc_md12}{}\doxysection{Running from Source \& Development}\label{md_README_autotoc_md12}
 The AYAB desktop software runs using Python 3.\+11. ~\newline
  The Python module dependencies are split across {\bfseries{runtime dependencies}}, which are in {\itshape requirements.\+build.\+txt} and {\bfseries{development dependencies}}, found in {\itshape requirements.\+txt}.
 
-This repository uses \href{https://pre-commit.com/}{\texttt{ pre-\/commit}} hooks. After cloning the repo and installing the development dependencies, you should run {\ttfamily pre-\/commit install} to set up the git hook scripts. \hypertarget{md_README_autotoc_md41}{}\doxysubsection{Platform-\/\+Specific Setup}\label{md_README_autotoc_md41}
+This repository uses \href{https://pre-commit.com/}{\texttt{ pre-\/commit}} hooks. After cloning the repo and installing the development dependencies, you should run {\ttfamily pre-\/commit install} to set up the git hook scripts. \hypertarget{md_README_autotoc_md13}{}\doxysubsection{Platform-\/\+Specific Setup}\label{md_README_autotoc_md13}
 $<$details$>$
 
-For flashing the firmware, avrdude has to be available on your system. To build or run the application, you will also need the system libraries required by Qt 6; installing the Qt 6 development tools is a concise (if heavy-\/handed) way of bringing in these dependencies.\hypertarget{md_README_autotoc_md42}{}\doxysubsubsection{Debian/\+Ubuntu}\label{md_README_autotoc_md42}
+For flashing the firmware, avrdude has to be available on your system. To build or run the application, you will also need the system libraries required by Qt 6; installing the Qt 6 development tools is a concise (if heavy-\/handed) way of bringing in these dependencies.\hypertarget{md_README_autotoc_md14}{}\doxysubsubsection{Debian/\+Ubuntu}\label{md_README_autotoc_md14}
 
 \begin{DoxyCode}{0}
 \DoxyCodeLine{sudo apt install python3.11 python3.11-\/dev python3.11-\/venv}
 \DoxyCodeLine{sudo apt install libasound2-\/dev avrdude qt6-\/tools-\/dev-\/tools build-\/essential}
 
 \end{DoxyCode}
- \hypertarget{md_README_autotoc_md43}{}\doxysubsubsection{open\+SUSE}\label{md_README_autotoc_md43}
+ \hypertarget{md_README_autotoc_md15}{}\doxysubsubsection{open\+SUSE}\label{md_README_autotoc_md15}
 
 \begin{DoxyCode}{0}
 \DoxyCodeLine{sudo zypper install python311 python311-\/pip python311-\/virtualenv python311-\/devel}
 \DoxyCodeLine{sudo zypper install libasound2 alsa-\/devel avrdude qt6-\/tools-\/dev-\/tools build-\/essential}
 
 \end{DoxyCode}
- \hypertarget{md_README_autotoc_md44}{}\doxysubsubsection{All Distributions}\label{md_README_autotoc_md44}
+ \hypertarget{md_README_autotoc_md16}{}\doxysubsubsection{All Distributions}\label{md_README_autotoc_md16}
 To be able to communicate with your Arduino, it might be necessary to add the rights for USB communication by adding your user to some groups. 
 \begin{DoxyCode}{0}
 \DoxyCodeLine{sudo usermod -\/aG tty [userName]}
@@ -86,7 +86,7 @@ If you encounter the pip {\ttfamily SSL\+:TLSV1\+\_\+\+ALERT\+\_\+\+PROTOCOL\+\_
 \DoxyCodeLine{curl https://bootstrap.pypa.io/get-\/pip.py | python}
 
 \end{DoxyCode}
- $<$/details$>$\hypertarget{md_README_autotoc_md45}{}\doxysubsection{Universal Setup Steps}\label{md_README_autotoc_md45}
+ $<$/details$>$\hypertarget{md_README_autotoc_md17}{}\doxysubsection{Universal Setup Steps}\label{md_README_autotoc_md17}
 Once platform-\/specific setup is complete, download the git repository\+: 
 \begin{DoxyCode}{0}
 \DoxyCodeLine{git clone https://github.com/AllYarnsAreBeautiful/ayab-\/desktop}
@@ -124,8 +124,8 @@ Finally, you can start AYAB with
 \DoxyCodeLine{fbs run}
 
 \end{DoxyCode}
-\hypertarget{md_README_autotoc_md46}{}\doxysection{CI/\+CD on Git\+Hub}\label{md_README_autotoc_md46}
-\hypertarget{md_README_autotoc_md47}{}\doxysubsection{Triggering a new build}\label{md_README_autotoc_md47}
+\hypertarget{md_README_autotoc_md18}{}\doxysection{CI/\+CD on Git\+Hub}\label{md_README_autotoc_md18}
+\hypertarget{md_README_autotoc_md19}{}\doxysubsection{Triggering a new build}\label{md_README_autotoc_md19}
 A new build is triggered when a new tag is created, either starting with
 
 
@@ -136,7 +136,7 @@ A new build is triggered when a new tag is created, either starting with
 
 Convention for the test-\/tag is to suffix the current date in the YYMMdd format. If there is already an existing test build for a single day, attach a letter. The test tags and releases will be manually removed from time for a better overview.
 
-The tag can be pushed from your local environment, or via the \href{https://github.com/AllYarnsAreBeautiful/ayab-desktop/releases/new}{\texttt{ \char`\"{}\+Draft a new Release\char`\"{}}} button on the Git\+Hub website.\hypertarget{md_README_autotoc_md48}{}\doxysubsection{Choosing the firmware release to be bundled with the build}\label{md_README_autotoc_md48}
+The tag can be pushed from your local environment, or via the \href{https://github.com/AllYarnsAreBeautiful/ayab-desktop/releases/new}{\texttt{ \char`\"{}\+Draft a new Release\char`\"{}}} button on the Git\+Hub website.\hypertarget{md_README_autotoc_md20}{}\doxysubsection{Choosing the firmware release to be bundled with the build}\label{md_README_autotoc_md20}
 The CI automatically downloads a given firmware release from the \href{https://github.com/AllYarnsAreBeautiful/ayab-firmware}{\texttt{ ayab-\/firmware repo}} and packs it into the Desktop release. The name of the firmware release is chosen in \href{https://github.com/AllYarnsAreBeautiful/ayab-desktop/blob/1.0.0-dev/src/main/resources/base/ayab/firmware/manifest.txt}{\texttt{ this manifest file}} in the ayab-\/desktop repo.
 
 Whenever building from source, you should ensure that the firmware is available as a compiled hex file is available at {\ttfamily main/resources/base/ayab/firmware/firmware.\+hex}. You can either compile the firmware and upload it through other means (e.\+g. VSCode with Platform\+IO), or compile and then drop it into the right path in the desktop directory, making it available for the flash through AYAB desktop. 
