@@ -1,0 +1,106 @@
+﻿Context,en_US,en_GB,de_DE,is_IS,it_IT,ru_RU,uk_UA,fr_FR,es_ES,ko_KR,zh_CN
+Firmware,Error flashing firmware.,Error flashing firmware.,,Villa við uppfærslu á hugbúnaði.,,,,,,,刷写固件错误
+Firmware,Flashing done!,Flashing done!,,Uppfærslu lokið!,,,,,,,刷写完成！
+Firmware,Firmware Flashing Utility,Firmware Flashing Utility,Firmware-Dienstprogramm,Hugbúnaðar uppfærsla,,,,,,,固件刷写
+Firmware,Port,Port,Port,Tengi,Porta,порт,порт,Port,Puerto,,端口
+Firmware,Controller,Controller,Mikrocontroller,Örgjörvi,Microcontroller,Микроконтроллер,Мікроконтролер,Microcontrôleur,Microcontrolador,,控制器
+Firmware,Firmware Version,Firmware Version,Firmware-Version,Hugbúnaðarútgáfa,Versione del Firmware,Версия Прошивки,Версія Прошивки,Version du Firmware,Versión del Firmware,,固件版本
+Firmware,Flash,Flash,Flashen,Uppfæra,Programma,,,Flasher,Flashear,,刷写
+Scene,Image dimensions,Image dimensions,Mustergröße,Myndastærð,Dimensione dell'immagine,Размер изображения,Розмір зображення,Dimensions de l'image,Dimensiones de la imagen,이미지 치수,图像尺寸
+Dock,Port Selection,Port Selection,Port wählen,Velja tengi,Selezione porta seriale,Выбрать порт,Вибір порту,Sélection du port,Seleccionar puerto,포트 선택,端口选择
+Dock,Refresh,Refresh,Aktualisieren,Endurnýja,Ricarica,Обновить,Оновити,Réactualiser,Actualizar,리플레시,刷新
+Dock,Settings,Settings,Einstellungen,Stillingar,Impostazioni,Настройки,Налаштування,Paramètres,Ajustes,설정,设置
+Dock,Knitting Mode,Knitting Mode,Strickmodus,Prjóna stilling,Modalità di lavorazione,Режим вязание,Режим в'язання,Mode tricot,Método de tejido,니팅 모드,编织模式
+Dock,Status,Status,Status,Staða,Stato,Статус,Стан,Statut,Estado,상태,状态
+Options,Colors,Colours,Farben,Litir,Colori,Цвета,Кольори,Couleurs,Colores,색상들,颜色
+Options,Start Row,Start Row,Startzeile,Byrja umferð,Inizio giro,Начальный ряд,Початковий ряд,Commencer le rang,Fila de inicio,시작 단,起始行
+Options,Infinite Repeat,Infinite Repeat,Unendlich wiederholen,Endurtekning,Ripetizione infinita,Повторять,Нескінченне повторення,Répétition a l'infini,Repetición infinita,무한 반복,无限重复
+Options,Start Needle,Start Needle,Startnadel,Byrjunar nál,Ago iniziale,Стартовая игла,Початкова голка,Première aiguille,Aguja de inicio,시작 바늘,起始针
+Options,Stop Needle,Stop Needle,Stopnadel,Enda nál,Ago finale,Конечная игла,Остання голка,Dernière aiguille,Aguja de parada,끝나는 바늘,结束针
+Options,Alignment,Alignment,Ausrichtung,Jafna,Allineamento,Выравнивание,Вирівнювання,Alignement,Alineamiento,조정,对齐
+Options,Mirror Image,Mirror Image,Muster spiegeln,Spegilmynd,Ribalta l'immagine,Зеркальное отражение,Дзеркальне зображення,Image miroir,Imagen espejo,거울 이미지,镜像
+Options,Continuous Status Reporting,Continuous Status Reporting,Kontinuierlicher Status,Stöðug skýrsla,Report continuativo,Непрерывный отчет о статусе,Постійне звітування про стан,Rapport de situation en continu,Informe de estado continuo,지속적 상태 보고,持续状态报告
+StatusTab,Hall Sensors,Hall Sensors,Hall-Effekt-Sensoren,Skynjari,Apparato sensori,Датчик Холла,Датчики Холла,Capteurs à effet Hall,Sensores de effecto Hall,홀 센서,霍尔传感器
+StatusTab,Hall Left,Hall Left,Hallsensor links,Vinstri skynjari,Apparato sensore sinistro,Датчик Холла слева,Лівий датчик Холла,Hall Gauche,Hall izquierda,홀 왼쪽,霍尔左
+StatusTab,Hall Right,Hall Right,Hallsensor rechts,Hægri skynjari,Apparato sensore destro,Датчик Холла справа,Правий датчик Холла,Hall Droite,Hall derecha,홀 오른쪽,霍尔右
+StatusTab,Carriage,Carriage,Schlitten,Vagn,Carrello,Каретка,Каретка,Chariot,Carro,캐리지,机头
+StatusTab,No carriage detected,No carriage detected,Kein Schlitten erkannt,Finn ekki vagn,Carrello non selezionato,Каретка не обнаружена,Каретку не виявлено,Chariot non détecté ,Carro no detectado,캐리지가 연결되지 않음,未检测到机头
+StatusTab,direction,direction,Richtung,Stefna,direzione,направление,напрямок,direction,dirección,방향,方向
+StatusTab,Progress,Progress,Fortschritt,Staða,Progressione,Прогресс,Прогрес,Progrès,Progreso,진행,进程
+StatusTab,progress,progress,Fortschritt,staða,progressione,прогресс,прогрес,progrès,progreso,진행,进程
+StatusTab,Center,Centre,Zentriert,Miðja,Centra,Центр,Центр,Centre,Centrar,중앙,中心
+StatusTab,Left,Left,Links,Vinstri,Sinistra,Лево,Ліворуч,Gauche,Izquierda,왼쪽,左
+StatusTab,Right,Right,Rechts,Hægri,Destra,Право,Праворуч,Droite,Derecha,오른쪽,右
+MainWindow,All Yarns Are Beautiful,All Yarns Are Beautiful,All Yarns Are Beautiful,Allt Garn Er Fallegt,All Yarns Are Beautiful,Вся пряжа прекрасна,Уся пряжа прекрасна,Tous Les Fils Sont Beaux,Todos Los Hilos Son Hermosos,모든 실은 아름답다,诸纱皆妙
+MainWindow,Website,Website,Webseite,Vefsíða,Sito web,Интернет сайт,Веб-сайт,Site Internet,Sitio web,웹사이트,网页
+MainWindow,Manual,Manual,Anleitung,Handbók,Manuale,Справочник,Посібник,Manuel,Manual,매뉴얼,手册
+MainWindow,Assistant,Assistant,Assistent,Aðstoð,Assistente,Помощник,Помічник,Assistant,Asistente,어시스턴트,助手
+MainWindow,1. Load Image File,1. Load Image File,1. Muster öffnen,1. Hlaðið myndskrá,1. Carica l'immagine,1. Загрузить изображение,1. Завантажити зображення,1. Charger une image,1. Cargar archivo de imagen,1. 이미지 파일 부르기,1.读取图像文件
+MainWindow,Knitting Options,Knitting Options,Strickeinstellungen,Prjóna valkostir,Opzioni Lavorazione,Варианты вязания,Варіанти в'язання,Options de tricot,Opciones de tejido,니팅 옵션,编织选项
+MainWindow,2. Knit,2. Knit,2. Stricken,2. Prjónið,2. Lavora,2. Вязание,2. В'язання,2. Tricoter,2. Tejer,2. 니트!,2.编织
+MainWindow,Test,Test,Testen,Prófa,Test,,Тест,Тест,Tester,Test,测试
+MainWindow,Cancel,Cancel,Abbrechen,Hætta við,Annulla,Отмена,Скасувати,Annuler,Cancelar,취소,取消
+MainWindow,Open Knitting Project,Open Knitting Project,Projekt öffnen,Opna skrá,Apri il progetto,Начать новый проект,Відкрити в'язальний проєкт,Ouvrir un projet,Abrir proyecto de tejido,니팅 프로젝트 열기,打开编织项目
+MenuBar,File,File,Datei,Skrá,File,Файл,Файл,Fichier,Archivo,파일,文件
+MenuBar,Help,Help,Hilfe,Hjálp,Aiuto,Помощь,Допомога,Aide,Ayuda,도움,帮助
+MenuBar,Tools,Tools,Werkzeuge,Verkfæri,Strumenti,Инструменты,Інструменти,Outils,Utiles,도구,工具
+MenuBar,Preferences,Preferences,Einstellungen,Forstillingar,Preferenze,Персональные настройки,Налаштування,Préférences,Preferencias,환경 설정,偏好设置
+MenuBar,Image Actions,Image Actions,Musterbearbeitung,Mynda aðgerðir,Azioni immagine,Действия с изображением,Дії з зображенням,Image,Imagen,이미지 변경,图像操作
+MenuBar,Load AYAB Firmware,Load AYAB Firmware,AYAB Firmware aufspielen,Uppfæra AYAB hugbúnað,Carica il firmware AYAB,Загрузить прошивку AYAB,Завантажити прошивку AYAB,Chargement du firmware AYAB,Cargar el firmware AYAB,AYAB 펌웨어 설정,读取AYAB固件
+MenuBar,Quit,Quit,Beenden,Hætta,Chiudi,Выход,Вихід,Quitter,Salir,끝내기,退出
+MenuBar,Help – About,Help – About,Hilfe – Über,Hjálp – Um,Aiuto – Informazioni,Помощь,Допомога – Про,Aide – À propos,Ayuda – Sobre,도움 - 관하여,帮助-关于
+MenuBar,Help,Help,Hilfe,Hjálp,Aiuto,Помощь,Допомога,Aide,Ayuda,도움,帮助
+MenuBar,Invert,Invert,Invertieren,Hvolfa,Inverti,Инвертировать,Інвертувати,Inverser,Invertir,뒤집기,颠倒
+MenuBar,Stretch,Stretch,Strecken,Teygja,Allunga,Растянуть,Розтягнути,Etirer,Tramo,늘리기,拉伸
+MenuBar,Repeat,Repeat,Wiederholen,Endurtaka,Ripeti,Повторить,Повторити,Répéter,Repetir,반복,重复
+MenuBar,Reflect,Reflect,Spiegeln,Endurspegla,Rifletti,Отразить,Відобразити,Refléter,Reflejar,반영,倒映
+MenuBar,Horizontal Flip,Horizontal Flip,Horizontal spiegeln,Snúa lárétt,Inverti orizzontale,Отражение по горизонтали,Відобразити по горизонталі,Retourner horizontal,Volteo horizontal,수평 뒤집기,水平翻转
+MenuBar,Vertical Flip,Vertical Flip,Vertikal spiegeln,Snúa lóðrétt,Inverti verticale,Отражение по вертикали,Відобразити по вертикалі,Retourner vertical,Volteo vertical,수직 뒤집기,垂直翻转
+MenuBar,Rotate Left,Rotate Left,Links drehen,Snúa til vinstri,Ruota a sinistra,Поворот влево,Обертати ліворуч,Rotation à gauche,Girar a la izquierda,왼쪽으로 돌리기,左转
+MenuBar,Rotate Right,Rotate Right,Rechts drehen,Snúa til hægri,Ruota a destra,Поворот вправо,Обертати праворуч,Rotation à droite,Girar a la derecha,오른쪽으로 돌리기,右转
+MenuBar,Set Preferences,Set Preferences,Einstellungen festlegen,Setjið forstillingar,Imposta preferenze,Установить персональные настройки,Встановити налаштування,Indiquez vos préférences,Cofigurar preferencias,기본 설정,设置偏好
+Mirrors,Reflect image,Reflect image,Muster spiegeln,Endurspegla mynd,Rifletti l'immagine,Отразить изображение,Відобразити зображення,Refléter l'image,Reflejar imagen,이미지 반영,倒映图像
+Mirrors,Add mirrors,Add mirrors,Spiegelungen hinzufügen,Spegla,Specchia,Добавить зеркальное отражение,Додати дзеркальне відображення,Miroirs,Agregar espejos,반영 추가,添加镜像
+Mirrors,Left,Left,Links,Vinstri,Sinistra,Лево,Ліворуч,Gauche,Izquierda,왼쪽,左
+Mirrors,Right,Right,Rechts,Hægri,Destra,Право,Праворуч,Droite,Derecha,오른쪽,右
+Mirrors,Top,Top,Oben,Efst,Sopra,Верх,Верх,Haut,Arriba,맨위,顶
+Mirrors,Bottom,Bottom,Unten,Neðst,Sotto,Низ,Низ,Bas,Abajo,맨아래,底
+Mirrors,OK,OK,OK,Í lagi,Conferma,ОК,ОК,Confirmer,OK,예,OK
+Prefs,Set Preferences,Set Preferences,Einstellungen festlegen,Setjið forstillingar,Imposta preferenze,Установить персональные настройки,Встановити налаштування,Indiquez vos préférences,Cofigurar preferencias,기본 설정,设置偏好
+Prefs,Settings,Settings,Einstellungen,Stillingar,Impostazioni,Настройки,Налаштування,Paramètres,Ajustes,설정,设置
+Prefs,Default Knitting Mode,Default Knitting Mode,Vorauswahl Strickmodus,Sjálfgefinn prjónahamur,Modalità di lavorazione automatica,Режим вязания по умолчанию,Режим в'язання за замовчуванням,Mode tricot par défaut,Método de tejer por defecto,기본 니팅 모드,默认编织模式
+Prefs,Default Infinite Repeat,Default Infinite Repeat,Vorauswahl Unendlich wiederholen,Sjálfgefin endurtekning,Ripetizione automatica,Повторение по умолчанию,Нескінченне повторення за замовчуванням,Répétition a l'infini par défaut,Repetición por defecto infinita,기본 무한 반복,默认无限重复
+Prefs,Default Alignment,Default Alignment,Vorauswahl Ausrichtung,Sjálfgefin jöfnun,Allineamento automatico,Выравнивание по умолчанию,Вирівнювання за замовчуванням,Alignement par défaut,Alineación por defecto,기본 정렬,默认对齐
+Prefs,Default Mirroring,Default Mirroring,Vorauswahl Spiegelung,Sjálfgefin speglun,Ribaltamento automatico,Зеркальное отображение по умолчанию,Дзеркальне відображення за замовчуванням,Image miroir par défaut,Reflejo por defecto,기본 미러링,默认镜像
+Prefs,Quiet Mode,Quiet Mode,Lautlos,Hljóðlaus stilling,Modalità silenziosa,Без звука,Режим без звуку,Mode silencieux,Modo silencioso,저소음 모드,静默模式
+Prefs,Language,Language,Sprache,Tungumál,Lingua,Язык,Мова,Langue,Lenguaje,언어,语言
+Prefs,OK,OK,OK,Í lagi,Conferma,ОК,ОК,Confirmer,OK,예,OK
+Prefs,Reset,Reset,Zurücksetzen,Endurstilla,Resetta,Сброс,Скинути за замовчуванням,Réinitialiser,Reiniciar,리셋,重置
+Progress,Progress,Progress,Fortschritt,Staða,Progressione,Прогресс,Прогрес,Progrès,Progreso,진행,进程
+KnitProgress,Row,Row,Zeile,Umferð,Giro,Ряд,Ряд,Rang,Fila,단,行
+KnitProgress,Pass,Pass,Durchgang,Endurtekning,Passa,Пройти,Пропуск,Passage,Paso,통과,通过
+KnitProgress,Color,Colour,Farbe,Litur,Colore,Цвет,Колір,Couleur,Color,색상,颜色
+NeedleColor,green,green,grün,grænn,verde,зелёный (зеленый),зелений,vert,verde,녹색,绿
+NeedleColor,orange,orange,orange,appelsínugulur,arancione,оранжевый,помаранчевий,orange,naranja,오렌지색,橙
+KnitMode,Singlebed,Singlebed,Einzelbett,Eitt borð,Frontura singola,Однофонтурное вязание,Однофонтурне,Fonture simple,Frontura simple,싱글 배드,单主机
+KnitMode,Ribber: Classic,Ribber: Classic,Doppelbett: Klassisch,Ribber: Klassískt,2a Frontura: Classico,двухфонтурное: Классика,Двофонтурне: Класика,2ème Fonture: Classique,Doble frontura: Clásico,고무단클래식,罗纹副机：经典模式
+KnitMode,Ribber: Middle-Colors-Twice,Ribber: Middle-Colours-Twice,Doppelbett: Middle-Colors-Twice,Ribber: Miðlitur-Tvisvar,2a Frontura: Middle-Colors-Twice,двухфонтурное: Средний-цвет-дважды,Двофонтурне: Подвоєння середнього кольору,2ème Fonture: Middle-Colors-Twice,Doble frontura: Colores medios dos veces,고무단중간-색-두번,罗纹副机：Middle-Colors-Twice
+KnitMode,Ribber: Heart of Pluto,Ribber: Heart of Pluto,Doppelbett: Heart of Pluto,Ribber: Heart of Pluto,2a Frontura: Heart of Pluto,двухфонтурное: сердце Плутона,Двофонтурне: серце Плутона,2ème Fonture: Heart of Pluto,Doble frontura: Heart of Pluto,고무단 Heart of Pluto,罗纹副机：冥王之心
+KnitMode,Ribber: Circular,Ribber: Circular,Doppelbett: Rundstricken,Ribber: Hringuprjón,2a Frontura: Circolare,двухфонтурное: Круговое,Двофонтурне: По колу,2ème Fonture: Circulaire,Doble frontura: Circular,고무단원형,罗纹副机：圆织
+Alignment,Center,Centre,Zentriert,Miðja,Centra,Центр,Центр,Centre,Centrar,중앙,中心
+Alignment,Left,Left,Links,Vinstri,Sinistra,Лево,Ліворуч,Gauche,Izquierda,왼쪽,左
+Alignment,Right,Right,Rechts,Hægri,Destra,Право,Праворуч,Droite,Derecha,오른쪽,右
+KnitEngine,Simulation,Simulation,Simulation,Hermir,Simulazione,Моделирование,Моделювання,Simulation,Simulación,시뮬레이션,模拟
+KnitEngine,You need to set an image.,You need to set an image.,Bitte Muster wählen.,Þú verður að hlaða mynd.,Devi impostare un'immagine.,Вам нужно установить изображение.,Виберіть зображення.,Choisissez une image pour continuer.,Necesitar configurar una imagen.,이미지를 설정하세요.,你需要设置一个图像。
+KnitEngine,Invalid needle start and end.,Invalid needle start and end.,Ungültige Startnadel oder Endnadel.,Röng upphafs- og enda-nál.,Ago iniziale e finale invalidi.,Недопустимое начало или конец иглы.,Неправильна стартова або кінцева голка.,Erreur sur la première et dernière aiguille du tricot.,Inicio y fin de la aguja no válidos.,바늘 시작이나 끝이 잘못 됐습니다.,无效的织针起始和结束。
+KnitEngine,Start row is larger than the image.,Start row is larger than the image.,Die Startzeile ist höher als das Muster.,Byrjunaröð er stærri en mynd.,Il giro d'inizio è più grande dell'immagine.,Начальный ряд больше изображения.,Початковий ряд більший за зображення.,Le premier rang est plus grand que l'image.,La fila de inicio es más grande que la imagen.,시작 단이 이미지보다 큼니다.,起始行比图像大。
+KnitEngine,Please choose a valid port.,Please choose a valid port.,Bitte wählen Sie einen gültigen Port.,Veljið rétt tengi.,Scegli una porta seriale valida.,"Пожалуйста, выберите действующий порт.",Виберіть дійсний порт.,Veuillez choisir un port valide.,Elija un puerto válido.,유효한 포트를 선택하세요.,请选择一个有效端口。
+KnitEngine,Single bed knitting currently supports only 2 colors.,Single bed knitting currently supports only 2 colours.,Einzelbettstricken unterstützt nur 2 Farben.,Stilling styður bara tvo liti.,La lavorazione in frontura singola supporta solo 2 colori.,Однофонтурное вязание поддерживает только двухцветное вязание.,Однофонтурне в'язання підтримує лише 2 кольори.,Le tricot en simple fonture est limité à deux couleurs.,El tejido de una frontura actualmente solo soporta 2 colores.,싱글배드 니팅은 2가지 색만 지원합니다.,单主机编织当前只支持双色。
+KnitEngine,Circular knitting supports only 2 colors.,Circular knitting supports only 2 colours.,Rundstricken unterstützt nur 2 Farben.,Hringprjón styður bara tvo liti.,La lavorazione circolare supporta solo 2 colori.,Круговое вязание поддерживает только двухцветное вязание.,В'язання по колу підтримує лише 2 кольори.,Le mode tricot circulaire est limité à deux couleurs.,Tejido circular soporta solo 2 colores.,원형 니팅은 2가지 색만 지원합니다.,圆织只支持双色。
+KnitEngine,Connecting to machine...,Connecting to machine...,Verbinde zur Maschine...,Tengist vél...,Connessione in corso…,Подключение к машине.,Підключення до машини...,Connection en cours...,Conexión a la máquina.,기계에 연결 중...,正在连接机器
+KnitEngine,Please start machine. (Set the carriage to mode KC-I or KC-II and move the carriage over the left turn mark).,Please start machine. (Set the carriage to mode KC-I or KC-II and move the carriage over the left turn mark).,Bitte starten Sie die Maschine. (Stellen Sie den Schlitten auf KC-I oder KC-II und bewegen Sie den Schlitten über die linke Umkehrmarke.),Kveikið á vélinni. (Stillið vagninn á KC-I eða KC-II og færið vagninn til vinstri yfir skynjarann).,Avvia la macchina. (Imposta il carrello su KC-I o KC-II e sposta il carrello oltre il segno sinistro d'inizio.),"Пожалуйста, включите машину. (установите каретку в положение КС-1 или КС-2 и переведите каретку влево за датчик).","Будь ласка, запустіть машину. (Налаштуйте каретку на KC-I або KC-II і перемістіть каретку ліворуч за датчик.)",Veuillez démarrer la machine. (Mettre le chariot sur le mode KC-I ou KCII et le placer sur le côté gauche).,"Por favor, inicie la máquina. (Ajuste el carro al modo KC-I o KC-II y mueva el carro sobre la marca de giro a la izquierda).",기계를 시작하세요.(캐리지의 체인지놉을 KC-I 또는 KC-II로 설정하고 캐리지를 왼쪽 센서 넘어로 이동). ,请启动机器（将机头设为KC-I或KC-II模式后左移到机床的回转返标上）。
+KnitEngine,Wrong Arduino firmware version. Please check that you have flashed the latest version.,Wrong Arduino firmware version. Please check that you have flashed the latest version.,Falsche Arduino-Firmware-Version.,Röng Arduino hugbúnaðarútgáfa. Vinsamlegast kannið hvort þú hafir nýjustu útgáfuna.,Versione del firmware di Arduino errata. Controlla di aver eseguito correttamente il flash all'ultima versione.,"Неправильная прошивка версии андурино. Пожалуйста, проверьте что Вы установили последюю версию.","Неправильна версія прошивки Arduino. Перевірте, чи встановлено останню версію.",Mauvaise version du firmware Arduino. Vérifiez que vous avez la dernière version.,"Versión incorrecta del firmware de Arduino. Por favor, compruebe que ha flasheado la última versión.",아두이노 펌웨가 문제가 있습니다. 최신 버전인지 체크해 주세요.,错误的Arduino固件版本，请确认已经刷到最新版本。
+KnitEngine,Please knit.,Please knit.,Bitte fangen Sie an zu stricken.,Vinsamlegast prjónið.,Inizia il lavoro.,Вяжите пожалуйста.,В'яжіть будь-ласка.,Commencez le tricot.,Comience a tejer.,니트 시작,请编织。
+KnitEngine,"Device not ready, try again.","Device not ready, try again.","Gerät nicht bereit, bitte versuchen Sie es erneut.","Tækið ekki tilbúið, reyndu aftur.","Il dispositivo non è pronto, riprova.","Устройство не отвечает, повторите попытку.",Пристрій не готовий. Повторіть спробу.,"La machine n'est pas prête, essayez encore.","Dispositivo no listo, inténtelo de nuevo.",장비가 준비 되지 않았음. 다시 시도.,设备尚未准备好，请再试。
+KnitEngine,Image transmission finished. Please knit until you hear the double beep sound.,Image transmission finished. Please knit until you hear the double beep sound.,"Musterübertragung beendet. Bitte stricken Sie, bis Sie den doppelten Piepton hören.",Myndhleðslu lokið. Prjónið þangað til þú heyrir tvöfalt píphljóð.,Trasferimento dell'immagine finito. Lavora finché senti il doppio bip.,Передача изображения завершена. Вяжите после того как услышите двойной звуковой сигнал.,"Передачу зображення завершено. Будь ласка, в'яжіть, поки не почуєте подвійний звуковий сигнал.",Image transmise. Tricotez jusqu'à ce que vous entendiez un double bip.,"Transmisión de imagen terminada. Por favor, tejer hasta que escuche el sonido de doble pitido.",이미지 전송이 완료 됐습니다. 삐소리가 2번 들릴 때까지 뜨세요.,图像转换结束，请编织直至听到两次哔声。
+KnitEngine,Knitting canceled.,Knitting cancelled.,Stricken abgebrochen.,Hætt við prjón.,Lavorazione eliminata.,Вязание завершено.,В’язання скасовано.,Annulation du tricot.,Tejido de punto cancelado.,니팅을 취소합니다.,编织取消。
