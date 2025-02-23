@@ -16,7 +16,9 @@ name: Build
 on:
   push:
     tags:
-      - "v?[0-9]+.[0-9]+.[0-9]+-?[a-zA-Z0-9]*"
+      # Not a regex! See https://docs.github.com/en/actions/writing-workflows/workflow-syntax-for-github-actions#filter-pattern-cheat-sheet
+      - 'v?[0-9]+.[0-9]+.[0-9]+'
+      - 'v?[0-9]+.[0-9]+.[0-9]+-[a-zA-Z0-9]+'
 
 jobs:
   setup:
@@ -306,6 +308,8 @@ jobs:
           artifacts: target/AYAB-${{ steps.vars.outputs.tag }}.exe
           artifactContentType: application/exe
           replacesArtifacts: true
+          # Avoid overwriting body that may have been manually edited
+          omitBodyDuringUpdate: true
       - uses: actions/upload-artifact@v4
         with:
           name: AYAB-${{ steps.vars.outputs.tag }}.exe
@@ -428,6 +432,8 @@ jobs:
           artifacts: target/AYAB-${{ steps.vars.outputs.tag }}.dmg
           artifactContentType: application/dmg
           replacesArtifacts: true
+          # Avoid overwriting body that may have been manually edited
+          omitBodyDuringUpdate: true
       - uses: actions/upload-artifact@v4
         with:
           name: AYAB-${{ steps.vars.outputs.tag }}.dmg
@@ -598,6 +604,8 @@ jobs:
           artifacts: AYAB-${{ steps.vars.outputs.tag }}-x86_64.AppImage
           artifactContentType: application/AppImage
           replacesArtifacts: true
+          # Avoid overwriting body that may have been manually edited
+          omitBodyDuringUpdate: true
       - uses: actions/upload-artifact@v4
         with:
           name: AYAB-${{ steps.vars.outputs.tag }}-x86_64.AppImage
