@@ -417,11 +417,16 @@ jobs:
       - name: Build app
         run: |
           python -m fbs freeze
-          codesign -s 'Apple Development' --force --all-architectures --timestamp --deep ./target/AYAB-mac.app
+          # Sign the avrdude binaries explicitly since `--deep` misses them because they are not
+          # in a directory meant to contain executables.
+          find ./target/AYAB-mac.app/Contents/Resources/ayab/firmware \
+            -type f \( -name avrdude_bin -o -name \*.dylib \) \
+            -exec codesign -s 'Apple' --force --timestamp {} \;
+          codesign -s 'Apple' --force --all-architectures --timestamp --deep ./target/AYAB-mac.app
       - name: Create installer
         run: |
           python -m fbs installer
-          codesign -s 'Apple Development' --force --all-architectures --timestamp --deep ./target/AYAB.dmg
+          codesign -s 'Apple' --force --all-architectures --timestamp --deep ./target/AYAB.dmg
           mv target/AYAB.dmg target/AYAB-${{ steps.vars.outputs.tag }}.dmg
       - name: Upload asset
         uses: ncipollo/release-action@v1
