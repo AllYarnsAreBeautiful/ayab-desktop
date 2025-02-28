@@ -409,14 +409,19 @@ jobs:
           pwd
           ls -l src/main/python/main/ayab/
           ls -l src/main/resources/base/ayab/translations/
+      - name: Import Apple developer certificate
+        uses: apple-actions/import-codesign-certs@v3
+        with: 
+          p12-file-base64: ${{ secrets.APPLE_CERTIFICATE }}
+          p12-password: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
       - name: Build app
         run: |
           python -m fbs freeze
-          codesign -s - --force --all-architectures --timestamp --deep ./target/AYAB-mac.app
+          codesign -s 'Apple Development' --force --all-architectures --timestamp --deep ./target/AYAB-mac.app
       - name: Create installer
         run: |
           python -m fbs installer
-          codesign -s - --force --all-architectures --timestamp --deep ./target/AYAB.dmg
+          codesign -s 'Apple Development' --force --all-architectures --timestamp --deep ./target/AYAB.dmg
           mv target/AYAB.dmg target/AYAB-${{ steps.vars.outputs.tag }}.dmg
       - name: Upload asset
         uses: ncipollo/release-action@v1
