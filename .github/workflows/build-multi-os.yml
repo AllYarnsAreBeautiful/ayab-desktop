@@ -412,7 +412,7 @@ jobs:
       - name: Import Apple developer certificate
         uses: apple-actions/import-codesign-certs@v3
         with: 
-          p12-file-base64: ${{ secrets.APPLE_CERTIFICATE }}
+          p12-file-base64: ${{ secrets.APPLE_CERTIFICATE_BASE64 }}
           p12-password: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
       - name: Build app
         run: |
@@ -421,12 +421,12 @@ jobs:
           # in a directory meant to contain executables.
           find ./target/AYAB-mac.app/Contents/Resources/ayab/firmware \
             -type f \( -name avrdude_bin -o -name \*.dylib \) \
-            -exec codesign -s 'Apple' --force --timestamp {} \;
-          codesign -s 'Apple' --force --all-architectures --timestamp --deep ./target/AYAB-mac.app
+            -exec codesign -s ${{ secrets.APPLE_CERTIFICATE_NAME }} --force --timestamp {} \;
+          codesign -s ${{ secrets.APPLE_CERTIFICATE_NAME }} --force --all-architectures --timestamp --deep --options=runtime ./target/AYAB-mac.app
       - name: Create installer
         run: |
           python -m fbs installer
-          codesign -s 'Apple' --force --all-architectures --timestamp --deep ./target/AYAB.dmg
+          codesign -s ${{ secrets.APPLE_CERTIFICATE_NAME }} --force --all-architectures --timestamp ./target/AYAB.dmg
           mv target/AYAB.dmg target/AYAB-${{ steps.vars.outputs.tag }}.dmg
       - name: Upload asset
         uses: ncipollo/release-action@v1
