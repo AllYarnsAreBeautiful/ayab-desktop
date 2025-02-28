@@ -324,6 +324,8 @@ jobs:
     strategy:
       matrix:
         python-version: [3.11.9]
+    env:
+      APPLE_CERTIFICATE_NAME: ${{ secrets.APPLE_CERTIFICATE_NAME }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -411,15 +413,34 @@ jobs:
           pwd
           ls -l src/main/python/main/ayab/
           ls -l src/main/resources/base/ayab/translations/
+      - name: Import Apple developer certificate
+        if: env.APPLE_CERTIFICATE_NAME
+        uses: apple-actions/import-codesign-certs@63fff01cd422d4b7b855d40ca1e9d34d2de9427d # v3
+        with:
+          p12-file-base64: ${{ secrets.APPLE_CERTIFICATE_BASE64 }}
+          p12-password: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
       - name: Build app
         run: |
           python -m fbs freeze
-          codesign -s - --force --all-architectures --timestamp --deep ./target/AYAB-mac.app
+      - name: Sign app
+        if: env.APPLE_CERTIFICATE_NAME
+        run: |
+          # Sign the avrdude binaries explicitly since `--deep` misses them because they are not
+          # in a directory meant to contain executables.
+          find ./target/AYAB-mac.app/Contents/Resources/ayab/firmware \
+            -type f \( -name avrdude_bin -o -name \*.dylib \) \
+            -exec codesign -s "$APPLE_CERTIFICATE_NAME" --force --timestamp {} \;
+          codesign -s "$APPLE_CERTIFICATE_NAME" --force --all-architectures --timestamp --deep \
+            --options=runtime ./target/AYAB-mac.app
       - name: Create installer
         run: |
           python -m fbs installer
-          codesign -s - --force --all-architectures --timestamp --deep ./target/AYAB.dmg
           mv target/AYAB.dmg target/AYAB-${{ steps.vars.outputs.tag }}.dmg
+      - name: Sign installer
+        if: env.APPLE_CERTIFICATE_NAME
+        run: |
+          codesign -s "$APPLE_CERTIFICATE_NAME" --force --all-architectures --timestamp \
+            target/AYAB-${{ steps.vars.outputs.tag }}.dmg
       - name: Upload asset
         uses: ncipollo/release-action@v1
         with:
