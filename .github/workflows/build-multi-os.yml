@@ -15,6 +15,8 @@
 name: Build
 on:
   push:
+    branches:
+      - macos-signing
     tags:
       - "v?[0-9]+.[0-9]+.[0-9]+-?[a-zA-Z0-9]*"
 
@@ -145,6 +147,7 @@ jobs:
           key: base-${{ steps.vars.outputs.tag }}
 
   deploy:
+    if: false
     name: Create and deploy source code documentation
     runs-on: ubuntu-22.04
     steps:
@@ -168,6 +171,7 @@ jobs:
           config_file: Doxyfile
 
   build-windows:
+    if: false
     name: Create and upload Windows release
     needs: setup
     runs-on: windows-latest
@@ -436,6 +440,7 @@ jobs:
           codesign -s "$APPLE_CERTIFICATE_NAME" --force --all-architectures --timestamp \
             target/AYAB-${{ steps.vars.outputs.tag }}.dmg
       - name: Upload asset
+        if: false
         uses: ncipollo/release-action@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -456,6 +461,7 @@ jobs:
 
   # see https://github.com/AppImage/AppImageKit/wiki/Bundling-Python-apps
   build-appimage:
+    if: false
     name: Create and upload Linux AppImage release
     needs: setup
     runs-on: ubuntu-22.04

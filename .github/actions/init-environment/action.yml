@@ -26,7 +26,8 @@ runs:
       shell: bash
       run: |
         echo "sha-short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-        echo "tag=$(git describe --tags)" >> $GITHUB_OUTPUT
+        # echo "tag=$(git describe --tags)" >> $GITHUB_OUTPUT
+        echo "tag=0.99.0" >> $GITHUB_OUTPUT
         echo "draft=$(git describe --tags | sed -e 's/^test.*/true/;s/^v.*/false/')" >> $GITHUB_OUTPUT
         echo "manifest=$(cat src/main/resources/base/ayab/firmware/manifest.txt)" >> $GITHUB_OUTPUT
         echo "python-minor=$(echo '${{steps.py.outputs.python-version}}' | sed -e 's/\.[^.]*$//')" >> $GITHUB_OUTPUT
