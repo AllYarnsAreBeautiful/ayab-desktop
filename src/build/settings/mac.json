@@ -1,5 +1,5 @@
 {
-    "mac_bundle_identifier": "",
+    "mac_bundle_identifier": "com.ayab-knitting.ayab-desktop",
     "resources_to_filter": [
         "src/main/resources/mac-frozen/Contents/Info.plist"
     ],

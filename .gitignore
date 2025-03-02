@@ -20,8 +20,8 @@ package_version
 documents/
 patterns/
 # Buildfolder
-build/
-target/
+/build/
+/target/
 # macOS
 .DS_Store
 # VSCode
