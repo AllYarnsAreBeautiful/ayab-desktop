@@ -321,11 +321,16 @@ jobs:
     name: Create and upload Mac OSX release
     needs: setup
     runs-on: macos-14
+    outputs:
+      tag: ${{ steps.vars.outputs.tag }}
+      submission_id: ${{ steps.notarize.outputs.submission_id }}
+      image_name: ${{ steps.diskimage.outputs.name }}
     strategy:
       matrix:
         python-version: [3.11.9]
     env:
       APPLE_CERTIFICATE_NAME: ${{ secrets.APPLE_CERTIFICATE_NAME }}
+      APPLE_STORE_CONNECT_KEY_ID: ${{ secrets.APPLE_STORE_CONNECT_KEY_ID }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -413,15 +418,18 @@ jobs:
           pwd
           ls -l src/main/python/main/ayab/
           ls -l src/main/resources/base/ayab/translations/
+
       - name: Import Apple developer certificate
         if: env.APPLE_CERTIFICATE_NAME
         uses: apple-actions/import-codesign-certs@63fff01cd422d4b7b855d40ca1e9d34d2de9427d # v3
         with:
           p12-file-base64: ${{ secrets.APPLE_CERTIFICATE_BASE64 }}
           p12-password: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+
       - name: Build app
         run: |
           python -m fbs freeze
+
       - name: Sign app
         if: env.APPLE_CERTIFICATE_NAME
         run: |
@@ -432,26 +440,36 @@ jobs:
             -exec codesign -s "$APPLE_CERTIFICATE_NAME" --force --timestamp {} \;
           codesign -s "$APPLE_CERTIFICATE_NAME" --force --all-architectures --timestamp --deep \
             --options=runtime ./target/AYAB-mac.app
-      - name: Create installer
+
+      - name: Create disk image
+        id: diskimage
         run: |
           python -m fbs installer
           mv target/AYAB.dmg target/AYAB-${{ steps.vars.outputs.tag }}.dmg
-      - name: Sign installer
+          echo 'name=AYAB-${{ steps.vars.outputs.tag }}.dmg' >> "$GITHUB_OUTPUT"
+          echo 'path=target/AYAB-${{ steps.vars.outputs.tag }}.dmg' >> "$GITHUB_OUTPUT"
+
+      - name: Sign disk image
         if: env.APPLE_CERTIFICATE_NAME
         run: |
           codesign -s "$APPLE_CERTIFICATE_NAME" --force --all-architectures --timestamp \
-            target/AYAB-${{ steps.vars.outputs.tag }}.dmg
-      - name: Upload asset
+            '${{ steps.diskimage.outputs.path }}'
+
+      - name: Upload signed disk image as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: AYAB-signed-dmg
+          path: ${{ steps.diskimage.outputs.path }}
+
+      - name: Attach disk image (before notarization) to release
         uses: ncipollo/release-action@v1
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ steps.vars.outputs.tag }}
-          commit: ${{ steps.vars.outputs.sha }}
           # Default to draft and prerelease to let a human check the release before it goes live
           draft: true
           prerelease: false
           allowUpdates: true
-          artifacts: target/AYAB-${{ steps.vars.outputs.tag }}.dmg
+          artifacts: ${{ steps.diskimage.outputs.path }}
           artifactContentType: application/dmg
           replacesArtifacts: true
           # Avoid overwriting a release that may have been manually edited
@@ -459,10 +477,83 @@ jobs:
           omitBodyDuringUpdate: true
           omitDraftDuringUpdate: true
           omitPrereleaseDuringUpdate: true
-      - uses: actions/upload-artifact@v4
+
+      - name: Submit disk image for notarization
+        if: env.APPLE_STORE_CONNECT_KEY_ID
+        id: notarize
+        env:
+          APPLE_STORE_CONNECT_ISSUER: ${{ secrets.APPLE_STORE_CONNECT_ISSUER }}
+          APPLE_STORE_CONNECT_KEY_BASE64: ${{ secrets.APPLE_STORE_CONNECT_KEY_BASE64 }}
+        run: |
+          printenv APPLE_STORE_CONNECT_KEY_BASE64 | base64 --decode > apple-store-connect.key
+
+          # Submit the disk image for notarization
+          SUBMISSION_ID=$(xcrun notarytool submit '${{ steps.diskimage.outputs.path }}' \
+            -k apple-store-connect.key -d "$APPLE_STORE_CONNECT_KEY_ID" -i "$APPLE_STORE_CONNECT_ISSUER" |
+            tee /dev/tty |
+            awk '/id:/ {print $2; exit}')
+
+          echo "submission_id=$SUBMISSION_ID" >> "$GITHUB_OUTPUT"
+
+  staple-macos:
+    name: Wait for notarization to complete and staple ticket to disk image
+    needs: build-macos
+    runs-on: macos-14
+    env:
+      APPLE_STORE_CONNECT_KEY_ID: ${{ secrets.APPLE_STORE_CONNECT_KEY_ID }}
+    steps:
+      - name: Download disk image artifact
+        uses: actions/download-artifact@v4
+        if: env.APPLE_STORE_CONNECT_KEY_ID
         with:
-          name: AYAB-${{ steps.vars.outputs.tag }}.dmg
-          path: target/AYAB-${{ steps.vars.outputs.tag }}.dmg
+          # Will download to a file named ${{ needs.build-macos.outputs.image_name }}
+          name: AYAB-signed-dmg
+
+      - name: Wait for notarization and staple ticket to disk image
+        id: staple
+        if: env.APPLE_STORE_CONNECT_KEY_ID
+        env:
+          APPLE_STORE_CONNECT_ISSUER: ${{ secrets.APPLE_STORE_CONNECT_ISSUER }}
+          APPLE_STORE_CONNECT_KEY_BASE64: ${{ secrets.APPLE_STORE_CONNECT_KEY_BASE64 }}
+        run: |
+          printenv APPLE_STORE_CONNECT_KEY_BASE64 | base64 --decode > apple-store-connect.key
+
+          # Wait for the notarization to complete
+          xcrun notarytool wait '${{ needs.build-macos.outputs.submission_id }}' \
+            -k apple-store-connect.key -d "$APPLE_STORE_CONNECT_KEY_ID" -i "$APPLE_STORE_CONNECT_ISSUER"
+
+          # Print the notarization log for debugging purposes
+          xcrun notarytool log '${{ needs.build-macos.outputs.submission_id }}' \
+            -k apple-store-connect.key -d "$APPLE_STORE_CONNECT_KEY_ID" -i "$APPLE_STORE_CONNECT_ISSUER"
+
+          # Staple the notarization ticket to the disk image
+          xcrun stapler staple -v '${{ needs.build-macos.outputs.image_name }}'
+
+      - name: Upload stapled disk image as artifact
+        uses: actions/upload-artifact@v4
+        if: env.APPLE_STORE_CONNECT_KEY_ID
+        with:
+          name: ${{ needs.build-macos.outputs.image_name }}
+          path: ${{ needs.build-macos.outputs.image_name }}
+
+      - name: Attach disk image (after notarization) to release
+        if: env.APPLE_STORE_CONNECT_KEY_ID
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ needs.build-macos.outputs.tag }}
+          # Default to draft and prerelease to let a human check the release before it goes live
+          draft: true
+          prerelease: false
+          allowUpdates: true
+          artifacts: ${{ needs.build-macos.outputs.image_name }}
+          artifactContentType: application/dmg
+          replacesArtifacts: true
+          # Avoid overwriting a release that may have been manually edited
+          omitNameDuringUpdate: true
+          omitBodyDuringUpdate: true
+          omitDraftDuringUpdate: true
+          omitPrereleaseDuringUpdate: true
+
 
   # see https://github.com/AppImage/AppImageKit/wiki/Bundling-Python-apps
   build-appimage:
