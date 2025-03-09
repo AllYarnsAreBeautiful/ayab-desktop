@@ -324,6 +324,7 @@ jobs:
         python-version: [3.11.9]
     env:
       APPLE_CERTIFICATE_NAME: ${{ secrets.APPLE_CERTIFICATE_NAME }}
+      APPLE_STORE_CONNECT_KEY_ID: ${{ secrets.APPLE_STORE_CONNECT_KEY_ID }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -431,14 +432,27 @@ jobs:
           codesign -s "$APPLE_CERTIFICATE_NAME" --force --all-architectures --timestamp --deep \
             --options=runtime ./target/AYAB-mac.app
       - name: Create installer
+        id: diskimage
         run: |
           python -m fbs installer
           mv target/AYAB.dmg target/AYAB-${{ steps.vars.outputs.tag }}.dmg
+          echo 'path=target/AYAB-${{ steps.vars.outputs.tag }}.dmg' >> "$GITHUB_OUTPUT"
       - name: Sign installer
         if: env.APPLE_CERTIFICATE_NAME
         run: |
           codesign -s "$APPLE_CERTIFICATE_NAME" --force --all-architectures --timestamp \
-            target/AYAB-${{ steps.vars.outputs.tag }}.dmg
+            '${{ steps.diskimage.outputs.path }}'
+      - name: Notarize disk image
+        if: env.APPLE_STORE_CONNECT_KEY_ID
+        env:
+          APPLE_STORE_CONNECT_ISSUER: ${{ secrets.APPLE_STORE_CONNECT_ISSUER }}
+          APPLE_STORE_CONNECT_KEY_BASE64: ${{ secrets.APPLE_STORE_CONNECT_KEY_BASE64 }}
+        run: |
+          printenv APPLE_STORE_CONNECT_KEY_BASE64 | base64 --decode > apple-store-connect.key
+          xcrun notarytool submit '${{ steps.diskimage.outputs.path }}' \
+            -k apple-store-connect.key -d "$APPLE_STORE_CONNECT_KEY_ID" -i "$APPLE_STORE_CONNECT_ISSUER" \
+            --wait
+          xcrun stapler -v '${{ steps.diskimage.outputs.path }}'
       - name: Upload asset
         uses: ncipollo/release-action@v1
         with:
@@ -450,7 +464,7 @@ jobs:
           draft: ${{ steps.vars.outputs.draft }}
           prerelease: false
           allowUpdates: true
-          artifacts: target/AYAB-${{ steps.vars.outputs.tag }}.dmg
+          artifacts: ${{ steps.diskimage.outputs.path }}
           artifactContentType: application/dmg
           replacesArtifacts: true
           # Avoid overwriting body that may have been manually edited
@@ -458,7 +472,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: AYAB-${{ steps.vars.outputs.tag }}.dmg
-          path: target/AYAB-${{ steps.vars.outputs.tag }}.dmg
+          path: ${{ steps.diskimage.outputs.path }}
 
   # see https://github.com/AppImage/AppImageKit/wiki/Bundling-Python-apps
   build-appimage:
