@@ -300,16 +300,18 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ steps.vars.outputs.tag }}
           commit: ${{ steps.vars.outputs.sha }}
-          body: "" # release message, alternative to body_path
-          # body_path: release_text.md  # uncomment if not used
-          draft: ${{ steps.vars.outputs.draft }}
+          # Default to draft and prerelease to let a human check the release before it goes live
+          draft: true
           prerelease: false
           allowUpdates: true
           artifacts: target/AYAB-${{ steps.vars.outputs.tag }}.exe
           artifactContentType: application/exe
           replacesArtifacts: true
-          # Avoid overwriting body that may have been manually edited
+          # Avoid overwriting a release that may have been manually edited
+          omitNameDuringUpdate: true
           omitBodyDuringUpdate: true
+          omitDraftDuringUpdate: true
+          omitPrereleaseDuringUpdate: true
       - uses: actions/upload-artifact@v4
         with:
           name: AYAB-${{ steps.vars.outputs.tag }}.exe
@@ -424,16 +426,18 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ steps.vars.outputs.tag }}
           commit: ${{ steps.vars.outputs.sha }}
-          body: "" # release message, alternative to body_path
-          # body_path: release_text.md  # uncomment if not used
-          draft: ${{ steps.vars.outputs.draft }}
+          # Default to draft and prerelease to let a human check the release before it goes live
+          draft: true
           prerelease: false
           allowUpdates: true
           artifacts: target/AYAB-${{ steps.vars.outputs.tag }}.dmg
           artifactContentType: application/dmg
           replacesArtifacts: true
-          # Avoid overwriting body that may have been manually edited
+          # Avoid overwriting a release that may have been manually edited
+          omitNameDuringUpdate: true
           omitBodyDuringUpdate: true
+          omitDraftDuringUpdate: true
+          omitPrereleaseDuringUpdate: true
       - uses: actions/upload-artifact@v4
         with:
           name: AYAB-${{ steps.vars.outputs.tag }}.dmg
@@ -596,16 +600,18 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ steps.vars.outputs.tag }}
           commit: ${{ steps.vars.outputs.sha }}
-          body: "" # release message, alternative to body_path
-          # body_path: release_text.md  # uncomment if not used
-          draft: ${{ steps.vars.outputs.draft }}
-          prerelease: false
           allowUpdates: true
           artifacts: AYAB-${{ steps.vars.outputs.tag }}-x86_64.AppImage
           artifactContentType: application/AppImage
           replacesArtifacts: true
-          # Avoid overwriting body that may have been manually edited
+          # Default to draft and prerelease to let a human check the release before it goes live
+          draft: true
+          prerelease: false
+          # Avoid overwriting a release that may have been manually edited
+          omitNameDuringUpdate: true
           omitBodyDuringUpdate: true
+          omitDraftDuringUpdate: true
+          omitPrereleaseDuringUpdate: true
       - uses: actions/upload-artifact@v4
         with:
           name: AYAB-${{ steps.vars.outputs.tag }}-x86_64.AppImage
