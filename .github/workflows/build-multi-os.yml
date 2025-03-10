@@ -61,7 +61,6 @@ jobs:
       - name: Install Python modules
         run: |
           python -m pip install --upgrade pip
-          python -m pip install --upgrade setuptools
           python -m pip install -r requirements.build.txt
       - name: Use cached gui files (1)
         id: gui1-cache
@@ -189,7 +188,6 @@ jobs:
           choco install patch
           choco install vcredist-all # fixes dependency on msvcr100.dll
           python -m pip install --upgrade pip
-          python -m pip install --upgrade setuptools
           python -m pip install -r requirements.build.txt
           python -m pip install -r windows-build\windows_build_requirements.txt
       - name: Restore cached firmware
@@ -589,7 +587,6 @@ jobs:
           cd squashfs-root
           sudo apt-get install -y avrdude libasound2-dev
           ./AppRun -m pip install --upgrade pip
-          ./AppRun -m pip install --upgrade setuptools
           # hack to fix setup.py script with faulty include
           ./AppRun -m pip install --global-option=build_ext --global-option="-I$(pwd)/opt/${{steps.vars.outputs.python-minor}}/include/${{steps.vars.outputs.python-minor}}" simpleaudio
           ./AppRun -m pip install -r requirements.build.txt
