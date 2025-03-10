@@ -340,7 +340,6 @@ jobs:
         id: vars
       - name: Install dependencies
         run: |
-          brew install avrdude
           mkdir tmp-wheel/
           python -m pip install delocate==0.11.0
 
@@ -433,13 +432,12 @@ jobs:
       - name: Sign app
         if: env.APPLE_CERTIFICATE_NAME
         run: |
-          # Sign the avrdude binaries explicitly since `--deep` misses them because they are not
+          # Sign the avrdude binary explicitly since `--deep` misses it because it is not
           # in a directory meant to contain executables.
-          find ./target/AYAB-mac.app/Contents/Resources/ayab/firmware \
-            -type f \( -name avrdude_bin -o -name \*.dylib \) \
-            -exec codesign -s "$APPLE_CERTIFICATE_NAME" --force --timestamp {} \;
-          codesign -s "$APPLE_CERTIFICATE_NAME" --force --all-architectures --timestamp --deep \
-            --options=runtime ./target/AYAB-mac.app
+          codesign -s "$APPLE_CERTIFICATE_NAME" --force --all-architectures \
+            --timestamp --deep --options=runtime \
+            ./target/AYAB-mac.app/Contents/Resources/ayab/firmware/avrdude_mac \
+            ./target/AYAB-mac.app
 
       - name: Create disk image
         id: diskimage

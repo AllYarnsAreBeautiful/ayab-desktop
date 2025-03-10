@@ -217,10 +217,16 @@ class FirmwareFlash(QDialog):
             + f' -D -Uflash:w:"{binary_file}":i '
         )
 
-        if os_name == "Windows" or os_name == "Darwin":
+        if os_name == "Windows":
             exec_command += (
                 ' -C "'
                 + self.__app_context.get_resource("ayab/firmware/avrdude.conf")
+                + '"'
+            )
+        elif os_name == "Darwin":
+            exec_command += (
+                ' -C "'
+                + self.__app_context.get_resource("ayab/firmware/avrdude_mac.conf")
                 + '"'
             )
 
