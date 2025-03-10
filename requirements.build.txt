@@ -1,3 +1,4 @@
+setuptools==75.8.0
 fbs @ git+https://github.com/AllYarnsAreBeautiful/fbs@1.2.1-pyqt6
 PySide6==6.6.2
 PyInstaller==6.4.0
