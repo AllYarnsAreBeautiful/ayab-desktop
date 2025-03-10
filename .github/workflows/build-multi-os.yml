@@ -490,7 +490,7 @@ jobs:
           # Submit the disk image for notarization
           SUBMISSION_ID=$(xcrun notarytool submit '${{ steps.diskimage.outputs.path }}' \
             -k apple-store-connect.key -d "$APPLE_STORE_CONNECT_KEY_ID" -i "$APPLE_STORE_CONNECT_ISSUER" |
-            tee /dev/tty |
+            tee /dev/stderr |
             awk '/id:/ {print $2; exit}')
 
           echo "submission_id=$SUBMISSION_ID" >> "$GITHUB_OUTPUT"
