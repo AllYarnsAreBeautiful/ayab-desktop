@@ -152,7 +152,12 @@ class KnitProgress(QTableWidget):
     def instantiate_row_from_columns(
         self, status: Status, columns: List[QTableWidgetItem]
     ) -> None:
-        self.setVerticalHeaderItem(0, QTableWidgetItem("To Be Selected"))
+        self.setVerticalHeaderItem(
+            0,
+            QTableWidgetItem(
+                QCoreApplication.translate("KnitProgress", "To Be Selected")
+            ),
+        )
         for i, col in enumerate(columns):
             self.setItem(0, i, col)
             self.setColumnWidth(i, self.__prefs.value("lower_display_stitch_width"))
@@ -264,14 +269,12 @@ class KnitProgress(QTableWidget):
         if current is None:
             self.__progbar.set_selection_label("")
             return
-        if (
-            self.horizontalHeaderItem(current.column()).foreground().color().red()
-            == 187
-        ):
+        header = self.horizontalHeaderItem(current.column())
+        if header is not None and header.foreground().color().red() == 187:
             side = "Right"
         else:
             side = "Left"
         selection_string = f"""Selection: {
             self.verticalHeaderItem(current.row()).text()} stitch {side}-{
-            self.horizontalHeaderItem(current.column()).text()}"""
+            header.text() if header else ''}"""
         self.__progbar.set_selection_label(selection_string)
