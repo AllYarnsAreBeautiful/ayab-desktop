@@ -244,7 +244,7 @@ class OptionsTab(SignalSender, QWidget):
                 return False, "Invalid needle start and end."
         # else
         if self.mode == Mode.SINGLEBED and self.num_colors >= 3:
-            return False, "Singlebed knitting currently supports only 2 colors."
+            return False, "Single bed knitting currently supports only 2 colors."
         # else
         if self.mode == Mode.CIRCULAR_RIBBER and self.num_colors >= 3:
             return False, "Circular knitting supports only 2 colors."
