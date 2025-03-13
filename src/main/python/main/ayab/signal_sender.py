@@ -108,7 +108,7 @@ class SignalSender(object):
     ) -> None:
         """Sends the blocking_popup_displayer signal."""
         self.emit_blocking_popup_displayer(
-            QCoreApplication.translate("AyabPlugin", message), message_type
+            QCoreApplication.translate("Notifications", message), message_type
         )
 
     def emit_popup(
@@ -116,9 +116,9 @@ class SignalSender(object):
     ) -> None:
         """Sends the popup_displayer signal."""
         self.emit_popup_displayer(
-            QCoreApplication.translate("AyabPlugin", message), message_type
+            QCoreApplication.translate("Notifications", message), message_type
         )
 
     def emit_notification(self, message: str = "", log: bool = True) -> None:
         """Sends the notifier signal."""
-        self.emit_notifier(QCoreApplication.translate("AyabPlugin", message), log)
+        self.emit_notifier(QCoreApplication.translate("Notifications", message), log)
