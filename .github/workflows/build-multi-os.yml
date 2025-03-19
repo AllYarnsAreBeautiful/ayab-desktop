@@ -351,6 +351,10 @@ jobs:
           python -m pip download --only-binary=:all: --platform macosx_11_0_arm64 "$(grep Pillow requirements.build.txt)"
           delocate-fuse Pillow*arm* Pillow*x86* -w tmp-wheel/
 
+          python -m pip download --only-binary=:all: --platform macosx_10_9_x86_64 "$(grep simpleaudio requirements.build.txt)"
+          python -m pip download --only-binary=:all: --platform macosx_11_0_arm64 "$(grep simpleaudio requirements.build.txt)"
+          delocate-fuse simpleaudio*arm* simpleaudio*x86* -w tmp-wheel/
+
           python -m pip download --only-binary=:all: --platform=macosx_10_9_universal2 "$(grep bitarray requirements.build.txt)"
 
           python -m pip install tmp-wheel/*.whl bitarray*.whl
