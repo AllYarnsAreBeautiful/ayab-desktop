@@ -26,16 +26,18 @@ import numpy.typing as npt
 from PIL import Image
 from .options import Alignment, OptionsTab
 from .mode import Mode
+from ..image import AyabImage
 from ..machine import Machine
 
 
 class Pattern(object):
-    def __init__(self, image: Image.Image, config: OptionsTab, num_colors: int = 2):
-        self.__pattern = (
-            image.transpose(Image.FLIP_LEFT_RIGHT) if config.auto_mirror else image
+    def __init__(self, im: AyabImage, config: OptionsTab, num_colors: int = 2):
+        self.__pattern : Image.Image = (
+            im.image.transpose(Image.FLIP_LEFT_RIGHT) if config.auto_mirror else im.image
         )
-        self.__num_colors = num_colors
-        self.__alignment = Alignment.CENTER
+        self.__memo : list[int] = im.memo
+        self.__num_colors : int = num_colors
+        self.__alignment : Alignment = Alignment.CENTER
         self.__pat_start_needle: int = -1
         self.__pat_end_needle: int = -1
         self.__knit_start_needle: int = 0
@@ -197,6 +199,10 @@ class Pattern(object):
     @property
     def pattern_expanded(self) -> list[bitarray]:
         return self.__pattern_expanded
+
+    @property
+    def memo(self) -> list[int]:
+        return self.__memo
 
     def array2rgb(self, a: list[int]) -> int:
         return (a[0] & 0xFF) * 0x10000 + (a[1] & 0xFF) * 0x100 + (a[2] & 0xFF)
