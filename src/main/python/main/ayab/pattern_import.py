@@ -5,6 +5,8 @@
 # .cut and .pal file formats
 #  documented at https://www.fileformat.info/format/drhalo/egff.htm
 
+# TODO (TP): extract memo information
+
 from __future__ import annotations
 import sys
 from typing import Optional, cast

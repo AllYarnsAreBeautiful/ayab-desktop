@@ -18,6 +18,7 @@
 #    Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
+
 from __future__ import annotations
 import logging
 from math import ceil
@@ -55,6 +56,7 @@ class AyabImage(SignalSender):
         super().__init__(parent.signal_receiver)
         self.__parent = parent
         self.image: Image.Image = None  # type: ignore
+        self.memo: list = []
         self.filename: Optional[str] = None
         self.filename_input = self.__parent.ui.filename_lineedit
 
@@ -87,12 +89,12 @@ class AyabImage(SignalSender):
             display_blocking_popup(
                 QCoreApplication.translate("Image", "Unable to load image file"),
                 "error",
-            )  # FIXME translate
+            )
             logging.error("Unable to load " + str(filename))
         except Exception as e:
             display_blocking_popup(
                 QCoreApplication.translate("Image", "Error loading image file"), "error"
-            )  # FIXME translate
+            )
             logging.error("Error loading image: " + str(e))
             raise
         else:
@@ -111,6 +113,19 @@ class AyabImage(SignalSender):
             self.image = CutPatternConverter().pattern2im(filename)
         else:
             self.image = Image.open(filename)
+        if suffix == ".png":
+            # check metadata for memo information
+            self.image.load()
+            if "Comment" in self.image.info and len(str(self.image.info["Comment"])) > 0:
+                comment = str(self.image.info["Comment"])
+                if comment.startswith("AYAB:"):
+                    # update memo information
+                    self.memo = []
+                    for i in range(len(comment) - 5):
+                        self.memo.append(int(comment[i + 5]))
+                # report metadata
+                logging.info("File metadata Comment tag: " + comment)
+                logging.info("File memo information: " + str(self.memo))
         self.image = self.image.convert("RGBA")
         self.emit_got_image_flag()
         self.emit_image_resizer()

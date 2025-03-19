@@ -36,6 +36,7 @@ from .output import FeedbackHandler
 from .dock_gui import Ui_Dock
 from typing import TYPE_CHECKING, Literal, Optional, cast
 from ..signal_sender import SignalSender
+from ..image import AyabImage
 
 if TYPE_CHECKING:
     from ..ayab import GuiMain
@@ -51,6 +52,7 @@ class Engine(SignalSender, QDockWidget):
 
     port_opener = Signal()
 
+    memo: list[int]
     pattern: Pattern
     status: StatusTab
 
@@ -67,6 +69,7 @@ class Engine(SignalSender, QDockWidget):
         parent.ui.dock_container_layout.addWidget(self)
 
         self.pattern: Pattern = None  # type:ignore
+        self.memo = []
         self.control = Control(parent, self)
         self.__feedback = FeedbackHandler(parent)
         self.__logger = logging.getLogger(type(self).__name__)
@@ -121,7 +124,7 @@ class Engine(SignalSender, QDockWidget):
     def __read_portname(self) -> str:
         return self.ui.serial_port_dropdown.currentText()
 
-    def knit_config(self, image: Image.Image) -> None:
+    def knit_config(self, im: AyabImage) -> None:
         """
         Read and check configuration options from options dock UI.
         """
@@ -130,11 +133,12 @@ class Engine(SignalSender, QDockWidget):
         self.__logger.debug(self.config.as_dict())
 
         # start to knit with the bottom first
-        image = image.transpose(Image.FLIP_TOP_BOTTOM)
+        im.image = im.image.transpose(Image.FLIP_TOP_BOTTOM)
 
         # TODO: detect if previous conf had the same
         # image to avoid re-generating.
-        self.pattern = Pattern(image, self.config, self.config.num_colors)
+        self.pattern = Pattern(im, self.config, self.config.num_colors)
+        self.memo = im.memo
 
         # validate configuration options
         valid, msg = self.validate()
@@ -171,7 +175,7 @@ class Engine(SignalSender, QDockWidget):
 
         # setup knitting controller
         self.config.portname = self.__read_portname()
-        self.control.start(self.pattern, self.config, operation)
+        self.control.start(self.pattern, self.memo, self.config, operation)
 
         with keep.presenting(on_fail="pass"):
             while True:
