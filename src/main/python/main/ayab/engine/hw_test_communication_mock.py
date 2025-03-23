@@ -61,7 +61,7 @@ class HardwareTestCommunicationMock(QObject, CommunicationMock):
         if len(self.rx_msg_list) == 0:
             return None
         # else
-        res = self.rx_msg_list.popleft()  # FIFO
+        res = self.rx_msg_list.pop()  # FIFO
         return res
 
     def __output(self, token: Token, msg: str) -> None:
