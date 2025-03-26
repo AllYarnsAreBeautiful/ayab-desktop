@@ -135,10 +135,6 @@ jobs:
   build-macos:
     name: Create and upload Mac OSX release
     runs-on: macos-14
-    outputs:
-      tag: ${{ steps.vars.outputs.tag }}
-      submission_id: ${{ steps.notarize.outputs.submission_id }}
-      image_name: ${{ steps.diskimage.outputs.name }}
     env:
       APPLE_CERTIFICATE_NAME: ${{ secrets.APPLE_CERTIFICATE_NAME }}
       APPLE_STORE_CONNECT_KEY_ID: ${{ secrets.APPLE_STORE_CONNECT_KEY_ID }}
@@ -217,18 +213,34 @@ jobs:
           echo 'path=target/AYAB-${{ steps.vars.outputs.tag }}.dmg' >> "$GITHUB_OUTPUT"
 
       - name: Sign disk image
-        if: env.APPLE_CERTIFICATE_NAME
+        if: steps.vars.outputs.do-release == 'true' && env.APPLE_CERTIFICATE_NAME
         run: |
           codesign -s "$APPLE_CERTIFICATE_NAME" --force --all-architectures --timestamp \
             '${{ steps.diskimage.outputs.path }}'
 
-      - name: Upload signed disk image as artifact
+      - name: Submit disk image for notarization
+        if: steps.vars.outputs.do-release == 'true' && env.APPLE_STORE_CONNECT_KEY_ID
+        env:
+          APPLE_STORE_CONNECT_ISSUER: ${{ secrets.APPLE_STORE_CONNECT_ISSUER }}
+          APPLE_STORE_CONNECT_KEY_BASE64: ${{ secrets.APPLE_STORE_CONNECT_KEY_BASE64 }}
+        run: |
+          printenv APPLE_STORE_CONNECT_KEY_BASE64 | base64 --decode > apple-store-connect.key
+
+          # Submit the disk image for notarization and wait
+          xcrun notarytool submit '${{ steps.diskimage.outputs.path }}' \
+            -k apple-store-connect.key -d "$APPLE_STORE_CONNECT_KEY_ID" -i "$APPLE_STORE_CONNECT_ISSUER" \
+            --wait
+
+          # Staple the notarization ticket to the disk image
+          xcrun stapler staple -v '${{ steps.diskimage.outputs.path }}'
+
+      - name: Upload disk image as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: AYAB-signed-dmg
+          name: ${{ steps.diskimage.outputs.name }}
           path: ${{ steps.diskimage.outputs.path }}
 
-      - name: Attach disk image (before notarization) to release
+      - name: Attach disk image to release
         uses: ncipollo/release-action@v1
         if: steps.vars.outputs.do-release == 'true'
         with:
@@ -245,83 +257,6 @@ jobs:
           omitBodyDuringUpdate: true
           omitDraftDuringUpdate: true
           omitPrereleaseDuringUpdate: true
-
-      - name: Submit disk image for notarization
-        if: env.APPLE_STORE_CONNECT_KEY_ID
-        id: notarize
-        env:
-          APPLE_STORE_CONNECT_ISSUER: ${{ secrets.APPLE_STORE_CONNECT_ISSUER }}
-          APPLE_STORE_CONNECT_KEY_BASE64: ${{ secrets.APPLE_STORE_CONNECT_KEY_BASE64 }}
-        run: |
-          printenv APPLE_STORE_CONNECT_KEY_BASE64 | base64 --decode > apple-store-connect.key
-
-          # Submit the disk image for notarization
-          SUBMISSION_ID=$(xcrun notarytool submit '${{ steps.diskimage.outputs.path }}' \
-            -k apple-store-connect.key -d "$APPLE_STORE_CONNECT_KEY_ID" -i "$APPLE_STORE_CONNECT_ISSUER" |
-            tee /dev/stderr |
-            awk '/id:/ {print $2; exit}')
-
-          echo "submission_id=$SUBMISSION_ID" >> "$GITHUB_OUTPUT"
-
-  staple-macos:
-    name: Wait for notarization to complete and staple ticket to disk image
-    needs: build-macos
-    runs-on: macos-14
-    env:
-      APPLE_STORE_CONNECT_KEY_ID: ${{ secrets.APPLE_STORE_CONNECT_KEY_ID }}
-    steps:
-      - name: Download disk image artifact
-        uses: actions/download-artifact@v4
-        if: env.APPLE_STORE_CONNECT_KEY_ID
-        with:
-          # Will download to a file named ${{ needs.build-macos.outputs.image_name }}
-          name: AYAB-signed-dmg
-
-      - name: Wait for notarization and staple ticket to disk image
-        id: staple
-        if: env.APPLE_STORE_CONNECT_KEY_ID
-        env:
-          APPLE_STORE_CONNECT_ISSUER: ${{ secrets.APPLE_STORE_CONNECT_ISSUER }}
-          APPLE_STORE_CONNECT_KEY_BASE64: ${{ secrets.APPLE_STORE_CONNECT_KEY_BASE64 }}
-        run: |
-          printenv APPLE_STORE_CONNECT_KEY_BASE64 | base64 --decode > apple-store-connect.key
-
-          # Wait for the notarization to complete
-          xcrun notarytool wait '${{ needs.build-macos.outputs.submission_id }}' \
-            -k apple-store-connect.key -d "$APPLE_STORE_CONNECT_KEY_ID" -i "$APPLE_STORE_CONNECT_ISSUER"
-
-          # Print the notarization log for debugging purposes
-          xcrun notarytool log '${{ needs.build-macos.outputs.submission_id }}' \
-            -k apple-store-connect.key -d "$APPLE_STORE_CONNECT_KEY_ID" -i "$APPLE_STORE_CONNECT_ISSUER"
-
-          # Staple the notarization ticket to the disk image
-          xcrun stapler staple -v '${{ needs.build-macos.outputs.image_name }}'
-
-      - name: Upload stapled disk image as artifact
-        uses: actions/upload-artifact@v4
-        if: env.APPLE_STORE_CONNECT_KEY_ID
-        with:
-          name: ${{ needs.build-macos.outputs.image_name }}
-          path: ${{ needs.build-macos.outputs.image_name }}
-
-      - name: Attach disk image (after notarization) to release
-        if: env.APPLE_STORE_CONNECT_KEY_ID
-        uses: ncipollo/release-action@v1
-        with:
-          tag: ${{ needs.build-macos.outputs.tag }}
-          # Default to draft and prerelease to let a human check the release before it goes live
-          draft: true
-          prerelease: false
-          allowUpdates: true
-          artifacts: ${{ needs.build-macos.outputs.image_name }}
-          artifactContentType: application/dmg
-          replacesArtifacts: true
-          # Avoid overwriting a release that may have been manually edited
-          omitNameDuringUpdate: true
-          omitBodyDuringUpdate: true
-          omitDraftDuringUpdate: true
-          omitPrereleaseDuringUpdate: true
-
 
   # see https://github.com/AppImage/AppImageKit/wiki/Bundling-Python-apps
   build-appimage:
