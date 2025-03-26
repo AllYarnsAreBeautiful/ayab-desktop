@@ -19,11 +19,11 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - name: Set up Python ${{ matrix.python-version }}
+    - name: Set up Python ${{ env.PYTHON_VERSION }}
       id: py
       uses: actions/setup-python@v5
       with:
-        python-version: ${{ matrix.python-version }}
+        python-version: ${{ env.PYTHON_VERSION }}
     - name: Set variables
       id: vars
       shell: bash

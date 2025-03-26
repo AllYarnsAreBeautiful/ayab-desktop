@@ -15,6 +15,9 @@
 name: Build
 on: [push, pull_request]
 
+env:
+  PYTHON_VERSION: 3.11.9
+
 jobs:
   deploy:
     name: Create and deploy source code documentation
@@ -42,9 +45,6 @@ jobs:
   build-windows:
     name: Create and upload Windows release
     runs-on: windows-latest
-    strategy:
-      matrix:
-        python-version: [3.11.9]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -139,9 +139,6 @@ jobs:
       tag: ${{ steps.vars.outputs.tag }}
       submission_id: ${{ steps.notarize.outputs.submission_id }}
       image_name: ${{ steps.diskimage.outputs.name }}
-    strategy:
-      matrix:
-        python-version: [3.11.9]
     env:
       APPLE_CERTIFICATE_NAME: ${{ secrets.APPLE_CERTIFICATE_NAME }}
       APPLE_STORE_CONNECT_KEY_ID: ${{ secrets.APPLE_STORE_CONNECT_KEY_ID }}
@@ -330,10 +327,9 @@ jobs:
   build-appimage:
     name: Create and upload Linux AppImage release
     runs-on: ubuntu-22.04
-    strategy:
-      matrix:
-        # Using Python 3.11.11 specifically for Linux builds due to python-appimage availability
-        python-version: [3.11.11]
+    env:
+      # Using Python 3.11.11 specifically for Linux builds due to python-appimage availability
+      PYTHON_VERSION: 3.11.11
     steps:
       - name: Checkout repo into AppDir
         uses: actions/checkout@v4

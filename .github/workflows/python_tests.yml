@@ -5,18 +5,18 @@ name: Python Tests
 
 on: [push, pull_request]
 
+env:
+  PYTHON_VERSION: 3.11.9
+
 jobs:
   run-pytest:
     runs-on: ubuntu-22.04
-    strategy:
-      matrix:
-        python-version: [3.11]
     steps:
       - uses: actions/checkout@v4
-      - name: Set up Python ${{ matrix.python-version }}
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: ${{ env.PYTHON_VERSION }}
           cache: "pip"
       - name: Install dependencies
         run: |
