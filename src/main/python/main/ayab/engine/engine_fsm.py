@@ -53,6 +53,8 @@ class State(Enum):
     REQUEST_TEST = auto()
     CONFIRM_TEST = auto()
     RUN_TEST = auto()
+    DISCONNECT = auto()
+    FINISHING = auto()
     FINISHED = auto()
 
 
@@ -200,8 +202,8 @@ class StateMachine(QStateMachine):
         if token == Token.reqLine:
             pattern_finished = control.cnf_line_API6(param)
             if pattern_finished:
-                control.state = State.FINISHED
-                return Output.KNITTING_FINISHED
+                control.state = State.FINISHING
+                return Output.NEXT_LINE
             else:
                 return Output.NEXT_LINE
         # else
@@ -239,6 +241,38 @@ class StateMachine(QStateMachine):
         # Any incoming testRes messages are processed in check_serial_API6,
         # there is nothing more to do here.
         control.check_serial_API6()
+        return Output.NONE
+
+    @staticmethod
+    def _API6_finishing(control: Control, operation: Operation) -> Output:
+        token, param = control.check_serial_API6()
+        if token == Token.reqLine:
+            control.cnf_final_line_API6(param)
+
+            # When closing the serial port, the final bytes written
+            # may be dropped by the driver
+            # (see https://github.com/serialport/serialport-rs/issues/117).
+            # This may cause the final `cnfLine` response to get lost and the
+            # firmware to get stuck knitting the previous row
+            # (see https://github.com/AllYarnsAreBeautiful/ayab-desktop/issues/662).
+            # To avoid this, before closing the port, we send a `reqInfo` message
+            # to the firmware and wait for the response.
+            control.com.req_info()
+            control.state = State.DISCONNECT
+            control.logger.debug("State DISCONNECT")
+            return Output.DISCONNECTING_FROM_MACHINE
+        # else
+        return Output.NONE
+
+    @staticmethod
+    def _API6_disconnect(control: Control, operation: Operation) -> Output:
+        token, _ = control.check_serial_API6()
+        if token == Token.cnfInfo:
+            # We received a response to our final `reqInfo` request,
+            # it is now safe to close the port.
+            control.state = State.FINISHED
+            return Output.KNITTING_FINISHED
+        # else
         return Output.NONE
 
     @staticmethod

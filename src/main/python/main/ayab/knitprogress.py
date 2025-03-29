@@ -20,7 +20,12 @@
 
 from __future__ import annotations
 from PySide6.QtCore import QCoreApplication, QRect, Qt
-from PySide6.QtWidgets import QTableWidget, QTableWidgetItem, QHeaderView, QAbstractItemView
+from PySide6.QtWidgets import (
+    QTableWidget,
+    QTableWidgetItem,
+    QHeaderView,
+    QAbstractItemView,
+)
 from PySide6.QtGui import QBrush, QColor
 from typing import TYPE_CHECKING, Optional, cast, List
 from math import floor
@@ -50,16 +55,14 @@ class KnitProgress(QTableWidget):
         self.__progbar = parent.progbar
         self.setGeometry(QRect(0, 0, 700, 220))
         self.setContentsMargins(1, 1, 1, 1)
-        self.verticalHeader().setSectionResizeMode(
-            QHeaderView.ResizeMode.Fixed
-        )
+        self.verticalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Fixed)
         self.verticalHeader().setSectionsClickable(False)
         self.horizontalHeader().setMinimumSectionSize(0)
-        self.horizontalHeader().setDefaultSectionSize(self.__prefs.value("lower_display_stitch_width"))
-        self.horizontalHeader().setSectionsClickable(False)
-        self.horizontalHeader().setSectionResizeMode(
-            QHeaderView.ResizeMode.Fixed
+        self.horizontalHeader().setDefaultSectionSize(
+            self.__prefs.value("lower_display_stitch_width")
         )
+        self.horizontalHeader().setSectionsClickable(False)
+        self.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Fixed)
         self.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectItems)
         self.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
         self.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
@@ -90,16 +93,15 @@ class KnitProgress(QTableWidget):
             or status.carriage_direction != self.previousStatus.carriage_direction
             or status.bits != self.previousStatus.bits
             or status.alt_color != self.previousStatus.alt_color
+            or status.knit_start_needle != self.previousStatus.knit_start_needle
+            or status.machine_width != self.previousStatus.machine_width
+            or status.passes_per_row != self.previousStatus.passes_per_row
         ):
             return True
 
         return False
 
-    def update_progress(
-        self, status: Status, row_multiplier: int, midline: int, auto_mirror: bool
-    ) -> None:
-        # FIXME auto_mirror not used
-
+    def update_progress(self, status: Status) -> None:
         if not self.uiStateChanged(status):
             return
 
@@ -112,10 +114,11 @@ class KnitProgress(QTableWidget):
         else:
             self.color = True
 
-        midline = self.load_columns_from_status(status, midline, columns)
+        self.load_columns_from_status(status, columns)
 
         # For the top row (row idx 0), we show the row header as "To Be Selected",
-        # When we show a new row, we recover the header info and recombine it with its row (now row idx 2)
+        # When we show a new row, we recover the header info and recombine it
+        # with its row (now row idx 2)
         self.make_row_with_spacer()
 
         if self.columnCount() != len(columns):
@@ -123,35 +126,38 @@ class KnitProgress(QTableWidget):
         n_cols = len(columns)
         if n_cols < 4:
             self.hideColumn(5)
-        self.instantiate_row_from_columns(midline, columns)
+        self.instantiate_row_from_columns(status, columns)
 
         self.previousStatus = status
-        self.previous_row_mulitplier = row_multiplier
 
         # update bar in Scene
         self.scene.row_progress = status.current_row
 
-    def load_columns_from_status(self, status: Status, midline: int, columns: List[QTableWidgetItem]) -> int:
-        midline = len(status.bits) - midline
+    def load_columns_from_status(
+        self, status: Status, columns: List[QTableWidgetItem]
+    ) -> None:
+        for c in range(0, len(status.bits)):
+            needle = status.knit_start_needle + c
+            needle_number_from_r1 = needle - status.machine_width // 2
+            if needle_number_from_r1 < 0:
+                color = self.__alternate_bg_colors(needle_number_from_r1, self.orange)
+            else:
+                color = self.__alternate_bg_colors(needle_number_from_r1, self.green)
+            columns.append(
+                self.__stitch(
+                    status.color, cast(bool, status.bits[c]), status.alt_color, color
+                )
+            )
 
-        for c in range(0, midline):
-            columns.append(self.__stitch(
-                status.color, cast(bool, status.bits[c]), status.alt_color, self.__alternate_bg_colors(midline-c, self.orange)
-            ))
-
-        # if we are only working on the right side, midline is negative.
-        green_start = midline
-        if green_start < 0:
-            green_start = 0
-        for c in range(green_start, len(status.bits)):
-            columns.append(self.__stitch(
-                status.color, cast(bool, status.bits[c]), status.alt_color, self.__alternate_bg_colors(c-green_start, self.green)
-            ))
-
-        return midline
-
-    def instantiate_row_from_columns(self, midline: int, columns: List[QTableWidgetItem]) -> None:
-        self.setVerticalHeaderItem(0, QTableWidgetItem("To Be Selected"))
+    def instantiate_row_from_columns(
+        self, status: Status, columns: List[QTableWidgetItem]
+    ) -> None:
+        self.setVerticalHeaderItem(
+            0,
+            QTableWidgetItem(
+                QCoreApplication.translate("KnitProgress", "To Be Selected")
+            ),
+        )
         for i, col in enumerate(columns):
             self.setItem(0, i, col)
             self.setColumnWidth(i, self.__prefs.value("lower_display_stitch_width"))
@@ -160,14 +166,16 @@ class KnitProgress(QTableWidget):
                 self.horizontalHeader().setVisible(False)
             else:
                 self.horizontalHeader().setVisible(True)
-            if i < midline:
-                header = QTableWidgetItem(f"{(midline)-(i)}")
+            needle = status.knit_start_needle + i
+            needle_number_from_r1 = needle - status.machine_width // 2
+            if needle_number_from_r1 < 0:
+                header = QTableWidgetItem(f"{-needle_number_from_r1}")
                 header.font().setBold(True)
                 header.setForeground(QBrush(QColor(f"#{self.orange:06x}")))
                 header.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
                 self.setHorizontalHeaderItem(i, header)
             else:
-                header = QTableWidgetItem(f"{(i+1)-(midline)}")
+                header = QTableWidgetItem(f"{1 + needle_number_from_r1}")
                 header.setForeground(QBrush(QColor(f"#{self.green:06x}")))
                 header.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
                 self.setHorizontalHeaderItem(i, header)
@@ -178,49 +186,74 @@ class KnitProgress(QTableWidget):
         self.insertRow(1)
         self.setVerticalHeaderItem(1, QTableWidgetItem(""))
         if self.rowCount() > 2:
-            self.setVerticalHeaderItem(2, self.format_row_header_text(self.previousStatus, self.previous_row_mulitplier))
+            self.setVerticalHeaderItem(
+                2,
+                self.format_row_header_text(self.previousStatus),
+            )
         self.verticalHeader().setSectionResizeMode(1, QHeaderView.ResizeMode.Fixed)
         self.verticalHeader().setMinimumSectionSize(0)
         self.verticalHeader().resizeSection(1, 5)
 
-    def format_row_header_text(self, status: Optional[Status], row_multiplier: int) -> QTableWidgetItem:
+    def format_row_header_text(self, status: Optional[Status]) -> QTableWidgetItem:
         if status is None:
             return QTableWidgetItem("")
         tr_ = QCoreApplication.translate
         info_header = QTableWidgetItem()
         info_text = ""
-        row, swipe = divmod(status.line_number, row_multiplier)
+        swipe = status.line_number % status.passes_per_row
         # row "Row [1]"
-        info_text = (tr_("KnitProgress", "Row") + " " + str(status.current_row))
+        info_text = tr_("KnitProgress", "Row") + " " + str(status.current_row)
 
         # pass, see Mode object. "Pass [1,2,3]"
-        if row_multiplier == 1:
-            info_text = info_text+(" "+tr_("KnitProgress", "Pass") + " " + str(swipe + 1))
+        if status.passes_per_row > 1:
+            info_text = info_text + (
+                f' {tr_("KnitProgress", "Pass")} {swipe + 1}/{status.passes_per_row}'
+            )
 
         # color "Color [A,B,C,D]"
         if self.color is True:
-            info_text = info_text + " " + tr_("KnitProgress", "Color") + " " + status.color_symbol
+            info_text = (
+                info_text
+                + " "
+                + tr_("KnitProgress", "Color")
+                + " "
+                + status.color_symbol
+            )
             background_color = QColor(f"#{status.color:06x}")
             # Ensure text is readable
             if background_color.lightness() > 128:
-                background_color.setHsl(background_color.hslHue(), background_color.hslSaturation(), 128)
+                background_color.setHsl(
+                    background_color.hslHue(), background_color.hslSaturation(), 128
+                )
             info_header.setForeground(QBrush(background_color))
 
         # Carriage & Direction "[K,L,G] [<-,->]"
         carriage = status.carriage_type
         direction = status.carriage_direction
-        info_text = info_text + (" "+carriage.symbol + " " + direction.symbol)
+        info_text = info_text + (" " + carriage.symbol + " " + direction.symbol)
         info_header.setText(info_text)
         return info_header
 
-    def __alternate_bg_colors(self, position: int, color: int, frequency: int = 10) -> QColor:
+    def __alternate_bg_colors(
+        self, position: int, color: int, frequency: int = 10
+    ) -> QColor:
         background_color = QColor(f"#{color:06x}")
-        bg_color_alternate = floor(position/frequency) % 2
+        bg_color_alternate = (position // frequency) % 2
         if bg_color_alternate > 0:
-            background_color.setHsl(floor(background_color.hslHue()*.85), floor(background_color.hslSaturation()*.85), background_color.lightness())
+            background_color.setHsl(
+                floor(background_color.hslHue() * 0.85),
+                floor(background_color.hslSaturation() * 0.85),
+                background_color.lightness(),
+            )
         return background_color
 
-    def __stitch(self, color: int, bit: bool, alt_color: Optional[int] = None, bg_color: Optional[QColor] = None) -> QTableWidgetItem:
+    def __stitch(
+        self,
+        color: int,
+        bit: bool,
+        alt_color: Optional[int] = None,
+        bg_color: Optional[QColor] = None,
+    ) -> QTableWidgetItem:
         stitch = QTableWidgetItem()
         if bit:
             background_color = QColor(f"#{color:06x}")
@@ -236,9 +269,12 @@ class KnitProgress(QTableWidget):
         if current is None:
             self.__progbar.set_selection_label("")
             return
-        if self.horizontalHeaderItem(current.column()).foreground().color().red() == 187:
+        header = self.horizontalHeaderItem(current.column())
+        if header is not None and header.foreground().color().red() == 187:
             side = "Right"
         else:
             side = "Left"
-        selection_string = f"Selection: {self.verticalHeaderItem(current.row()).text()} , stitch {side}-{self.horizontalHeaderItem(current.column()).text()}"
+        selection_string = f"""Selection: {
+            self.verticalHeaderItem(current.row()).text()} stitch {side}-{
+            header.text() if header else ''}"""
         self.__progbar.set_selection_label(selection_string)

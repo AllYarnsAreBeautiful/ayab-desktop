@@ -62,7 +62,6 @@ class Control(SignalSender):
     initial_position: int
     len_pat_expanded: int
     line_block: int
-    midline: int
     mode: Mode
     mode_func: ModeFuncType
     num_colors: int
@@ -111,10 +110,6 @@ class Control(SignalSender):
             )
             self.start_pixel = self.start_needle - self.pattern.pat_start_needle
             self.end_pixel = self.end_needle - self.pattern.pat_start_needle
-            if self.FLANKING_NEEDLES and self.mode != Mode.SINGLEBED:
-                self.midline = self.pattern.knit_end_needle - self.machine.width // 2
-            else:
-                self.midline = self.end_needle - self.machine.width // 2
             self.initial_carriage = Carriage.Unknown
             self.initial_position = -1
             self.initial_direction = Direction.Unknown
@@ -155,6 +150,16 @@ class Control(SignalSender):
             self.status.color_symbol = ""  # "A/B"
         else:
             self.status.alt_color = None
+
+        self.status.machine_width = self.machine.width
+
+        if self.FLANKING_NEEDLES and self.mode != Mode.SINGLEBED:
+            self.status.knit_start_needle = self.pattern.knit_start_needle
+        else:
+            # in single-bed mode, only the pattern bits are emitted, no extra needles
+            self.status.knit_start_needle = self.start_needle
+
+        self.status.passes_per_row = self.passes_per_row
 
     def check_serial_API6(self) -> tuple[Token, int]:
         msg, token, param = self.com.update_API6()
@@ -216,9 +221,12 @@ class Control(SignalSender):
         color, row_index, blank_line, last_line = self.mode_func(self, line_number)
         bits = self.select_needles_API6(color, row_index, blank_line)
 
-        # send line to machine
-        flag = last_line and not self.inf_repeat
-        self.com.cnf_line_API6(requested_line, color, flag, bits.tobytes())
+        # Send line to machine
+        # Note that we never set the "final line" flag here, because
+        # we will send an extra blank line afterwards to make sure we
+        # can track the final line being knitted.
+        flags = 0
+        self.com.cnf_line_API6(requested_line, color, flags, bits.tobytes())
 
         # screen output
         # TODO: tidy up this code
@@ -248,6 +256,17 @@ class Control(SignalSender):
             return False  # keep knitting
         else:
             return True  # pattern finished
+
+    def cnf_final_line_API6(self, requested_line: int) -> None:
+        self.logger.debug("sending blank line as final line=%d", requested_line)
+
+        # prepare a blank line as the final line
+        bits = bitarray(self.machine.width, endian="little")
+
+        # send line to machine
+        color = 0  # doesn't matter
+        flags = 1  # this is the last line
+        self.com.cnf_line_API6(requested_line, color, flags, bits.tobytes())
 
     def __update_status(self, line_number: int, color: int, bits: bitarray) -> None:
         self.status.total_rows = self.pat_height

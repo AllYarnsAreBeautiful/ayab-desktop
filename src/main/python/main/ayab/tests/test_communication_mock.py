@@ -73,7 +73,7 @@ class TestCommunicationMock(unittest.TestCase):
         assert bytes_read == expected_result
         # indState shall be sent automatically, also
         expected_result = (
-            bytes([Token.indState.value, 0, 1, 0xFF, 0xFF, 0xFF, 0xFF, 1, 0, 1]),
+            bytes([Token.indState.value, 0, 1, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0, 1]),
             Token.indState,
             0,
         )
@@ -107,6 +107,9 @@ class TestCommunicationMock(unittest.TestCase):
         )
         self.comm_dummy.update_API6()  # cnfStart
 
+        # Alternates between requesting a line and no output
         for i in range(0, 256):
             bytes_read = self.comm_dummy.update_API6()
             assert bytes_read == (bytearray([Token.reqLine.value, i]), Token.reqLine, i)
+            bytes_read = self.comm_dummy.update_API6()
+            assert bytes_read == (None, Token.none, 0)

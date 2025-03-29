@@ -21,7 +21,6 @@
 
 from __future__ import annotations
 import logging
-from time import sleep
 from PIL import Image
 
 from PySide6.QtCore import QCoreApplication, Signal
@@ -205,16 +204,12 @@ class Engine(SignalSender, QDockWidget):
             else:
                 # operation == Operation.TEST:
                 self.__logger.info("Finished knitting.")
-            # small delay to finish printing to knit progress window
-            # before "finish.wav" sound plays
-            sleep(1)
         else:
             # TODO: provide translations for these messages
             self.__logger.info("Finished testing.")
 
         # send signal to finish operation
-        # "finish.wav" sound only plays if knitting was not canceled
-        self.emit_operation_finisher(operation, not self.__canceled)
+        self.emit_operation_finisher(operation)
 
     def __handle_status(self) -> None:
         if self.status.active:
@@ -224,15 +219,10 @@ class Engine(SignalSender, QDockWidget):
         # that holds up this thread until the knit progress window has finished
         # updating, Otherwise if the knit progress window lags the status
         # will change before the information is written to the UI.
-        data = Status()
-        data.copy(self.status)
-        self.emit_knit_progress_updater(
-            data,
-            self.control.passes_per_row,
-            self.control.midline,
-            self.config.auto_mirror,
-        )
-        self.emit_progress_bar_updater(data)
+        status_copy = Status()
+        status_copy.copy(self.status)
+        self.emit_knit_progress_updater(status_copy)
+        self.emit_progress_bar_updater(status_copy)
 
     def cancel(self) -> None:
         self.__canceled = True

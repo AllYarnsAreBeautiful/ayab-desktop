@@ -14,48 +14,35 @@ from typing import TYPE_CHECKING, cast
 if TYPE_CHECKING:  # TODO: why does mypy not resolve the absolute import correctly?
     from main.ayab.ayab import GuiMain
     from main.ayab import utils
+    from main.ayab.version_checker import VersionChecker
+
     # from https://github.com/python/typing/discussions/1102#discussioncomment-2376328
     cached_property = property
 else:
     try:
         from main.ayab.ayab import GuiMain
         from main.ayab import utils
-    except: #'fbs run' needs weird things.
+        from main.ayab.version_checker import VersionChecker
+    except ImportError:  # 'fbs run' needs weird things.
         from ayab.ayab import GuiMain
         from ayab import utils
+        from ayab.version_checker import VersionChecker
     from fbs_runtime.application_context.PySide6 import cached_property
 
 
 class AppContext(ApplicationContext):  # type: ignore # 1. Subclass ApplicationContext
-    REPO = "AllYarnsAreBeautiful/ayab-desktop"
+    _version_checker: VersionChecker
 
     def run(self) -> int:  # 2. Implement run()
         self.make_user_directory()
         self.configure_logger()
         self.install_translator()
         self.main_window.show()
-        pkg = utils.package_version(self)
-        tag = self.check_new_version(self.REPO)
-        if tag is not None and tag != pkg:
-            url = "https://github.com/" + self.REPO + "/releases/tag/" + tag
-            utils.display_blocking_popup(
-                "<p>A new version of the AYAB desktop software has been released!"
-                + " You can download version <strong>"
-                + tag
-                + "</strong> using this link:<br/><br/><a href='"
-                + url
-                + "'>"
-                + url
-                + "</a></p>"
-            )
+        self._version_checker = VersionChecker(
+            current_version=utils.package_version(self)
+        )
+        self._version_checker.start_background_check()
         return cast(int, self.app.exec())  # 3. End run() with this line
-
-    def check_new_version(self, repo: str) -> str:
-        try:
-            return utils.latest_version(repo)
-        except Exception:
-            return ""
-            pass
 
     def make_user_directory(self) -> None:
         self.userdata_path = path.expanduser(path.join("~", "AYAB"))

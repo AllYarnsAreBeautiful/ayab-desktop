@@ -26,7 +26,7 @@ from typing import TYPE_CHECKING, Any
 if TYPE_CHECKING:
     from .signal_receiver import SignalReceiver
     from .utils import MessageTypes
-    from .engine.status import ColorSymbolType, Status
+    from .engine.status import Status
     from .engine.engine_fsm import Operation
     from .engine.options import Alignment
     from .engine.control import Control
@@ -49,19 +49,11 @@ class SignalSender(object):
     def emit_start_row_updater(self, start_row: int) -> None:
         self.__signal_receiver.start_row_updater.emit(start_row)
 
-    def emit_progress_bar_updater(
-        self, status: Status
-    ) -> None:
-        self.__signal_receiver.progress_bar_updater.emit(
-            status
-        )
+    def emit_progress_bar_updater(self, status: Status) -> None:
+        self.__signal_receiver.progress_bar_updater.emit(status)
 
-    def emit_knit_progress_updater(
-        self, status: Status, row_multiplier: int, midline: int, auto_mirror: bool
-    ) -> None:
-        self.__signal_receiver.knit_progress_updater.emit(
-            status, row_multiplier, midline, auto_mirror
-        )
+    def emit_knit_progress_updater(self, status: Status) -> None:
+        self.__signal_receiver.knit_progress_updater.emit(status)
 
     def emit_notifier(self, text: str, log: bool) -> None:
         self.__signal_receiver.notifier.emit(text, log)
@@ -86,8 +78,8 @@ class SignalSender(object):
     def emit_image_resizer(self) -> None:
         self.__signal_receiver.image_resizer.emit()
 
-    def emit_image_reverser(self) -> None:
-        self.__signal_receiver.image_reverser.emit()
+    def emit_image_reverser(self, image_reversed: bool) -> None:
+        self.__signal_receiver.image_reverser.emit(image_reversed)
 
     def emit_got_image_flag(self) -> None:
         self.__signal_receiver.got_image_flag.emit()
@@ -101,8 +93,8 @@ class SignalSender(object):
     def emit_knitting_starter(self) -> None:
         self.__signal_receiver.knitting_starter.emit()
 
-    def emit_operation_finisher(self, operation: Operation, beep: bool) -> None:
-        self.__signal_receiver.operation_finisher.emit(operation, beep)
+    def emit_operation_finisher(self, operation: Operation) -> None:
+        self.__signal_receiver.operation_finisher.emit(operation)
 
     def emit_hw_test_starter(self, control: Control) -> None:
         self.__signal_receiver.hw_test_starter.emit(control)
@@ -116,7 +108,7 @@ class SignalSender(object):
     ) -> None:
         """Sends the blocking_popup_displayer signal."""
         self.emit_blocking_popup_displayer(
-            QCoreApplication.translate("AyabPlugin", message), message_type
+            QCoreApplication.translate("Notifications", message), message_type
         )
 
     def emit_popup(
@@ -124,9 +116,9 @@ class SignalSender(object):
     ) -> None:
         """Sends the popup_displayer signal."""
         self.emit_popup_displayer(
-            QCoreApplication.translate("AyabPlugin", message), message_type
+            QCoreApplication.translate("Notifications", message), message_type
         )
 
     def emit_notification(self, message: str = "", log: bool = True) -> None:
         """Sends the notifier signal."""
-        self.emit_notifier(QCoreApplication.translate("AyabPlugin", message), log)
+        self.emit_notifier(QCoreApplication.translate("Notifications", message), log)

@@ -22,9 +22,6 @@ Mock Class of Communication for Test/Simulation purposes
 
 import logging
 from time import sleep
-from collections import deque
-
-from PySide6.QtWidgets import QMessageBox
 
 from .communication import Communication, Token
 
@@ -32,12 +29,11 @@ from .communication import Communication, Token
 class CommunicationMock(Communication):
     """Class Handling the mock communication protocol."""
 
-    def __init__(self, delay=True, step=False) -> None:
+    def __init__(self, delay=True) -> None:
         """Initialize communication."""
         logging.basicConfig(level=logging.DEBUG)
         self.logger = logging.getLogger(type(self).__name__)
         self.__delay = delay
-        self.__step = step
         self.reset()
 
     def __del__(self) -> None:
@@ -47,8 +43,9 @@ class CommunicationMock(Communication):
     def reset(self):
         self.__is_open = False
         self.__is_started = False
-        self.rx_msg_list = deque([], maxlen=100)
+        self.rx_msg_list = list()
         self.__line_count = 0
+        self.__started_row = False
 
     def is_open(self) -> bool:
         """Return status of the interface."""
@@ -73,11 +70,22 @@ class CommunicationMock(Communication):
         self.rx_msg_list.append(cnfInfo)
 
     def req_init_API6(self, machine_val):
-        """Send machine type."""
+        """Send machine type and initial state report"""
         cnfInit = bytes([Token.cnfInit.value, 0])
         self.rx_msg_list.append(cnfInit)
         indState = bytes(
-            [Token.indState.value, 0, 1, 0xFF, 0xFF, 0xFF, 0xFF, 1, 0x00, 1]
+            [
+                Token.indState.value,
+                0,  # success
+                1,  # fsm state
+                0xFF,
+                0xFF,  # left sensor value
+                0xFF,
+                0xFF,  # right sensor value
+                0xFF,  # carriage type (unknown)
+                0,  # position
+                1,  # direction
+            ]
         )
         self.rx_msg_list.append(indState)
 
@@ -98,29 +106,22 @@ class CommunicationMock(Communication):
         """Send a row of stitch data."""
         return True
 
-    def update_API6(self) -> tuple[bytes, Token, int]:
+    def update_API6(self) -> tuple[bytes | None, Token, int]:
         """Read and parse data packet."""
         if self.__is_open and self.__is_started:
-            reqLine = bytes([Token.reqLine.value, self.__line_count])
-            self.__line_count += 1
-            self.__line_count %= 256
-            self.rx_msg_list.append(reqLine)
-            if self.__delay:
-                sleep(1)  # wait for knitting progress dialog to update
-            # step through output line by line
-            if self.__step:
-                # pop up box waits for user input before moving on to next line
-                msg = QMessageBox()
-                msg.setIcon(QMessageBox.Icon.Information)
-                msg.setText("Line number = " + str(self.__line_count))
-                msg.setStandardButtons(
-                    QMessageBox.StandardButton.Ok | QMessageBox.StandardButton.Cancel
-                )
-                ret = None
-                ret = msg.exec_()
-                while ret is None:
-                    pass
+            # Alternate between reqLine and no message
+            # (so that the UI makes the end-of-line sound for each row)
+            if self.__started_row:
+                self.__started_row = False
+                reqLine = bytes([Token.reqLine.value, self.__line_count])
+                self.__line_count += 1
+                self.__line_count %= 256
+                self.rx_msg_list.append(reqLine)
+                if self.__delay:
+                    sleep(1)  # wait for knitting progress dialog to update
+            else:
+                self.__started_row = True
         if len(self.rx_msg_list) > 0:
-            return self.parse_API6(self.rx_msg_list.popleft())  # FIFO
+            return self.parse_API6(self.rx_msg_list.pop(0))  # FIFO
         # else
         return self.parse_API6(None)

@@ -56,7 +56,6 @@ class AyabImage(SignalSender):
         self.__parent = parent
         self.image: Image.Image = None  # type: ignore
         self.filename: Optional[str] = None
-        self.reversed = False
         self.filename_input = self.__parent.ui.filename_lineedit
 
     def select_file(self) -> None:

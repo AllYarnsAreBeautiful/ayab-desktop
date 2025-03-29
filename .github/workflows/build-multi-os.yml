@@ -16,7 +16,9 @@ name: Build
 on:
   push:
     tags:
-      - "v?[0-9]+.[0-9]+.[0-9]+-?[a-zA-Z0-9]*"
+      # Not a regex! See https://docs.github.com/en/actions/writing-workflows/workflow-syntax-for-github-actions#filter-pattern-cheat-sheet
+      - 'v?[0-9]+.[0-9]+.[0-9]+'
+      - 'v?[0-9]+.[0-9]+.[0-9]+-[a-zA-Z0-9]+'
 
 jobs:
   setup:
@@ -24,7 +26,7 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        python-version: [3.11]
+        python-version: [3.11.9]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -59,7 +61,6 @@ jobs:
       - name: Install Python modules
         run: |
           python -m pip install --upgrade pip
-          python -m pip install --upgrade setuptools
           python -m pip install -r requirements.build.txt
       - name: Use cached gui files (1)
         id: gui1-cache
@@ -173,7 +174,7 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        python-version: [3.11]
+        python-version: [3.11.9]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -187,7 +188,6 @@ jobs:
           choco install patch
           choco install vcredist-all # fixes dependency on msvcr100.dll
           python -m pip install --upgrade pip
-          python -m pip install --upgrade setuptools
           python -m pip install -r requirements.build.txt
           python -m pip install -r windows-build\windows_build_requirements.txt
       - name: Restore cached firmware
@@ -268,6 +268,22 @@ jobs:
           pwd
           ls -l src/main/python/main/ayab/
           ls -l src/main/resources/base/ayab/translations/
+
+      # The OpenSSL-based backend for QtNetwork requires the OpenSSL dynamic
+      # libraries but they are not packaged with Qt or PySide. Pyinstaller
+      # tries to find them for us and make them available, but does not
+      # always succeed, see https://github.com/pyinstaller/pyinstaller/issues/8857
+      # What we can do instead is disable the OpenSSL backend by deleting the
+      # relevant plugin — this way, Pyinstaller won't package OpenSSL DLLs,
+      # and Qt will silently fall back to the `schannel` backend that uses
+      # native Windows libraries. Note that deleting the plugin is an approach
+      # that is actually suggested in the Qt documentation, see
+      # https://doc.qt.io/qt-6/ssl.html#considerations-while-packaging-your-application
+      - name: Remove OpenSSL QtNetwork backend
+        shell: bash
+        run: |
+          find "$(python -c 'import PySide6;print(PySide6.__path__[0])')" -iname qopensslbackend.dll -delete
+
       - name: Build app
         shell: pwsh
         run: python -m fbs freeze
@@ -282,14 +298,18 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ steps.vars.outputs.tag }}
           commit: ${{ steps.vars.outputs.sha }}
-          body: "" # release message, alternative to body_path
-          # body_path: release_text.md  # uncomment if not used
-          draft: ${{ steps.vars.outputs.draft }}
+          # Default to draft and prerelease to let a human check the release before it goes live
+          draft: true
           prerelease: false
           allowUpdates: true
           artifacts: target/AYAB-${{ steps.vars.outputs.tag }}.exe
           artifactContentType: application/exe
           replacesArtifacts: true
+          # Avoid overwriting a release that may have been manually edited
+          omitNameDuringUpdate: true
+          omitBodyDuringUpdate: true
+          omitDraftDuringUpdate: true
+          omitPrereleaseDuringUpdate: true
       - uses: actions/upload-artifact@v4
         with:
           name: AYAB-${{ steps.vars.outputs.tag }}.exe
@@ -299,9 +319,16 @@ jobs:
     name: Create and upload Mac OSX release
     needs: setup
     runs-on: macos-14
+    outputs:
+      tag: ${{ steps.vars.outputs.tag }}
+      submission_id: ${{ steps.notarize.outputs.submission_id }}
+      image_name: ${{ steps.diskimage.outputs.name }}
     strategy:
       matrix:
-        python-version: [3.11]
+        python-version: [3.11.9]
+    env:
+      APPLE_CERTIFICATE_NAME: ${{ secrets.APPLE_CERTIFICATE_NAME }}
+      APPLE_STORE_CONNECT_KEY_ID: ${{ secrets.APPLE_STORE_CONNECT_KEY_ID }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -311,7 +338,6 @@ jobs:
         id: vars
       - name: Install dependencies
         run: |
-          brew install avrdude
           mkdir tmp-wheel/
           python -m pip install delocate==0.11.0
 
@@ -389,33 +415,141 @@ jobs:
           pwd
           ls -l src/main/python/main/ayab/
           ls -l src/main/resources/base/ayab/translations/
+
+      - name: Import Apple developer certificate
+        if: env.APPLE_CERTIFICATE_NAME
+        uses: apple-actions/import-codesign-certs@63fff01cd422d4b7b855d40ca1e9d34d2de9427d # v3
+        with:
+          p12-file-base64: ${{ secrets.APPLE_CERTIFICATE_BASE64 }}
+          p12-password: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+
       - name: Build app
         run: |
           python -m fbs freeze
-          codesign -s - --force --all-architectures --timestamp --deep ./target/AYAB-mac.app
-      - name: Create installer
+
+      - name: Sign app
+        if: env.APPLE_CERTIFICATE_NAME
+        run: |
+          # Sign the avrdude binary explicitly since `--deep` misses it because it is not
+          # in a directory meant to contain executables.
+          codesign -s "$APPLE_CERTIFICATE_NAME" --force --all-architectures \
+            --timestamp --deep --options=runtime \
+            ./target/AYAB-mac.app/Contents/Resources/ayab/firmware/avrdude_mac \
+            ./target/AYAB-mac.app
+
+      - name: Create disk image
+        id: diskimage
         run: |
           python -m fbs installer
-          codesign -s - --force --all-architectures --timestamp --deep ./target/AYAB.dmg
           mv target/AYAB.dmg target/AYAB-${{ steps.vars.outputs.tag }}.dmg
-      - name: Upload asset
+          echo 'name=AYAB-${{ steps.vars.outputs.tag }}.dmg' >> "$GITHUB_OUTPUT"
+          echo 'path=target/AYAB-${{ steps.vars.outputs.tag }}.dmg' >> "$GITHUB_OUTPUT"
+
+      - name: Sign disk image
+        if: env.APPLE_CERTIFICATE_NAME
+        run: |
+          codesign -s "$APPLE_CERTIFICATE_NAME" --force --all-architectures --timestamp \
+            '${{ steps.diskimage.outputs.path }}'
+
+      - name: Upload signed disk image as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: AYAB-signed-dmg
+          path: ${{ steps.diskimage.outputs.path }}
+
+      - name: Attach disk image (before notarization) to release
         uses: ncipollo/release-action@v1
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ steps.vars.outputs.tag }}
-          commit: ${{ steps.vars.outputs.sha }}
-          body: "" # release message, alternative to body_path
-          # body_path: release_text.md  # uncomment if not used
-          draft: ${{ steps.vars.outputs.draft }}
+          # Default to draft and prerelease to let a human check the release before it goes live
+          draft: true
           prerelease: false
           allowUpdates: true
-          artifacts: target/AYAB-${{ steps.vars.outputs.tag }}.dmg
+          artifacts: ${{ steps.diskimage.outputs.path }}
           artifactContentType: application/dmg
           replacesArtifacts: true
-      - uses: actions/upload-artifact@v4
+          # Avoid overwriting a release that may have been manually edited
+          omitNameDuringUpdate: true
+          omitBodyDuringUpdate: true
+          omitDraftDuringUpdate: true
+          omitPrereleaseDuringUpdate: true
+
+      - name: Submit disk image for notarization
+        if: env.APPLE_STORE_CONNECT_KEY_ID
+        id: notarize
+        env:
+          APPLE_STORE_CONNECT_ISSUER: ${{ secrets.APPLE_STORE_CONNECT_ISSUER }}
+          APPLE_STORE_CONNECT_KEY_BASE64: ${{ secrets.APPLE_STORE_CONNECT_KEY_BASE64 }}
+        run: |
+          printenv APPLE_STORE_CONNECT_KEY_BASE64 | base64 --decode > apple-store-connect.key
+
+          # Submit the disk image for notarization
+          SUBMISSION_ID=$(xcrun notarytool submit '${{ steps.diskimage.outputs.path }}' \
+            -k apple-store-connect.key -d "$APPLE_STORE_CONNECT_KEY_ID" -i "$APPLE_STORE_CONNECT_ISSUER" |
+            tee /dev/stderr |
+            awk '/id:/ {print $2; exit}')
+
+          echo "submission_id=$SUBMISSION_ID" >> "$GITHUB_OUTPUT"
+
+  staple-macos:
+    name: Wait for notarization to complete and staple ticket to disk image
+    needs: build-macos
+    runs-on: macos-14
+    env:
+      APPLE_STORE_CONNECT_KEY_ID: ${{ secrets.APPLE_STORE_CONNECT_KEY_ID }}
+    steps:
+      - name: Download disk image artifact
+        uses: actions/download-artifact@v4
+        if: env.APPLE_STORE_CONNECT_KEY_ID
         with:
-          name: AYAB-${{ steps.vars.outputs.tag }}.dmg
-          path: target/AYAB-${{ steps.vars.outputs.tag }}.dmg
+          # Will download to a file named ${{ needs.build-macos.outputs.image_name }}
+          name: AYAB-signed-dmg
+
+      - name: Wait for notarization and staple ticket to disk image
+        id: staple
+        if: env.APPLE_STORE_CONNECT_KEY_ID
+        env:
+          APPLE_STORE_CONNECT_ISSUER: ${{ secrets.APPLE_STORE_CONNECT_ISSUER }}
+          APPLE_STORE_CONNECT_KEY_BASE64: ${{ secrets.APPLE_STORE_CONNECT_KEY_BASE64 }}
+        run: |
+          printenv APPLE_STORE_CONNECT_KEY_BASE64 | base64 --decode > apple-store-connect.key
+
+          # Wait for the notarization to complete
+          xcrun notarytool wait '${{ needs.build-macos.outputs.submission_id }}' \
+            -k apple-store-connect.key -d "$APPLE_STORE_CONNECT_KEY_ID" -i "$APPLE_STORE_CONNECT_ISSUER"
+
+          # Print the notarization log for debugging purposes
+          xcrun notarytool log '${{ needs.build-macos.outputs.submission_id }}' \
+            -k apple-store-connect.key -d "$APPLE_STORE_CONNECT_KEY_ID" -i "$APPLE_STORE_CONNECT_ISSUER"
+
+          # Staple the notarization ticket to the disk image
+          xcrun stapler staple -v '${{ needs.build-macos.outputs.image_name }}'
+
+      - name: Upload stapled disk image as artifact
+        uses: actions/upload-artifact@v4
+        if: env.APPLE_STORE_CONNECT_KEY_ID
+        with:
+          name: ${{ needs.build-macos.outputs.image_name }}
+          path: ${{ needs.build-macos.outputs.image_name }}
+
+      - name: Attach disk image (after notarization) to release
+        if: env.APPLE_STORE_CONNECT_KEY_ID
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ needs.build-macos.outputs.tag }}
+          # Default to draft and prerelease to let a human check the release before it goes live
+          draft: true
+          prerelease: false
+          allowUpdates: true
+          artifacts: ${{ needs.build-macos.outputs.image_name }}
+          artifactContentType: application/dmg
+          replacesArtifacts: true
+          # Avoid overwriting a release that may have been manually edited
+          omitNameDuringUpdate: true
+          omitBodyDuringUpdate: true
+          omitDraftDuringUpdate: true
+          omitPrereleaseDuringUpdate: true
+
 
   # see https://github.com/AppImage/AppImageKit/wiki/Bundling-Python-apps
   build-appimage:
@@ -424,7 +558,8 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        python-version: [3.11]
+        # Using Python 3.11.11 specifically for Linux builds due to python-appimage availability
+        python-version: [3.11.11]
     steps:
       - name: Checkout repo into AppDir
         uses: actions/checkout@v4
@@ -440,7 +575,7 @@ jobs:
           cp -r !(git) git
           shopt -u dotglob
       - name: Download AppImage of Python designed for manylinux
-        run: wget -c https://github.com/niess/python-appimage/releases/download/${{steps.vars.outputs.python}}/${{steps.vars.outputs.python-appimage}}
+        run: wget -c https://github.com/niess/python-appimage/releases/download/python${{steps.vars.outputs.python-minor}}/${{steps.vars.outputs.python-appimage}}
       - name: Extract the AppImage
         run: |
           chmod +x ${{steps.vars.outputs.python-appimage}}
@@ -452,14 +587,13 @@ jobs:
           cd squashfs-root
           sudo apt-get install -y avrdude libasound2-dev
           ./AppRun -m pip install --upgrade pip
-          ./AppRun -m pip install --upgrade setuptools
           # hack to fix setup.py script with faulty include
-          ./AppRun -m pip install --global-option=build_ext --global-option="-I$(pwd)/opt/${{steps.vars.outputs.python}}/include/${{steps.vars.outputs.python}}" simpleaudio
+          ./AppRun -m pip install --global-option=build_ext --global-option="-I$(pwd)/opt/${{steps.vars.outputs.python-minor}}/include/${{steps.vars.outputs.python-minor}}" simpleaudio
           ./AppRun -m pip install -r requirements.build.txt
       - name: Add AppDir subdirectories to PATH
         run: |
           echo "usr/bin" >> $GITHUB_PATH
-          echo "opt/${{steps.vars.outputs.python}}/bin" >> $GITHUB_PATH
+          echo "opt/${{steps.vars.outputs.python-minor}}/bin" >> $GITHUB_PATH
       - name: Restore cached firmware
         id: firmware-cache
         uses: actions/cache@v4
@@ -573,14 +707,18 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ steps.vars.outputs.tag }}
           commit: ${{ steps.vars.outputs.sha }}
-          body: "" # release message, alternative to body_path
-          # body_path: release_text.md  # uncomment if not used
-          draft: ${{ steps.vars.outputs.draft }}
-          prerelease: false
           allowUpdates: true
           artifacts: AYAB-${{ steps.vars.outputs.tag }}-x86_64.AppImage
           artifactContentType: application/AppImage
           replacesArtifacts: true
+          # Default to draft and prerelease to let a human check the release before it goes live
+          draft: true
+          prerelease: false
+          # Avoid overwriting a release that may have been manually edited
+          omitNameDuringUpdate: true
+          omitBodyDuringUpdate: true
+          omitDraftDuringUpdate: true
+          omitPrereleaseDuringUpdate: true
       - uses: actions/upload-artifact@v4
         with:
           name: AYAB-${{ steps.vars.outputs.tag }}-x86_64.AppImage

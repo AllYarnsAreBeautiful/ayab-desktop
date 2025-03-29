@@ -31,7 +31,9 @@ from ..machine import Machine
 
 class Pattern(object):
     def __init__(self, image: Image.Image, config: OptionsTab, num_colors: int = 2):
-        self.__pattern = image
+        self.__pattern = (
+            image.transpose(Image.FLIP_LEFT_RIGHT) if config.auto_mirror else image
+        )
         self.__num_colors = num_colors
         self.__alignment = Alignment.CENTER
         self.__pat_start_needle: int = -1
@@ -115,18 +117,16 @@ class Pattern(object):
                         ] = True
 
     def __calc_pat_start_end_needles(self) -> bool:
-        # the sequence of needles is printed in right to left by default
-        # so the needle count starts at 0 on the right hand side
         if self.__alignment == Alignment.CENTER:
             needle_width = self.__knit_end_needle - self.__knit_start_needle
             self.__pat_start_needle = (
                 self.__knit_start_needle + (needle_width - self.pat_width + 1) // 2
             )
             self.__pat_end_needle = self.__pat_start_needle + self.__pat_width
-        elif self.__alignment == Alignment.RIGHT:
+        elif self.__alignment == Alignment.LEFT:
             self.__pat_start_needle = self.__knit_start_needle
             self.__pat_end_needle = self.__pat_start_needle + self.__pat_width
-        elif self.__alignment == Alignment.LEFT:
+        elif self.__alignment == Alignment.RIGHT:
             self.__pat_end_needle = self.__knit_end_needle
             self.__pat_start_needle = self.__pat_end_needle - self.__pat_width
         else:
