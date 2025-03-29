@@ -35,7 +35,7 @@ class Pattern(object):
         self.__pattern : Image.Image = (
             im.image.transpose(Image.FLIP_LEFT_RIGHT) if config.auto_mirror else im.image
         )
-        self.__memo : list[int] = im.memo
+        self.__memos : list[int] = im.memos
         self.__num_colors : int = num_colors
         self.__alignment : Alignment = Alignment.CENTER
         self.__pat_start_needle: int = -1
@@ -201,8 +201,8 @@ class Pattern(object):
         return self.__pattern_expanded
 
     @property
-    def memo(self) -> list[int]:
-        return self.__memo
+    def memos(self) -> list[int]:
+        return self.__memos
 
     def array2rgb(self, a: list[int]) -> int:
         return (a[0] & 0xFF) * 0x10000 + (a[1] & 0xFF) * 0x100 + (a[2] & 0xFF)
