@@ -60,14 +60,6 @@ class AyabImage(SignalSender):
         self.filename: Optional[str] = None
         self.filename_input = self.__parent.ui.filename_lineedit
 
-    def clone(self) -> AyabImage:
-        im: AyabImage = AyabImage(self.__parent)
-        im.image = self.image
-        im.memos = self.memos
-        im.filename = self.filename
-        im.filename_input = self.filename_input
-        return im
-
     def select_file(self) -> None:
         filename = self.filename_input.text()
         if filename == "":
