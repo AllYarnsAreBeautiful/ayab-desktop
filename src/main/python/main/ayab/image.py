@@ -56,9 +56,17 @@ class AyabImage(SignalSender):
         super().__init__(parent.signal_receiver)
         self.__parent = parent
         self.image: Image.Image = None  # type: ignore
-        self.memo: list = []
+        self.memos: list = []
         self.filename: Optional[str] = None
         self.filename_input = self.__parent.ui.filename_lineedit
+
+    def clone(self) -> AyabImage:
+        im: AyabImage = AyabImage(self.__parent)
+        im.image = self.image
+        im.memos = self.memos
+        im.filename = self.filename
+        im.filename_input = self.filename_input
+        return im
 
     def select_file(self) -> None:
         filename = self.filename_input.text()
@@ -120,12 +128,12 @@ class AyabImage(SignalSender):
                 comment = str(self.image.info["Comment"])
                 if comment.startswith("AYAB:"):
                     # update memo information
-                    self.memo = []
+                    self.memos = []
                     for i in range(len(comment) - 5):
-                        self.memo.append(int(comment[i + 5]))
+                        self.memos.append(int(comment[i + 5]))
                 # report metadata
                 logging.info("File metadata Comment tag: " + comment)
-                logging.info("File memo information: " + str(self.memo))
+                logging.info("File memo information: " + str(self.memos))
         self.image = self.image.convert("RGBA")
         self.emit_got_image_flag()
         self.emit_image_resizer()

@@ -61,7 +61,7 @@ class Control(SignalSender):
     initial_position: int
     len_pat_expanded: int
     line_block: int
-    memo: list[int]
+    memos: list[int]
     mode: Mode
     mode_func: ModeFuncType
     num_colors: int
@@ -86,7 +86,7 @@ class Control(SignalSender):
         self.api_version: int = self.FIRST_SUPPORTED_API_VERSION
 
     def start(
-            self, pattern: Pattern, memo: list[int], options: OptionsTab, operation: Operation
+            self, pattern: Pattern, memos: list[int], options: OptionsTab, operation: Operation
     ) -> None:
         self.machine = options.machine
         if operation == Operation.KNIT:
@@ -94,7 +94,7 @@ class Control(SignalSender):
             self.line_block = 0
             self.pattern_repeats = 0
             self.pattern = pattern
-            self.memo = memo
+            self.memos = memos
             self.pat_height = pattern.pat_height
             self.num_colors = options.num_colors
             self.start_row = options.start_row
@@ -235,7 +235,7 @@ class Control(SignalSender):
             + str(self.pat_row)
         )
         try:
-            msg = msg + " memo: " + str(self.memo[self.pat_row])
+            msg = msg + " memo: " + str(self.memos[self.pat_row])
         except:
             pass
         if blank_line:
@@ -272,7 +272,7 @@ class Control(SignalSender):
         self.status.current_row = self.pat_row + 1
         self.status.line_number = line_number
         try:
-            self.status.memo = self.memo[self.pat_row]
+            self.status.memo = self.memos[self.pat_row]
         except:
             self.status.memo = 0
         if self.inf_repeat:
@@ -291,6 +291,7 @@ class Control(SignalSender):
             self.status.carriage_direction = self.initial_direction
         else:
             self.status.carriage_direction = self.initial_direction.reverse()
+        self.logger.debug(str(self.memos))
 
     def select_needles_API6(
         self, color: int, row_index: int, blank_line: bool
