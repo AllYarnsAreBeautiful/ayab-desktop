@@ -21,9 +21,9 @@ This module handles IP communication, currently works in a synchronous way.
 """
 
 from .communication import *
+from ..machine import *
 
 import socket
-import ipaddress
 
 import logging
 import pprint
@@ -33,32 +33,32 @@ from time import sleep
 remotePort = 12346
 
 class CommunicationIP(Communication):
-    def __init__(self):
+    def __init__(self) -> None:
         logging.basicConfig(level=logging.DEBUG)
         self.logger = logging.getLogger(type(self).__name__)
-        self.__tarAddressPort = ("255.255.255.255", 12345)
-        self.__sockTCP = None
+        self.__tarAddressPort: tuple[str | None, int]  = ("255.255.255.255", 12345)
+        self.__sockTCP: None | socket.socket = None
         # socket.socket(family=socket.AF_INET, type=socket.SOCK_STREAM)
         self.rx_msg_list = list()
         self.version = 6
 
-    def __del__(self):
-        return self.close_socket()
+    def __del__(self) -> None:
+        self.close_socket()
 
-    def is_open(self):
+    def is_open(self) -> bool:
         if self.__sockTCP is not None:
             return True
         else:
             return False
 
-    def open_serial(self, portname=None):
+    def open_serial(self, portname: str | None = None) -> bool:
         print("open: " , portname)
         return self.open_tcp(portname)
 
-    def close_serial(self):
-        return True
+    def close_serial(self) -> None:
+        return None
 
-    def open_tcp(self, pPortname=None):
+    def open_tcp(self, pPortname: str | None = None) -> bool:
         try:
             self.__portname = pPortname
             self.__tarAddressPort = (self.__portname, remotePort)
@@ -73,7 +73,7 @@ class CommunicationIP(Communication):
             self.logger.info("Open TCP Socket faild")
             return False
 
-    def close_socket(self):
+    def close_socket(self) -> None:
         if self.__sockTCP is not None:
             try:
                 self.__sockTCP.close()
@@ -83,7 +83,7 @@ class CommunicationIP(Communication):
                 self.logger.warning("Closing TCP Socket failed. (mem Leak?)")
             self.__sockTCP = None
 
-    def send(self, data):
+    def send(self, data: bytearray) -> None:
         if self.__sockTCP is not None:
             try:
                 self.__sockTCP.send(bytes(data))
@@ -97,14 +97,14 @@ class CommunicationIP(Communication):
                 self.close_socket()
 
     # NB this method must be the same for all API versions
-    def req_info(self):
-        self.send([Token.reqInfo.value,self.version])
+    def req_info(self) -> None:
+        self.send(bytearray([Token.reqInfo.value,self.version]))
 
-    def req_test_API6(self):
-        self.send([Token.reqTest.value])
+    def req_test_API6(self) -> None:
+        self.send(bytearray([Token.reqTest.value]))
 
-    def req_start_API6(self, start_needle, stop_needle,
-                       continuous_reporting, disable_hardware_beep):
+    def req_start_API6(self, start_needle: int, stop_needle: int,
+                       continuous_reporting: bool, disable_hardware_beep: bool) -> None:
         """Send a start message to the device."""
         data = bytearray()
         data.append(Token.reqStart.value)
@@ -116,9 +116,9 @@ class CommunicationIP(Communication):
         hash = 0
         hash = add_crc(hash, data)
         data.append(hash)
-        data = self.send(data)
+        self.send(data)
 
-    def req_init_API6(self, machine: Machine):
+    def req_init_API6(self, machine: Machine) -> None:
         """Send a start message to the device."""
         data = bytearray()
         data.append(Token.reqInit.value)
@@ -126,9 +126,9 @@ class CommunicationIP(Communication):
         hash = 0
         hash = add_crc(hash, data)
         data.append(hash)
-        data = self.send(data)
+        self.send(data)
 
-    def cnf_line_API6(self, line_number, color, flags, line_data):
+    def cnf_line_API6(self, line_number: int , color: int, flags: int, line_data: bytes) -> None:
         """Send a line of data via the serial port.
 
         Send a line of data to the serial port. All arguments are mandatory.
@@ -150,13 +150,13 @@ class CommunicationIP(Communication):
         hash = 0
         hash = add_crc(hash, data)
         data.append(hash)
-        data = self.send(data)
+        self.send(data)
 
-    def update_API6(self):
+    def update_API6(self) -> tuple[bytes | None, Token, int]:
         """Read data from serial and parse as SLIP packet."""
         return self.parse_API6(self.read_API6())
 
-    def parse_API6(self, msg):
+    def parse_API6(self, msg: bytes | None) -> tuple[bytes | None, Token, int]:
         if msg is None:
             return None, Token.none, 0
         # else
@@ -169,7 +169,7 @@ class CommunicationIP(Communication):
         pp.pprint(msg[1: -1].decode())
         return msg, Token.unknown, 0
 
-    def read_API6(self):
+    def read_API6(self) -> bytes | None:
         """Read data from serial as SLIP packet."""
         if self.__sockTCP is not None:
             try:
@@ -192,24 +192,9 @@ class CommunicationIP(Communication):
         # else
         return None
 
-    def write_API6(self, cmd: str) -> None:
+    def write_API6(self, cmd: bytes | bytearray) -> None:
         # SLIP protocol, no CRC8
         if self.__ser:
-            self.__ser.write(cmd)
+            self.__ser.write(bytes(cmd))
 
 
-# CRC algorithm after Maxim/Dallas
-def add_crc(crc, data):
-    for i in range(len(data)):
-        n = data[i]
-        for j in range(8):
-            f = (crc ^ n) & 1
-            crc >>= 1
-            if f:
-                crc ^= 0x8C
-            n >>= 1
-    return crc & 0xFF
-
-
-class CommunicationException(Exception):
-    pass

@@ -26,6 +26,7 @@ import logging
 
 from PySide6.QtWidgets import QMainWindow
 from PySide6.QtCore import QCoreApplication
+from PySide6.QtCore import QEvent
 
 from .main_gui import Ui_MainWindow
 from .gui_fsm import gui_fsm
@@ -59,7 +60,7 @@ class GuiMain(QMainWindow):
     components from `menu_gui.ui`.
     """
 
-    def closeEvent(self, event):
+    def closeEvent(self, event: QEvent) -> None:
         print("close")
         self.engine.close()
         event.accept()

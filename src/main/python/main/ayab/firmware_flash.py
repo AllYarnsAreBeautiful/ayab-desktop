@@ -186,10 +186,10 @@ class FirmwareFlash(QDialog):
         self, base_dir: str, os_name: str, controller_name: str, firmware_name: str
     ) -> Optional[str]:
         if os_name == "Windows":
-            exe_route = self.__parent_ui.app_context.get_resource("ayab/firmware/esp32/win64/esptool.exe")
+            exe_route = self.__app_context.get_resource("ayab/firmware/esp32/win64/esptool.exe")
             exe_route = "\"" + exe_route + "\""
         elif os_name == "Linux":
-            exe_route = self.__parent_ui.app_context.get_resource("ayab/firmware/esp32/linux-amd64/esptool")
+            exe_route = self.__app_context.get_resource("ayab/firmware/esp32/linux-amd64/esptool")
         elif os_name == "Darwin":  # macOS
             #exe_route = self.__parent_ui.app_context.get_resource("ayab/firmware/esp32/macos/esptool")
             exe_route = "esptool.py"

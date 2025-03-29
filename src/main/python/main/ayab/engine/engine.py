@@ -75,9 +75,10 @@ class Engine(SignalSender, QDockWidget):
         self.__logger = logging.getLogger(type(self).__name__)
         self.setWindowTitle("Machine: " + Machine(self.config.machine).name)
 
-    def close(self) -> None:
+    def close(self) -> bool:
         logging.info("StopUDPMonitor")
         udpMonitor.stop()
+        return True
 
     def __del__(self) -> None:
         self.control.stop()
