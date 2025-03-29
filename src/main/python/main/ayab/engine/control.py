@@ -291,7 +291,6 @@ class Control(SignalSender):
             self.status.carriage_direction = self.initial_direction
         else:
             self.status.carriage_direction = self.initial_direction.reverse()
-        self.logger.debug(str(self.memos))
 
     def select_needles_API6(
         self, color: int, row_index: int, blank_line: bool
