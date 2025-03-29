@@ -172,7 +172,7 @@ class KnitProgress(QTableWidget):
                 self.horizontalHeader().setVisible(False)
             else:
                 self.horizontalHeader().setVisible(True)
-            needle = status.knit_start_needle + i
+            needle = status.knit_start_needle + i - self.show_memo_column
             needle_number_from_r1 = needle - status.machine_width // 2
             if self.show_memo_column and i == 0:
                 header = QTableWidgetItem("M")
