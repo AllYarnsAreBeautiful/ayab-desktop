@@ -26,16 +26,15 @@ import numpy.typing as npt
 from PIL import Image
 from .options import Alignment, OptionsTab
 from .mode import Mode
-from ..image import AyabImage
 from ..machine import Machine
 
 
 class Pattern(object):
-    def __init__(self, im: AyabImage, config: OptionsTab, num_colors: int = 2):
+    def __init__(self, image: Image.Image, memos: list[int], config: OptionsTab, num_colors: int = 2):
         self.__pattern : Image.Image = (
-            im.image.transpose(Image.FLIP_LEFT_RIGHT) if config.auto_mirror else im.image
+            image.transpose(Image.FLIP_LEFT_RIGHT) if config.auto_mirror else image
         )
-        self.__memos : list[int] = im.memos
+        self.__memos : list[int] = memos
         self.__num_colors : int = num_colors
         self.__alignment : Alignment = Alignment.CENTER
         self.__pat_start_needle: int = -1

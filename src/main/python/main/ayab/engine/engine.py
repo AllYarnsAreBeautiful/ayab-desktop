@@ -133,12 +133,11 @@ class Engine(SignalSender, QDockWidget):
         self.__logger.debug(self.config.as_dict())
 
         # start to knit with the bottom first
-        im_rev = im.clone()
-        im_rev.image = im.image.transpose(Image.FLIP_TOP_BOTTOM)
+        image_rev: Image.Image = im.image.transpose(Image.FLIP_TOP_BOTTOM)
 
         # TODO: detect if previous conf had the same
         # image to avoid re-generating.
-        self.pattern = Pattern(im_rev, self.config, self.config.num_colors)
+        self.pattern = Pattern(image_rev, im.memos, self.config, self.config.num_colors)
         self.memos = im.memos
 
         # validate configuration options
