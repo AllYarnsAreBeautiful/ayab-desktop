@@ -28,6 +28,8 @@ To build or run the application, you will also need the system libraries require
 
 #### Debian/Ubuntu
 ```bash
+    sudo add-apt-repository -y ppa:deadsnakes/ppa
+    sudo apt update
     sudo apt install python3.11 python3.11-dev python3.11-venv
     sudo apt install libasound2-dev avrdude qt6-tools-dev-tools build-essential
 ```
