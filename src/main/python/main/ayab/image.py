@@ -103,6 +103,7 @@ class AyabImage(SignalSender):
             self.__parent.engine.config.refresh()
 
     def __open(self, filename: str) -> None:
+        self.memos = []
         # check for files that need conversion
         suffix = filename[-4:].lower()
         if suffix == ".pat":
@@ -120,7 +121,6 @@ class AyabImage(SignalSender):
                 comment = str(self.image.info["Comment"])
                 if comment.startswith("AYAB:"):
                     # update memo information
-                    self.memos = []
                     for i in range(len(comment) - 5):
                         try:
                             self.memos.append(int(comment[i + 5]))
