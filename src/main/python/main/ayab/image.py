@@ -56,7 +56,7 @@ class AyabImage(SignalSender):
         super().__init__(parent.signal_receiver)
         self.__parent = parent
         self.image: Image.Image = None  # type: ignore
-        self.memos: list = []
+        self.memos: list[int] = []
         self.filename: Optional[str] = None
         self.filename_input = self.__parent.ui.filename_lineedit
 
@@ -122,7 +122,10 @@ class AyabImage(SignalSender):
                     # update memo information
                     self.memos = []
                     for i in range(len(comment) - 5):
-                        self.memos.append(int(comment[i + 5]))
+                        try:
+                            self.memos.append(int(comment[i + 5]))
+                        except:
+                            self.memos.append(0)
                 # report metadata
                 logging.info("File metadata Comment tag: " + comment)
                 logging.info("File memo information: " + str(self.memos))
