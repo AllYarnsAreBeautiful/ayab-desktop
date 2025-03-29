@@ -81,7 +81,7 @@ class KnitProgress(QTableWidget):
         self.setRowCount(0)
         self.setCurrentCell(-1, -1)
         self.color = True
-        self.memo_column = len(self.scene.ayabimage.memos) > 0
+        self.show_memo_column = len(self.scene.ayabimage.memos) > 0
 
     def uiStateChanged(self, status: Status) -> bool:
         if not self.previousStatus:
@@ -140,7 +140,7 @@ class KnitProgress(QTableWidget):
     def load_columns_from_status(
         self, status: Status, columns: List[QTableWidgetItem]
     ) -> None:
-        if self.memo_column:
+        if self.show_memo_column:
             columns.append(self.__memo(status.memo))
         for c in range(0, len(status.bits)):
             needle = status.knit_start_needle + c
@@ -174,7 +174,7 @@ class KnitProgress(QTableWidget):
                 self.horizontalHeader().setVisible(True)
             needle = status.knit_start_needle + i
             needle_number_from_r1 = needle - status.machine_width // 2
-            if self.memo_column and i == 0:
+            if self.show_memo_column and i == 0:
                 header = QTableWidgetItem("M")
                 header.setForeground(QBrush(QColor(f"#{self.grey:06x}")))
             elif needle_number_from_r1 < 0:
