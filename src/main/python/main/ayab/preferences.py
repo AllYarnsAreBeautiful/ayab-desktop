@@ -213,7 +213,7 @@ class PrefsDialog(QDialog):
 
         # set up preferences dialog
         self.__ui = Ui_Prefs()
-        self.__ui.setupUi(self)
+        self.__ui.setupUi(self) # type: ignore
         self.__form = QFormLayout(self.__ui.prefs_group)
 
         # add form items

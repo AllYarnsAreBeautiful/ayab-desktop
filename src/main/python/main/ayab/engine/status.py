@@ -224,7 +224,7 @@ class StatusTab(Status, QWidget):
     def __init__(self) -> None:
         super().__init__()
         self.ui = Ui_StatusTab()
-        self.ui.setupUi(self)
+        self.ui.setupUi(self) # type: ignore
 
     def refresh(self) -> None:
         pass  # TODO

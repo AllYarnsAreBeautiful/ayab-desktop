@@ -30,8 +30,8 @@ from ..signal_sender import SignalSender
 from .options_gui import Ui_Options
 from .mode import Mode
 from ..machine import Machine
-from . import lowercase_e_rc
-from . import lowercase_e_reversed_rc
+from . import eKnitter_rc
+from . import eKnitter_reversed_rc
 from typing import TYPE_CHECKING, Literal, TypedDict
 
 if TYPE_CHECKING:
@@ -65,8 +65,8 @@ class OptionsTab(SignalSender, QWidget):
     @date   June 2020
     """
 
-    lowercase_e_rc
-    lowercase_e_reversed_rc
+    eKnitter_rc
+    eKnitter_reversed_rc
     alignment: Alignment
     auto_mirror: bool
     continuous_reporting: bool
@@ -89,7 +89,7 @@ class OptionsTab(SignalSender, QWidget):
         # self.__reset()
 
     def __setup_ui(self) -> None:
-        self.ui.setupUi(self)
+        self.ui.setupUi(self) # type: ignore
 
         # Combo boxes
         Mode.add_items(self.ui.knitting_mode_box)
@@ -126,10 +126,10 @@ class OptionsTab(SignalSender, QWidget):
     def __auto_mirror_changed(self) -> None:
         image_reversed = self.ui.auto_mirror_checkbox.isChecked()
         if image_reversed:
-            self.ui.auto_mirror_icon.setPixmap(QPixmap(":/garamond-lowercase-e.png"))
+            self.ui.auto_mirror_icon.setPixmap(QPixmap(":/eKnitter.png"))
         else:
             self.ui.auto_mirror_icon.setPixmap(
-                QPixmap(":/garamond-lowercase-e-reversed.png")
+                QPixmap(":/eKnitter-reversed.png")
             )
         self.emit_image_reverser(image_reversed)
 
@@ -180,11 +180,11 @@ class OptionsTab(SignalSender, QWidget):
         self.ui.alignment_combo_box.setCurrentIndex(self.alignment.value)
         if self.auto_mirror:
             self.ui.auto_mirror_checkbox.setCheckState(Qt.CheckState.Checked)
-            self.ui.auto_mirror_icon.setPixmap(QPixmap(":/garamond-lowercase-e.png"))
+            self.ui.auto_mirror_icon.setPixmap(QPixmap(":/eKnitter.png"))
         else:
             self.ui.auto_mirror_checkbox.setCheckState(Qt.CheckState.Unchecked)
             self.ui.auto_mirror_icon.setPixmap(
-                QPixmap(":/garamond-lowercase-e-reversed.png")
+                QPixmap(":/eKnitter-reversed.png")
             )
         # self.ui.continuous_reporting_checkbox
         self.emit_image_reverser(self.auto_mirror)

@@ -61,7 +61,7 @@ class Engine(SignalSender, QDockWidget):
         logging.info("StartUDPMonitor")
         udpMonitor.start()
         self.ui = Ui_Dock()
-        self.ui.setupUi(self)
+        self.ui.setupUi(self) # type: ignore
         self.config: OptionsTab = OptionsTab(parent)
         self.config.portname = self.__read_portname()
         self.reload_settings()

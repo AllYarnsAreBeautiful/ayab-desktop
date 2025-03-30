@@ -158,7 +158,7 @@ class MirrorDialog(QDialog):
     def __init__(self, parent: Mirrors):
         super().__init__()  # FIXME set the parent widget as GuiMain
         self.__ui = Ui_Mirrors()
-        self.__ui.setupUi(self)
+        self.__ui.setupUi(self) # type: ignore
         self.__ui.check0.toggled.connect(lambda: parent.toggled(0))
         self.__ui.check1.toggled.connect(lambda: parent.toggled(1))
         self.__ui.check2.toggled.connect(lambda: parent.toggled(2))

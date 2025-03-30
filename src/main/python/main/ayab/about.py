@@ -38,7 +38,7 @@ class About(QFrame):
         super().__init__()
         self.__version = utils.package_version(parent.app_context)
         self.__ui = Ui_AboutForm()
-        self.__ui.setupUi(self)
+        self.__ui.setupUi(self) # type: ignore
         self.__ui.title_label.setText(
             QCoreApplication.translate("MainWindow", "All Yarns Are Beautiful")
             + " "

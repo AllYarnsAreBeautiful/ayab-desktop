@@ -59,7 +59,7 @@ class FirmwareFlash(QDialog):
         self.__app_context = parent.app_context
 
         self.ui = Ui_Firmware()
-        self.ui.setupUi(self)
+        self.ui.setupUi(self) # type: ignore
         self.ui.flash_firmware.setEnabled(False)
         self.ui.flash_firmware.setDefault(True)
         self.load_json()
