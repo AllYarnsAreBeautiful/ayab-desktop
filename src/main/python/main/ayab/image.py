@@ -27,7 +27,7 @@ from PIL import Image
 from PySide6.QtCore import QCoreApplication
 from PySide6.QtWidgets import QInputDialog, QDialog, QFileDialog
 
-from .transforms import Transform, Mirrors
+from .transforms import ImageTransform, Mirrors
 from .signal_sender import SignalSender
 from .utils import display_blocking_popup
 from .machine import Machine
@@ -134,7 +134,7 @@ class AyabImage(SignalSender):
         self.emit_image_resizer()
 
     def invert(self) -> None:
-        self.apply_transform(Transform.invert)
+        self.apply_transform(ImageTransform.invert)
 
     def repeat(self) -> None:
         machine_width = Machine(self.__parent.prefs.value("machine")).width
@@ -149,7 +149,7 @@ class AyabImage(SignalSender):
             minValue=1,
             maxValue=ceil(machine_width / self.image.width),
         )
-        self.apply_transform(Transform.repeat, v[0], h[0])
+        self.apply_transform(ImageTransform.repeat, v[0], h[0])
 
     def stretch(self) -> None:
         machine_width = Machine(self.__parent.prefs.value("machine")).width
@@ -164,24 +164,24 @@ class AyabImage(SignalSender):
             minValue=1,
             maxValue=ceil(machine_width / self.image.width),
         )
-        self.apply_transform(Transform.stretch, v[0], h[0])
+        self.apply_transform(ImageTransform.stretch, v[0], h[0])
 
     def reflect(self) -> None:
         m = Mirrors()
         if m.result == QDialog.DialogCode.Accepted:
-            self.apply_transform(Transform.reflect, m.mirrors)
+            self.apply_transform(ImageTransform.reflect, m.mirrors)
 
     def hflip(self) -> None:
-        self.apply_transform(Transform.hflip)
+        self.apply_transform(ImageTransform.hflip)
 
     def vflip(self) -> None:
-        self.apply_transform(Transform.vflip)
+        self.apply_transform(ImageTransform.vflip)
 
     def rotate_left(self) -> None:
-        self.apply_transform(Transform.rotate_left)
+        self.apply_transform(ImageTransform.rotate_left)
 
     def rotate_right(self) -> None:
-        self.apply_transform(Transform.rotate_right)
+        self.apply_transform(ImageTransform.rotate_right)
 
     def zoom_in(self) -> None:
         self.__parent.scene.set_zoom(+1)
