@@ -56,7 +56,7 @@ class AyabImage(SignalSender):
         super().__init__(parent.signal_receiver)
         self.__parent = parent
         self.image: Image.Image = None  # type: ignore
-        self.memos: list[int] = []
+        self.memos: list[str] = []
         self.filename: Optional[str] = None
         self.filename_input = self.__parent.ui.filename_lineedit
 
