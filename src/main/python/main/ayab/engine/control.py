@@ -86,7 +86,7 @@ class Control(SignalSender):
         self.api_version: int = self.FIRST_SUPPORTED_API_VERSION
 
     def start(
-            self, pattern: Pattern, memos: list[int], options: OptionsTab, operation: Operation
+            self, pattern: Pattern, memos: list[str], options: OptionsTab, operation: Operation
     ) -> None:
         self.machine = options.machine
         if operation == Operation.KNIT:

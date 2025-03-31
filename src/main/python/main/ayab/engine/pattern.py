@@ -200,7 +200,7 @@ class Pattern(object):
         return self.__pattern_expanded
 
     @property
-    def memos(self) -> list[int]:
+    def memos(self) -> list[str]:
         return self.__memos
 
     def array2rgb(self, a: list[int]) -> int:
