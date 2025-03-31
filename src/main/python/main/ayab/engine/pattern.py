@@ -34,7 +34,7 @@ class Pattern(object):
         self.__pattern : Image.Image = (
             image.transpose(Image.FLIP_LEFT_RIGHT) if config.auto_mirror else image
         )
-        self.__memos : list[int] = memos
+        self.__memos : list[str] = memos
         self.__num_colors : int = num_colors
         self.__alignment : Alignment = Alignment.CENTER
         self.__pat_start_needle: int = -1

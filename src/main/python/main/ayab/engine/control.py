@@ -61,7 +61,7 @@ class Control(SignalSender):
     initial_position: int
     len_pat_expanded: int
     line_block: int
-    memos: list[int]
+    memos: list[str]
     mode: Mode
     mode_func: ModeFuncType
     num_colors: int
