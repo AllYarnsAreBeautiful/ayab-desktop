@@ -135,6 +135,7 @@ class AyabImage(SignalSender):
 
     def invert(self) -> None:
         self.apply_transform(ImageTransform.invert)
+        # memos unchanged
 
     def repeat(self) -> None:
         machine_width = Machine(self.__parent.prefs.value("machine")).width
@@ -150,6 +151,7 @@ class AyabImage(SignalSender):
             maxValue=ceil(machine_width / self.image.width),
         )
         self.apply_transform(ImageTransform.repeat, v[0], h[0])
+        self.memos = self.memos * v[0]
 
     def stretch(self) -> None:
         machine_width = Machine(self.__parent.prefs.value("machine")).width
@@ -165,23 +167,29 @@ class AyabImage(SignalSender):
             maxValue=ceil(machine_width / self.image.width),
         )
         self.apply_transform(ImageTransform.stretch, v[0], h[0])
+        self.memos = []
 
     def reflect(self) -> None:
         m = Mirrors()
         if m.result == QDialog.DialogCode.Accepted:
             self.apply_transform(ImageTransform.reflect, m.mirrors)
+        self.memos = []
 
     def hflip(self) -> None:
         self.apply_transform(ImageTransform.hflip)
+        # memos unchanged
 
     def vflip(self) -> None:
         self.apply_transform(ImageTransform.vflip)
+        self.memos = []
 
     def rotate_left(self) -> None:
         self.apply_transform(ImageTransform.rotate_left)
+        self.memos = []
 
     def rotate_right(self) -> None:
         self.apply_transform(ImageTransform.rotate_right)
+        self.memos = []
 
     def zoom_in(self) -> None:
         self.__parent.scene.set_zoom(+1)
@@ -196,10 +204,6 @@ class AyabImage(SignalSender):
     ) -> None:
         """Executes an image transform specified by function and args."""
         self.image = transform(self.image, args)
-        try:
-            pass  # self.image = transform(self.image, args)
-        except Exception as e:
-            logging.error("Error while executing image transform: " + repr(e))
 
         # Update the view
         self.emit_image_resizer()
