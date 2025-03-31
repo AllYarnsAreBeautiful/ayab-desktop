@@ -52,7 +52,7 @@ class Engine(SignalSender, QDockWidget):
 
     port_opener = Signal()
 
-    memos: list[int]
+    memos: list[str]
     pattern: Pattern
     status: StatusTab
 

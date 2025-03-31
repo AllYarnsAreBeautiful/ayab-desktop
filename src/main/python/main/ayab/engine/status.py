@@ -119,7 +119,7 @@ class Status(object):
     current_row: int
     firmware_state: int
     line_number: int
-    memo: int
+    memo: str
     repeats: int
     total_rows: int
     # carriage info
