@@ -74,6 +74,10 @@ class KnitProgress(QTableWidget):
         self.previousStatus: Optional[Status] = None
         self.scene = parent.scene
         self.currentItemChanged.connect(self.onStitchSelect)
+        self.qcolor_green: QColor = QColor(f"#{self.green:06x}")
+        self.qcolor_orange: QColor = QColor(f"#{self.orange:06x}")
+        self.qcolor_grey: QColor = QColor(f"#{self.grey:06x}")
+        self.qcolor_smoke: QColor = QColor(f"#{self.smoke:06x}")
 
     def start(self) -> None:
         self.clearContents()
@@ -176,15 +180,15 @@ class KnitProgress(QTableWidget):
             needle_number_from_r1 = needle - status.machine_width // 2
             if self.show_memo_column and i == 0:
                 header = QTableWidgetItem("M")
-                header.setForeground(QBrush(QColor(f"#{self.grey:06x}")))
+                header.setForeground(QBrush(self.qcolor_grey))
             elif needle_number_from_r1 < 0:
                 header = QTableWidgetItem(f"{-needle_number_from_r1}")
                 header.font().setBold(True)
-                header.setForeground(QBrush(QColor(f"#{self.orange:06x}")))
+                header.setForeground(QBrush(self.qcolor_orange))
                 header.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
             else:
                 header = QTableWidgetItem(f"{1 + needle_number_from_r1}")
-                header.setForeground(QBrush(QColor(f"#{self.green:06x}")))
+                header.setForeground(QBrush(self.qcolor_green))
                 header.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
             self.setHorizontalHeaderItem(i, header)
 
@@ -279,7 +283,7 @@ class KnitProgress(QTableWidget):
         memo: str,
     ) -> QTableWidgetItem:
         cell = QTableWidgetItem()
-        cell.setBackground(QBrush(QColor(f"#{self.smoke:06x}")))
+        cell.setBackground(QBrush(self.qcolor_smoke))
         if len(memo) > 0 and memo != "0":
             cell.setText(memo)
         return cell
@@ -290,7 +294,7 @@ class KnitProgress(QTableWidget):
             self.__progbar.set_selection_label("")
             return
         header = self.horizontalHeaderItem(current.column())
-        if header is not None and header.foreground().color().red() == 187:
+        if header is not None and header.foreground().color() == self.qcolor_green:
             side = "Right"
         else:
             side = "Left"
