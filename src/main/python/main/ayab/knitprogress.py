@@ -280,8 +280,8 @@ class KnitProgress(QTableWidget):
     ) -> QTableWidgetItem:
         cell = QTableWidgetItem()
         cell.setBackground(QBrush(QColor(f"#{self.smoke:06x}")))
-        if memo > 0:
-            cell.setText(str(memo))
+        if len(memo) > 0 and  memo != "0":
+            cell.setText(memo)
         return cell
 
 
