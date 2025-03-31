@@ -30,7 +30,7 @@ from ..machine import Machine
 
 
 class Pattern(object):
-    def __init__(self, image: Image.Image, memos: list[int], config: OptionsTab, num_colors: int = 2):
+    def __init__(self, image: Image.Image, memos: list[str], config: OptionsTab, num_colors: int = 2):
         self.__pattern : Image.Image = (
             image.transpose(Image.FLIP_LEFT_RIGHT) if config.auto_mirror else image
         )
