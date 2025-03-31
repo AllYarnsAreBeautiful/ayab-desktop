@@ -146,7 +146,7 @@ class Status(object):
         self.current_row = -1
         self.firmware_state = -1
         self.line_number = -1
-        self.memo = 0
+        self.memo = '0'
         self.repeats = -1
         self.total_rows = -1
         # carriage info
