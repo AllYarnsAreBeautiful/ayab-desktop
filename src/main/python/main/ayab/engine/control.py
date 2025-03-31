@@ -274,7 +274,7 @@ class Control(SignalSender):
         try:
             self.status.memo = self.memos[self.pat_row]
         except:
-            self.status.memo = 0
+            self.status.memo = "0"
         if self.inf_repeat:
             self.status.repeats = self.pattern_repeats
         if self.mode != Mode.SINGLEBED:
