@@ -13,6 +13,8 @@ $<$details$>$
 For flashing the firmware, avrdude has to be available on your system. To build or run the application, you will also need the system libraries required by Qt 6; installing the Qt 6 development tools is a concise (if heavy-\/handed) way of bringing in these dependencies.\hypertarget{md_README_autotoc_md14}{}\doxysubsubsection{Debian/\+Ubuntu}\label{md_README_autotoc_md14}
 
 \begin{DoxyCode}{0}
+\DoxyCodeLine{sudo add-\/apt-\/repository -\/y ppa:deadsnakes/ppa}
+\DoxyCodeLine{sudo apt update}
 \DoxyCodeLine{sudo apt install python3.11 python3.11-\/dev python3.11-\/venv}
 \DoxyCodeLine{sudo apt install libasound2-\/dev avrdude qt6-\/tools-\/dev-\/tools build-\/essential}
 
