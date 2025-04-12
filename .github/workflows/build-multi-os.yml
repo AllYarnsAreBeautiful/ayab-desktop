@@ -20,7 +20,7 @@ env:
 
 jobs:
   build-windows:
-    name: Create and upload Windows release
+    name: Create and upload Windows build
     runs-on: windows-latest
     steps:
       - name: Checkout code
@@ -28,13 +28,16 @@ jobs:
         with:
           submodules: recursive
           fetch-depth: 0 # necessary for `git describe`
+
       - uses: ./.github/actions/init-environment
         id: vars
+
       - name: Get firmware version matching manifest
         shell: bash
         working-directory: src/main/resources/base/ayab/firmware/
         run: |
-          curl -O ${{ steps.vars.outputs.firmware-url }}
+          curl --fail -O '${{ steps.vars.outputs.firmware-url }}'
+
       - name: Install dependencies
         shell: pwsh
         run: |
@@ -42,14 +45,17 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r requirements.build.txt
           python -m pip install -r windows-build\windows_build_requirements.txt
+
       - name: Convert UI and translation files
         run: |
           bash setup-environment.ps1
+
       - name: Remove unneeded files
         shell: bash
         run: |
           rm src/main/python/main/ayab/*_gui.ui
           rm src/main/python/main/ayab/ayab_logo_rc.qrc
+
       - name: Change line endings to CRLF
         shell: bash
         run: |
@@ -80,12 +86,14 @@ jobs:
       - name: Build app
         shell: pwsh
         run: python -m fbs freeze
+
       - name: Create installer
         shell: pwsh
         run: |
           python -m fbs installer
           Move-Item -Path target\AYABSetup.exe -Destination target\AYAB-${{ steps.vars.outputs.tag }}.exe
-      - name: Upload asset
+
+      - name: Attach installer to release
         uses: ncipollo/release-action@v1
         if: steps.vars.outputs.do-release == 'true'
         with:
@@ -104,13 +112,14 @@ jobs:
           omitBodyDuringUpdate: true
           omitDraftDuringUpdate: true
           omitPrereleaseDuringUpdate: true
+
       - uses: actions/upload-artifact@v4
         with:
           name: AYAB-${{ steps.vars.outputs.tag }}.exe
           path: target/AYAB-${{ steps.vars.outputs.tag }}.exe
 
   build-macos:
-    name: Create and upload Mac OSX release
+    name: Create and upload Mac OSX build
     runs-on: macos-14
     env:
       APPLE_CERTIFICATE_NAME: ${{ secrets.APPLE_CERTIFICATE_NAME }}
@@ -121,13 +130,16 @@ jobs:
         with:
           submodules: recursive
           fetch-depth: 0 # necessary for `git describe`
+
       - uses: ./.github/actions/init-environment
         id: vars
+
       - name: Get firmware version matching manifest
         shell: bash
         working-directory: src/main/resources/base/ayab/firmware/
         run: |
-          curl -O ${{ steps.vars.outputs.firmware-url }}
+          curl --fail -O '${{ steps.vars.outputs.firmware-url }}'
+
       - name: Install dependencies
         run: |
           mkdir tmp-wheel/
@@ -152,9 +164,11 @@ jobs:
           python -m pip install tmp-wheel/*.whl bitarray*.whl
 
           python -m pip install --no-binary charset_normalizer -r requirements.build.txt
+
       - name: Convert UI and translation files
         run: |
           bash setup-environment.ps1
+
       - name: Remove unneeded files
         run: |
           rm src/main/python/main/ayab/*_gui.ui
@@ -248,36 +262,45 @@ jobs:
         with:
           submodules: recursive
           fetch-depth: 0 # necessary for `git describe`
+
       - uses: ./.github/actions/init-environment
         id: vars
+
       - name: Get firmware version matching manifest
         shell: bash
         working-directory: src/main/resources/base/ayab/firmware/
         run: |
-          curl -O ${{ steps.vars.outputs.firmware-url }}
+          curl --fail -O '${{ steps.vars.outputs.firmware-url }}'
+
       - name: Install Python modules
         run: |
           sudo apt-get install -y avrdude libasound2-dev
           python -m pip install --upgrade pip
           python -m pip install --upgrade setuptools
           python -m pip install -r requirements.build.txt
+
       - name: Convert UI and translation files
         run: |
           bash setup-environment.ps1
+
       - name: Relocate
         run: |
           mkdir git
           shopt -s extglob dotglob
           cp -r !(git) git
           shopt -u dotglob
+
       - name: Download AppImage of Python designed for manylinux
         run: wget -c https://github.com/niess/python-appimage/releases/download/python${{steps.vars.outputs.python-minor}}/${{steps.vars.outputs.python-appimage}}
+
       - name: Extract the AppImage
         run: |
           chmod +x ${{steps.vars.outputs.python-appimage}}
           ./${{steps.vars.outputs.python-appimage}} --appimage-extract
+
       - name: Move repo
         run: mv git/* squashfs-root
+
       - name: Install dependencies
         run: |
           cd squashfs-root
@@ -286,21 +309,25 @@ jobs:
           # hack to fix setup.py script with faulty include
           ./AppRun -m pip install --global-option=build_ext --global-option="-I$(pwd)/opt/${{steps.vars.outputs.python-minor}}/include/${{steps.vars.outputs.python-minor}}" simpleaudio
           ./AppRun -m pip install -r requirements.build.txt
+
       - name: Add AppDir subdirectories to PATH
         run: |
           echo "usr/bin" >> $GITHUB_PATH
           echo "opt/${{steps.vars.outputs.python-minor}}/bin" >> $GITHUB_PATH
+
       - name: Remove unneeded files
         run: |
           rm squashfs-root/src/main/python/main/ayab/*_gui.ui
           rm squashfs-root/src/main/python/main/ayab/ayab_logo_rc.qrc
           rm squashfs-root/src/main/python/main/ayab/engine/lowercase_e_rc.qrc
           rm squashfs-root/src/main/python/main/ayab/engine/lowercase_e_reversed_rc.qrc
+
       - name: Replace AppRun
         run: |
           cd squashfs-root
           rm AppRun
           cp linux-build/appimage/AppRun .
+
       - name: Add icon
         run: |
           cd squashfs-root
@@ -309,6 +336,7 @@ jobs:
           cp linux-build/appimage/ayab.png ayab.png
           mkdir -p usr/share/icons/hicolor/128x128/apps/
           cp ayab.png usr/share/icons/hicolor/128x128/apps/
+
       - name: Create desktop file
         run: |
           cd squashfs-root
@@ -317,12 +345,14 @@ jobs:
           rm -f usr/share/applications/*.desktop
           cp linux-build/appimage/com.ayab_knitting.ayab.desktop com.ayab_knitting.ayab.desktop
           cp com.ayab_knitting.ayab.desktop usr/share/applications/com.ayab_knitting.ayab.desktop
+
       - name: Add metadata
         run: |
           cd squashfs-root
           mkdir -p usr/share/metainfo/
           rm -f usr/share/metainfo/*.appdata.xml
           cp linux-build/appimage/ayab.appdata.xml usr/share/metainfo/
+
       - name: Convert to AppImage
         run: |
           wget -c https://github.com/$(wget -q https://github.com/probonopd/go-appimage/releases/expanded_assets/continuous -O - | grep appimagetool-.*-x86_64.AppImage | head -n 1 | cut -d '"' -f 2)
@@ -332,7 +362,8 @@ jobs:
           VERSION=${{steps.vars.outputs.tag}} ./appimagetool-*-x86_64.AppImage squashfs-root/
           sudo apt remove appstream
           mv ayab-${{ steps.vars.outputs.tag }}-x86_64.AppImage AYAB-${{ steps.vars.outputs.tag }}-x86_64.AppImage
-      - name: Upload asset
+
+      - name: Attach AppImage to release
         uses: ncipollo/release-action@v1
         if: steps.vars.outputs.do-release == 'true'
         with:
@@ -351,6 +382,7 @@ jobs:
           omitBodyDuringUpdate: true
           omitDraftDuringUpdate: true
           omitPrereleaseDuringUpdate: true
+
       - uses: actions/upload-artifact@v4
         with:
           name: AYAB-${{ steps.vars.outputs.tag }}-x86_64.AppImage
