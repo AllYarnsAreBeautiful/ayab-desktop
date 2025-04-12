@@ -1,0 +1,28 @@
+name: Deploy pages
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Install dependencies for doxygen
+        run: |
+          sudo apt-get install doxygen graphviz -y
+      - name: Create .nojekyll so that filenames with underscores work on Github Pages
+        run: |
+          mkdir -p docs/html
+          touch docs/html/.nojekyll
+      - name: Deploy to pages
+        uses: DenverCoder1/doxygen-github-pages-action@v1.3.1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: gh-pages
+          folder: docs/html
+          config_file: Doxyfile
