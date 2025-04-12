@@ -1,20 +1,20 @@
 name: Init Environment
+description: "Sets up the environment and extracts various build-related variables"
 outputs:
   do-release:
+    description: "'true' if the current ref is a release tag (matches semver pattern)"
     value: ${{steps.vars.outputs.do-release}}
-  sha-short:
-    value: ${{steps.vars.outputs.sha-short}}
   tag:
+    description: "Current Git tag from git describe"
     value: ${{steps.vars.outputs.tag}}
-  draft:
-    value: ${{steps.vars.outputs.draft}}
-  manifest:
-    value: ${{steps.vars.outputs.manifest}}
   python-minor:
+    description: "Python version without patch number (e.g. 3.11)"
     value: ${{steps.vars.outputs.python-minor}}
   python-appimage:
+    description: "Python AppImage filename for Linux builds"
     value: ${{steps.vars.outputs.python-appimage}}
   firmware-url:
+    description: "Download URL for the firmware hex file"
     value: ${{steps.firmware.outputs.firmware-url}}
 runs:
   using: "composite"
@@ -24,6 +24,7 @@ runs:
       uses: actions/setup-python@v5
       with:
         python-version: ${{ env.PYTHON_VERSION }}
+
     - name: Set variables
       id: vars
       shell: bash
@@ -33,10 +34,10 @@ runs:
         fi
         echo "sha-short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
         echo "tag=$(git describe --tags)" >> $GITHUB_OUTPUT
-        echo "draft=$(git describe --tags | sed -e 's/^test.*/true/;s/^v.*/false/')" >> $GITHUB_OUTPUT
         echo "manifest=$(cat src/main/resources/base/ayab/firmware/manifest.txt)" >> $GITHUB_OUTPUT
         echo "python-minor=$(echo '${{steps.py.outputs.python-version}}' | sed -e 's/\.[^.]*$//')" >> $GITHUB_OUTPUT
         echo "python-appimage=python${{steps.py.outputs.python-version}}-cp311-cp311-manylinux_2_28_x86_64.AppImage" >> $GITHUB_OUTPUT
+
     - name: Get firmware version matching manifest
       id: firmware
       shell: bash
@@ -55,6 +56,7 @@ runs:
           echo "Error: could not find firmware release matching manifest"
           exit 1
         fi
+
     - name: Set PACKAGE_VERSION
       shell: bash
       run: |
