@@ -30,22 +30,22 @@ class UDPMonitor(threading.Thread):
    def __init__(self) -> None:      
       threading.Thread.__init__(self)      
       self.exitFlag = False
-      self.__sockUDP = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
+      self.__sockUDP: socket.socket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
       self.__sockUDP.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
       self.__sockUDP.settimeout(0.1)
       self.__sockUDP.setblocking(False)
       # self.__hostname = socket.gethostname()
       self.__ip_addresses = socket.gethostbyname_ex('localhost')
       self.__ip_address = "0.0.0.0"
-      self.addresslist = list()
+      self.addresslist: list[socket._RetAddress] = list()
    
-   def __del__(self):
+   def __del__(self) -> None:
       try:
          self.stop()
       except Exception:
          return
 
-   def run(self):
+   def run(self) -> None:
       print("Starting ")
       self.__sockUDP.bind((self.__ip_address ,localPort))
       
@@ -56,12 +56,12 @@ class UDPMonitor(threading.Thread):
             print("Recive")
             adress = dataadress[1][0]
             if not(adress in self.__ip_addresses[2]) and not(adress in self.addresslist):
-               queueLock.acquire(1)
+               queueLock.acquire(True)
                self.addresslist.append(adress)
                queueLock.release()
          except:
             sleep(1)
-         queueLock.acquire(1)
+         queueLock.acquire(True)
          Run = not self.exitFlag
          queueLock.release()
          # print("RUN = ",Run)
@@ -69,19 +69,19 @@ class UDPMonitor(threading.Thread):
       print("Exiting")
       self.__sockUDP.close()
       del self.__sockUDP
-      self.__sockUDP = None
+      self.__sockUDP = socket.socket()
       return
 
-   def stop(self):
+   def stop(self) -> None:
       print("Stoping")
-      queueLock.acquire(1)
+      queueLock.acquire(True)
       self.exitFlag = True
       queueLock.release()
       sleep(1)
 
-   def getIPlist(self):
+   def getIPlist(self) -> list[str]:
       print("GetList")
-      result = list()
+      result: list[str] = list()
       if queueLock.acquire(True,0.1):
          result.extend(self.addresslist)
          queueLock.release()

@@ -45,7 +45,7 @@ class Menu(QMenuBar):
             self.setNativeMenuBar(False)
 
         self.ui = Ui_MenuBar()
-        self.ui.setupUi(self)
+        self.ui.setupUi(self) # type: ignore
         self.setup()
 
     def setup(self) -> None:

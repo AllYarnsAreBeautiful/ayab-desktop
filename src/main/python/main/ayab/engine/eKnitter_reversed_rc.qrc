@@ -1,0 +1,5 @@
+<RCC>
+  <qresource prefix="/">
+    <file>eKnitter-reversed.png</file>
+  </qresource>
+</RCC>
