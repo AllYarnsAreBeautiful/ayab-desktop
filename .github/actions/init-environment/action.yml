@@ -63,4 +63,4 @@ runs:
         echo ${{ steps.vars.outputs.tag }} > src/main/resources/base/ayab/package_version
         # remove suffix from semver tag, as fbs does not support them
         version_without_suffix=$(echo ${{ steps.vars.outputs.tag }} | sed -E 's/^v?([0-9]+\.[0-9]+\.[0-9]+).*$/\1/')
-        sed -i -e "s/PACKAGE_VERSION/$version_without_suffix/" src/build/settings/base.json
+        sed -i.bak -e "s/PACKAGE_VERSION/$version_without_suffix/" src/build/settings/base.json
