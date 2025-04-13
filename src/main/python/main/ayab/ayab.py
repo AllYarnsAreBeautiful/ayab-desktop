@@ -26,6 +26,7 @@ import logging
 from PySide6.QtWidgets import QMainWindow
 from PySide6.QtCore import QCoreApplication
 
+
 from .main_gui import Ui_MainWindow
 from .gui_fsm import gui_fsm
 from .signal_receiver import SignalReceiver
@@ -36,6 +37,7 @@ from .transforms import Transform
 from .firmware_flash import FirmwareFlash
 from .hw_test import HardwareTestDialog
 from .preferences import Preferences
+from . import utils
 
 # from .statusbar import StatusBar
 from .progressbar import ProgressBar
@@ -69,6 +71,8 @@ class GuiMain(QMainWindow):
         # create UI
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+
+        self.setWindowTitle(f"AYAB {utils.package_version(app_context)}")
 
         # add modular components
         self.menu = Menu(self)

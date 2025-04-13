@@ -41,7 +41,7 @@
    <item>
     <widget class="QLabel" name="title_label">
      <property name="text">
-      <string>All Yarns Are Beautiful</string>
+      <string notr="true">AYAB</string>
      </property>
     </widget>
    </item>
