@@ -34,7 +34,6 @@ runs:
         fi
         echo "sha-short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
         echo "tag=$(git describe --tags)" >> $GITHUB_OUTPUT
-        echo "manifest=$(cat src/main/resources/base/ayab/firmware/manifest.txt)" >> $GITHUB_OUTPUT
         echo "python-minor=$(echo '${{steps.py.outputs.python-version}}' | sed -e 's/\.[^.]*$//')" >> $GITHUB_OUTPUT
         echo "python-appimage=python${{steps.py.outputs.python-version}}-cp311-cp311-manylinux_2_28_x86_64.AppImage" >> $GITHUB_OUTPUT
 
@@ -42,11 +41,12 @@ runs:
       id: firmware
       shell: bash
       run: |
-        echo ${{ steps.vars.outputs.manifest }}
+        manifest=$(cat src/main/resources/base/ayab/firmware/manifest.txt)
+        echo "manifest=$manifest"
         available=$(curl -s https://github.com/AllYarnsAreBeautiful/ayab-firmware/releases | grep -oE '/tag/[^\"]+' | sed -E 's/\/tag\///')
-        echo $available
-        match=$(for x in $available; do echo $x; done | grep '^${{ steps.vars.outputs.manifest }}$' | sort -r | head -1)
-        echo $match
+        echo "available=$available"
+        match=$(for x in $available; do echo $x; done | grep "^${manifest}\$" | sort -r | head -1)
+        echo "match=$match"
         if [[ $match ]]
         then
           cd src/main/resources/base/ayab/firmware/
