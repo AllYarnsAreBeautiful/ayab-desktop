@@ -35,6 +35,9 @@ pyside6-rcc src/main/python/main/ayab/ayab_logo_rc.qrc -o src/main/python/main/a
 pyside6-rcc src/main/python/main/ayab/engine/lowercase_e_rc.qrc -o src/main/python/main/ayab/engine/lowercase_e_rc.py
 pyside6-rcc src/main/python/main/ayab/engine/lowercase_e_reversed_rc.qrc -o src/main/python/main/ayab/engine/lowercase_e_reversed_rc.py
 
+pyside6-rcc src/main/python/main/ayab/engine/eKnitter_rc.qrc -o src/main/python/main/ayab/engine/eKnitter_rc.py
+pyside6-rcc src/main/python/main/ayab/engine/eKnitter_reversed_rc.qrc -o src/main/python/main/ayab/engine/eKnitter_reversed_rc.py
+
 # generate translation files
 cd src/main/resources/base/ayab/translations/
 perl ayab_trans.pl

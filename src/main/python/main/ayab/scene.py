@@ -89,12 +89,21 @@ class Scene(QGraphicsView):
         machine_width = Machine(self.__prefs.value("machine")).width
 
         # draw "machine"
+        rect_pen = QPen(QColor("black"))
+        rect_pen.setWidthF(0.5)
+
+        rect_height = 7
+
         rect_orange = QGraphicsRectItem(
-            -machine_width / 2 - 0.5, -5.5, machine_width / 2 + 0.5, 5
-        )
-        rect_orange.setBrush(QBrush(QColor("orange")))
-        rect_green = QGraphicsRectItem(0, -5.5, machine_width / 2 + 0.5, 5)
-        rect_green.setBrush(QBrush(QColor("green")))
+            -machine_width / 2 - 0.5, -0.5-rect_height,
+            machine_width / 2 + 0.5, rect_height
+            )
+        rect_orange.setBrush(QBrush(QColor("#C96939")))
+        rect_orange.setPen(rect_pen)
+
+        rect_green = QGraphicsRectItem(0, -0.5-rect_height, machine_width / 2 + 0.5, rect_height)
+        rect_green.setBrush(QBrush(QColor("#8A9A5B")))
+        rect_green.setPen(rect_pen)
 
         qscene.addItem(rect_orange)
         qscene.addItem(rect_green)
@@ -127,22 +136,22 @@ class Scene(QGraphicsView):
             pattern.setPos(pos, 0)
 
             # draw limiting lines (start/stop needle)
-            qscene.addItem(
-                QGraphicsRectItem(
+            rect_start = QGraphicsRectItem(
                     self.__start_needle - machine_width / 2 - 0.5,
                     -5.5,
                     0,
                     pixmap.height() + 5.5,
                 )
-            )
-            qscene.addItem(
-                QGraphicsRectItem(
+            rect_start.setPen(rect_pen)
+            qscene.addItem(rect_start)
+            rect_stop = QGraphicsRectItem(
                     self.__stop_needle - machine_width / 2 + 1.5,
                     -5.5,
                     0,
                     pixmap.height() + 5.5,
                 )
-            )
+            rect_stop.setPen(rect_pen)
+            qscene.addItem(rect_stop)
 
             # Draw knitting progress
             qscene.addItem(

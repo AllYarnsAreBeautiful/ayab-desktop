@@ -6,3 +6,4 @@ types-pyserial==3.5.0
 types-mock
 types-Pillow==10
 mypy==1.9.0
+esptool==3.3.3

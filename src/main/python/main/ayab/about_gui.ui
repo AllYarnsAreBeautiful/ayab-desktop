@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>About AYAB</string>
+   <string>About AYAB for eKnitter</string>
   </property>
   <property name="autoFillBackground">
    <bool>false</bool>
@@ -41,7 +41,7 @@
    <item>
     <widget class="QLabel" name="title_label">
      <property name="text">
-      <string>All Yarns Are Beautiful</string>
+      <string>All Yarns Are Beautiful for eKnitter</string>
      </property>
     </widget>
    </item>

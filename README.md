@@ -86,11 +86,19 @@ macOS
 You can install Git using Homebrew:
 ```bash
     brew install git
+    brew install esptool
 ```
 You will also need the Xcode command line tools:
 ```bash
     xcode-select --install
 ```
+
+get ayab-desktop for eKnitter from github:
+
+```bash
+    git clone -b eKnitter https://github.com/yekomS/ayab-desktop ayab-desktop-eknitter
+```
+
 Install python from [the official universal2 installer](https://www.python.org/ftp/python/3.11.8/python-3.11.8-macos11.pkg). (Conda does not produce universal binaries)  
 
 If you encounter the pip `SSL:TLSV1_ALERT_PROTOCOL_VERSION` problem:

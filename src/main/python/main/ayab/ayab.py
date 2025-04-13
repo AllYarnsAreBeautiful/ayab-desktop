@@ -17,6 +17,7 @@
 #    Copyright 2014 Sebastian Oliva, Christian Obersteiner,
 #       Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
+#   Copyright 2024 Marcus Hoose (eKnitter.com)
 """Provides a graphical interface for users to operate AYAB."""
 
 from __future__ import annotations
@@ -25,6 +26,7 @@ import logging
 
 from PySide6.QtWidgets import QMainWindow
 from PySide6.QtCore import QCoreApplication
+from PySide6.QtCore import QEvent
 
 from .main_gui import Ui_MainWindow
 from .gui_fsm import gui_fsm
@@ -58,6 +60,11 @@ class GuiMain(QMainWindow):
     components from `menu_gui.ui`.
     """
 
+    def closeEvent(self, event: QEvent) -> None:
+        print("close")
+        self.engine.close()
+        event.accept()
+
     def __init__(self, app_context: AppContext):
         super().__init__()
         self.app_context = app_context
@@ -68,7 +75,7 @@ class GuiMain(QMainWindow):
 
         # create UI
         self.ui = Ui_MainWindow()
-        self.ui.setupUi(self)
+        self.ui.setupUi(self) # type: ignore
 
         # add modular components
         self.menu = Menu(self)
@@ -131,6 +138,7 @@ class GuiMain(QMainWindow):
 
     def __quit(self) -> None:
         logging.debug("Quitting")
+        self.engine.close()
         instance = QCoreApplication.instance()
         if instance is not None:
             instance.quit()

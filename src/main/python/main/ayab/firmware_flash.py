@@ -59,7 +59,7 @@ class FirmwareFlash(QDialog):
         self.__app_context = parent.app_context
 
         self.ui = Ui_Firmware()
-        self.ui.setupUi(self)
+        self.ui.setupUi(self) # type: ignore
         self.ui.flash_firmware.setEnabled(False)
         self.ui.flash_firmware.setDefault(True)
         self.load_json()
@@ -155,9 +155,15 @@ class FirmwareFlash(QDialog):
             if firmware.get("version") == firmware_key:
                 firmware_name = firmware.get("file")
 
-        command = self.generate_command(
-            base_dir, os_name, controller_name, firmware_name
-        )
+        if "eknitter" in controller_name:
+            command = self.generate_command_eknitter(
+                base_dir, os_name, controller_name, firmware_name
+            )
+        else:
+            command = self.generate_command(
+                base_dir, os_name, controller_name, firmware_name
+            )
+
         if command is None:
             return False
         # else
@@ -175,6 +181,39 @@ class FirmwareFlash(QDialog):
             utils.display_blocking_popup(tr_("Firmware", "Flashing done!"))
             self.close()
             return True
+
+    def generate_command_eknitter(
+        self, base_dir: str, os_name: str, controller_name: str, firmware_name: str
+    ) -> Optional[str]:
+        if os_name == "Windows":
+            exe_route = self.__app_context.get_resource("ayab/firmware/esp32/win64/esptool.exe")
+            exe_route = "\"" + exe_route + "\""
+        elif os_name == "Linux":
+            exe_route = self.__app_context.get_resource("ayab/firmware/esp32/linux-amd64/esptool")
+        elif os_name == "Darwin":  # macOS
+            #exe_route = self.__parent_ui.app_context.get_resource("ayab/firmware/esp32/macos/esptool")
+            exe_route = "esptool.py"
+        
+        binary_file = os.path.join(
+            self.__app_context.get_resource("ayab/firmware"), firmware_name
+        )
+
+        if "fw" in firmware_name:
+            exec_command = (
+                f"{exe_route} -port {self.port} --baud 921600 --no-stub  write_flash"
+                + f" --flash_size 8MB 0x10000 {binary_file} --force"
+            )
+        elif "fs" in firmware_name:
+            exec_command = (
+                f"{exe_route} -port {self.port} --baud 921600 --no-stub  write_flash"
+                + f" --flash_size 8MB 0x670000 {binary_file} --force"
+            )
+        else:
+            self.__logger.debug("error firmware or filesystem")
+            return None
+
+        self.__logger.debug(exec_command)
+        return exec_command
 
     def generate_command(
         self, base_dir: str, os_name: str, controller_name: str, firmware_name: str

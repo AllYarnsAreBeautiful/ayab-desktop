@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>All Yarns Are Beautiful</string>
+   <string>All Yarns Are Beautiful for eKnitter</string>
   </property>
   <widget class="QWidget" name="central_widget">
    <layout class="QGridLayout" name="grid_layout">
