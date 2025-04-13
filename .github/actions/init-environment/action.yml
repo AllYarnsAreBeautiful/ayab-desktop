@@ -1,40 +1,66 @@
 name: Init Environment
+description: "Sets up the environment and extracts various build-related variables"
 outputs:
-  sha-short:
-    value: ${{steps.vars.outputs.sha-short}}
+  do-release:
+    description: "'true' if the current ref is a release tag (matches semver pattern)"
+    value: ${{steps.vars.outputs.do-release}}
   tag:
+    description: "Current Git tag from git describe"
     value: ${{steps.vars.outputs.tag}}
-  draft:
-    value: ${{steps.vars.outputs.draft}}
-  manifest:
-    value: ${{steps.vars.outputs.manifest}}
   python-minor:
+    description: "Python version without patch number (e.g. 3.11)"
     value: ${{steps.vars.outputs.python-minor}}
   python-appimage:
+    description: "Python AppImage filename for Linux builds"
     value: ${{steps.vars.outputs.python-appimage}}
+  firmware-url:
+    description: "Download URL for the firmware hex file"
+    value: ${{steps.firmware.outputs.firmware-url}}
 runs:
   using: "composite"
   steps:
-    - name: Set up Python ${{ matrix.python-version }}
+    - name: Set up Python ${{ env.PYTHON_VERSION }}
       id: py
       uses: actions/setup-python@v5
       with:
-        python-version: ${{ matrix.python-version }}
-        cache: "pip"
+        python-version: ${{ env.PYTHON_VERSION }}
+
     - name: Set variables
       id: vars
       shell: bash
       run: |
+        if [[ "$GITHUB_REF" =~ ^refs/tags/v?[0-9]+\.[0-9]+\.[0-9]+-?[-a-zA-Z0-9]*$ ]]; then
+            echo "do-release=true" >> $GITHUB_OUTPUT
+        fi
         echo "sha-short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
         echo "tag=$(git describe --tags)" >> $GITHUB_OUTPUT
-        echo "draft=$(git describe --tags | sed -e 's/^test.*/true/;s/^v.*/false/')" >> $GITHUB_OUTPUT
-        echo "manifest=$(cat src/main/resources/base/ayab/firmware/manifest.txt)" >> $GITHUB_OUTPUT
         echo "python-minor=$(echo '${{steps.py.outputs.python-version}}' | sed -e 's/\.[^.]*$//')" >> $GITHUB_OUTPUT
         echo "python-appimage=python${{steps.py.outputs.python-version}}-cp311-cp311-manylinux_2_28_x86_64.AppImage" >> $GITHUB_OUTPUT
+
+    - name: Get firmware version matching manifest
+      id: firmware
+      shell: bash
+      run: |
+        manifest=$(cat src/main/resources/base/ayab/firmware/manifest.txt)
+        echo "manifest=$manifest"
+        available=$(curl -s https://github.com/AllYarnsAreBeautiful/ayab-firmware/releases | grep -oE '/tag/[^\"]+' | sed -E 's/\/tag\///')
+        echo "available=$available"
+        match=$(for x in $available; do echo $x; done | grep "^${manifest}\$" | sort -r | head -1)
+        echo "match=$match"
+        if [[ $match ]]
+        then
+          cd src/main/resources/base/ayab/firmware/
+          url=https://github.com/AllYarnsAreBeautiful/ayab-firmware/releases/download/$match/ayab_monolithic_uno.hex
+          echo "firmware-url=${url}" >> $GITHUB_OUTPUT
+        else
+          echo "Error: could not find firmware release matching manifest"
+          exit 1
+        fi
+
     - name: Set PACKAGE_VERSION
       shell: bash
       run: |
         echo ${{ steps.vars.outputs.tag }} > src/main/resources/base/ayab/package_version
         # remove suffix from semver tag, as fbs does not support them
         version_without_suffix=$(echo ${{ steps.vars.outputs.tag }} | sed -E 's/^v?([0-9]+\.[0-9]+\.[0-9]+).*$/\1/')
-        sed -i -e s/PACKAGE_VERSION/$version_without_suffix/ src/build/settings/base.json
+        sed -i.bak -e "s/PACKAGE_VERSION/$version_without_suffix/" src/build/settings/base.json

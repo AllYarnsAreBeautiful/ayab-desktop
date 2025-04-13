@@ -13,244 +13,49 @@
 # @date   July 2020
 
 name: Build
-on:
-  push:
-    tags:
-      # Not a regex! See https://docs.github.com/en/actions/writing-workflows/workflow-syntax-for-github-actions#filter-pattern-cheat-sheet
-      - 'v?[0-9]+.[0-9]+.[0-9]+'
-      - 'v?[0-9]+.[0-9]+.[0-9]+-[a-zA-Z0-9]+'
+on: [push, pull_request]
+
+env:
+  PYTHON_VERSION: 3.11.9
 
 jobs:
-  setup:
-    name: Create cache
-    runs-on: ubuntu-22.04
-    strategy:
-      matrix:
-        python-version: [3.11.9]
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          submodules: recursive
-      - uses: ./.github/actions/init-environment
-        id: vars
-      - name: Get firmware version matching manifest
-        run: |
-          echo ${{ steps.vars.outputs.manifest }}
-          available=$(curl -s https://github.com/AllYarnsAreBeautiful/ayab-firmware/releases | grep -oE '/tag/[^\"]+' | sed -E 's/\/tag\///')
-          echo $available
-          match=$(for x in $available; do echo $x; done | grep ^${{ steps.vars.outputs.manifest }} | sort -r | head -1)
-          echo $match
-          if [[ $match ]]
-          then
-            cd src/main/resources/base/ayab/firmware/
-            wget https://github.com/AllYarnsAreBeautiful/ayab-firmware/releases/download/$match/ayab_monolithic_uno.hex
-          else
-            echo "Error: could not find firmware release matching manifest"
-            exit 1
-          fi
-      - name: Cache firmware
-        uses: actions/cache/save@v4
-        with:
-          path: src/main/resources/base/ayab/firmware/*.hex
-          key: firmware-${{ steps.vars.outputs.manifest }}
-      - name: Install dependencies
-        run: |
-          sudo apt update
-          sudo apt-get install -y avrdude libasound2-dev
-      - name: Install Python modules
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install -r requirements.build.txt
-      - name: Use cached gui files (1)
-        id: gui1-cache
-        uses: actions/cache@v4
-        with:
-          path: src/main/python/main/ayab/*_gui.py
-          key: gui1-${{ hashFiles('src/main/python/main/ayab/*_gui.ui') }}
-      - name: Use cached gui files (2)
-        id: gui2-cache
-        uses: actions/cache@v4
-        with:
-          path: src/main/python/main/ayab/engine/*_gui.py
-          key: gui2-${{ hashFiles('src/main/python/main/ayab/engine/*_gui.ui') }}
-      - name: Use cached logo
-        id: logo-cache
-        uses: actions/cache@v4
-        with:
-          path: src/main/python/main/ayab/ayab_logo_rc.py
-          key: logo-${{ hashFiles('src/main/python/main/ayab/ayab_logo_rc.qrc') }}
-      - name: Use cached graphics
-        id: e-cache
-        uses: actions/cache@v4
-        with:
-          path: src/main/python/main/ayab/engine/*_rc.py
-          key: e-${{ hashFiles('src/main/python/main/ayab/engine/*_rc.qrc') }}
-      - name: Use cached translation files
-        id: qm-cache
-        uses: actions/cache@v4
-        with:
-          path: src/main/resources/base/ayab/translations/*.qm
-          key: qm-${{ hashFiles('src/main/resources/base/ayab/translations/ayab-translation-master.tsv') }}
-      - name: Use cached `base.json` file
-        id: base-cache
-        uses: actions/cache@v4
-        with:
-          path: src/build/settings/base.json
-          key: base-${{ steps.vars.outputs.tag }}
-      - name: Convert UI and translation files
-        if: ${{ (steps.gui1-cache.outputs.cache-hit != 'true') ||
-          (steps.gui2-cache.outputs.cache-hit != 'true') ||
-          (steps.logo-cache.outputs.cache-hit != 'true') ||
-          (steps.e-cache.outputs.cache-hit    != 'true') ||
-          (steps.qm-cache.outputs.cache-hit   != 'true') }}
-        run: |
-          # Install qt6 packages to bring in system dependencies only
-          sudo apt install -y qt6-base-dev qt6-tools-dev-tools
-          bash setup-environment.ps1
-      - name: Cache gui files (1)
-        if: ${{ (steps.gui1-cache.outputs.cache-hit != 'true') }}
-        uses: actions/cache/save@v4
-        with:
-          path: src/main/python/main/ayab/*_gui.py
-          key: gui1-${{ hashFiles('src/main/python/main/ayab/*_gui.ui') }}
-      - name: Cache gui files (2)
-        if: ${{ (steps.gui2-cache.outputs.cache-hit != 'true') }}
-        uses: actions/cache/save@v4
-        with:
-          path: src/main/python/main/ayab/*_gui.py
-          key: gui2-${{ hashFiles('src/main/python/main/ayab/engine/*_gui.ui') }}
-      - name: Cache logo
-        if: ${{ (steps.logo-cache.outputs.cache-hit != 'true') }}
-        uses: actions/cache/save@v4
-        with:
-          path: src/main/python/main/ayab/ayab_logo_rc.py
-          key: logo-${{ hashFiles('src/main/python/main/ayab/ayab_logo_rc.qrc') }}
-      - name: Cache graphics
-        if: ${{ (steps.e-cache.outputs.cache-hit != 'true') }}
-        uses: actions/cache/save@v4
-        with:
-          path: src/main/python/main/ayab/engine/*_rc.py
-          key: e-${{ hashFiles('src/main/python/main/ayab/engine/*_rc.qrc') }}
-      - name: Cache translation files
-        if: ${{ (steps.qm-cache.outputs.cache-hit != 'true') }}
-        uses: actions/cache/save@v4
-        with:
-          path: src/main/resources/base/ayab/translations/*.qm
-          key: qm-${{ hashFiles('src/main/resources/base/ayab/translations/ayab-translation-master.tsv') }}
-      - name: Cache `base.json` file
-        if: ${{ (steps.base-cache.outputs.cache-hit != 'true') }}
-        uses: actions/cache/save@v4
-        with:
-          path: src/build/settings/base.json
-          key: base-${{ steps.vars.outputs.tag }}
-
-  deploy:
-    name: Create and deploy source code documentation
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          submodules: recursive
-      - name: Install dependencies for doxygen
-        run: |
-          sudo apt-get install doxygen graphviz -y
-      - name: Create .nojekyll so that filenames with underscores work on Github Pages
-        run: |
-          mkdir -p docs/html
-          touch docs/html/.nojekyll
-      - name: Deploy to pages
-        uses: DenverCoder1/doxygen-github-pages-action@v1.3.1
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: gh-pages
-          folder: docs/html
-          config_file: Doxyfile
-
   build-windows:
-    name: Create and upload Windows release
-    needs: setup
+    name: Create and upload Windows build
     runs-on: windows-latest
-    strategy:
-      matrix:
-        python-version: [3.11.9]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           submodules: recursive
+          fetch-depth: 0 # necessary for `git describe`
+
       - uses: ./.github/actions/init-environment
         id: vars
+
+      - name: Get firmware version matching manifest
+        shell: bash
+        working-directory: src/main/resources/base/ayab/firmware/
+        run: |
+          curl --fail -O '${{ steps.vars.outputs.firmware-url }}'
+
       - name: Install dependencies
         shell: pwsh
         run: |
-          choco install patch
-          choco install vcredist-all # fixes dependency on msvcr100.dll
+          choco install vcredist2010 # fixes dependency on msvcr100.dll
           python -m pip install --upgrade pip
           python -m pip install -r requirements.build.txt
           python -m pip install -r windows-build\windows_build_requirements.txt
-      - name: Restore cached firmware
-        id: firmware-cache
-        uses: actions/cache@v4
-        with:
-          path: src/main/resources/base/ayab/firmware/*.hex
-          key: firmware-${{ steps.vars.outputs.manifest }}
-          enableCrossOsArchive: true
-          fail-on-cache-miss: true
-      - name: Restore cached gui files (1)
-        id: gui1-cache
-        uses: actions/cache@v4
-        with:
-          path: src/main/python/main/ayab/*_gui.py
-          key: gui1-${{ hashFiles('src/main/python/main/ayab/*_gui.ui') }}
-          enableCrossOsArchive: true
-          fail-on-cache-miss: true
-      - name: Restore cached gui files (2)
-        id: gui2-cache
-        uses: actions/cache@v4
-        with:
-          path: src/main/python/main/ayab/engine/*_gui.py
-          key: gui2-${{ hashFiles('src/main/python/main/ayab/engine/*_gui.ui') }}
-          enableCrossOsArchive: true
-          fail-on-cache-miss: true
-      - name: Restore cached logo
-        id: logo-cache
-        uses: actions/cache@v4
-        with:
-          path: src/main/python/main/ayab/ayab_logo_rc.py
-          key: logo-${{ hashFiles('src/main/python/main/ayab/ayab_logo_rc.qrc') }}
-          enableCrossOsArchive: true
-          fail-on-cache-miss: true
-      - name: Restore cached graphics
-        id: e-cache
-        uses: actions/cache@v4
-        with:
-          path: src/main/python/main/ayab/engine/*_rc.py
-          key: e-${{ hashFiles('src/main/python/main/ayab/engine/*_rc.qrc') }}
-          enableCrossOsArchive: true
-          fail-on-cache-miss: true
-      - name: Restore cached translation files
-        id: qm-cache
-        uses: actions/cache@v4
-        with:
-          path: src/main/resources/base/ayab/translations/*.qm
-          key: qm-${{ hashFiles('src/main/resources/base/ayab/translations/ayab-translation-master.tsv') }}
-          enableCrossOsArchive: true
-          fail-on-cache-miss: true
-      - name: Restore cached `base.json` file
-        id: base-cache
-        uses: actions/cache@v4
-        with:
-          path: src/build/settings/base.json
-          key: base-${{ steps.vars.outputs.tag }}
-          enableCrossOsArchive: true
-          fail-on-cache-miss: true
+
+      - name: Convert UI and translation files
+        run: |
+          bash setup-environment.ps1
+
       - name: Remove unneeded files
         shell: bash
         run: |
           rm src/main/python/main/ayab/*_gui.ui
           rm src/main/python/main/ayab/ayab_logo_rc.qrc
+
       - name: Change line endings to CRLF
         shell: bash
         run: |
@@ -262,12 +67,6 @@ jobs:
           do
             unix2dos $f
           done
-      - name: Check cached files
-        shell: bash
-        run: |
-          pwd
-          ls -l src/main/python/main/ayab/
-          ls -l src/main/resources/base/ayab/translations/
 
       # The OpenSSL-based backend for QtNetwork requires the OpenSSL dynamic
       # libraries but they are not packaged with Qt or PySide. Pyinstaller
@@ -287,13 +86,16 @@ jobs:
       - name: Build app
         shell: pwsh
         run: python -m fbs freeze
+
       - name: Create installer
         shell: pwsh
         run: |
           python -m fbs installer
           Move-Item -Path target\AYABSetup.exe -Destination target\AYAB-${{ steps.vars.outputs.tag }}.exe
-      - name: Upload asset
+
+      - name: Attach installer to release
         uses: ncipollo/release-action@v1
+        if: steps.vars.outputs.do-release == 'true'
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ steps.vars.outputs.tag }}
@@ -310,22 +112,15 @@ jobs:
           omitBodyDuringUpdate: true
           omitDraftDuringUpdate: true
           omitPrereleaseDuringUpdate: true
+
       - uses: actions/upload-artifact@v4
         with:
           name: AYAB-${{ steps.vars.outputs.tag }}.exe
           path: target/AYAB-${{ steps.vars.outputs.tag }}.exe
 
   build-macos:
-    name: Create and upload Mac OSX release
-    needs: setup
+    name: Create and upload Mac OSX build
     runs-on: macos-14
-    outputs:
-      tag: ${{ steps.vars.outputs.tag }}
-      submission_id: ${{ steps.notarize.outputs.submission_id }}
-      image_name: ${{ steps.diskimage.outputs.name }}
-    strategy:
-      matrix:
-        python-version: [3.11.9]
     env:
       APPLE_CERTIFICATE_NAME: ${{ secrets.APPLE_CERTIFICATE_NAME }}
       APPLE_STORE_CONNECT_KEY_ID: ${{ secrets.APPLE_STORE_CONNECT_KEY_ID }}
@@ -334,8 +129,17 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: recursive
+          fetch-depth: 0 # necessary for `git describe`
+
       - uses: ./.github/actions/init-environment
         id: vars
+
+      - name: Get firmware version matching manifest
+        shell: bash
+        working-directory: src/main/resources/base/ayab/firmware/
+        run: |
+          curl --fail -O '${{ steps.vars.outputs.firmware-url }}'
+
       - name: Install dependencies
         run: |
           mkdir tmp-wheel/
@@ -360,65 +164,15 @@ jobs:
           python -m pip install tmp-wheel/*.whl bitarray*.whl
 
           python -m pip install --no-binary charset_normalizer -r requirements.build.txt
-      - name: Restore cached firmware
-        id: firmware-cache
-        uses: actions/cache@v4
-        with:
-          path: src/main/resources/base/ayab/firmware/*.hex
-          key: firmware-${{ steps.vars.outputs.manifest }}
-          fail-on-cache-miss: true
-      - name: Restore cached gui files (1)
-        id: gui1-cache
-        uses: actions/cache@v4
-        with:
-          path: src/main/python/main/ayab/*_gui.py
-          key: gui1-${{ hashFiles('src/main/python/main/ayab/*_gui.ui') }}
-          fail-on-cache-miss: true
-      - name: Restore cached gui files (2)
-        id: gui2-cache
-        uses: actions/cache@v4
-        with:
-          path: src/main/python/main/ayab/engine/*_gui.py
-          key: gui2-${{ hashFiles('src/main/python/main/ayab/engine/*_gui.ui') }}
-          fail-on-cache-miss: true
-      - name: Restore cached logo
-        id: logo-cache
-        uses: actions/cache@v4
-        with:
-          path: src/main/python/main/ayab/ayab_logo_rc.py
-          key: logo-${{ hashFiles('src/main/python/main/ayab/ayab_logo_rc.qrc') }}
-          fail-on-cache-miss: true
-      - name: Restore cached graphics
-        id: e-cache
-        uses: actions/cache@v4
-        with:
-          path: src/main/python/main/ayab/engine/*_rc.py
-          key: e-${{ hashFiles('src/main/python/main/ayab/engine/*_rc.qrc') }}
-          fail-on-cache-miss: true
-      - name: Restore cached translation files
-        id: qm-cache
-        uses: actions/cache@v4
-        with:
-          path: src/main/resources/base/ayab/translations/*.qm
-          key: qm-${{ hashFiles('src/main/resources/base/ayab/translations/ayab-translation-master.tsv') }}
-          fail-on-cache-miss: true
-      - name: Restore cached `base.json` file
-        id: base-cache
-        uses: actions/cache@v4
-        with:
-          path: src/build/settings/base.json
-          key: base-${{ steps.vars.outputs.tag }}
-          enableCrossOsArchive: true
-          fail-on-cache-miss: true
+
+      - name: Convert UI and translation files
+        run: |
+          bash setup-environment.ps1
+
       - name: Remove unneeded files
         run: |
           rm src/main/python/main/ayab/*_gui.ui
           rm src/main/python/main/ayab/ayab_logo_rc.qrc
-      - name: Check cached files
-        run: |
-          pwd
-          ls -l src/main/python/main/ayab/
-          ls -l src/main/resources/base/ayab/translations/
 
       - name: Import Apple developer certificate
         if: env.APPLE_CERTIFICATE_NAME
@@ -432,12 +186,18 @@ jobs:
           python -m fbs freeze
 
       - name: Sign app
-        if: env.APPLE_CERTIFICATE_NAME
+        shell: bash
         run: |
-          # Sign the avrdude binary explicitly since `--deep` misses it because it is not
-          # in a directory meant to contain executables.
-          codesign -s "$APPLE_CERTIFICATE_NAME" --force --all-architectures \
-            --timestamp --deep --options=runtime \
+          # - If an actual certificate is not available, we default the identity to "-" to enable
+          #   ad-hoc signing, and disable the hardened runtime.
+          # - We sign the `avrdude_mac` binary explicitly since `--deep` misses it because it
+          #   is not in a directory meant to contain executables.
+          codesign_identity=${APPLE_CERTIFICATE_NAME:-"-"}
+          if [[ -n "$APPLE_CERTIFICATE_NAME" ]]; then
+            codesign_options="--options=runtime"
+          fi
+          codesign -s "$codesign_identity" $codesign_options \
+            --force --all-architectures --timestamp --deep \
             ./target/AYAB-mac.app/Contents/Resources/ayab/firmware/avrdude_mac \
             ./target/AYAB-mac.app
 
@@ -450,19 +210,36 @@ jobs:
           echo 'path=target/AYAB-${{ steps.vars.outputs.tag }}.dmg' >> "$GITHUB_OUTPUT"
 
       - name: Sign disk image
-        if: env.APPLE_CERTIFICATE_NAME
+        if: steps.vars.outputs.do-release == 'true' && env.APPLE_CERTIFICATE_NAME
         run: |
           codesign -s "$APPLE_CERTIFICATE_NAME" --force --all-architectures --timestamp \
             '${{ steps.diskimage.outputs.path }}'
 
-      - name: Upload signed disk image as artifact
+      - name: Submit disk image for notarization
+        if: steps.vars.outputs.do-release == 'true' && env.APPLE_STORE_CONNECT_KEY_ID
+        env:
+          APPLE_STORE_CONNECT_ISSUER: ${{ secrets.APPLE_STORE_CONNECT_ISSUER }}
+          APPLE_STORE_CONNECT_KEY_BASE64: ${{ secrets.APPLE_STORE_CONNECT_KEY_BASE64 }}
+        run: |
+          printenv APPLE_STORE_CONNECT_KEY_BASE64 | base64 --decode > apple-store-connect.key
+
+          # Submit the disk image for notarization and wait
+          xcrun notarytool submit '${{ steps.diskimage.outputs.path }}' \
+            -k apple-store-connect.key -d "$APPLE_STORE_CONNECT_KEY_ID" -i "$APPLE_STORE_CONNECT_ISSUER" \
+            --wait
+
+          # Staple the notarization ticket to the disk image
+          xcrun stapler staple -v '${{ steps.diskimage.outputs.path }}'
+
+      - name: Upload disk image as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: AYAB-signed-dmg
+          name: ${{ steps.diskimage.outputs.name }}
           path: ${{ steps.diskimage.outputs.path }}
 
-      - name: Attach disk image (before notarization) to release
+      - name: Attach disk image to release
         uses: ncipollo/release-action@v1
+        if: steps.vars.outputs.do-release == 'true'
         with:
           tag: ${{ steps.vars.outputs.tag }}
           # Default to draft and prerelease to let a human check the release before it goes live
@@ -478,114 +255,58 @@ jobs:
           omitDraftDuringUpdate: true
           omitPrereleaseDuringUpdate: true
 
-      - name: Submit disk image for notarization
-        if: env.APPLE_STORE_CONNECT_KEY_ID
-        id: notarize
-        env:
-          APPLE_STORE_CONNECT_ISSUER: ${{ secrets.APPLE_STORE_CONNECT_ISSUER }}
-          APPLE_STORE_CONNECT_KEY_BASE64: ${{ secrets.APPLE_STORE_CONNECT_KEY_BASE64 }}
-        run: |
-          printenv APPLE_STORE_CONNECT_KEY_BASE64 | base64 --decode > apple-store-connect.key
-
-          # Submit the disk image for notarization
-          SUBMISSION_ID=$(xcrun notarytool submit '${{ steps.diskimage.outputs.path }}' \
-            -k apple-store-connect.key -d "$APPLE_STORE_CONNECT_KEY_ID" -i "$APPLE_STORE_CONNECT_ISSUER" |
-            tee /dev/stderr |
-            awk '/id:/ {print $2; exit}')
-
-          echo "submission_id=$SUBMISSION_ID" >> "$GITHUB_OUTPUT"
-
-  staple-macos:
-    name: Wait for notarization to complete and staple ticket to disk image
-    needs: build-macos
-    runs-on: macos-14
-    env:
-      APPLE_STORE_CONNECT_KEY_ID: ${{ secrets.APPLE_STORE_CONNECT_KEY_ID }}
-    steps:
-      - name: Download disk image artifact
-        uses: actions/download-artifact@v4
-        if: env.APPLE_STORE_CONNECT_KEY_ID
-        with:
-          # Will download to a file named ${{ needs.build-macos.outputs.image_name }}
-          name: AYAB-signed-dmg
-
-      - name: Wait for notarization and staple ticket to disk image
-        id: staple
-        if: env.APPLE_STORE_CONNECT_KEY_ID
-        env:
-          APPLE_STORE_CONNECT_ISSUER: ${{ secrets.APPLE_STORE_CONNECT_ISSUER }}
-          APPLE_STORE_CONNECT_KEY_BASE64: ${{ secrets.APPLE_STORE_CONNECT_KEY_BASE64 }}
-        run: |
-          printenv APPLE_STORE_CONNECT_KEY_BASE64 | base64 --decode > apple-store-connect.key
-
-          # Wait for the notarization to complete
-          xcrun notarytool wait '${{ needs.build-macos.outputs.submission_id }}' \
-            -k apple-store-connect.key -d "$APPLE_STORE_CONNECT_KEY_ID" -i "$APPLE_STORE_CONNECT_ISSUER"
-
-          # Print the notarization log for debugging purposes
-          xcrun notarytool log '${{ needs.build-macos.outputs.submission_id }}' \
-            -k apple-store-connect.key -d "$APPLE_STORE_CONNECT_KEY_ID" -i "$APPLE_STORE_CONNECT_ISSUER"
-
-          # Staple the notarization ticket to the disk image
-          xcrun stapler staple -v '${{ needs.build-macos.outputs.image_name }}'
-
-      - name: Upload stapled disk image as artifact
-        uses: actions/upload-artifact@v4
-        if: env.APPLE_STORE_CONNECT_KEY_ID
-        with:
-          name: ${{ needs.build-macos.outputs.image_name }}
-          path: ${{ needs.build-macos.outputs.image_name }}
-
-      - name: Attach disk image (after notarization) to release
-        if: env.APPLE_STORE_CONNECT_KEY_ID
-        uses: ncipollo/release-action@v1
-        with:
-          tag: ${{ needs.build-macos.outputs.tag }}
-          # Default to draft and prerelease to let a human check the release before it goes live
-          draft: true
-          prerelease: false
-          allowUpdates: true
-          artifacts: ${{ needs.build-macos.outputs.image_name }}
-          artifactContentType: application/dmg
-          replacesArtifacts: true
-          # Avoid overwriting a release that may have been manually edited
-          omitNameDuringUpdate: true
-          omitBodyDuringUpdate: true
-          omitDraftDuringUpdate: true
-          omitPrereleaseDuringUpdate: true
-
-
   # see https://github.com/AppImage/AppImageKit/wiki/Bundling-Python-apps
   build-appimage:
     name: Create and upload Linux AppImage release
-    needs: setup
     runs-on: ubuntu-22.04
-    strategy:
-      matrix:
-        # Using Python 3.11.11 specifically for Linux builds due to python-appimage availability
-        python-version: [3.11.11]
+    env:
+      # Using a specific Python version for Linux builds due to python-appimage availability
+      PYTHON_VERSION: 3.11.12
     steps:
       - name: Checkout repo into AppDir
         uses: actions/checkout@v4
         with:
           submodules: recursive
-          fetch-depth: 0
+          fetch-depth: 0 # necessary for `git describe`
+
       - uses: ./.github/actions/init-environment
         id: vars
+
+      - name: Get firmware version matching manifest
+        shell: bash
+        working-directory: src/main/resources/base/ayab/firmware/
+        run: |
+          curl --fail -O '${{ steps.vars.outputs.firmware-url }}'
+
+      - name: Install Python modules
+        run: |
+          sudo apt-get install -y avrdude libasound2-dev
+          python -m pip install --upgrade pip
+          python -m pip install --upgrade setuptools
+          python -m pip install -r requirements.build.txt
+
+      - name: Convert UI and translation files
+        run: |
+          bash setup-environment.ps1
+
       - name: Relocate
         run: |
           mkdir git
           shopt -s extglob dotglob
           cp -r !(git) git
           shopt -u dotglob
+
       - name: Download AppImage of Python designed for manylinux
         run: wget -c https://github.com/niess/python-appimage/releases/download/python${{steps.vars.outputs.python-minor}}/${{steps.vars.outputs.python-appimage}}
+
       - name: Extract the AppImage
         run: |
           chmod +x ${{steps.vars.outputs.python-appimage}}
           ./${{steps.vars.outputs.python-appimage}} --appimage-extract
+
       - name: Move repo
         run: mv git/* squashfs-root
+
       - name: Install dependencies
         run: |
           cd squashfs-root
@@ -594,86 +315,25 @@ jobs:
           # hack to fix setup.py script with faulty include
           ./AppRun -m pip install --global-option=build_ext --global-option="-I$(pwd)/opt/${{steps.vars.outputs.python-minor}}/include/${{steps.vars.outputs.python-minor}}" simpleaudio
           ./AppRun -m pip install -r requirements.build.txt
+
       - name: Add AppDir subdirectories to PATH
         run: |
           echo "usr/bin" >> $GITHUB_PATH
           echo "opt/${{steps.vars.outputs.python-minor}}/bin" >> $GITHUB_PATH
-      - name: Restore cached firmware
-        id: firmware-cache
-        uses: actions/cache@v4
-        with:
-          path: src/main/resources/base/ayab/firmware/*.hex
-          key: firmware-${{ steps.vars.outputs.manifest }}
-          fail-on-cache-miss: true
-      - name: Restore cached gui files (1)
-        id: gui1-cache
-        uses: actions/cache@v4
-        with:
-          path: src/main/python/main/ayab/*_gui.py
-          key: gui1-${{ hashFiles('src/main/python/main/ayab/*_gui.ui') }}
-          fail-on-cache-miss: true
-      - name: Restore cached gui files (2)
-        id: gui2-cache
-        uses: actions/cache@v4
-        with:
-          path: src/main/python/main/ayab/engine/*_gui.py
-          key: gui2-${{ hashFiles('src/main/python/main/ayab/engine/*_gui.ui') }}
-          fail-on-cache-miss: true
-      - name: Restore cached logo
-        id: logo-cache
-        uses: actions/cache@v4
-        with:
-          path: src/main/python/main/ayab/ayab_logo_rc.py
-          key: logo-${{ hashFiles('src/main/python/main/ayab/ayab_logo_rc.qrc') }}
-          fail-on-cache-miss: true
-      - name: Restore cached graphics
-        id: e-cache
-        uses: actions/cache@v4
-        with:
-          path: src/main/python/main/ayab/engine/*_rc.py
-          key: e-${{ hashFiles('src/main/python/main/ayab/engine/*_rc.qrc') }}
-          fail-on-cache-miss: true
-      - name: Restore cached translation files
-        id: qm-cache
-        uses: actions/cache@v4
-        with:
-          path: src/main/resources/base/ayab/translations/*.qm
-          key: qm-${{ hashFiles('src/main/resources/base/ayab/translations/ayab-translation-master.tsv') }}
-          fail-on-cache-miss: true
-      - name: Restore cached `base.json` file
-        id: base-cache
-        uses: actions/cache@v4
-        with:
-          path: src/build/settings/base.json
-          key: base-${{ steps.vars.outputs.tag }}
-          enableCrossOsArchive: true
-          fail-on-cache-miss: true
-      - name: Move cached files
-        run: |
-          mv src/main/resources/base/ayab/firmware/*.hex squashfs-root/src/main/resources/base/ayab/firmware/
-          mv src/main/python/main/ayab/*_gui.py squashfs-root/src/main/python/main/ayab/
-          mv src/main/python/main/ayab/engine/*_gui.py squashfs-root/src/main/python/main/ayab/engine/
-          mv src/main/python/main/ayab/ayab_logo_rc.py squashfs-root/src/main/python/main/ayab/
-          mv src/main/python/main/ayab/engine/lowercase_e_rc.py squashfs-root/src/main/python/main/ayab/engine
-          mv src/main/python/main/ayab/engine/lowercase_e_reversed_rc.py squashfs-root/src/main/python/main/ayab/engine
-          mv src/main/resources/base/ayab/translations/*.qm squashfs-root/src/main/resources/base/ayab/translations/
-          mv src/build/settings/base.json squashfs-root/src/build/settings/base.json
+
       - name: Remove unneeded files
         run: |
           rm squashfs-root/src/main/python/main/ayab/*_gui.ui
           rm squashfs-root/src/main/python/main/ayab/ayab_logo_rc.qrc
           rm squashfs-root/src/main/python/main/ayab/engine/lowercase_e_rc.qrc
           rm squashfs-root/src/main/python/main/ayab/engine/lowercase_e_reversed_rc.qrc
-      - name: Check cached files
-        run: |
-          pwd
-          ls -l squashfs-root/src/main/python/main/ayab/
-          ls -l squashfs-root/src/main/resources/base/ayab/translations/
+
       - name: Replace AppRun
         run: |
           cd squashfs-root
           rm AppRun
           cp linux-build/appimage/AppRun .
+
       - name: Add icon
         run: |
           cd squashfs-root
@@ -682,6 +342,7 @@ jobs:
           cp linux-build/appimage/ayab.png ayab.png
           mkdir -p usr/share/icons/hicolor/128x128/apps/
           cp ayab.png usr/share/icons/hicolor/128x128/apps/
+
       - name: Create desktop file
         run: |
           cd squashfs-root
@@ -690,12 +351,14 @@ jobs:
           rm -f usr/share/applications/*.desktop
           cp linux-build/appimage/com.ayab_knitting.ayab.desktop com.ayab_knitting.ayab.desktop
           cp com.ayab_knitting.ayab.desktop usr/share/applications/com.ayab_knitting.ayab.desktop
+
       - name: Add metadata
         run: |
           cd squashfs-root
           mkdir -p usr/share/metainfo/
           rm -f usr/share/metainfo/*.appdata.xml
           cp linux-build/appimage/ayab.appdata.xml usr/share/metainfo/
+
       - name: Convert to AppImage
         run: |
           wget -c https://github.com/$(wget -q https://github.com/probonopd/go-appimage/releases/expanded_assets/continuous -O - | grep appimagetool-.*-x86_64.AppImage | head -n 1 | cut -d '"' -f 2)
@@ -705,8 +368,10 @@ jobs:
           VERSION=${{steps.vars.outputs.tag}} ./appimagetool-*-x86_64.AppImage squashfs-root/
           sudo apt remove appstream
           mv ayab-${{ steps.vars.outputs.tag }}-x86_64.AppImage AYAB-${{ steps.vars.outputs.tag }}-x86_64.AppImage
-      - name: Upload asset
+
+      - name: Attach AppImage to release
         uses: ncipollo/release-action@v1
+        if: steps.vars.outputs.do-release == 'true'
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ steps.vars.outputs.tag }}
@@ -723,6 +388,7 @@ jobs:
           omitBodyDuringUpdate: true
           omitDraftDuringUpdate: true
           omitPrereleaseDuringUpdate: true
+
       - uses: actions/upload-artifact@v4
         with:
           name: AYAB-${{ steps.vars.outputs.tag }}-x86_64.AppImage
