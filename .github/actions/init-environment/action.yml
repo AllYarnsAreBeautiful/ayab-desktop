@@ -45,7 +45,7 @@ runs:
         echo ${{ steps.vars.outputs.manifest }}
         available=$(curl -s https://github.com/AllYarnsAreBeautiful/ayab-firmware/releases | grep -oE '/tag/[^\"]+' | sed -E 's/\/tag\///')
         echo $available
-        match=$(for x in $available; do echo $x; done | grep ^${{ steps.vars.outputs.manifest }} | sort -r | head -1)
+        match=$(for x in $available; do echo $x; done | grep '^${{ steps.vars.outputs.manifest }}$' | sort -r | head -1)
         echo $match
         if [[ $match ]]
         then
