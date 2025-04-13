@@ -186,12 +186,18 @@ jobs:
           python -m fbs freeze
 
       - name: Sign app
-        if: env.APPLE_CERTIFICATE_NAME
+        shell: bash
         run: |
-          # Sign the avrdude binary explicitly since `--deep` misses it because it is not
-          # in a directory meant to contain executables.
-          codesign -s "$APPLE_CERTIFICATE_NAME" --force --all-architectures \
-            --timestamp --deep --options=runtime \
+          # - If an actual certificate is not available, we default the identity to "-" to enable
+          #   ad-hoc signing, and disable the hardened runtime.
+          # - We sign the `avrdude_mac` binary explicitly since `--deep` misses it because it
+          #   is not in a directory meant to contain executables.
+          codesign_identity=${APPLE_CERTIFICATE_NAME:-"-"}
+          if [[ -n "$APPLE_CERTIFICATE_NAME" ]]; then
+            codesign_options="--options=runtime"
+          fi
+          codesign -s "$codesign_identity" $codesign_options \
+            --force --all-architectures --timestamp --deep \
             ./target/AYAB-mac.app/Contents/Resources/ayab/firmware/avrdude_mac \
             ./target/AYAB-mac.app
 
