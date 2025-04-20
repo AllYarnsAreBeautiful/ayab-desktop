@@ -200,7 +200,15 @@ class AyabImage(SignalSender):
         *args: tuple[int, int] | list[int] | int,
     ) -> None:
         """Executes an image transform specified by function and args."""
-        self.image = transform(self.image, args)
+        try:
+            self.image = transform(self.image, args)
+        except Exception as e:
+            display_blocking_popup(
+                QCoreApplication.translate("Image", "Error applying transform"), "error"
+            )
+            logging.error(f"Error in transform {transform.__name__}: {str(e)}")
+        return
+
 
         # Update the view
         self.emit_image_resizer()
