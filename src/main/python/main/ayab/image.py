@@ -122,10 +122,7 @@ class AyabImage(SignalSender):
                 if comment.startswith("AYAB:"):
                     # update memo information
                     for i in range(len(comment) - 5):
-                        try:
-                            self.memos.append(comment[i + 5])
-                        except:
-                            self.memos.append('0')
+                        self.memos.append(comment[i + 5])
                 # report metadata
                 logging.info("File metadata Comment tag: " + comment)
                 logging.info("File memo information: " + str(self.memos))
