@@ -207,8 +207,7 @@ class AyabImage(SignalSender):
                 QCoreApplication.translate("Image", "Error applying transform"), "error"
             )
             logging.error(f"Error in transform {transform.__name__}: {str(e)}")
-        return
-
+            return
 
         # Update the view
         self.emit_image_resizer()
