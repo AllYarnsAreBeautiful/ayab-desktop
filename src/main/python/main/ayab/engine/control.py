@@ -236,8 +236,10 @@ class Control(SignalSender):
         )
         try:
             msg = msg + " memo: " + str(self.memos[self.pat_row])
-        except:
+        except IndexError:
             pass
+        except Exception as e:
+            self.logger.debug(f"Error logging memo: {str(e)}")
         if blank_line:
             msg += " BLANK LINE"
         else:
@@ -273,7 +275,10 @@ class Control(SignalSender):
         self.status.line_number = line_number
         try:
             self.status.memo = self.memos[self.pat_row]
-        except:
+        except IndexError:
+            self.status.memo = "0"
+        except Exception as e:
+            self.logger.warning(f"Error setting memo value: {str(e)}")
             self.status.memo = "0"
         if self.inf_repeat:
             self.status.repeats = self.pattern_repeats
