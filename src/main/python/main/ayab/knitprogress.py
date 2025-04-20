@@ -36,8 +36,6 @@ if TYPE_CHECKING:
     from .engine.status import Status
 
 
-# TODO (TP): display memo information
-
 class KnitProgress(QTableWidget):
     """
     Class for the knit progress window, implemented as a subclass of `QScrollArea`.
