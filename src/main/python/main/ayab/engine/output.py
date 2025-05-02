@@ -75,6 +75,9 @@ class FeedbackHandler(SignalSender):
     def _error_initializing_firmware(self) -> None:
         self.emit_notification("Error initializing firmware")
 
+    def _error_serial_port(self) -> None:
+        self.emit_notification("Error opening serial port")
+
     def _wait_for_init(self) -> None:
         self.emit_notification(
             "Please start machine. (Set the carriage to mode KC-I "
