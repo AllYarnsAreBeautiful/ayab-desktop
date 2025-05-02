@@ -13,9 +13,6 @@ outputs:
   python-appimage:
     description: "Python AppImage filename for Linux builds"
     value: ${{steps.vars.outputs.python-appimage}}
-  firmware-url:
-    description: "Download URL for the firmware hex file"
-    value: ${{steps.firmware.outputs.firmware-url}}
 runs:
   using: "composite"
   steps:
@@ -41,19 +38,29 @@ runs:
       id: firmware
       shell: bash
       run: |
-        manifest=$(cat src/main/resources/base/ayab/firmware/manifest.txt)
+        firmware_dir=src/main/resources/base/ayab/firmware
+        if [[ ! -d "$firmware_dir" || ! -r "$firmware_dir/manifest.txt" ]]; then
+          echo "Error: firmware directory or manifest.txt not found" >&2
+          exit 1
+        fi
+        manifest=$(<"$firmware_dir/manifest.txt")
         echo "manifest=$manifest"
         available=$(curl -s https://github.com/AllYarnsAreBeautiful/ayab-firmware/releases | grep -oE '/tag/[^\"]+' | sed -E 's/\/tag\///')
         echo "available=$available"
         match=$(for x in $available; do echo $x; done | grep "^${manifest}\$" | sort -r | head -1)
         echo "match=$match"
-        if [[ $match ]]
+        if [[ -z "$match" ]]
         then
-          cd src/main/resources/base/ayab/firmware/
-          url=https://github.com/AllYarnsAreBeautiful/ayab-firmware/releases/download/$match/ayab_monolithic_uno.hex
-          echo "firmware-url=${url}" >> $GITHUB_OUTPUT
-        else
-          echo "Error: could not find firmware release matching manifest"
+          echo "Error: could not find matching firmware release for manifest"
+          exit 1
+        fi
+
+        cd "$firmware_dir"
+        firmware_file=ayab_monolithic_uno.hex
+        url=https://github.com/AllYarnsAreBeautiful/ayab-firmware/releases/download/$match/$firmware_file
+        curl --fail --silent --show-error --location -O "$url"
+        if [[ ! -s "$firmware_file" ]]; then
+          echo "Error: could not download firmware release matching manifest"
           exit 1
         fi
 
