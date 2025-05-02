@@ -29,14 +29,9 @@ jobs:
           submodules: recursive
           fetch-depth: 0 # necessary for `git describe`
 
-      - uses: ./.github/actions/init-environment
+      - name: Initialize common build environment
+        uses: ./.github/actions/init-environment
         id: vars
-
-      - name: Get firmware version matching manifest
-        shell: bash
-        working-directory: src/main/resources/base/ayab/firmware/
-        run: |
-          curl --fail -O '${{ steps.vars.outputs.firmware-url }}'
 
       - name: Install dependencies
         shell: pwsh
@@ -131,14 +126,9 @@ jobs:
           submodules: recursive
           fetch-depth: 0 # necessary for `git describe`
 
-      - uses: ./.github/actions/init-environment
+      - name: Initialize common build environment
+        uses: ./.github/actions/init-environment
         id: vars
-
-      - name: Get firmware version matching manifest
-        shell: bash
-        working-directory: src/main/resources/base/ayab/firmware/
-        run: |
-          curl --fail -O '${{ steps.vars.outputs.firmware-url }}'
 
       - name: Install dependencies
         run: |
@@ -269,14 +259,9 @@ jobs:
           submodules: recursive
           fetch-depth: 0 # necessary for `git describe`
 
-      - uses: ./.github/actions/init-environment
+      - name: Initialize common build environment
+        uses: ./.github/actions/init-environment
         id: vars
-
-      - name: Get firmware version matching manifest
-        shell: bash
-        working-directory: src/main/resources/base/ayab/firmware/
-        run: |
-          curl --fail -O '${{ steps.vars.outputs.firmware-url }}'
 
       - name: Install Python modules
         run: |
