@@ -20,6 +20,7 @@
 
 from __future__ import annotations
 from typing import TYPE_CHECKING
+from PySide6.QtCore import QCoreApplication
 from PySide6.QtGui import QColor
 
 if TYPE_CHECKING:
@@ -48,10 +49,7 @@ class ProgressBar(object):
         self.__status_label.setText("")
         self.__selection_label.setText("")
 
-    def update(
-        self,
-        status: Status
-    ) -> bool:
+    def update(self, status: Status) -> bool:
         if status.current_row < 0:
             return False
         self.row = status.current_row
@@ -76,9 +74,15 @@ class ProgressBar(object):
             color_text = "Color " + self.color
             bg_color = QColor.fromRgb(self.background_color)
             if bg_color.lightness() < 128:
-                fg_color = 0xffffff
-            else: fg_color = 0x000000
-            self.__color_label.setStyleSheet("QLabel {background-color: "+f"#{self.background_color:06x}"+f";color:#{fg_color:06x}"+";}")
+                fg_color = 0xFFFFFF
+            else:
+                fg_color = 0x000000
+            self.__color_label.setStyleSheet(
+                "QLabel {background-color: "
+                + f"#{self.background_color:06x}"
+                + f";color:#{fg_color:06x}"
+                + ";}"
+            )
 
         self.__color_label.setText(color_text)
 
@@ -86,8 +90,15 @@ class ProgressBar(object):
         if self.total == 0:
             row_text = ""
         else:
-            row_text = f"Row {self.row}/{self.total}"
+            row_text = (
+                QCoreApplication.translate("ProgressBar", "Row")
+                + f" {self.row}/{self.total}"
+            )
             if self.repeats >= 0:
-                row_text += f" ({self.repeats} repeats completed)"
+                row_text += (
+                    " ("
+                    + QCoreApplication.translate("ProgressBar", "repeats completed")
+                    + f": {self.repeats})"
+                )
         self.__row_label.setText(row_text)
         self.__status_label.setText(f"{self.row}/{self.total}")

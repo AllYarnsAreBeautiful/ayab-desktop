@@ -91,7 +91,11 @@ class Engine(SignalSender, QDockWidget):
 
     def reload_settings(self) -> None:
         self.config.refresh()
-        self.setWindowTitle("Machine: " + Machine(self.config.machine).name)
+        self.setWindowTitle(
+            QCoreApplication.translate("Dock", "Machine")
+            + ": "
+            + Machine(self.config.machine).name
+        )
 
     def __disable_status_tab(self) -> None:
         self.ui.tab_widget.setTabEnabled(1, False)
