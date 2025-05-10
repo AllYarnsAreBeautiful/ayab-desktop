@@ -36,13 +36,10 @@ class About(QFrame):
 
     def __init__(self, parent: GuiMain):
         super().__init__()
-        self.__version = utils.package_version(parent.app_context)
         self.__ui = Ui_AboutForm()
         self.__ui.setupUi(self)
         self.__ui.title_label.setText(
-            QCoreApplication.translate("MainWindow", "All Yarns Are Beautiful")
-            + " "
-            + self.__version
+            f"AYAB {utils.package_version(parent.app_context)}"
         )
         self.__ui.link_label.setText(
             QCoreApplication.translate("MainWindow", "Website")
