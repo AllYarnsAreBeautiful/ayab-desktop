@@ -18,7 +18,6 @@
 #    Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
-import pytest
 import serial
 import unittest
 from mock import patch
@@ -39,19 +38,22 @@ class TestCommunication(unittest.TestCase):
         assert after is False
 
     def test_open_serial(self):
-        with patch.object(serial, "Serial") as mock_method:
+        with patch.object(serial, "Serial") as Serial:
             self.ayabCom = Communication()
             openStatus = self.ayabCom.open_serial("dummyPortname")
             assert openStatus
-            mock_method.assert_called_once_with("dummyPortname", 115200, timeout=0.1)
+            Serial.assert_called_once_with(
+                "dummyPortname", 115200, timeout=0.1, exclusive=True
+            )
 
-        with patch.object(serial, "Serial") as mock_method:
-            with pytest.raises(Exception) as excinfo:
-                mock_method.side_effect = serial.SerialException()
-                self.ayabCom = Communication()
-                openStatus = self.ayabCom.open_serial("dummyPortname")
-            assert "CommunicationException" in str(excinfo.type)
-            mock_method.assert_called_once_with("dummyPortname", 115200, timeout=0.1)
+        with patch.object(serial, "Serial") as Serial:
+            Serial.side_effect = serial.SerialException()
+            self.ayabCom = Communication()
+            openStatus = self.ayabCom.open_serial("dummyPortname")
+            assert openStatus is False
+            Serial.assert_called_once_with(
+                "dummyPortname", 115200, timeout=0.1, exclusive=True
+            )
 
     def test_update_API6(self):
         byte_array = bytearray([0xC0, Token.cnfStart.value, 1, 0xC0])
