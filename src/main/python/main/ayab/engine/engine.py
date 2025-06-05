@@ -37,6 +37,10 @@ from .dock_gui import Ui_Dock
 from typing import TYPE_CHECKING, Literal, Optional, cast
 from ..signal_sender import SignalSender
 
+import ipaddress
+import zeroconf
+from .mdns_discovery import MdnsBrowser
+
 if TYPE_CHECKING:
     from ..ayab import GuiMain
 from .control import Control
@@ -57,6 +61,9 @@ class Engine(SignalSender, QDockWidget):
     def __init__(self, parent: GuiMain):
         # set up UI
         super().__init__(parent.signal_receiver)
+        self.mdns_browser = MdnsBrowser("_ayab._tcp.local.")
+        self.mdns_browser.start()
+
         self.ui = Ui_Dock()
         self.ui.setupUi(self)
         self.config: OptionsTab = OptionsTab(parent)
@@ -118,8 +125,28 @@ class Engine(SignalSender, QDockWidget):
         # Add Simulation item to indicate operation without machine
         combo_box.addItem(QCoreApplication.translate("KnitEngine", "Simulation"))
 
-    def __read_portname(self) -> str:
-        return self.ui.serial_port_dropdown.currentText()
+        # When starting up, mdns services won't be available yet, i.e. refresh button required
+        # => Shouldn't this list be updated in background ?
+        for key, value in self.mdns_browser.get_known_services().items():
+            server_name = value.server.removesuffix('.local.')
+            try:
+                server_ip = ipaddress.IPv4Address(value.addresses[0])
+            except ipaddress.AddressValueError:
+                server_ip = 'unknown'
+            combo_box.addItem(f"{server_name} ({server_ip})", value)
+
+    def __read_portname(self) -> str | zeroconf.ServiceInfo:
+        # FIXME: method should return a class rather than a string to forward additional data
+        selected_index = self.ui.serial_port_dropdown.currentIndex()
+        user_data = self.ui.serial_port_dropdown.itemData(selected_index)
+        if user_data:
+            # Websocket connection
+            portname = f"ws://{user_data.server}:{user_data.port}/ws"
+            self.__logger.info(f"Connecting to {portname} ({user_data.properties[b'board_id'].decode()})")
+        else:
+            # Serial connection (default)
+            portname = self.ui.serial_port_dropdown.currentText()
+        return portname
 
     def knit_config(self, image: Image.Image) -> None:
         """
