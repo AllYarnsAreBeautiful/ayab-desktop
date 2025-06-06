@@ -8,7 +8,10 @@ for websocket communication.
 """
 class WebsocketSerial:
     def __init__(self, uri: str, timeout: float | None):
-        self._ws = websockets.sync.client.connect(uri)
+        try:
+            self._ws = websockets.sync.client.connect(uri)
+        except Exception as e:
+            raise ConnectionError(f"Failed to connect to websocket {uri}: {e}")        
         self._timeout = timeout
         self._rxbuffer = b''
         self._lock = threading.Lock()
@@ -28,7 +31,7 @@ class WebsocketSerial:
                     data = self._ws.recv(self._timeout)
                     if isinstance(data, bytes):
                         self._rxbuffer += data
-                except TimeoutError:
+                except (TimeoutError, websockets.ConnectionClosed):
                     break
 
             data = self._rxbuffer[0:size]
@@ -39,4 +42,21 @@ class WebsocketSerial:
         self._ws.send(data)
 
     def close(self) -> None:
-        self._ws.close()
+        try:
+            with self._lock:
+                self._ws.close()
+        except Exception:
+            pass  # Ignore errors during close        
+
+    def flush(self) -> None:
+        """Flush write buffers, if applicable."""
+        pass  # WebSockets handle this automatically
+
+    def reset_input_buffer(self) -> None:
+        """Clear input buffer."""
+        with self._lock:
+            self._rxbuffer = b''
+
+    def reset_output_buffer(self) -> None:
+        """Clear output buffer."""
+        pass  # WebSockets handle this automatically

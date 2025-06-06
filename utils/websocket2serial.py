@@ -4,6 +4,7 @@ import websockets
 import logging
 import socket
 import argparse
+import contextlib
 from zeroconf.asyncio import (
     AsyncServiceInfo,
     AsyncZeroconf,
@@ -119,10 +120,8 @@ async def serial_websocket_handler(serial_port_name, baud_rate, websocket):
 
         for task in pending: # Cancel any remaining pending tasks
             task.cancel()
-            try:
+            with contextlib.suppress(asyncio.CancelledError):
                 await task # Await to ensure cancellation completes
-            except asyncio.CancelledError:
-                pass # Expected for cancelled tasks
 
         logging.info(f"WebSocket communication closed for {websocket.remote_address}.")
 
@@ -147,7 +146,7 @@ def get_local_ip():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     try:
         # Doesn't actually have to be reachable
-        s.connect(('10.255.255.255', 1))
+        s.connect(('255.255.255.255', 1))
         IP = s.getsockname()[0]
     except Exception:
         IP = '127.0.0.1' # Fallback to localhost if no network connection
@@ -192,7 +191,6 @@ async def main():
         "port": str(WEBSOCKET_PORT),
         "path" : "/ws",
         "board_id": f"Ayab Serial to WebSocket Bridge for {serial_port_name} at {baud_rate} baud",
-        "port": str(WEBSOCKET_PORT),
         "serial_port_name": serial_port_name,
         "serial_baud_rate": str(baud_rate)
     }
