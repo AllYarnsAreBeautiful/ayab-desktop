@@ -21,7 +21,7 @@ class WebsocketSerial:
     def in_waiting(self) -> int:
         return len(self._rxbuffer)
 
-    def read(self, size: int = 1) -> str | bytes:
+    def read(self, size: int = 1) -> bytes:
         with self._lock:
             while size > len(self._rxbuffer):
                 try:
@@ -35,8 +35,8 @@ class WebsocketSerial:
             self._rxbuffer = self._rxbuffer[size:]
         return data
 
-    def write(self, data: bytes):
+    def write(self, data: bytes) -> None:
         self._ws.send(data)
 
-    def close(self):
+    def close(self) -> None:
         self._ws.close()
