@@ -94,7 +94,7 @@ class Communication(object):
         if not self.__ser:
             self.__portname = portname
             try:
-                if self.__portname[0:5] == "ws://":
+                if self.__portname and self.__portname[0:5] == "ws://":
                     self.__ser = WebsocketSerial(self.__portname, timeout=0.1)
                 else:
                     self.__ser = serial.Serial(self.__portname, 115200, timeout=0.1, exclusive=True)
