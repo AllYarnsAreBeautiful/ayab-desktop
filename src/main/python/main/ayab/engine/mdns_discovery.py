@@ -1,13 +1,15 @@
 import zeroconf
 import threading
 import logging
+from typing import Callable
 
 class MdnsBrowser:
     """
     Explore Zeroconf services and manage them using a thread-safe dict
     """
-    def __init__(self, service_type: str):
+    def __init__(self, service_type: str, update_callback: Callable[..., None]):
         self.service_type : str = service_type
+        self.update_callback : Callable[..., None] = update_callback
         self.services : dict [str, zeroconf.ServiceInfo | None] = {}
         self.services_lock = threading.Lock()
         self.zeroconf_instance : zeroconf.Zeroconf | None = None
@@ -39,6 +41,7 @@ class MdnsBrowser:
                 self.__logger.info(f"Service {change_type}: {name}")
                 with self.services_lock:
                     self.services[name] = info
+                    self.update_callback()
             else:
                 self.__logger.warning(f"Unable to retrieve service {name} information")
         except Exception as e:
@@ -51,6 +54,7 @@ class MdnsBrowser:
         with self.services_lock:
             if name in self.services:
                 del self.services[name]
+                self.update_callback()                
 
     def start(self) -> None:
         """Start Zeroconf service browser."""
