@@ -29,7 +29,7 @@ from .communication import Communication, Token
 from .communication_mock import CommunicationMock
 from .hw_test_communication_mock import HardwareTestCommunicationMock
 from .output import Output
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Callable, Any
 
 import time
 
@@ -71,10 +71,10 @@ class StateMachine(QStateMachine):
     CONNECT: QState
     VERSION_CHECK: QState
 
-    lastRetry = 0
+    lastRetry : float = 0.0
 
     @staticmethod
-    def retry(method, args=(), timeout=0.1):
+    def retry(method: Callable[..., None], args: Any=(), timeout: float=0.1) -> None:
         current_time = time.time()
         if (current_time - StateMachine.lastRetry) > timeout:
             StateMachine.lastRetry = current_time

@@ -128,14 +128,15 @@ class Engine(SignalSender, QDockWidget):
         # When starting up, mdns services won't be available yet, i.e. refresh button required
         # => Shouldn't this list be updated in background ?
         for key, value in self.mdns_browser.get_known_services().items():
-            server_name = value.server.removesuffix('.local.')
-            try:
-                server_ip = ipaddress.IPv4Address(value.addresses[0])
-            except ipaddress.AddressValueError:
-                server_ip = 'unknown'
-            combo_box.addItem(f"{server_name} ({server_ip})", value)
+            if value and value.server:
+                server_name = value.server.removesuffix('.local.')
+                try:
+                    server_ip = str(ipaddress.IPv4Address(value.addresses[0]))
+                except ipaddress.AddressValueError:
+                    server_ip = 'unknown'
+                combo_box.addItem(f"{server_name} ({server_ip})", value)
 
-    def __read_portname(self) -> str | zeroconf.ServiceInfo:
+    def __read_portname(self) -> str:
         # FIXME: method should return a class rather than a string to forward additional data
         selected_index = self.ui.serial_port_dropdown.currentIndex()
         user_data = self.ui.serial_port_dropdown.itemData(selected_index)
