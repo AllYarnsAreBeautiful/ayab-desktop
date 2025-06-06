@@ -1,7 +1,5 @@
 import zeroconf
-import socket
 import threading
-import time
 import logging
 
 class MdnsBrowser:
@@ -35,11 +33,9 @@ class MdnsBrowser:
 
     def _on_service_changed(self, zeroconf_instance: zeroconf.Zeroconf, type: str, name: str, change_type: str) -> None:
         """Callback called when a service is added or updated."""
-        info : zeroconf.ServiceInfo | None = zeroconf.ServiceInfo(type, name)
         try:
-            info = zeroconf_instance.get_service_info(type, name, timeout=3000)
+            info : zeroconf.ServiceInfo | None = zeroconf_instance.get_service_info(type, name, timeout=3000)
             if info:
-                info = zeroconf_instance.get_service_info(type, name)
                 self.__logger.info(f"Service {change_type}: {name}")
                 with self.services_lock:
                     self.services[name] = info
@@ -56,22 +52,6 @@ class MdnsBrowser:
             if name in self.services:
                 del self.services[name]
 
-    def _on_service_updated(self, zeroconf_instance: zeroconf.Zeroconf, type: str, name: str) -> None:
-        """Callback called when a service's information is updated."""
-        self.__logger.info(f"Service '{name}' of type '{type}' updated. Attempting to get new info...")
-        try:
-            # Re-fetch the service info as it might have changed
-            info = zeroconf_instance.get_service_info(type, name, timeout=3000)
-
-            if info:
-                self.__logger.info(f"Successfully retrieved updated info for service: {name}")
-                with self.services_lock:
-                    self.services[name] = info # Overwrite with new info
-            else:
-                self.__logger.warning(f"Failed to retrieve updated information for service {name} (it might have disappeared or changed unexpectedly).")
-        except Exception as e:
-            self.__logger.error(f"Error during service info update for {name}: {e}")
-
     def start(self) -> None:
         """Start Zeroconf service browser."""
         if self.running:
@@ -82,12 +62,11 @@ class MdnsBrowser:
         self.__logger.info(f"Starting service exploration for: {self.service_type}")
         try:
             self.zeroconf_instance = zeroconf.Zeroconf()
-            listener = zeroconf.ServiceBrowser(
+            self.browser = zeroconf.ServiceBrowser(
                 self.zeroconf_instance,
                 self.service_type,
                 self.listener,
             )
-            self.browser = listener
         except Exception as e:
             self.__logger.error(f"Error while starting Zeroconf: {e}")
             self.stop()

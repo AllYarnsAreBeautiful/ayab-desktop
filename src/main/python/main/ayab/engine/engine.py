@@ -38,7 +38,6 @@ from typing import TYPE_CHECKING, Literal, Optional, cast
 from ..signal_sender import SignalSender
 
 import ipaddress
-import zeroconf
 from .mdns_discovery import MdnsBrowser
 
 if TYPE_CHECKING:
@@ -80,6 +79,7 @@ class Engine(SignalSender, QDockWidget):
 
     def __del__(self) -> None:
         self.control.stop()
+        self.mdns_browser.stop() # Lead to EventLoopBlocked exception when closing the window rather than the application
 
     def setup_ui(self) -> None:
         # insert tabs
