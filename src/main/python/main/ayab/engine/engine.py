@@ -22,7 +22,7 @@ from __future__ import annotations
 import logging
 from PIL import Image
 
-from PySide6.QtCore import QCoreApplication, Signal
+from PySide6.QtCore import QCoreApplication, Signal, Slot
 from PySide6.QtWidgets import QDockWidget
 from wakepy import keep
 
@@ -53,6 +53,7 @@ class Engine(SignalSender, QDockWidget):
     """
 
     port_opener = Signal()
+    mdns_update_signal = Signal()
 
     pattern: Pattern
     status: StatusTab
@@ -60,7 +61,8 @@ class Engine(SignalSender, QDockWidget):
     def __init__(self, parent: GuiMain):
         # set up UI
         super().__init__(parent.signal_receiver)
-        self.mdns_browser = MdnsBrowser("_ayab._tcp.local.")
+        self.mdns_browser = MdnsBrowser("_ayab._tcp.local.", self.mdns_update)
+        self.mdns_update_signal.connect(self.__populate_ports)
         self.mdns_browser.start()
 
         self.ui = Ui_Dock()
@@ -80,6 +82,13 @@ class Engine(SignalSender, QDockWidget):
     def __del__(self) -> None:
         self.control.stop()
         self.mdns_browser.stop() # Lead to EventLoopBlocked exception when closing the window rather than the application
+
+    @Slot()
+    def mdns_update(self) -> None:
+        """
+        This method can be called from a non-Qt thread
+        """
+        self.mdns_update_signal.emit()
 
     def setup_ui(self) -> None:
         # insert tabs
@@ -127,7 +136,7 @@ class Engine(SignalSender, QDockWidget):
 
         # When starting up, mdns services won't be available yet, i.e. refresh button required
         # => Shouldn't this list be updated in background ?
-        for key, value in self.mdns_browser.get_known_services().items():
+        for _key, value in self.mdns_browser.get_known_services().items():
             if value and value.server:
                 server_name = value.server.removesuffix('.local.')
                 try:

@@ -11,7 +11,7 @@ class WebsocketSerial:
         try:
             self._ws = websockets.sync.client.connect(uri)
         except Exception as e:
-            raise ConnectionError(f"Failed to connect to websocket {uri}: {e}")        
+            raise ConnectionError(f"Failed to connect to websocket {uri}: {e}") from e
         self._timeout = timeout
         self._rxbuffer = b''
         self._lock = threading.Lock()
@@ -39,7 +39,11 @@ class WebsocketSerial:
         return data
 
     def write(self, data: bytes) -> None:
-        self._ws.send(data)
+        try:
+            with self._lock:
+                self._ws.send(data)
+        except websockets.ConnectionClosed:
+            raise ConnectionError("WebSocket connection is closed")        
 
     def close(self) -> None:
         try:
