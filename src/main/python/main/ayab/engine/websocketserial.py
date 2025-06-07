@@ -43,7 +43,7 @@ class WebsocketSerial:
             with self._lock:
                 self._ws.send(data)
         except websockets.ConnectionClosed:
-            raise ConnectionError("WebSocket connection is closed")        
+            raise ConnectionError("WebSocket connection is closed") from None
 
     def close(self) -> None:
         try:
