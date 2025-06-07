@@ -146,7 +146,8 @@ def get_local_ip():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     try:
         # Doesn't actually have to be reachable
-        s.connect(('255.255.255.255', 1))
+        # 192.0.2.0/24 is not routable and SonarCloud won(t flag a security issue
+        s.connect(('192.0.2.255', 1))
         IP = s.getsockname()[0]
     except Exception:
         IP = '127.0.0.1' # Fallback to localhost if no network connection

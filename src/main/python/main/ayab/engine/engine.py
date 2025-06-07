@@ -134,8 +134,6 @@ class Engine(SignalSender, QDockWidget):
         # Add Simulation item to indicate operation without machine
         combo_box.addItem(QCoreApplication.translate("KnitEngine", "Simulation"))
 
-        # When starting up, mdns services won't be available yet, i.e. refresh button required
-        # => Shouldn't this list be updated in background ?
         for _key, value in self.mdns_browser.get_known_services().items():
             if value and value.server:
                 server_name = value.server.removesuffix('.local.')
