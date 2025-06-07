@@ -30,6 +30,7 @@ import serial
 import sliplib
 from enum import Enum
 from ..machine import Machine
+from .websocketserial import WebsocketSerial
 
 import logging
 import pprint
@@ -68,7 +69,7 @@ class Token(Enum):
 class Communication(object):
     """Class Handling the serial communication protocol."""
 
-    def __init__(self, serial: Optional[serial.Serial] = None):
+    def __init__(self, serial: Optional[serial.Serial | WebsocketSerial] = None):
         """Create an AyabCommunication object,
         with an optional serial communication object."""
         logging.basicConfig(level=logging.DEBUG)
@@ -93,7 +94,10 @@ class Communication(object):
         if not self.__ser:
             self.__portname = portname
             try:
-                self.__ser = serial.Serial(self.__portname, 115200, timeout=0.1)
+                if self.__portname and self.__portname[0:5] == "ws://":
+                    self.__ser = WebsocketSerial(self.__portname, timeout=0.1)
+                else:
+                    self.__ser = serial.Serial(self.__portname, 115200, timeout=0.1)
             except Exception:
                 self.logger.error(f"could not open serial port {self.__portname}")
                 raise CommunicationException()

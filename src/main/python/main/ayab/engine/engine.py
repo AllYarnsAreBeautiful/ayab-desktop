@@ -22,7 +22,7 @@ from __future__ import annotations
 import logging
 from PIL import Image
 
-from PySide6.QtCore import QCoreApplication, Signal
+from PySide6.QtCore import QCoreApplication, Signal, Slot
 from PySide6.QtWidgets import QDockWidget
 from wakepy import keep
 
@@ -37,6 +37,9 @@ from .dock_gui import Ui_Dock
 from typing import TYPE_CHECKING, Literal, Optional, cast
 from ..signal_sender import SignalSender
 
+import ipaddress
+from .mdns_discovery import MdnsBrowser
+
 if TYPE_CHECKING:
     from ..ayab import GuiMain
 from .control import Control
@@ -50,6 +53,7 @@ class Engine(SignalSender, QDockWidget):
     """
 
     port_opener = Signal()
+    mdns_update_signal = Signal()
 
     pattern: Pattern
     status: StatusTab
@@ -57,6 +61,10 @@ class Engine(SignalSender, QDockWidget):
     def __init__(self, parent: GuiMain):
         # set up UI
         super().__init__(parent.signal_receiver)
+        self.mdns_browser = MdnsBrowser("_ayab._tcp.local.", self.mdns_update)
+        self.mdns_update_signal.connect(self.__populate_ports)
+        self.mdns_browser.start()
+
         self.ui = Ui_Dock()
         self.ui.setupUi(self)
         self.config: OptionsTab = OptionsTab(parent)
@@ -73,6 +81,14 @@ class Engine(SignalSender, QDockWidget):
 
     def __del__(self) -> None:
         self.control.stop()
+        self.mdns_browser.stop() # Lead to EventLoopBlocked exception when closing the window rather than the application
+
+    @Slot()
+    def mdns_update(self) -> None:
+        """
+        This method can be called from a non-Qt thread
+        """
+        self.mdns_update_signal.emit()
 
     def setup_ui(self) -> None:
         # insert tabs
@@ -118,8 +134,27 @@ class Engine(SignalSender, QDockWidget):
         # Add Simulation item to indicate operation without machine
         combo_box.addItem(QCoreApplication.translate("KnitEngine", "Simulation"))
 
+        for _key, value in self.mdns_browser.get_known_services().items():
+            if value and value.server:
+                server_name = value.server.removesuffix('.local.')
+                try:
+                    server_ip = str(ipaddress.IPv4Address(value.addresses[0]))
+                except ipaddress.AddressValueError:
+                    server_ip = 'unknown'
+                combo_box.addItem(f"{server_name} ({server_ip})", value)
+
     def __read_portname(self) -> str:
-        return self.ui.serial_port_dropdown.currentText()
+        # FIXME: method should return a class rather than a string to forward additional data
+        selected_index = self.ui.serial_port_dropdown.currentIndex()
+        user_data = self.ui.serial_port_dropdown.itemData(selected_index)
+        if user_data:
+            # Websocket connection
+            portname = f"ws://{user_data.server}:{user_data.port}/ws"
+            self.__logger.info(f"Connecting to {portname} ({user_data.properties[b'board_id'].decode()})")
+        else:
+            # Serial connection (default)
+            portname = self.ui.serial_port_dropdown.currentText()
+        return portname
 
     def knit_config(self, image: Image.Image) -> None:
         """
