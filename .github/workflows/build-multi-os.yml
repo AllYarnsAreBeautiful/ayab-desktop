@@ -251,7 +251,7 @@ jobs:
     runs-on: ubuntu-22.04
     env:
       # Using a specific Python version for Linux builds due to python-appimage availability
-      PYTHON_VERSION: 3.11.12
+      PYTHON_VERSION: 3.11.13
     steps:
       - name: Checkout repo into AppDir
         uses: actions/checkout@v4
