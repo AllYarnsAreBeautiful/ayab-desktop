@@ -92,6 +92,7 @@ class StateMachine(QStateMachine):
             control.com = Communication()
         if not control.com.open_serial(control.portname):
             control.logger.error("Could not open serial port")
+            control.state = State.FINISHED
             return Output.ERROR_SERIAL_PORT
         # else
         # setup complete

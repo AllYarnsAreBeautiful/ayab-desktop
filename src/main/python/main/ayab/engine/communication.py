@@ -93,11 +93,12 @@ class Communication(object):
         if not self.__ser:
             self.__portname = portname
             try:
-                self.__ser = serial.Serial(self.__portname, 115200, timeout=0.1)
+                self.__ser = serial.Serial(
+                    self.__portname, 115200, timeout=0.1, exclusive=True
+                )
+                return True
             except Exception:
-                self.logger.error(f"could not open serial port {self.__portname}")
-                raise CommunicationException()
-            return True
+                self.logger.exception(f"Could not open serial port {self.__portname}")
         return False
 
     def close_serial(self) -> None:
@@ -260,7 +261,3 @@ def add_crc(crc: int, data: bytearray) -> int:
                 crc ^= 0x8C
             n >>= 1
     return crc & 0xFF
-
-
-class CommunicationException(Exception):
-    pass
