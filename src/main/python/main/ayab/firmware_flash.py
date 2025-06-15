@@ -27,7 +27,7 @@ import logging
 import os
 import platform
 import re
-from subprocess import run, STDOUT, PIPE, check_output
+from subprocess import run, STDOUT, PIPE, check_output, CalledProcessError
 
 from .firmware_flash_gui import Ui_Firmware
 from . import utils
@@ -161,18 +161,25 @@ class FirmwareFlash(QDialog):
         if command is None:
             return False
         # else
-        tr_ = QCoreApplication.translate
         try:
             check_output(command, stderr=STDOUT, timeout=10, shell=True)
         except Exception as e:
-            self.__logger.info("Error flashing firmware: " + repr(e))
+            self.__logger.error("Error flashing firmware: %r", e)
+            if isinstance(e, CalledProcessError):
+                self.__logger.error("Command output: %r", e.output)
             utils.display_blocking_popup(
-                tr_("Firmware", "Error flashing firmware."), "error"
+                QCoreApplication.translate(
+                    "Firmware",
+                    "Error flashing firmware. Check the AYAB log for details.",
+                ),
+                "error",
             )
             return False
         else:
             self.__logger.info("Flashing done!")
-            utils.display_blocking_popup(tr_("Firmware", "Flashing done!"))
+            utils.display_blocking_popup(
+                QCoreApplication.translate("Firmware", "Flashing done!")
+            )
             self.close()
             return True
 
@@ -192,7 +199,7 @@ class FirmwareFlash(QDialog):
                 self.__logger.error("`avrdude` not found in path")
                 utils.display_blocking_popup(
                     QCoreApplication.translate(
-                        "FirmwareFlash", "Error flashing firmware: `avrdude` not found."
+                        "Firmware", "Error flashing firmware: `avrdude` not found."
                     ),
                     "error",
                 )
@@ -206,6 +213,18 @@ class FirmwareFlash(QDialog):
         binary_file = os.path.join(
             self.__app_context.get_resource("ayab/firmware"), firmware_name
         )
+
+        if not os.path.exists(binary_file) or os.path.getsize(binary_file) <= 0:
+            self.__logger.error("Firmware file not found or empty: %s", binary_file)
+            utils.display_blocking_popup(
+                QCoreApplication.translate(
+                    "Firmware",
+                    "Error flashing firmware: firmware file not found or empty.",
+                ),
+                "error",
+            )
+            return None
+
         device = self.device_dict.get(controller_name)
         programmer = self.programmer_dict.get(controller_name, "wiring")
 
