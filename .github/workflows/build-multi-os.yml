@@ -256,8 +256,11 @@ jobs:
     name: Create and upload Linux AppImage release
     runs-on: ubuntu-22.04
     env:
-      # Using a specific Python version for Linux builds due to python-appimage availability
-      PYTHON_VERSION: 3.11.13
+      # Using a specific Python version for Linux builds due to
+      # python-appimage availability (we can't use the same version
+      # for other platforms because there's no official binary for
+      # 3.11 after 3.11.9)
+      PYTHON_VERSION: 3.11.16
     steps:
       - name: Checkout repo into AppDir
         uses: actions/checkout@v4
@@ -287,8 +290,14 @@ jobs:
           cp -r !(git) git
           shopt -u dotglob
 
-      - name: Download AppImage of Python designed for manylinux
-        run: wget -c https://github.com/niess/python-appimage/releases/download/python${{steps.vars.outputs.python-minor}}/${{steps.vars.outputs.python-appimage}}
+      # Pinning python-appimage to avoid surprise changes
+      # and using a specific tag of the manylinux image to
+      # get it to output an AppImage including the expected
+      # Python version.
+      - name: Build AppImage of Python designed for manylinux
+        run: |
+          python -m pip install --only-binary :all: python-appimage==1.4.6
+          python -m python_appimage build manylinux 2_28_x86_64:2026.09.14-1 cp311-cp311
 
       - name: Extract the AppImage
         run: |
@@ -302,9 +311,6 @@ jobs:
         run: |
           cd squashfs-root
           sudo apt-get install -y avrdude libasound2-dev
-          ./AppRun -m pip install --upgrade pip
-          # hack to fix setup.py script with faulty include
-          ./AppRun -m pip install --global-option=build_ext --global-option="-I$(pwd)/opt/${{steps.vars.outputs.python-minor}}/include/${{steps.vars.outputs.python-minor}}" simpleaudio
           ./AppRun -m pip install -r requirements.build.txt
 
       - name: Add AppDir subdirectories to PATH
