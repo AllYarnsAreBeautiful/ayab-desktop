@@ -44,8 +44,10 @@ class KnitProgress(QTableWidget):
     @date   June 2020
     """
 
-    green = 0xBBCCBB
-    orange = 0xEECC99
+    green = 0x99DD99
+    orange = 0xEECC77
+    grey = 0xCCCCCC
+    smoke = 0xF5F5F5
 
     def __init__(self, parent: GuiMain):
         super().__init__(parent.ui.graphics_splitter)
@@ -70,6 +72,10 @@ class KnitProgress(QTableWidget):
         self.previousStatus: Optional[Status] = None
         self.scene = parent.scene
         self.currentItemChanged.connect(self.onStitchSelect)
+        self.qcolor_green: QColor = QColor(f"#{self.green:06x}")
+        self.qcolor_orange: QColor = QColor(f"#{self.orange:06x}")
+        self.qcolor_grey: QColor = QColor(f"#{self.grey:06x}")
+        self.qcolor_smoke: QColor = QColor(f"#{self.smoke:06x}")
 
     def start(self) -> None:
         self.clearContents()
@@ -77,6 +83,7 @@ class KnitProgress(QTableWidget):
         self.setRowCount(0)
         self.setCurrentCell(-1, -1)
         self.color = True
+        self.show_memo_column = len(self.scene.ayabimage.memos) > 0
 
     def uiStateChanged(self, status: Status) -> bool:
         if not self.previousStatus:
@@ -87,6 +94,7 @@ class KnitProgress(QTableWidget):
 
         if (
             status.line_number != self.previousStatus.line_number
+            or status.memo != self.previousStatus.memo
             or status.current_row != self.previousStatus.current_row
             or status.color_symbol != self.previousStatus.color_symbol
             or status.carriage_type != self.previousStatus.carriage_type
@@ -124,8 +132,6 @@ class KnitProgress(QTableWidget):
         if self.columnCount() != len(columns):
             self.setColumnCount(len(columns))
         n_cols = len(columns)
-        if n_cols < 4:
-            self.hideColumn(5)
         self.instantiate_row_from_columns(status, columns)
 
         self.previousStatus = status
@@ -136,6 +142,8 @@ class KnitProgress(QTableWidget):
     def load_columns_from_status(
         self, status: Status, columns: List[QTableWidgetItem]
     ) -> None:
+        if self.show_memo_column:
+            columns.append(self.__memo(status.memo))
         for c in range(0, len(status.bits)):
             needle = status.knit_start_needle + c
             needle_number_from_r1 = needle - status.machine_width // 2
@@ -166,19 +174,21 @@ class KnitProgress(QTableWidget):
                 self.horizontalHeader().setVisible(False)
             else:
                 self.horizontalHeader().setVisible(True)
-            needle = status.knit_start_needle + i
+            needle = status.knit_start_needle + i - self.show_memo_column
             needle_number_from_r1 = needle - status.machine_width // 2
-            if needle_number_from_r1 < 0:
+            if self.show_memo_column and i == 0:
+                header = QTableWidgetItem("M")
+                header.setForeground(QBrush(self.qcolor_grey))
+            elif needle_number_from_r1 < 0:
                 header = QTableWidgetItem(f"{-needle_number_from_r1}")
                 header.font().setBold(True)
-                header.setForeground(QBrush(QColor(f"#{self.orange:06x}")))
+                header.setForeground(QBrush(self.qcolor_orange))
                 header.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-                self.setHorizontalHeaderItem(i, header)
             else:
                 header = QTableWidgetItem(f"{1 + needle_number_from_r1}")
-                header.setForeground(QBrush(QColor(f"#{self.green:06x}")))
+                header.setForeground(QBrush(self.qcolor_green))
                 header.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-                self.setHorizontalHeaderItem(i, header)
+            self.setHorizontalHeaderItem(i, header)
 
     def make_row_with_spacer(self) -> None:
         self.removeRow(1)
@@ -231,6 +241,7 @@ class KnitProgress(QTableWidget):
         carriage = status.carriage_type
         direction = status.carriage_direction
         info_text = info_text + (" " + carriage.symbol + " " + direction.symbol)
+
         info_header.setText(info_text)
         return info_header
 
@@ -265,12 +276,23 @@ class KnitProgress(QTableWidget):
                 stitch.setBackground(QBrush(bg_color))
         return stitch
 
+    def __memo(
+        self,
+        memo: str,
+    ) -> QTableWidgetItem:
+        cell = QTableWidgetItem()
+        cell.setBackground(QBrush(self.qcolor_smoke))
+        if len(memo) > 0 and memo != "0":
+            cell.setText(memo)
+        return cell
+
+
     def onStitchSelect(self, current: QTableWidgetItem | None) -> None:
         if current is None:
             self.__progbar.set_selection_label("")
             return
         header = self.horizontalHeaderItem(current.column())
-        if header is not None and header.foreground().color().red() == 187:
+        if header is not None and header.foreground().color() == self.qcolor_green:
             side = "Right"
         else:
             side = "Left"
