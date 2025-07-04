@@ -3,6 +3,7 @@ import threading
 import logging
 from typing import Callable
 
+
 class MdnsBrowser:
     """
     Explore Zeroconf services and manage them using a thread-safe dict
@@ -80,7 +81,7 @@ class MdnsBrowser:
             self.__logger.warning("MdnsBrowser not running.")
             return
 
-        self.__logger.info("Shutting down MdnsBrowser...")
+        self.__logger.info("Shutting down MdnsBrowser...")      
         if self.browser:
             self.browser.cancel()
         if self.zeroconf_instance:
@@ -92,4 +93,7 @@ class MdnsBrowser:
         """Return known services."""
         with self.services_lock:
             return self.services.copy()
+        
+    def __del__(self):
+        self.stop()
 

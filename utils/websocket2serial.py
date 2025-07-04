@@ -14,7 +14,9 @@ from zeroconf.asyncio import (
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # --- Serial Port Configuration (set via command-line arguments) ---
-TIMEOUT = 0.1
+SERIAL_PORT = "/dev/ttyUSB0"
+SERIAL_BAUD_RATE = 115200
+SERIAL_TIMEOUT = 0.1
 
 # --- WebSocket Configuration ---
 WEBSOCKET_HOST = '0.0.0.0'  # Listen on all available interfaces
@@ -27,7 +29,8 @@ ZEROCONF_SERVICE_NAME = "Ayab Serial Bridge"
 # Global variables for Zeroconf instance and service info
 zeroconf_instance = None
 service_info = None
-      
+
+
 async def serial_to_websocket_task(serial_port_name, baud_rate, websocket, ser):
     """
     Asynchronously reads data from the serial port and sends it to the WebSocket.
@@ -48,11 +51,12 @@ async def serial_to_websocket_task(serial_port_name, baud_rate, websocket, ser):
                 except Exception as e:
                     logging.error(f"Serial -> WS: Error sending data to WebSocket: {e}")
                     break  # Exit task on other WebSocket errors
-            await asyncio.sleep(TIMEOUT)
+            await asyncio.sleep(SERIAL_TIMEOUT)
     except Exception as e:
         logging.error(f"Serial -> WS task encountered an unexpected error: {e}")
     finally:
         logging.info(f"Stopped serial_to_websocket_task for {serial_port_name} (WS client: {websocket.remote_address})")
+
 
 async def websocket_to_serial_task(serial_port_name, websocket, ser):
     """
@@ -83,7 +87,6 @@ async def websocket_to_serial_task(serial_port_name, websocket, ser):
             except Exception as e:
                 logging.error(f"WS -> Serial: Error receiving from WebSocket or writing to serial: {e}")
                 break  # Exit task on other errors
-            await asyncio.sleep(0.01)
     except Exception as e:
         logging.error(f"WS -> Serial task encountered an unexpected error: {e}")
     finally:
@@ -104,7 +107,7 @@ async def serial_websocket_handler(serial_port_name, baud_rate, websocket):
             bytesize=serial.EIGHTBITS,
             parity=serial.PARITY_NONE,
             stopbits=serial.STOPBITS_ONE,
-            timeout=TIMEOUT
+            timeout=SERIAL_TIMEOUT
         )
         logging.info(f"Serial port {serial_port_name} opened for {websocket.remote_address}.")
 
@@ -151,9 +154,11 @@ def get_local_ip():
         IP = s.getsockname()[0]
     except Exception:
         IP = '127.0.0.1'  # Fallback to localhost if no network connection
+        logging.warning("Could not determine local IP address, falling back to 127.0.0.1. The service may not be discoverable on the network.")
     finally:
         s.close()
     return IP
+
 
 async def main():
     """
@@ -167,18 +172,25 @@ async def main():
     parser.add_argument(
         "-s", "--serial_port",
         type=str,
-        default="/dev/ttyUSB0",
+        default=SERIAL_PORT,
         help="The serial port name to use (e.g., COM1 on Windows, /dev/ttyUSB0 on Linux)."
     )
     parser.add_argument(
         "-b", "--baud_rate",
         type=int,
-        default=115200,
+        default=SERIAL_BAUD_RATE,
         help="The baud rate for the serial port (e.g., 9600, 115200)."
+    )
+    parser.add_argument(
+        "-p", "--websocket_port",
+        type=int,
+        default=WEBSOCKET_PORT,
+        help="The WebSocket server port (default: 8080)."
     )
     args = parser.parse_args()
     serial_port_name = args.serial_port
     baud_rate = args.baud_rate
+    websocket_port = args.websocket_port
     logging.info(f"Specified serial port: {serial_port_name} at baud rate: {baud_rate}")
 
     # 1. Start the Zeroconf server and register the service
@@ -189,7 +201,7 @@ async def main():
     # Optional properties for the service (can be useful for clients)
     properties = {
         "api_ver": "0.1",
-        "port": str(WEBSOCKET_PORT),
+        "port": str(websocket_port),
         "path" : "/ws",
         "board_id": f"Ayab Serial to WebSocket Bridge for {serial_port_name} at {baud_rate} baud",
         "serial_port_name": serial_port_name,
@@ -200,19 +212,19 @@ async def main():
         ZEROCONF_SERVICE_TYPE,
         f"{ZEROCONF_SERVICE_NAME} - {serial_port_name}@{baud_rate}._ayab._tcp.local.",  # Full service name including port and baud rate
         addresses=[socket.inet_aton(local_ip)],  # Convert IP to binary format
-        port=WEBSOCKET_PORT,
+        port=websocket_port,
         properties=properties,
         server=f"{socket.gethostname()}.local.",  # Hostname of the machine
     )
 
-    logging.info(f"Registering Zeroconf service: {ZEROCONF_SERVICE_NAME} for {serial_port_name}@{baud_rate} on port {WEBSOCKET_PORT}")
+    logging.info(f"Registering Zeroconf service: {ZEROCONF_SERVICE_NAME} for {serial_port_name}@{baud_rate} on port {websocket_port}")
     await zeroconf_instance.async_register_service(service_info)
 
     # 2. Start the WebSocket server
-    logging.info(f"Starting WebSocket server on ws://{WEBSOCKET_HOST}:{WEBSOCKET_PORT}")
+    logging.info(f"Starting WebSocket server on ws://{WEBSOCKET_HOST}:{websocket_port}")
     try:
         # Pass both serial_port_name and baud_rate to the WebSocket handler function using a lambda
-        async with websockets.serve(lambda ws: serial_websocket_handler(serial_port_name, baud_rate, ws), WEBSOCKET_HOST, WEBSOCKET_PORT) as server:
+        async with websockets.serve(lambda ws: serial_websocket_handler(serial_port_name, baud_rate, ws), WEBSOCKET_HOST, websocket_port) as server:
             await server.serve_forever()  # Run the server forever
     except Exception as e:
         logging.error(f"Error starting WebSocket server: {e}")
