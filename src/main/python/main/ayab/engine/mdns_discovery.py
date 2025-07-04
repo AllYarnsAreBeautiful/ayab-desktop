@@ -8,12 +8,12 @@ class MdnsBrowser:
     Explore Zeroconf services and manage them using a thread-safe dict
     """
     def __init__(self, service_type: str, update_callback: Callable[..., None]):
-        self.service_type : str = service_type
-        self.update_callback : Callable[..., None] = update_callback
-        self.services : dict [str, zeroconf.ServiceInfo | None] = {}
+        self.service_type: str = service_type
+        self.update_callback: Callable[..., None] = update_callback
+        self.services: dict[str, zeroconf.ServiceInfo | None] = {}
         self.services_lock = threading.Lock()
-        self.zeroconf_instance : zeroconf.Zeroconf | None = None
-        self.browser : zeroconf.ServiceBrowser | None = None
+        self.zeroconf_instance: zeroconf.Zeroconf | None = None
+        self.browser: zeroconf.ServiceBrowser | None = None
         self.running = False
         self.__logger = logging.getLogger(type(self).__name__)
 
@@ -46,7 +46,6 @@ class MdnsBrowser:
                 self.__logger.warning(f"Unable to retrieve service {name} information")
         except Exception as e:
             self.__logger.error(f"Error while fetching service {name}: {e}")
-
 
     def _on_service_removed(self, zeroconf_instance: zeroconf.Zeroconf, type: str, name: str) -> None:
         """Callback called when a service is removed."""
