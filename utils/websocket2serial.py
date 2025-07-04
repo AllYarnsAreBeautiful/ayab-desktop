@@ -21,6 +21,7 @@ SERIAL_TIMEOUT = 0.1
 # --- WebSocket Configuration ---
 WEBSOCKET_HOST = '0.0.0.0'  # Listen on all available interfaces
 WEBSOCKET_PORT = 8080
+WEBSOCKET_PATH = "/ws"
 
 # --- Zeroconf Configuration ---
 ZEROCONF_SERVICE_TYPE = "_ayab._tcp.local."
@@ -29,6 +30,7 @@ ZEROCONF_SERVICE_NAME = "Ayab Serial Bridge"
 # Global variables for Zeroconf instance and service info
 zeroconf_instance = None
 service_info = None
+serial_port_in_use = False
 
 
 async def serial_to_websocket_task(serial_port_name, baud_rate, websocket, ser):
@@ -98,9 +100,24 @@ async def serial_websocket_handler(serial_port_name, baud_rate, websocket):
     Main handler for each new WebSocket connection.
     It opens the serial port and creates two tasks for bidirectional communication.
     """
+    global serial_port_in_use
+
+    if websocket.request.path != WEBSOCKET_PATH:
+        error_message = f"Error: No handler for path {websocket.request.path}, closing connection"
+        await websocket.send(error_message)
+        logging.error(error_message)
+        return
+
+    if serial_port_in_use:
+        error_message = f"Error: Serial port {serial_port_name} is already in use by another connection."
+        await websocket.send(error_message)
+        logging.error(error_message)
+        return
+
     logging.info(f"New WebSocket connection from {websocket.remote_address}. Attempting to open serial port {serial_port_name}...")
     ser = None
     try:
+        serial_port_in_use = True
         ser = serial.Serial(
             port=serial_port_name,
             baudrate=baud_rate,
@@ -139,6 +156,7 @@ async def serial_websocket_handler(serial_port_name, baud_rate, websocket):
     except Exception as e:
         logging.error(f"An unexpected error occurred in serial_websocket_handler: {e}")
     finally:
+        serial_port_in_use = False
         if ser and ser.is_open:
             ser.close()
             logging.info(f"Serial port {serial_port_name} closed for {websocket.remote_address}.")
@@ -202,7 +220,7 @@ async def main():
     properties = {
         "api_ver": "0.1",
         "port": str(websocket_port),
-        "path" : "/ws",
+        "path" : WEBSOCKET_PATH,
         "board_id": f"Ayab Serial to WebSocket Bridge for {serial_port_name} at {baud_rate} baud",
         "serial_port_name": serial_port_name,
         "serial_baud_rate": str(baud_rate)

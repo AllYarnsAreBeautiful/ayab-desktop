@@ -94,6 +94,7 @@ class MdnsBrowser:
         with self.services_lock:
             return self.services.copy()
         
-    def __del__(self):
+    def __del__(self) -> None:
+        """Call the stop method when the instance is destroyed."""
         self.stop()
 
