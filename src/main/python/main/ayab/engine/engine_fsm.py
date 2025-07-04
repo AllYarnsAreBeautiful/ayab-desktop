@@ -74,7 +74,7 @@ class StateMachine(QStateMachine):
     lastRetry : float = 0.0
 
     @staticmethod
-    def retry(method: Callable[..., None], args: Any=(), timeout: float=0.1) -> None:
+    def retry(method: Callable[..., None], args: Any = (), timeout: float = 0.1) -> None:
         current_time = time.time()
         if (current_time - StateMachine.lastRetry) > timeout:
             StateMachine.lastRetry = current_time

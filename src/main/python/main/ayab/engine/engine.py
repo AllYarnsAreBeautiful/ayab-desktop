@@ -81,7 +81,7 @@ class Engine(SignalSender, QDockWidget):
 
     def __del__(self) -> None:
         self.control.stop()
-        self.mdns_browser.stop() # Lead to EventLoopBlocked exception when closing the window rather than the application
+        self.mdns_browser.stop()  # Lead to EventLoopBlocked exception when closing the window rather than the application
 
     @Slot()
     def mdns_update(self) -> None:

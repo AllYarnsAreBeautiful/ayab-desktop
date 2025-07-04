@@ -17,7 +17,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 TIMEOUT = 0.1
 
 # --- WebSocket Configuration ---
-WEBSOCKET_HOST = '0.0.0.0' # Listen on all available interfaces
+WEBSOCKET_HOST = '0.0.0.0'  # Listen on all available interfaces
 WEBSOCKET_PORT = 8080
 
 # --- Zeroconf Configuration ---
@@ -37,17 +37,17 @@ async def serial_to_websocket_task(serial_port_name, baud_rate, websocket, ser):
     try:
         while True:
             if ser.in_waiting > 0:
-                data = ser.read(ser.in_waiting) # Read all available data
+                data = ser.read(ser.in_waiting)  # Read all available data
                 logging.debug(f"Serial -> WS: Read {len(data)} bytes from {serial_port_name}: {data!r}")
                 try:
-                    await websocket.send(data) # Send raw binary data via WebSocket
+                    await websocket.send(data)  # Send raw binary data via WebSocket
                     logging.debug(f"Serial -> WS: Sent {len(data)} bytes to WS client.")
                 except websockets.exceptions.ConnectionClosedOK:
                     logging.info(f"Serial -> WS: WebSocket client {websocket.remote_address} disconnected cleanly.")
-                    break # Exit task if client disconnects
+                    break  # Exit task if client disconnects
                 except Exception as e:
                     logging.error(f"Serial -> WS: Error sending data to WebSocket: {e}")
-                    break # Exit task on other WebSocket errors
+                    break  # Exit task on other WebSocket errors
             await asyncio.sleep(TIMEOUT)
     except Exception as e:
         logging.error(f"Serial -> WS task encountered an unexpected error: {e}")
@@ -76,13 +76,13 @@ async def websocket_to_serial_task(serial_port_name, websocket, ser):
 
             except websockets.exceptions.ConnectionClosedOK:
                 logging.info(f"WS -> Serial: WebSocket client {websocket.remote_address} disconnected cleanly.")
-                break # Exit task if client disconnects
+                break  # Exit task if client disconnects
             except websockets.exceptions.ConnectionClosed as e:
                 logging.warning(f"WS -> Serial: WebSocket connection closed unexpectedly: {e}")
-                break # Exit task on unexpected connection closure
+                break  # Exit task on unexpected connection closure
             except Exception as e:
                 logging.error(f"WS -> Serial: Error receiving from WebSocket or writing to serial: {e}")
-                break # Exit task on other errors
+                break  # Exit task on other errors
             await asyncio.sleep(0.01)
     except Exception as e:
         logging.error(f"WS -> Serial task encountered an unexpected error: {e}")
@@ -115,13 +115,13 @@ async def serial_websocket_handler(serial_port_name, baud_rate, websocket):
         # Wait for both tasks to complete (e.g., if WebSocket disconnects or an error occurs)
         done, pending = await asyncio.wait(
             [producer_task, consumer_task],
-            return_when=asyncio.FIRST_COMPLETED # Stop if one task completes (e.g., client disconnects)
+            return_when=asyncio.FIRST_COMPLETED  # Stop if one task completes (e.g., client disconnects)
         )
 
-        for task in pending: # Cancel any remaining pending tasks
+        for task in pending:  # Cancel any remaining pending tasks
             task.cancel()
             with contextlib.suppress(asyncio.CancelledError):
-                await task # Await to ensure cancellation completes
+                await task  # Await to ensure cancellation completes
 
         logging.info(f"WebSocket communication closed for {websocket.remote_address}.")
 
@@ -132,7 +132,7 @@ async def serial_websocket_handler(serial_port_name, baud_rate, websocket):
             error_message = f"Error: Could not open serial port {serial_port_name}. {e}".encode('utf-8')
             await websocket.send(error_message)
         except Exception:
-            pass # Ignore if WebSocket is already closed
+            pass  # Ignore if WebSocket is already closed
     except Exception as e:
         logging.error(f"An unexpected error occurred in serial_websocket_handler: {e}")
     finally:
@@ -150,7 +150,7 @@ def get_local_ip():
         s.connect(('192.0.2.255', 1))
         IP = s.getsockname()[0]
     except Exception:
-        IP = '127.0.0.1' # Fallback to localhost if no network connection
+        IP = '127.0.0.1'  # Fallback to localhost if no network connection
     finally:
         s.close()
     return IP
@@ -198,11 +198,11 @@ async def main():
 
     service_info = AsyncServiceInfo(
         ZEROCONF_SERVICE_TYPE,
-        f"{ZEROCONF_SERVICE_NAME} - {serial_port_name}@{baud_rate}._ayab._tcp.local.", # Full service name including port and baud rate
-        addresses=[socket.inet_aton(local_ip)], # Convert IP to binary format
+        f"{ZEROCONF_SERVICE_NAME} - {serial_port_name}@{baud_rate}._ayab._tcp.local.",  # Full service name including port and baud rate
+        addresses=[socket.inet_aton(local_ip)],  # Convert IP to binary format
         port=WEBSOCKET_PORT,
         properties=properties,
-        server=f"{socket.gethostname()}.local.", # Hostname of the machine
+        server=f"{socket.gethostname()}.local.",  # Hostname of the machine
     )
 
     logging.info(f"Registering Zeroconf service: {ZEROCONF_SERVICE_NAME} for {serial_port_name}@{baud_rate} on port {WEBSOCKET_PORT}")

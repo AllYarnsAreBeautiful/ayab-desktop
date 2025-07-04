@@ -1,11 +1,14 @@
 import websockets.sync.client
 import threading
 
+
 """Handles the serial communication protocol over a websocket.
 
 This modules exposes an interface compatible with the Serial class
 for websocket communication.
 """
+
+
 class WebsocketSerial:
     def __init__(self, uri: str, timeout: float | None):
         try:
