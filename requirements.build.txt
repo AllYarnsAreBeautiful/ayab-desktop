@@ -11,3 +11,5 @@ numpy==1.26.4
 charset-normalizer<3.0.0
 semver==3.0.2
 wakepy==0.10.1
+zeroconf==0.147.0
+websockets==15.0.1
