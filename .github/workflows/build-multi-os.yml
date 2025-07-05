@@ -149,9 +149,15 @@ jobs:
           python -m pip download --only-binary=:all: --platform macosx_11_0_arm64 "$(grep simpleaudio requirements.build.txt)"
           delocate-fuse simpleaudio*arm* simpleaudio*x86* -w tmp-wheel/
 
-          python -m pip download --only-binary=:all: --platform=macosx_10_9_universal2 "$(grep bitarray requirements.build.txt)"
+          python -m pip download --dest tmp-wheel/ --only-binary=:all: --platform=macosx_10_9_universal2 "$(grep bitarray requirements.build.txt)"
 
-          python -m pip install tmp-wheel/*.whl bitarray*.whl
+          python -m pip download --only-binary=:all: --platform macosx_10_9_x86_64 "$(grep zeroconf requirements.build.txt)"
+          python -m pip download --only-binary=:all: --platform macosx_11_0_arm64 "$(grep zeroconf requirements.build.txt)"
+          delocate-fuse zeroconf*arm* zeroconf*x86* -w tmp-wheel/
+
+          python -m pip download --dest tmp-wheel/ --only-binary=:all: --platform=macosx_10_9_universal2 "$(grep websockets requirements.build.txt)"
+
+          python -m pip install tmp-wheel/*.whl
 
           python -m pip install --no-binary charset_normalizer -r requirements.build.txt
 
