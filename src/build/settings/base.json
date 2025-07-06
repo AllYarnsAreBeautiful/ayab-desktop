@@ -5,8 +5,5 @@
     "version": "PACKAGE_VERSION",
     "gpg_key": "B8A1C58F998BE8DBEC66A5FEA3353059B9A4D7A8",
     "gpg_name": "Tom Price",
-    "hidden_imports": [
-        "zeroconf._utils.ipaddress",
-        "zeroconf._handlers.answers"
-    ]
+    "extra_pyinstaller_args": ["--collect-submodules","zeroconf"]
 }
