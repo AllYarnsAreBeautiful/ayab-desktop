@@ -16,7 +16,7 @@ class WebsocketSerial:
         except Exception as e:
             raise ConnectionError(f"Failed to connect to websocket {uri}: {e}") from e
         self._timeout = timeout
-        self._rxbuffer = b''
+        self._rxbuffer = b""
         self._lock = threading.Lock()
 
     @property
@@ -53,7 +53,7 @@ class WebsocketSerial:
             with self._lock:
                 self._ws.close()
         except Exception:
-            pass  # Ignore errors during close        
+            pass  # Ignore errors during close
 
     def flush(self) -> None:
         """Flush write buffers, if applicable."""
@@ -62,7 +62,7 @@ class WebsocketSerial:
     def reset_input_buffer(self) -> None:
         """Clear input buffer."""
         with self._lock:
-            self._rxbuffer = b''
+            self._rxbuffer = b""
 
     def reset_output_buffer(self) -> None:
         """Clear output buffer."""

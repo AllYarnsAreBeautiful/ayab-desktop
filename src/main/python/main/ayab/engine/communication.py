@@ -97,7 +97,9 @@ class Communication(object):
                 if self.__portname and self.__portname[0:5] == "ws://":
                     self.__ser = WebsocketSerial(self.__portname, timeout=0.1)
                 else:
-                    self.__ser = serial.Serial(self.__portname, 115200, timeout=0.1, exclusive=True)
+                    self.__ser = serial.Serial(
+                        self.__portname, 115200, timeout=0.1, exclusive=True
+                    )
                 return True
             except Exception:
                 self.logger.exception(f"Could not open serial port {self.__portname}")
