@@ -41,7 +41,10 @@ class Menu(QMenuBar):
         super().__init__(parent)
 
         # Use native menubar on macOS, not elsewhere (i.e. Linux)
-        if QOperatingSystemVersion.currentType() != QOperatingSystemVersion.OSType.MacOS:
+        if (
+            QOperatingSystemVersion.currentType()
+            != QOperatingSystemVersion.OSType.MacOS
+        ):
             self.setNativeMenuBar(False)
 
         self.ui = Ui_MenuBar()

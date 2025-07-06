@@ -27,7 +27,14 @@ The method of configuration may differ depending on the OS.
 from __future__ import annotations
 
 from PySide6.QtCore import Qt, QSettings, QCoreApplication
-from PySide6.QtWidgets import QDialog, QFormLayout, QLabel, QCheckBox, QComboBox, QSpinBox
+from PySide6.QtWidgets import (
+    QDialog,
+    QFormLayout,
+    QLabel,
+    QCheckBox,
+    QComboBox,
+    QSpinBox,
+)
 
 from .prefs_gui import Ui_Prefs
 from .signal_sender import SignalSender
@@ -89,7 +96,7 @@ PreferencesDict = TypedDict(
         "quiet_mode": type[bool],
         "disable_hardware_beep": type[bool],
         "language": type[Language],
-        "lower_display_stitch_width": type[int]
+        "lower_display_stitch_width": type[int],
     },
 )
 
@@ -119,7 +126,7 @@ class Preferences(SignalSender):
         "quiet_mode": bool,
         "disable_hardware_beep": bool,
         "language": Language,
-        "lower_display_stitch_width": int
+        "lower_display_stitch_width": int,
     }
 
     def __init__(self, parent: GuiMain):
@@ -353,4 +360,6 @@ class PrefsLangWidget(QComboBox):
         self.setCurrentIndex(self.findData(self.prefs.value("language")))
 
 
-PrefsWidgetTypes: TypeAlias = PrefsBoolWidget | PrefsLangWidget | PrefsComboWidget | PrefsIntWidget
+PrefsWidgetTypes: TypeAlias = (
+    PrefsBoolWidget | PrefsLangWidget | PrefsComboWidget | PrefsIntWidget
+)

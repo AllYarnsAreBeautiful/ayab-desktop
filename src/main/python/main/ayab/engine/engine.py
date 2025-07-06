@@ -81,7 +81,9 @@ class Engine(SignalSender, QDockWidget):
 
     def __del__(self) -> None:
         self.control.stop()
-        self.mdns_browser.stop()  # Lead to EventLoopBlocked exception when closing the window rather than the application
+        # Lead to EventLoopBlocked exception when closing the window
+        # rather than the application
+        self.mdns_browser.stop()
 
     @Slot()
     def mdns_update(self) -> None:
@@ -135,26 +137,27 @@ class Engine(SignalSender, QDockWidget):
         # Add websocket ports (collected by mDNS)
         for _key, value in self.mdns_browser.get_known_services().items():
             if value and value.server:
-                server_name = value.server.removesuffix('.local.')
+                server_name = value.server.removesuffix(".local.")
                 try:
                     server_ip = str(ipaddress.IPv4Address(value.addresses[0]))
                 except ipaddress.AddressValueError:
-                    server_ip = 'unknown'
+                    server_ip = "unknown"
                 combo_box.addItem(f"{server_name} ({server_ip})", value)
         # Add Simulation item to indicate operation without machine
         combo_box.addItem(QCoreApplication.translate("KnitEngine", "Simulation"))
 
     def __read_portname(self) -> str:
-        # FIXME: method should return a class rather than a string to forward additional data
+        # FIXME: method should return a class rather than a string to forward
+        # additional data
         selected_index = self.ui.serial_port_dropdown.currentIndex()
         user_data = self.ui.serial_port_dropdown.itemData(selected_index)
         if user_data:
             # Websocket connection
             portname = f"ws://{user_data.server.rstrip('.')}:{user_data.port}/ws"
-            if b'board_id' in user_data.properties:
-                board_id = user_data.properties[b'board_id'].decode()
+            if b"board_id" in user_data.properties:
+                board_id = user_data.properties[b"board_id"].decode()
             else:
-                board_id = user_data.properties[b'board_id'] = b"<Unknown>"
+                board_id = user_data.properties[b"board_id"] = b"<Unknown>"
 
             self.__logger.info(f"Connecting to {board_id}")
         else:
