@@ -1,0 +1,5 @@
+{
+    "extra_pyinstaller_args": [
+                "--additional-hooks-dir=src/build/hooks/windows"
+        ]
+}
