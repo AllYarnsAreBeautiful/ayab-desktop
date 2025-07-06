@@ -151,7 +151,12 @@ class Engine(SignalSender, QDockWidget):
         if user_data:
             # Websocket connection
             portname = f"ws://{user_data.server.rstrip('.')}:{user_data.port}/ws"
-            self.__logger.info(f"Connecting to {portname} ({user_data.properties[b'board_id'].decode()})")
+            if b'board_id' in user_data.properties:
+                board_id = user_data.properties[b'board_id'].decode()
+            else:
+                board_id = user_data.properties[b'board_id'] = b"<Unknown>"
+
+            self.__logger.info(f"Connecting to {board_id}")
         else:
             # Serial connection (default)
             portname = self.ui.serial_port_dropdown.currentText()
