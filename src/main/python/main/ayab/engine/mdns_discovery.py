@@ -1,3 +1,4 @@
+import contextlib
 import zeroconf
 import threading
 import logging
@@ -124,7 +125,5 @@ class MdnsBrowser:
 
     def __del__(self) -> None:
         """Call the stop method when the instance is destroyed."""
-        try:
+        with contextlib.suppress(Exception):
             self.stop()
-        except Exception:
-            pass
