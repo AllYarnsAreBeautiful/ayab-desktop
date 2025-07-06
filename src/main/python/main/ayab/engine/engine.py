@@ -130,10 +130,9 @@ class Engine(SignalSender, QDockWidget):
 
     def __populate_ports(self, port_list: Optional[list[str]] = None) -> None:
         combo_box = self.ui.serial_port_dropdown
+        # Add serial ports
         utils.populate_ports(combo_box, port_list)
-        # Add Simulation item to indicate operation without machine
-        combo_box.addItem(QCoreApplication.translate("KnitEngine", "Simulation"))
-
+        # Add websocket ports (collected by mDNS)
         for _key, value in self.mdns_browser.get_known_services().items():
             if value and value.server:
                 server_name = value.server.removesuffix('.local.')
@@ -142,6 +141,8 @@ class Engine(SignalSender, QDockWidget):
                 except ipaddress.AddressValueError:
                     server_ip = 'unknown'
                 combo_box.addItem(f"{server_name} ({server_ip})", value)
+        # Add Simulation item to indicate operation without machine
+        combo_box.addItem(QCoreApplication.translate("KnitEngine", "Simulation"))
 
     def __read_portname(self) -> str:
         # FIXME: method should return a class rather than a string to forward additional data
