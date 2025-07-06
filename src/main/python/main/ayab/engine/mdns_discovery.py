@@ -27,55 +27,60 @@ class MdnsBrowser:
             self.parent_browser = parent_browser
 
         def add_service(
-            self, zeroconf_instance: zeroconf.Zeroconf, type: str, name: str
+            self, zeroconf_instance: zeroconf.Zeroconf, service_type: str, name: str
         ) -> None:
             self.parent_browser._on_service_changed(
-                zeroconf_instance, type, name, "added"
+                zeroconf_instance, service_type, name, "added"
             )
 
         def update_service(
-            self, zeroconf_instance: zeroconf.Zeroconf, type: str, name: str
+            self, zeroconf_instance: zeroconf.Zeroconf, service_type: str, name: str
         ) -> None:
             self.parent_browser._on_service_changed(
-                zeroconf_instance, type, name, "updated"
+                zeroconf_instance, service_type, name, "updated"
             )
 
         def remove_service(
-            self, zeroconf_instance: zeroconf.Zeroconf, type: str, name: str
+            self, zeroconf_instance: zeroconf.Zeroconf, service_type: str, name: str
         ) -> None:
-            self.parent_browser._on_service_removed(zeroconf_instance, type, name)
+            self.parent_browser._on_service_removed(
+                zeroconf_instance, service_type, name
+            )
 
     def _on_service_changed(
         self,
         zeroconf_instance: zeroconf.Zeroconf,
-        type: str,
+        service_type: str,
         name: str,
         change_type: str,
     ) -> None:
         """Callback called when a service is added or updated."""
         try:
             info: zeroconf.ServiceInfo | None = zeroconf_instance.get_service_info(
-                type, name, timeout=3000
+                service_type, name, timeout=3000
             )
             if info:
                 self.__logger.info(f"Service {change_type}: {name}")
                 with self.services_lock:
                     self.services[name] = info
-                    self.update_callback()
+                self.update_callback()
             else:
                 self.__logger.warning(f"Unable to retrieve service {name} information")
         except Exception as e:
             self.__logger.error(f"Error while fetching service {name}: {e}")
 
     def _on_service_removed(
-        self, zeroconf_instance: zeroconf.Zeroconf, type: str, name: str
+        self, zeroconf_instance: zeroconf.Zeroconf, service_type: str, name: str
     ) -> None:
         """Callback called when a service is removed."""
         self.__logger.info(f"Service removed: {name}")
+        should_notify = False
         with self.services_lock:
             if name in self.services:
                 del self.services[name]
-                self.update_callback()
+                should_notify = True
+        if should_notify:
+            self.update_callback()
 
     def start(self) -> None:
         """Start Zeroconf service browser."""
@@ -105,8 +110,10 @@ class MdnsBrowser:
         self.__logger.info("Shutting down MdnsBrowser...")
         if self.browser:
             self.browser.cancel()
+            self.browser = None
         if self.zeroconf_instance:
             self.zeroconf_instance.close()
+            self.zeroconf_instance = None
         self.running = False
         self.__logger.info("ServiceBrowser stopped.")
 
@@ -117,4 +124,7 @@ class MdnsBrowser:
 
     def __del__(self) -> None:
         """Call the stop method when the instance is destroyed."""
-        self.stop()
+        try:
+            self.stop()
+        except Exception:
+            pass
