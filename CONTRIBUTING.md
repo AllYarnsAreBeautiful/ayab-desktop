@@ -36,7 +36,7 @@ We use GitHub issues to track public bugs. Report a bug by [opening a new issue]
   - Be specific!
   - Give sample code if you can.
 - What you expected would happen
-- What actually happens instead
+- What actually happened
 - Notes (possibly including why you think this might be happening, or stuff you tried that didn't work)
 
 People *love* thorough bug reports. I'm not even kidding.

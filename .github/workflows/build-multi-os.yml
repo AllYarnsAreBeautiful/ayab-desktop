@@ -21,7 +21,7 @@ env:
 jobs:
   build-windows:
     name: Create and upload Windows build
-    runs-on: windows-latest
+    runs-on: windows-2022
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
