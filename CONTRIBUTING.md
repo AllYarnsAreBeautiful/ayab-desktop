@@ -43,7 +43,7 @@ People *love* thorough bug reports. I'm not even kidding.
 
 ## Use a Consistent Coding Style
 
-- Please the style of your contribution to the rest of the code
+- Please match the style of your contribution to the rest of the code
 - Python code is linted with flake8
 
 ## License
