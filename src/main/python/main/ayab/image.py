@@ -18,6 +18,7 @@
 #    Andreas Müller, Christian Gerbrandt
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
+
 from __future__ import annotations
 import logging
 from math import ceil
@@ -26,7 +27,7 @@ from PIL import Image
 from PySide6.QtCore import QCoreApplication
 from PySide6.QtWidgets import QInputDialog, QDialog, QFileDialog
 
-from .transforms import Transform, Mirrors
+from .transforms import ImageTransform, Mirrors
 from .signal_sender import SignalSender
 from .utils import display_blocking_popup
 from .machine import Machine
@@ -55,6 +56,7 @@ class AyabImage(SignalSender):
         super().__init__(parent.signal_receiver)
         self.__parent = parent
         self.image: Image.Image = None  # type: ignore
+        self.memos: list[str] = []
         self.filename: Optional[str] = None
         self.filename_input = self.__parent.ui.filename_lineedit
 
@@ -87,12 +89,12 @@ class AyabImage(SignalSender):
             display_blocking_popup(
                 QCoreApplication.translate("Image", "Unable to load image file"),
                 "error",
-            )  # FIXME translate
+            )
             logging.error("Unable to load " + str(filename))
         except Exception as e:
             display_blocking_popup(
                 QCoreApplication.translate("Image", "Error loading image file"), "error"
-            )  # FIXME translate
+            )
             logging.error("Error loading image: " + str(e))
             raise
         else:
@@ -101,6 +103,7 @@ class AyabImage(SignalSender):
             self.__parent.engine.config.refresh()
 
     def __open(self, filename: str) -> None:
+        self.memos = []
         # check for files that need conversion
         suffix = filename[-4:].lower()
         if suffix == ".pat":
@@ -111,12 +114,25 @@ class AyabImage(SignalSender):
             self.image = CutPatternConverter().pattern2im(filename)
         else:
             self.image = Image.open(filename)
+        if suffix == ".png":
+            # check metadata for memo information
+            self.image.load()
+            if "Comment" in self.image.info and len(str(self.image.info["Comment"])) > 0:
+                comment = str(self.image.info["Comment"])
+                if comment.startswith("AYAB:"):
+                    # update memo information
+                    for i in range(len(comment) - 5):
+                        self.memos.append(comment[i + 5])
+                # report metadata
+                logging.info("File metadata Comment tag: " + comment)
+                logging.info("File memo information: " + str(self.memos))
         self.image = self.image.convert("RGBA")
         self.emit_got_image_flag()
         self.emit_image_resizer()
 
     def invert(self) -> None:
-        self.apply_transform(Transform.invert)
+        self.apply_transform(ImageTransform.invert)
+        # memos unchanged
 
     def repeat(self) -> None:
         machine_width = Machine(self.__parent.prefs.value("machine")).width
@@ -131,7 +147,8 @@ class AyabImage(SignalSender):
             minValue=1,
             maxValue=ceil(machine_width / self.image.width),
         )
-        self.apply_transform(Transform.repeat, v[0], h[0])
+        self.apply_transform(ImageTransform.repeat, v[0], h[0])
+        self.memos = self.memos * v[0]
 
     def stretch(self) -> None:
         machine_width = Machine(self.__parent.prefs.value("machine")).width
@@ -146,24 +163,30 @@ class AyabImage(SignalSender):
             minValue=1,
             maxValue=ceil(machine_width / self.image.width),
         )
-        self.apply_transform(Transform.stretch, v[0], h[0])
+        self.apply_transform(ImageTransform.stretch, v[0], h[0])
+        self.memos = []
 
     def reflect(self) -> None:
         m = Mirrors()
         if m.result == QDialog.DialogCode.Accepted:
-            self.apply_transform(Transform.reflect, m.mirrors)
+            self.apply_transform(ImageTransform.reflect, m.mirrors)
+        self.memos = []
 
     def hflip(self) -> None:
-        self.apply_transform(Transform.hflip)
+        self.apply_transform(ImageTransform.hflip)
+        # memos unchanged
 
     def vflip(self) -> None:
-        self.apply_transform(Transform.vflip)
+        self.apply_transform(ImageTransform.vflip)
+        self.memos = []
 
     def rotate_left(self) -> None:
-        self.apply_transform(Transform.rotate_left)
+        self.apply_transform(ImageTransform.rotate_left)
+        self.memos = []
 
     def rotate_right(self) -> None:
-        self.apply_transform(Transform.rotate_right)
+        self.apply_transform(ImageTransform.rotate_right)
+        self.memos = []
 
     def zoom_in(self) -> None:
         self.__parent.scene.set_zoom(+1)
@@ -177,11 +200,14 @@ class AyabImage(SignalSender):
         *args: tuple[int, int] | list[int] | int,
     ) -> None:
         """Executes an image transform specified by function and args."""
-        self.image = transform(self.image, args)
         try:
-            pass  # self.image = transform(self.image, args)
+            self.image = transform(self.image, args)
         except Exception as e:
-            logging.error("Error while executing image transform: " + repr(e))
+            display_blocking_popup(
+                QCoreApplication.translate("Image", "Error applying transform"), "error"
+            )
+            logging.error(f"Error in transform {transform.__name__}: {str(e)}")
+            return
 
         # Update the view
         self.emit_image_resizer()
