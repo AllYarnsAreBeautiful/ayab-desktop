@@ -1,3 +1,5 @@
+import websockets.exceptions
+import websockets.protocol
 import websockets.sync.client
 import threading
 
@@ -34,7 +36,7 @@ class WebsocketSerial:
                     data = self._ws.recv(self._timeout)
                     if isinstance(data, bytes):
                         self._rxbuffer += data
-                except (TimeoutError, websockets.ConnectionClosed):
+                except (TimeoutError, websockets.exceptions.ConnectionClosed):
                     break
 
             data = self._rxbuffer[0:size]
@@ -45,7 +47,7 @@ class WebsocketSerial:
         try:
             with self._lock:
                 self._ws.send(data)
-        except websockets.ConnectionClosed:
+        except websockets.exceptions.ConnectionClosed:
             raise ConnectionError("WebSocket connection is closed") from None
 
     def close(self) -> None:

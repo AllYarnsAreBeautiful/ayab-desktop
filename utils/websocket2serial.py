@@ -1,6 +1,7 @@
 import serial
 import asyncio
 import websockets
+import websockets.exceptions
 import logging
 import socket
 import argparse
@@ -32,7 +33,7 @@ ZEROCONF_SERVICE_NAME = "Ayab Serial Bridge"
 # Global variables for Zeroconf instance and service info
 zeroconf_instance = None
 service_info = None
-serial_port_in_use = False
+serial_port_lock = asyncio.Lock()
 
 
 async def serial_to_websocket_task(serial_port_name, baud_rate, websocket, ser):
@@ -140,7 +141,7 @@ async def serial_websocket_handler(serial_port_name, baud_rate, websocket):
     It opens the serial port and creates two tasks for bidirectional
     communication.
     """
-    global serial_port_in_use
+    global serial_port_lock
 
     if websocket.request.path != WEBSOCKET_PATH:
         error_message = (
@@ -151,7 +152,7 @@ async def serial_websocket_handler(serial_port_name, baud_rate, websocket):
         logging.error(error_message)
         return
 
-    if serial_port_in_use:
+    if serial_port_lock.locked():
         error_message = (
             f"Error: Serial port {serial_port_name} is already in use by "
             f"another connection."
@@ -165,67 +166,71 @@ async def serial_websocket_handler(serial_port_name, baud_rate, websocket):
         f"Attempting to open serial port {serial_port_name}..."
     )
     ser = None
-    try:
-        serial_port_in_use = True
-        ser = serial.Serial(
-            port=serial_port_name,
-            baudrate=baud_rate,
-            bytesize=serial.EIGHTBITS,
-            parity=serial.PARITY_NONE,
-            stopbits=serial.STOPBITS_ONE,
-            timeout=SERIAL_TIMEOUT,
-        )
-        logging.info(
-            f"Serial port {serial_port_name} opened for " f"{websocket.remote_address}."
-        )
-
-        # Create two concurrent tasks for bidirectional communication
-        producer_task = asyncio.create_task(
-            serial_to_websocket_task(serial_port_name, baud_rate, websocket, ser)
-        )
-        consumer_task = asyncio.create_task(
-            websocket_to_serial_task(serial_port_name, websocket, ser)
-        )
-
-        # Wait for both tasks to complete (e.g., if WebSocket disconnects
-        # or an error occurs)
-        done, pending = await asyncio.wait(
-            [producer_task, consumer_task],
-            return_when=asyncio.FIRST_COMPLETED,  # Stop if one task completes
-        )
-
-        for task in pending:  # Cancel any remaining pending tasks
-            task.cancel()
-            with contextlib.suppress(asyncio.CancelledError):
-                await task  # Await to ensure cancellation completes
-
-        logging.info(f"WebSocket communication closed for {websocket.remote_address}.")
-
-    except serial.SerialException as e:
-        logging.error(
-            f"Failed to open serial port {serial_port_name} for "
-            f"{websocket.remote_address}: {e}"
-        )
-        # Send error to WebSocket client if connection is still open
+    async with serial_port_lock:
         try:
-            error_message = (
-                f"Error: Could not open serial port {serial_port_name}. {e}".encode(
-                    "utf-8"
-                )
+            ser = serial.Serial(
+                port=serial_port_name,
+                baudrate=baud_rate,
+                bytesize=serial.EIGHTBITS,
+                parity=serial.PARITY_NONE,
+                stopbits=serial.STOPBITS_ONE,
+                timeout=SERIAL_TIMEOUT,
             )
-            await websocket.send(error_message)
-        except Exception:
-            pass  # Ignore if WebSocket is already closed
-    except Exception as e:
-        logging.error(f"An unexpected error occurred in serial_websocket_handler: {e}")
-    finally:
-        serial_port_in_use = False
-        if ser and ser.is_open:
-            ser.close()
             logging.info(
-                f"Serial port {serial_port_name} closed for "
+                f"Serial port {serial_port_name} opened for "
                 f"{websocket.remote_address}."
             )
+
+            # Create two concurrent tasks for bidirectional communication
+            producer_task = asyncio.create_task(
+                serial_to_websocket_task(serial_port_name, baud_rate, websocket, ser)
+            )
+            consumer_task = asyncio.create_task(
+                websocket_to_serial_task(serial_port_name, websocket, ser)
+            )
+
+            # Wait for both tasks to complete (e.g., if WebSocket disconnects
+            # or an error occurs)
+            done, pending = await asyncio.wait(
+                [producer_task, consumer_task],
+                return_when=asyncio.FIRST_COMPLETED,  # Stop if one task completes
+            )
+
+            for task in pending:  # Cancel any remaining pending tasks
+                task.cancel()
+                with contextlib.suppress(asyncio.CancelledError):
+                    await task  # Await to ensure cancellation completes
+
+            logging.info(
+                f"WebSocket communication closed for {websocket.remote_address}."
+            )
+
+        except serial.SerialException as e:
+            logging.error(
+                f"Failed to open serial port {serial_port_name} for "
+                f"{websocket.remote_address}: {e}"
+            )
+            # Send error to WebSocket client if connection is still open
+            try:
+                error_message = (
+                    f"Error: Could not open serial port {serial_port_name}. {e}".encode(
+                        "utf-8"
+                    )
+                )
+                await websocket.send(error_message)
+            except Exception:
+                pass  # Ignore if WebSocket is already closed
+        except Exception as e:
+            logging.error(
+                f"An unexpected error occurred in serial_websocket_handler: {e}"
+            )
+        finally:
+            if ser and ser.is_open:
+                ser.close()
+                logging.info(
+                    f"Serial port {serial_port_name} closed for "
+                    f"{websocket.remote_address}."
+                )
 
 
 def get_local_ip():

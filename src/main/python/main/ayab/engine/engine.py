@@ -134,7 +134,7 @@ class Engine(SignalSender, QDockWidget):
                 server_name = value.server.removesuffix(".local.")
                 try:
                     server_ip = str(ipaddress.IPv4Address(value.addresses[0]))
-                except ipaddress.AddressValueError:
+                except (IndexError, ipaddress.AddressValueError):
                     server_ip = "unknown"
                 combo_box.addItem(f"{server_name} ({server_ip})", value)
         # Add Simulation item to indicate operation without machine
@@ -148,10 +148,7 @@ class Engine(SignalSender, QDockWidget):
         if user_data:
             # Websocket connection
             portname = f"ws://{user_data.server.rstrip('.')}:{user_data.port}/ws"
-            if b"board_id" in user_data.properties:
-                board_id = user_data.properties[b"board_id"].decode()
-            else:
-                board_id = user_data.properties[b"board_id"] = b"<Unknown>"
+            board_id = user_data.properties.get(b"board_id", b"<Unknown>").decode()
 
             self.__logger.info(f"Connecting to {board_id}")
         else:
