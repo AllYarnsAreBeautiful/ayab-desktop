@@ -45,10 +45,11 @@ class WebsocketSerial:
             self._rxbuffer = self._rxbuffer[size:]
         return data
 
-    def write(self, data: bytes) -> None:
+    def write(self, data: bytes) -> int:
         try:
             with self._lock:
                 self._ws.send(data)
+                return len(data)
         except websockets.exceptions.ConnectionClosed:
             raise ConnectionError("WebSocket connection is closed") from None
 
