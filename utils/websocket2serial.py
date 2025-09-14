@@ -63,14 +63,12 @@ async def serial_to_websocket_task(serial_port_name, websocket, ser):
                         f"{websocket.remote_address} disconnected cleanly."
                     )
                     break  # Exit task if client disconnects
-                except Exception as e:
-                    logging.exception(
-                        f"Serial -> WS: Error sending data to WebSocket: {e}"
-                    )
+                except Exception:
+                    logging.exception("Serial -> WS: Error sending data to WebSocket")
                     break  # Exit task on other WebSocket errors
             await asyncio.sleep(SERIAL_TIMEOUT)
-    except Exception as e:
-        logging.exception(f"Serial -> WS task encountered an unexpected error: {e}")
+    except Exception:
+        logging.exception("Serial -> WS task encountered an unexpected error")
     finally:
         logging.info(
             f"Stopped serial_to_websocket_task for {serial_port_name} "
@@ -128,8 +126,8 @@ async def websocket_to_serial_task(serial_port_name, websocket, ser):
                     f"writing to serial: {e}"
                 )
                 break  # Exit task on other errors
-    except Exception as e:
-        logging.exception(f"WS -> Serial task encountered an unexpected error: {e}")
+    except Exception:
+        logging.exception("WS -> Serial task encountered an unexpected error")
     finally:
         logging.info(
             f"Stopped websocket_to_serial_task for {serial_port_name} "
@@ -143,7 +141,6 @@ async def serial_websocket_handler(serial_port_name, baud_rate, websocket):
     It opens the serial port and creates two tasks for bidirectional
     communication.
     """
-    global serial_port_lock
 
     if websocket.request.path != WEBSOCKET_PATH:
         error_message = (
@@ -222,10 +219,11 @@ async def serial_websocket_handler(serial_port_name, baud_rate, websocket):
                 await websocket.send(error_message)
             except Exception:
                 pass  # Ignore if WebSocket is already closed
-        except Exception as e:
+        except Exception:
             logging.exception(
-                f"An unexpected error occurred in serial_websocket_handler: {e}"
+                "An unexpected error occurred in serial_websocket_handler"
             )
+
         finally:
             if ser and ser.is_open:
                 ser.close()
@@ -338,8 +336,8 @@ async def main():
             websocket_port,
         ) as server:
             await server.serve_forever()  # Run the server forever
-    except Exception as e:
-        logging.exception(f"Error starting WebSocket server: {e}")
+    except Exception:
+        logging.exception("Error starting WebSocket server")
     finally:
         # Ensure Zeroconf is unregistered and closed upon shutdown
         if zeroconf_instance:
@@ -354,5 +352,5 @@ if __name__ == "__main__":
         asyncio.run(main())
     except KeyboardInterrupt:
         logging.info("Server stopped by user.")
-    except Exception as e:
-        logging.exception(f"Fatal error: {e}")
+    except Exception:
+        logging.exception("Fatal error")
