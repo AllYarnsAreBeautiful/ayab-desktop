@@ -151,21 +151,15 @@ async def serial_websocket_handler(serial_port_name, baud_rate, websocket):
         logging.error(error_message)
         return
 
-    if serial_port_lock.locked():
-        error_message = (
-            f"Error: Serial port {serial_port_name} is already in use by "
-            f"another connection."
-        )
-        await websocket.send(error_message)
-        logging.error(error_message)
-        return
-
     logging.info(
         f"New WebSocket connection from {websocket.remote_address}. "
         f"Attempting to open serial port {serial_port_name}..."
     )
     ser = None
-    async with serial_port_lock:
+    acquired = False
+    try:
+        await asyncio.wait_for(serial_port_lock.acquire(), timeout=0.01)
+        acquired = True
         try:
             ser = serial.Serial(
                 port=serial_port_name,
@@ -231,6 +225,19 @@ async def serial_websocket_handler(serial_port_name, baud_rate, websocket):
                     f"Serial port {serial_port_name} closed for "
                     f"{websocket.remote_address}."
                 )
+
+    except asyncio.TimeoutError:
+        # Another connection acquired the lock just before us
+        error_message = (
+            f"Error: Serial port {serial_port_name} is already "
+            "in use by another connection."
+        )
+        await websocket.send(error_message)
+        logging.error(error_message)
+
+    finally:
+        if acquired:
+            serial_port_lock.release()
 
 
 def get_local_ip():
