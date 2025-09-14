@@ -119,7 +119,7 @@ async def websocket_to_serial_task(serial_port_name, websocket, ser):
                 break  # Exit task if client disconnects
             except websockets.exceptions.ConnectionClosed as e:
                 logging.warning(
-                    f"WS -> Serial: WebSocket connection closed " f"unexpectedly: {e}"
+                    f"WS -> Serial: WebSocket connection closed unexpectedly: {e}"
                 )
                 break  # Exit task on unexpected connection closure
             except Exception as e:
@@ -193,7 +193,7 @@ async def serial_websocket_handler(serial_port_name, baud_rate, websocket):
 
             # Wait for both tasks to complete (e.g., if WebSocket disconnects
             # or an error occurs)
-            done, pending = await asyncio.wait(
+            _, pending = await asyncio.wait(
                 [producer_task, consumer_task],
                 return_when=asyncio.FIRST_COMPLETED,  # Stop if one task completes
             )
