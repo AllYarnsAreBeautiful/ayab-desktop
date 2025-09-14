@@ -1,3 +1,4 @@
+import contextlib
 import websockets.exceptions
 import websockets.protocol
 import websockets.sync.client
@@ -27,7 +28,8 @@ class WebsocketSerial:
 
     @property
     def in_waiting(self) -> int:
-        return len(self._rxbuffer)
+        with self._lock:
+            return len(self._rxbuffer)
 
     def read(self, size: int = 1) -> bytes:
         with self._lock:
@@ -51,11 +53,9 @@ class WebsocketSerial:
             raise ConnectionError("WebSocket connection is closed") from None
 
     def close(self) -> None:
-        try:
-            with self._lock:
+        with self._lock:
+            with contextlib.suppress(Exception):
                 self._ws.close()
-        except Exception:
-            pass  # Ignore errors during close
 
     def flush(self) -> None:
         """Flush write buffers, if applicable."""

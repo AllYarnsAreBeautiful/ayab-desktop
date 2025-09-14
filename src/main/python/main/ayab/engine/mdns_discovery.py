@@ -68,10 +68,10 @@ class MdnsBrowser:
             else:
                 self.__logger.warning(f"Unable to retrieve service {name} information")
         except Exception as e:
-            self.__logger.error(f"Error while fetching service {name}: {e}")
+            self.__logger.exception(f"Error while fetching service {name}: {e}")
 
     def _on_service_removed(
-        self, zeroconf_instance: zeroconf.Zeroconf, service_type: str, name: str
+        self, _zeroconf_instance: zeroconf.Zeroconf, _service_type: str, name: str
     ) -> None:
         """Callback called when a service is removed."""
         self.__logger.info(f"Service removed: {name}")
@@ -89,7 +89,6 @@ class MdnsBrowser:
             self.__logger.warning("MdnsBrowser already running.")
             return
 
-        self.running = True
         self.__logger.info(f"Starting service exploration for: {self.service_type}")
         try:
             self.zeroconf_instance = zeroconf.Zeroconf()
@@ -98,8 +97,9 @@ class MdnsBrowser:
                 self.service_type,
                 self.listener,
             )
+            self.running = True
         except Exception as e:
-            self.__logger.error(f"Error while starting Zeroconf: {e}")
+            self.__logger.exception(f"Error while starting Zeroconf: {e}")
             self.stop()
 
     def stop(self) -> None:
