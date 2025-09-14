@@ -36,7 +36,7 @@ service_info = None
 serial_port_lock = asyncio.Lock()
 
 
-async def serial_to_websocket_task(serial_port_name, baud_rate, websocket, ser):
+async def serial_to_websocket_task(serial_port_name, websocket, ser):
     """
     Asynchronously reads data from the serial port and sends it to the
     WebSocket. This task runs continuously as long as the WebSocket
@@ -64,11 +64,13 @@ async def serial_to_websocket_task(serial_port_name, baud_rate, websocket, ser):
                     )
                     break  # Exit task if client disconnects
                 except Exception as e:
-                    logging.error(f"Serial -> WS: Error sending data to WebSocket: {e}")
+                    logging.exception(
+                        f"Serial -> WS: Error sending data to WebSocket: {e}"
+                    )
                     break  # Exit task on other WebSocket errors
             await asyncio.sleep(SERIAL_TIMEOUT)
     except Exception as e:
-        logging.error(f"Serial -> WS task encountered an unexpected error: {e}")
+        logging.exception(f"Serial -> WS task encountered an unexpected error: {e}")
     finally:
         logging.info(
             f"Stopped serial_to_websocket_task for {serial_port_name} "
@@ -121,13 +123,13 @@ async def websocket_to_serial_task(serial_port_name, websocket, ser):
                 )
                 break  # Exit task on unexpected connection closure
             except Exception as e:
-                logging.error(
+                logging.exception(
                     f"WS -> Serial: Error receiving from WebSocket or "
                     f"writing to serial: {e}"
                 )
                 break  # Exit task on other errors
     except Exception as e:
-        logging.error(f"WS -> Serial task encountered an unexpected error: {e}")
+        logging.exception(f"WS -> Serial task encountered an unexpected error: {e}")
     finally:
         logging.info(
             f"Stopped websocket_to_serial_task for {serial_port_name} "
@@ -183,7 +185,7 @@ async def serial_websocket_handler(serial_port_name, baud_rate, websocket):
 
             # Create two concurrent tasks for bidirectional communication
             producer_task = asyncio.create_task(
-                serial_to_websocket_task(serial_port_name, baud_rate, websocket, ser)
+                serial_to_websocket_task(serial_port_name, websocket, ser)
             )
             consumer_task = asyncio.create_task(
                 websocket_to_serial_task(serial_port_name, websocket, ser)
@@ -221,7 +223,7 @@ async def serial_websocket_handler(serial_port_name, baud_rate, websocket):
             except Exception:
                 pass  # Ignore if WebSocket is already closed
         except Exception as e:
-            logging.error(
+            logging.exception(
                 f"An unexpected error occurred in serial_websocket_handler: {e}"
             )
         finally:
@@ -337,7 +339,7 @@ async def main():
         ) as server:
             await server.serve_forever()  # Run the server forever
     except Exception as e:
-        logging.error(f"Error starting WebSocket server: {e}")
+        logging.exception(f"Error starting WebSocket server: {e}")
     finally:
         # Ensure Zeroconf is unregistered and closed upon shutdown
         if zeroconf_instance:
@@ -353,4 +355,4 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         logging.info("Server stopped by user.")
     except Exception as e:
-        logging.error(f"Fatal error: {e}")
+        logging.exception(f"Fatal error: {e}")

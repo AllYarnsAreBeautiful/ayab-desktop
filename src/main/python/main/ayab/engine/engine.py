@@ -149,7 +149,9 @@ class Engine(SignalSender, QDockWidget):
             # Websocket connection
             path = user_data.properties.get(b"path", b"/ws").decode()
             board_id = user_data.properties.get(b"board_id", b"<Unknown>").decode()
-            portname = f"ws://{user_data.server.rstrip('.')}:{user_data.port}{path}"
+            portname = (
+                f"ws://{user_data.server.removesuffix('.')}:{user_data.port}{path}"
+            )
 
             self.__logger.info(f"Connecting to {board_id} at {path}")
         else:
