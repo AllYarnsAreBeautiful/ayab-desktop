@@ -177,33 +177,36 @@ class Control(SignalSender):
         return token, param
 
     def __log_indState(self, msg: bytes) -> None:
-        directionMap = {0x00: "Left ", 0x01: "Right", 0xFF: "?"}
-        machineSideMap = {0x00: "? ", 0x01: "Left", 2: "Right"}
-        beltShiftMap = {0x00: "?", 0x01: "Regular", 0x02: "Shifted"}
-        carriageMap = {0x00: "K", 0x01: "L", 0x02: "G", 0x03: "K270", 0xFF: "None"}
+        try:
+            directionMap = {0x00: "Left ", 0x01: "Right", 0xFF: "?"}
+            machineSideMap = {0x00: "? ", 0x01: "Left", 2: "Right"}
+            beltShiftMap = {0x00: "?", 0x01: "Regular", 0x02: "Shifted"}
+            carriageMap = {0x00: "K", 0x01: "L", 0x02: "G", 0x03: "K270", 0xFF: "None"}
 
-        error = msg[1]
-        state = msg[2]
-        hallLeft = struct.unpack(">H", msg[3:5])[0]
-        hallRight = struct.unpack(">H", msg[5:7])[0]
-        carriage = carriageMap.get(msg[7], f"0x{msg[7]:02x}?")
-        position = msg[8]
-        direction = directionMap.get(msg[9], f"0x{msg[9]:02x}?")
+            error = msg[1]
+            state = msg[2]
+            hallLeft = struct.unpack(">H", msg[3:5])[0]
+            hallRight = struct.unpack(">H", msg[5:7])[0]
+            carriage = carriageMap.get(msg[7], f"0x{msg[7]:02x}?")
+            position = msg[8]
+            direction = directionMap.get(msg[9], f"0x{msg[9]:02x}?")
 
-        try:  # AyabAsync supplies additional parameters
-            hallActive = machineSideMap.get(msg[10], f"0x{msg[10]:02x}?")
-            beltShift = beltShiftMap.get(msg[11], f"0x{msg[11]:02x}?")
-            self.logger.info(
-                f"IndState: {error:1d} {state:1d} {position:3d}"
-                f" {carriage:5s} ({beltShift:11s},{direction:5s})"
-                f" Hall:{hallActive:5s} ({hallLeft:5d}, {hallRight:5d})"
-            )
-        except IndexError:
-            self.logger.info(
-                f"IndState: {error:1d} {state:1d} {position:3d}"
-                f" {carriage:5s} ({direction:5s})"
-                f" Hall:({hallLeft:5d}, {hallRight:5d})"
-            )
+            try:  # AyabAsync supplies additional parameters
+                hallActive = machineSideMap.get(msg[10], f"0x{msg[10]:02x}?")
+                beltShift = beltShiftMap.get(msg[11], f"0x{msg[11]:02x}?")
+                self.logger.info(
+                    f"IndState: {error:1d} {state:1d} {position:3d}"
+                    f" {carriage:5s} ({beltShift:11s},{direction:5s})"
+                    f" Hall:{hallActive:5s} ({hallLeft:5d}, {hallRight:5d})"
+                )
+            except IndexError:
+                self.logger.info(
+                    f"IndState: {error:1d} {state:1d} {position:3d}"
+                    f" {carriage:5s} ({direction:5s})"
+                    f" Hall:({hallLeft:5d}, {hallRight:5d})"
+                )
+        except (IndexError, struct.error) as e:
+            self.logger.warning(f"Unable to parse IndState message: {e}")
 
     def __log_cnfInfo(self, msg: bytes) -> None:
         api = msg[1]
