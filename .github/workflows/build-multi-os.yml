@@ -257,7 +257,7 @@ jobs:
     runs-on: ubuntu-22.04
     env:
       # Using a specific Python version for Linux builds due to python-appimage availability
-      PYTHON_VERSION: 3.11.13
+      PYTHON_VERSION: 3.11.14
     steps:
       - name: Checkout repo into AppDir
         uses: actions/checkout@v4
@@ -304,7 +304,8 @@ jobs:
           sudo apt-get install -y avrdude libasound2-dev
           ./AppRun -m pip install --upgrade pip
           # hack to fix setup.py script with faulty include
-          ./AppRun -m pip install --global-option=build_ext --global-option="-I$(pwd)/opt/${{steps.vars.outputs.python-minor}}/include/${{steps.vars.outputs.python-minor}}" simpleaudio
+          #./AppRun -m pip install --global-option=build_ext --global-option="-I$(pwd)/opt/${{steps.vars.outputs.python-minor}}/include/${{steps.vars.outputs.python-minor}}" simpleaudio
+          ./AppRun -m pip install --config-settings="--build-option=build_ext" --config-settings="--build-option=-I$(pwd)/opt/${{steps.vars.outputs.python-minor}}/include/${{steps.vars.outputs.python-minor}}" simpleaudio
           ./AppRun -m pip install -r requirements.build.txt
 
       - name: Add AppDir subdirectories to PATH

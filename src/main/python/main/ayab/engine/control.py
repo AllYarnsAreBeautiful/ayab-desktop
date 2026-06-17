@@ -213,6 +213,7 @@ class Control(SignalSender):
         # get data for next line of knitting
         color, row_index, blank_line, last_line = self.mode_func(self, line_number)
         bits = self.select_needles_API6(color, row_index, blank_line)
+        self.logger.debug("bits (select_needles_API6): " + bits.to01())
 
         # Send line to machine
         # Note that we never set the "final line" flag here, because

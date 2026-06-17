@@ -56,11 +56,12 @@ from typing import (
     overload,
 )
 
+import os
+
 if TYPE_CHECKING:
     from .ayab import GuiMain
 
 T = TypeVar("T")
-
 
 def str2bool(qvariant: str | bool) -> bool:
     if type(qvariant) is str:
@@ -129,17 +130,41 @@ class Preferences(SignalSender):
         "lower_display_stitch_width": int,
     }
 
+    """How many recent files can be added to menu."""
+    MAX_RECENT_COUNT = 5
+
     def __init__(self, parent: GuiMain):
         super().__init__(parent.signal_receiver)
         self.parent = parent
         self.languages = Language(self.parent.app_context)
         self.settings: QSettings = QSettings()
         self.settings.setFallbacksEnabled(False)
+
+        """Recent files list"""
+        self.recentFiles: list[str] = []
         self.refresh()
 
     def refresh(self) -> None:
+        """Sync variables and recent files list with saved configuration"""
         for var in self.variables.keys():
             self.settings.setValue(var, self.value(cast(PreferencesDictKeys, var)))
+
+        # Read recents from configuration
+        # and check if files are still available
+        for i in range(self.MAX_RECENT_COUNT):
+            filename = self.settings.value("Recent/" + str(i))
+            if filename is not None and os.path.exists(str(filename)) and (filename not in self.recentFiles):
+                self.recentFiles.append(str(filename))
+
+        # Remove Recent section since it is possible
+        # there are no available files
+        self.settings.remove("Recent")
+
+        # Save recents back to configuration
+        i = 0
+        while i < self.MAX_RECENT_COUNT and i < len(self.recentFiles):
+            self.settings.setValue("Recent/" + str(i), self.recentFiles[i])
+            i += 1
 
     def reset(self) -> None:
         """Reset all the fields except language"""
@@ -148,6 +173,17 @@ class Preferences(SignalSender):
                 self.settings.setValue(
                     var, self.default_value(cast(PreferencesDictKeys, var))
                 )
+
+        # Reset recent files list and remove section
+        self.recentFiles = []
+        self.settings.remove("Recent")
+
+    # Add file to recents, used during usual open from file.
+    def addRecent(self, filename: str) -> None:
+        """Add fileName to recent list if it is not already there"""
+        if filename not in self.recentFiles:
+            self.recentFiles.insert(0, filename)
+            self.refresh()
 
     @overload
     def value(self, var: PreferencesDictBoolKeys) -> bool: ...
@@ -222,6 +258,7 @@ class PrefsDialog(QDialog):
         self.__ui = Ui_Prefs()
         self.__ui.setupUi(self)
         self.__form = QFormLayout(self.__ui.prefs_group)
+        self.__parent = parent
 
         # add form items
         self.__widget = {}
@@ -259,8 +296,12 @@ class PrefsDialog(QDialog):
             widget.refresh()
 
     def __reset_and_refresh(self) -> None:
+        """Reset preferences and refresh UI accordingly"""
         self.__prefs.reset()
         self.__refresh_form()
+
+        # Update recents menu after reset
+        self.__parent.menu.showRecents()
 
 
 class PrefsBoolWidget(QCheckBox):
