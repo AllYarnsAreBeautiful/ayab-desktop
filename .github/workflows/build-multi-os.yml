@@ -37,6 +37,7 @@ jobs:
         shell: pwsh
         run: |
           choco install vcredist2010 # fixes dependency on msvcr100.dll
+          choco install vcredist2012 # fixes dependency on msvcr110.dll
           python -m pip install --upgrade pip
           python -m pip install -r requirements.build.txt
           python -m pip install -r windows-build\windows_build_requirements.txt
