@@ -28,6 +28,7 @@ jobs:
         with:
           submodules: recursive
           fetch-depth: 0 # necessary for `git describe`
+          persist-credentials: false
 
       - name: Initialize common build environment
         uses: ./.github/actions/init-environment
@@ -126,6 +127,7 @@ jobs:
         with:
           submodules: recursive
           fetch-depth: 0 # necessary for `git describe`
+          persist-credentials: false
 
       - name: Initialize common build environment
         uses: ./.github/actions/init-environment
@@ -268,6 +270,7 @@ jobs:
         with:
           submodules: recursive
           fetch-depth: 0 # necessary for `git describe`
+          persist-credentials: false
 
       - name: Initialize common build environment
         uses: ./.github/actions/init-environment
