@@ -70,7 +70,7 @@ def str2bool(qvariant: str | bool) -> bool:
 
 
 PreferencesDictBoolKeys: TypeAlias = Literal[
-    "default_infinite_repeat",
+    "default_infinite_vertical_repeat",
     "default_knit_side_image",
     "quiet_mode",
     "disable_hardware_beep",
@@ -88,7 +88,7 @@ PreferencesDict = TypedDict(
     {
         "machine": type[Machine],
         "default_knitting_mode": type[Mode],
-        "default_infinite_repeat": type[bool],
+        "default_infinite_vertical_repeat": type[bool],
         "default_alignment": type[Alignment],
         "default_knit_side_image": type[bool],
         "aspect_ratio": type[AspectRatio],
@@ -118,7 +118,7 @@ class Preferences(SignalSender):
     variables: PreferencesDict = {
         "machine": Machine,
         "default_knitting_mode": Mode,
-        "default_infinite_repeat": bool,
+        "default_infinite_vertical_repeat": bool,
         "default_alignment": Alignment,
         "default_knit_side_image": bool,
         "aspect_ratio": AspectRatio,
@@ -135,7 +135,25 @@ class Preferences(SignalSender):
         self.languages = Language(self.parent.app_context)
         self.settings: QSettings = QSettings()
         self.settings.setFallbacksEnabled(False)
+        self.__migrate_infinite_repeat_setting()
         self.refresh()
+
+    def __migrate_infinite_repeat_setting(self) -> None:
+        old_key = "default_infinite_repeat"
+        new_key = "default_infinite_vertical_repeat"
+        keys = self.settings.allKeys()
+
+        if old_key in keys and new_key not in keys:
+            try:
+                migrated_value = str2bool(
+                    cast(str | bool, self.settings.value(old_key))
+                )
+            except ValueError:
+                migrated_value = False
+            self.settings.setValue(new_key, migrated_value)
+
+        if old_key in keys:
+            self.settings.remove(old_key)
 
     def refresh(self) -> None:
         for var in self.variables.keys():
