@@ -156,6 +156,9 @@ class Preferences(SignalSender):
             if filename is not None and os.path.exists(str(filename)) and (filename not in self.recentFiles):
                 self.recentFiles.append(str(filename))
 
+        # Restrict recentFiles size
+        del self.recentFiles[self.MAX_RECENT_COUNT:]
+
         # Remove Recent section since it is possible
         # there are no available files
         self.settings.remove("Recent")
