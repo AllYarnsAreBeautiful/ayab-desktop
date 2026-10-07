@@ -181,9 +181,11 @@ class Preferences(SignalSender):
     # Add file to recents, used during usual open from file.
     def addRecent(self, filename: str) -> None:
         """Add fileName to recent list if it is not already there"""
-        if filename not in self.recentFiles:
-            self.recentFiles.insert(0, filename)
-            self.refresh()
+        if filename in self.recentFiles:
+            del self.recentFiles[self.recentFiles.index(filename)]
+
+        self.recentFiles.insert(0, filename)
+        self.refresh()
 
     @overload
     def value(self, var: PreferencesDictBoolKeys) -> bool: ...
