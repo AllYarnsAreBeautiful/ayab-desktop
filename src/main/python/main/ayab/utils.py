@@ -21,7 +21,7 @@
 
 from __future__ import annotations
 import logging
-from typing import Any, Callable, Literal, Optional, Sequence, TypeAlias
+from typing import Any, Callable, Literal, Optional, TypeAlias
 import serial.tools.list_ports
 
 from PySide6.QtWidgets import QMessageBox, QComboBox
@@ -83,21 +83,6 @@ def populate_ports(
 def get_serial_ports() -> list[str]:
     """Return a list of all USB serial ports."""
     return list(serial.tools.list_ports.grep("USB"))  # type: ignore
-
-
-# Color functions
-
-
-def rgb2array(color: int) -> tuple[int, int, int]:
-    return color // 0x1000, (color // 0x100) & 0xFF, color & 0xFF
-
-
-def greyscale(rgb: Sequence[int]) -> int:
-    return int(0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2])
-
-
-def contrast_color(color: int) -> int:
-    return [0x000000, 0xFFFFFF][greyscale(rgb2array(color)) < 0x80]
 
 
 # Version
