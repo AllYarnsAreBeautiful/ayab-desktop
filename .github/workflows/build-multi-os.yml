@@ -138,12 +138,6 @@ jobs:
           mkdir tmp-wheel/
           python -m pip install delocate==0.11.0
 
-          # Find platform values on e.g. https://pypi.org/project/numpy/1.26.4/#files
-
-          python -m pip download --only-binary=:all: --platform macosx_10_09_x86_64 "$(grep numpy requirements.build.txt)"
-          python -m pip download --only-binary=:all: --platform macosx_11_0_arm64 "$(grep numpy requirements.build.txt)"
-          delocate-fuse numpy*arm* numpy*x86* -w tmp-wheel/
-
           python -m pip download --only-binary=:all: --platform macosx_10_10_x86_64 "$(grep Pillow requirements.build.txt)"
           python -m pip download --only-binary=:all: --platform macosx_11_0_arm64 "$(grep Pillow requirements.build.txt)"
           delocate-fuse Pillow*arm* Pillow*x86* -w tmp-wheel/

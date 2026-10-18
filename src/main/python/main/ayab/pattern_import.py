@@ -7,9 +7,7 @@
 
 from __future__ import annotations
 import sys
-from typing import Optional, cast
-import numpy as np
-import numpy.typing as npt
+from typing import Optional
 from PIL import Image
 
 # import png
@@ -19,16 +17,16 @@ def signExt_b2d(x: int) -> int:
     return (((x & 0xFF) ^ 0x80) - 0x80) & 0xFFFFFFFF
 
 
-def getByteAt(data: bytes, i: int) -> np.uint8:
-    return cast(np.uint8, data[i] & 0xFF)
+def getByteAt(data: bytes, i: int) -> int:
+    return data[i]
 
 
-def getWordAt(data: bytes, i: int) -> np.uint16:
-    return cast(np.uint16, (getByteAt(data, i) + (getByteAt(data, i + 1) << 8)))
+def getWordAt(data: bytes, i: int) -> int:
+    return getByteAt(data, i) + (getByteAt(data, i + 1) << 8)
 
 
-def getDWordAt(data: bytes, i: int) -> np.uint32:
-    return cast(np.uint32, (getWordAt(data, i) + (getWordAt(data, i + 2) << 16)))
+def getDWordAt(data: bytes, i: int) -> int:
+    return getWordAt(data, i) + (getWordAt(data, i + 2) << 16)
 
 
 # Pascal-style string
@@ -39,22 +37,22 @@ def getStringAt(data: bytes, i: int) -> bytes:
 
 class Color:
 
-    n: Optional[np.uint8]
-    code = np.uint8(0x10)
-    symbol = np.uint8(0)
-    r: np.uint8 = np.uint8()
-    g: np.uint8 = np.uint8()
-    b: np.uint8 = np.uint8()
+    n: Optional[int]
+    code = 0x10
+    symbol = 0
+    r = 0
+    g = 0
+    b = 0
 
     def __init__(
         self,
-        code: np.uint8 = code,
-        n: Optional[np.uint8] = None,
-        symbol: np.uint8 = symbol,
+        code: int = code,
+        n: Optional[int] = None,
+        symbol: int = symbol,
         name: bytes = b"",
-        r: np.uint8 = r,
-        g: np.uint8 = g,
-        b: np.uint8 = b,
+        r: int = r,
+        g: int = g,
+        b: int = b,
         binary: Optional[bytes] = None,
     ):
         if binary is not None:
@@ -74,7 +72,7 @@ class Color:
 
     def string(self) -> str:
         return (
-            f"{hex(self.code)}, {str(self.n)}, '{chr(cast(int, self.symbol))}',"
+            f"{hex(self.code)}, {str(self.n)}, '{chr(self.symbol)}',"
             + f" {self.name!r}, {hex(int.from_bytes(self.rgb, 'big'))}"
         )
 
@@ -84,17 +82,17 @@ class Color:
 
 class PatternConverter:
 
-    width: np.uint16
-    height: np.uint16
+    width: int
+    height: int
 
     def __init__(self, debug: bool = True):
         self.reinit(debug)
 
     def reinit(self, debug: bool = True) -> None:
         self.filename: Optional[str] = None
-        self.height = np.uint16(0)
-        self.width = np.uint16(0)
-        self.color_pattern = np.empty([0, 0], np.uint8)
+        self.height = 0
+        self.width = 0
+        self.color_pattern: list[list[int]] = []
         # self.stitch_pattern = bytearray()
         # self.extension = bytearray()
         self.colors: dict[int, Color] = {}
@@ -103,7 +101,7 @@ class PatternConverter:
         # self.col1 = 0
         # self.col2 = 0x3C #  '<'
         # self.status = 0
-        self.debug = True
+        self.debug = debug
 
     def read_file(self, filename: str) -> bytes:
         self.reinit()
@@ -143,7 +141,7 @@ class PatternConverter:
     #         [
     #             num
     #             for element in [
-    #                 self.colors[self.color_pattern[self.height - row - 1, column]].rgb
+    #                 self.colors[self.color_pattern[self.height - row - 1][column]].rgb
     #                 for column in range(self.width)
     #             ]
     #             for num in element
@@ -153,19 +151,17 @@ class PatternConverter:
     #     return png.from_array(rgb, mode="RGB")
 
     def output_im(self) -> Image.Image:
-        rgb = np.array(
+        rgb = [
             [
-                [
-                    self.colors[self.color_pattern[self.height - row - 1, column]].rgb
-                    for column in range(self.width)
-                ]
-                for row in range(self.height)
-            ],
-            np.uint8,
-        )
+                self.colors[self.color_pattern[self.height - row - 1][column]].rgb
+                for column in range(self.width)
+            ]
+            for row in range(self.height)
+        ]
         if self.debug:
             print(rgb, file=sys.stderr)
-        return Image.fromarray(rgb, mode="RGB")
+        pixels = bytes(channel for row in rgb for color in row for channel in color)
+        return Image.frombytes("RGB", (self.width, self.height), pixels)
 
     def exit(self, msg: str, return_code: int) -> None:
         print(msg)
@@ -272,14 +268,14 @@ class PatPatternConverter(DAKPatternConverter):
                 color = getByteAt(pattern_data, pos)
                 pos += 1
                 if color & 0x80:
-                    run = cast(int, color & 0x7F)
+                    run = color & 0x7F
                     color = getByteAt(pattern_data, pos)
                     pos += 1
                 # all_colors.add(color)
                 # row_colors.add(color)
                 if run > 0:
                     for _i in range(run):
-                        self.color_pattern[row, column] = color
+                        self.color_pattern[row][column] = color
                         column += 1
             # self.max_row_colors = max(self.max_row_colors, len(row_colors))
         return pos
@@ -301,24 +297,18 @@ class PatPatternConverter(DAKPatternConverter):
         #
         #  decode run length encoding of color pattern
         #  count colors
-        self.color_pattern = np.zeros(
-            (
-                self.height,
-                self.width,
-            ),
-            np.uint8,
-        )
+        self.color_pattern = [[0] * self.width for _row in range(self.height)]
         pos = pattern_start
         # all_colors = set()
         pos = self.count_colors(pattern_data, pos)
         #
         #  no stitch data
-        # self.stitch_pattern = np.zeros((self.height, self.width), np.uint8)
+        # self.stitch_pattern = [[0] * self.width for _row in range(self.height)]
         #
         #  get base color
         # b151 = getByteAt(pattern_data, 0x151)
         # if b151:
-        #     self.col1 = np.int8(b151) + 0x100
+        #     self.col1 = signExt_b2d(b151)
         # else:
         #     self.col1 = 0
         # self.col2 = getByteAt(pattern_data, 0x152)
@@ -365,7 +355,7 @@ class PatPatternConverter(DAKPatternConverter):
         if pos == pattern_size or len(self.colors) == 0:
             # if self.col1 == 0:
             # self.col1 = Counter(color_array).most_common(1)[0][0]
-            color = np.uint8(0)
+            color = 0
             for i in range(0x80):
                 self.extract_color(pattern_data, color, i)
         # if self.debug:
@@ -376,17 +366,17 @@ class PatPatternConverter(DAKPatternConverter):
         # return self.status
         return self.output_im()
 
-    def extract_color(self, pattern_data: bytes, color: np.uint8, i: int) -> None:
+    def extract_color(self, pattern_data: bytes, color: int, i: int) -> None:
         a = getByteAt(pattern_data, i + 3)
         if a != 0xFF:
             color += 1
-            pos = cast(int, 3 * (a & 0xF))
+            pos = 3 * (a & 0xF)
             # b = 3 * (self.getByteAt(i + 0x84) & 0xF)
             new_color = Color(
-                np.uint8(0x10 + 0x40 * (0 == i)),
+                0x10 + 0x40 * (0 == i),
                 # ((self.col1 & 0xFF) == i),
                 color,
-                np.uint8(i),
+                i,
                 b"",
                 getByteAt(pattern_data, 0x107 + pos),
                 getByteAt(pattern_data, 0x106 + pos),
@@ -517,8 +507,8 @@ class StpPatternConverter(DAKPatternConverter):
     # decode run length encoding of color and stitch patterns
     def __decode_runs(
         self, data: bytes, blocks: list[STPBlock], offset: int
-    ) -> npt.NDArray[np.uint8]:
-        output = np.zeros((self.height, self.width), np.uint8)
+    ) -> list[list[int]]:
+        output = [[0] * self.width for _row in range(self.height)]
         block_num = 0
         block_data = blocks[0].data
         pos = 0
@@ -529,18 +519,18 @@ class StpPatternConverter(DAKPatternConverter):
                 pos = 0
             column = 0
             while column < self.width:
-                run = np.uint8(1)
+                run = 1
                 symbol = getByteAt(block_data, pos)
                 pos += 1
                 if symbol & 0x80:
-                    run = symbol & np.uint8(0x7F)
+                    run = symbol & 0x7F
                     symbol = getByteAt(block_data, pos)
                     pos += 1
                 # if offset:
                 # symbol = getByteAt(data, offset + symbol * 2 - 2)
                 if run > 0:
                     for _i in range(run):
-                        output[row, column] = symbol
+                        output[row][column] = symbol
                         column += 1
         return output
 
@@ -550,7 +540,7 @@ class StpPatternConverter(DAKPatternConverter):
 
 class CutPatternConverter(PatternConverter):
     def parse_color_patterns(
-        self, pattern_data: bytes, pos: int, all_colors: set[np.uint8]
+        self, pattern_data: bytes, pos: int, all_colors: set[int]
     ) -> int:
         for row in range(self.height):
             eol = False
@@ -567,7 +557,7 @@ class CutPatternConverter(PatternConverter):
         self,
         pattern_data: bytes,
         pos: int,
-        all_colors: set[np.uint8],
+        all_colors: set[int],
         row: int,
         column: int,
         row_end: int,
@@ -588,7 +578,7 @@ class CutPatternConverter(PatternConverter):
             for _stitch in range(run):
                 if column >= self.width:
                     self.exit("row " + str(row) + " is too long", -5)  # FIXME translate
-                self.color_pattern[row, column] = color
+                self.color_pattern[row][column] = color
                 column += 1
             return False, pos, column
         for _stitch in range(run):
@@ -597,7 +587,7 @@ class CutPatternConverter(PatternConverter):
             color = getByteAt(pattern_data, pos)
             pos += 1
             all_colors.add(color)
-            self.color_pattern[row, column] = color
+            self.color_pattern[row][column] = color
             column += 1
         return False, pos, column
 
@@ -618,14 +608,8 @@ class CutPatternConverter(PatternConverter):
         # self.status = 0
         #
         #  decode run length encoding of color pattern
-        self.color_pattern = np.zeros(
-            (
-                self.height,
-                self.width,
-            ),
-            np.uint8,
-        )
-        all_colors: set[np.uint8] = set()
+        self.color_pattern = [[0] * self.width for _row in range(self.height)]
+        all_colors: set[int] = set()
         pos = pattern_start
         self.parse_color_patterns(pattern_data, pos, all_colors)
         #
@@ -656,7 +640,7 @@ class CutPatternConverter(PatternConverter):
                 g = getByteAt(color_data, index + 1)
                 b = getByteAt(color_data, index + 2)
 
-                self.colors[cs] = Color(n=np.uint8(cs), r=r, g=g, b=b)
+                self.colors[cs] = Color(n=cs, r=r, g=g, b=b)
                 offset += 3
         #
         #  return self.status
