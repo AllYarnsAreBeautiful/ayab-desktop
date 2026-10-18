@@ -558,7 +558,7 @@ class CutPatternConverter(PatternConverter):
             row_end = pos + 2 + getWordAt(pattern_data, pos)
             pos += 2
             while not eol:
-                eol = self.parse_color(
+                eol, pos, column = self.parse_color(
                     pattern_data, pos, all_colors, row, column, row_end
                 )
         return pos
@@ -571,7 +571,7 @@ class CutPatternConverter(PatternConverter):
         row: int,
         column: int,
         row_end: int,
-    ) -> bool:
+    ) -> tuple[bool, int, int]:
         byte = getByteAt(pattern_data, pos)
         pos += 1
         run = byte & 0x7F
@@ -580,26 +580,26 @@ class CutPatternConverter(PatternConverter):
                 self.exit(
                     ".cut file misspecified at row " + str(row), -5
                 )  # FIXME translate
-            return True
+            return True, pos, column
         if byte & 0x80:
             color = getByteAt(pattern_data, pos)
             pos += 1
             all_colors.add(color)
             for _stitch in range(run):
-                if column > self.width:
+                if column >= self.width:
                     self.exit("row " + str(row) + " is too long", -5)  # FIXME translate
                 self.color_pattern[row, column] = color
                 column += 1
-            return False
+            return False, pos, column
         for _stitch in range(run):
-            if column > self.width:
+            if column >= self.width:
                 self.exit("row " + str(row) + " is too long", -5)  # FIXME translate
             color = getByteAt(pattern_data, pos)
             pos += 1
             all_colors.add(color)
             self.color_pattern[row, column] = color
             column += 1
-        return False
+        return False, pos, column
 
     #  read .cut file and optional .pal file, return a PIL.Image object
     def pattern2im(
