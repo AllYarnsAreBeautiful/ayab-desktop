@@ -21,9 +21,7 @@
 
 from __future__ import annotations
 import logging
-from typing import Any, Callable, Literal, Optional, TypeAlias, cast
-import numpy as np
-import numpy.typing as npt
+from typing import Any, Callable, Literal, Optional, Sequence, TypeAlias
 import serial.tools.list_ports
 
 from PySide6.QtWidgets import QMessageBox, QComboBox
@@ -90,12 +88,12 @@ def get_serial_ports() -> list[str]:
 # Color functions
 
 
-def rgb2array(color: int) -> npt.NDArray[np.int_]:
-    return np.array([color // 0x1000, (color // 0x100) & 0xFF, color & 0xFF])
+def rgb2array(color: int) -> tuple[int, int, int]:
+    return color // 0x1000, (color // 0x100) & 0xFF, color & 0xFF
 
 
-def greyscale(rgb: npt.NDArray[np.int_]) -> int:
-    return cast(int, np.dot([0.299, 0.587, 0.114], rgb))
+def greyscale(rgb: Sequence[int]) -> int:
+    return int(0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2])
 
 
 def contrast_color(color: int) -> int:
