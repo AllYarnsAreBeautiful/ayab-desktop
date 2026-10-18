@@ -117,7 +117,7 @@ jobs:
 
   build-macos:
     name: Create and upload Mac OSX build
-    runs-on: macos-14
+    runs-on: macos-15
     env:
       APPLE_CERTIFICATE_NAME: ${{ secrets.APPLE_CERTIFICATE_NAME }}
       APPLE_STORE_CONNECT_KEY_ID: ${{ secrets.APPLE_STORE_CONNECT_KEY_ID }}
