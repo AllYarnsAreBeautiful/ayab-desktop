@@ -72,8 +72,8 @@ class Communication(object):
     def __init__(self, serial: Optional[serial.Serial | WebsocketSerial] = None):
         """Create an AyabCommunication object,
         with an optional serial communication object."""
-        logging.basicConfig(level=logging.DEBUG)
         self.logger = logging.getLogger(type(self).__name__)
+        self.logger.setLevel(logging.DEBUG)
         self.__ser = serial
         self.__driver = sliplib.Driver()
         self.rx_msg_list: list[bytes] = list()
