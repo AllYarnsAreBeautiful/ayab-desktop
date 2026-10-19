@@ -33,7 +33,7 @@ from .signal_receiver import SignalReceiver
 from .audio import AudioPlayer
 from .menu import Menu
 from .scene import Scene
-from .transforms import Transform
+from .transforms import ImageTransform
 from .firmware_flash import FirmwareFlash
 from .hw_test import HardwareTestDialog
 from .preferences import Preferences
@@ -121,8 +121,8 @@ class GuiMain(QMainWindow):
         self.menu.ui.action_cancel.triggered.connect(self.engine.cancel)
         self.menu.ui.action_set_preferences.triggered.connect(self.__set_prefs)
         self.menu.ui.action_about.triggered.connect(self.about.show)
-        # get names of image actions from Transform methods
-        transforms = filter(lambda x: x[0] != "_", Transform.__dict__.keys())
+        # get names of image actions from ImageTransform methods
+        transforms = filter(lambda x: x[0] != "_", ImageTransform.__dict__.keys())
         for t in transforms:
             action = getattr(self.menu.ui, "action_" + t)
             slot = getattr(self.scene.ayabimage, t)
