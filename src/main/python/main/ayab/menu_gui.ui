@@ -13,6 +13,7 @@
    <property name="title">
     <string>Help</string>
    </property>
+   <addaction name="action_openpatternsfolder"/>
    <addaction name="action_about"/>
   </widget>
   <widget class="QMenu" name="menu_tools">
@@ -93,6 +94,11 @@
    </property>
    <property name="shortcut">
     <string notr="true">Escape</string>
+   </property>
+  </action>
+  <action name="action_openpatternsfolder">
+   <property name="text">
+    <string>Open Patterns Folder</string>
    </property>
   </action>
   <action name="action_about">

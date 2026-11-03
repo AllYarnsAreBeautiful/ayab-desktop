@@ -26,6 +26,11 @@ import logging
 from PySide6.QtWidgets import QMainWindow
 from PySide6.QtCore import QCoreApplication
 
+from pathlib import Path
+from PySide6.QtCore import QUrl
+from PySide6.QtGui import QDesktopServices
+from PySide6.QtWidgets import QMessageBox
+
 
 from .main_gui import Ui_MainWindow
 from .gui_fsm import gui_fsm
@@ -116,6 +121,10 @@ class GuiMain(QMainWindow):
         self.menu.ui.action_open_image_file.triggered.connect(
             self.scene.ayabimage.select_file
         )
+        #add open samples folder functionality:
+        self.menu.ui.action_openpatternsfolder.triggered.connect(
+            self._show_patterns_folder
+        )
         self.menu.ui.action_quit.triggered.connect(self.__quit)
         self.menu.ui.action_load_AYAB_firmware.triggered.connect(self.flash.open)
         self.menu.ui.action_cancel.triggered.connect(self.engine.cancel)
@@ -194,3 +203,13 @@ class GuiMain(QMainWindow):
         if log:
             logging.info("Notification: " + text)
         self.ui.label_notifications.setText(text)
+
+    def _show_patterns_folder(self, checked: bool = False) -> None:
+        samples_dir = Path.home() / "AYAB"
+
+        if not samples_dir.is_dir():
+            QMessageBox.warning(self, "Folder not found", f"Could not find:\n{samples_dir}")
+            return
+
+        if not QDesktopServices.openUrl(QUrl.fromLocalFile(str(samples_dir))):
+            QMessageBox.warning(self, "Could not open folder", str(samples_dir))
