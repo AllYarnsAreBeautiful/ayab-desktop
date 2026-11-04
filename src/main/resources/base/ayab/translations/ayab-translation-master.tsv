@@ -56,6 +56,7 @@ MenuBar	Cancel Knitting	Cancel Knitting	Stricken abbrechen	Hætta við prjón	An
 MenuBar	Quit	Quit	Beenden	Hætta	Chiudi	Выход	Вихід	Quitter	Salir	끝내기	やめる	退出
 MenuBar	Help – About	Help - About	Über AYAB...	Hjálp – Um	Aiuto – Informazioni	Помощь - о программе	Допомога – Про	Aide – À propos	Ayuda – Sobre	도움 - 관하여	ヘルプ - について	帮助-关于
 MenuBar	Open Patterns Folder	Open Patterns Folder	Muster-Ordner öffnen	Öppna mönstermappen	Apri la cartella dei modelli	Открыть папку с шаблонами	Відкрити папку з шаблонами	Ouvrir le dossier des modèles	Abrir la carpeta de patrones	패턴 폴더 열기	パターンフォルダを開く	打开图案文件夹
+MenuBar	Could not open folder	Could not open folder	Ordner konnte nicht geöffnet werden	Kunde inte öppna mappen	Impossibile aprire la cartella	Не удалось открыть папку	Не вдалося відкрити папку	Impossible d’ouvrir le dossier	No se pudo abrir la carpeta	폴더를 열지 못했습니다	フォルダを開けませんでした	无法打开文件夹
 MenuBar	Invert	Invert	Invertieren	Hvolfa	Inverti	Инвертировать	Інвертувати	Inverser	Invertir	뒤집기	反転する	反色
 MenuBar	Stretch	Stretch	Strecken	Teygja	Allunga	Растянуть	Розтягнути	Etirer	Tramo	늘리기	ストレッチする	拉伸
 MenuBar	Repeat	Repeat	Wiederholen	Endurtaka	Ripeti	Повторить	Повторити	Répéter	Repetir	반복	繰り返す	重复
@@ -67,7 +68,7 @@ MenuBar	Rotate Right	Rotate Right	Rechts drehen	Snúa til hægri	Ruota a destra	
 MenuBar	Set Preferences	Set Preferences	Einstellungen festlegen	Setjið forstillingar	Imposta preferenze	Установить персональные настройки	Встановити налаштування	Indiquez vos préférences	Cofigurar preferencias	기본 설정	環境設定を設定する	设置偏好
 MenuBar	Zoom in	Zoom in	Vergrößern	Stækka	Zoom in	Приблизить	Збільшити	Zoomer	Alejar	확대	ズームイン	放大
 MenuBar	Zoom out	Zoom out	Verkleinern	Minnka	Zoom out	Отдалить	Зменшити	Dézoomer	Alejar	축소	ズームアウト	缩小
-MenuBar	Recent Files	Recent Files				Последние файлы							
+MenuBar	Recent Files	Recent Files				Последние файлы						
 Mirrors	Reflect image	Reflect image	Muster spiegeln	Endurspegla mynd	Rifletti l'immagine	Отразить изображение	Відобразити зображення	Refléter l'image	Reflejar imagen	이미지 반영	イメージを反映する	倒映图像
 Mirrors	Add mirrors	Add mirrors	Spiegelungen hinzufügen	Spegla	Specchia	Добавить зеркальное отражение	Додати дзеркальне відображення	Miroirs	Agregar espejos	반영 추가	ミラーを追加するる	添加镜像
 Mirrors	Left	Left	Links	Vinstri	Sinistra	Слева	Ліворуч	Gauche	Izquierda	왼쪽	左	左

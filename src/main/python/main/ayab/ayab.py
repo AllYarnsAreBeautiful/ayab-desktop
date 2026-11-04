@@ -206,10 +206,12 @@ class GuiMain(QMainWindow):
 
     def _show_patterns_folder(self, checked: bool = False) -> None:
         samples_dir = Path.home() / "AYAB"
+        err_title = "AYAB" 
+        err_message = QCoreApplication.translate("Menu Bar", "Could not open folder") 
 
         if not samples_dir.is_dir():
-            QMessageBox.warning(self, "Folder not found", f"Could not find:\n{samples_dir}")
+            QMessageBox.warning(self, err_title, err_message + "\n\n" + str(samples_dir))
             return
 
         if not QDesktopServices.openUrl(QUrl.fromLocalFile(str(samples_dir))):
-            QMessageBox.warning(self, "Could not open folder", str(samples_dir))
+            QMessageBox.warning(self, err_title, err_message + "\n\n" + str(samples_dir))
