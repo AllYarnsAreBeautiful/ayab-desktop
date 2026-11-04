@@ -21,13 +21,13 @@
 from __future__ import annotations
 from PySide6.QtCore import QOperatingSystemVersion
 from PySide6.QtWidgets import QMenuBar
+from PySide6.QtGui import QAction
 
 from .menu_gui import Ui_MenuBar
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 if TYPE_CHECKING:
     from .ayab import GuiMain
-
 
 class Menu(QMenuBar):
     """
@@ -39,7 +39,7 @@ class Menu(QMenuBar):
 
     def __init__(self, parent: GuiMain):
         super().__init__(parent)
-
+        self.__parent = parent
         # Use native menubar on macOS, not elsewhere (i.e. Linux)
         if (
             QOperatingSystemVersion.currentType()
@@ -52,9 +52,52 @@ class Menu(QMenuBar):
         self.setup()
 
     def setup(self) -> None:
+        """Initial menu setup"""
         self.addAction(self.ui.menu_tools.menuAction())
         self.addAction(self.ui.menu_preferences.menuAction())
         self.addAction(self.ui.menu_help.menuAction())
+
+        # Wire recent file actions once (guard prevents re-wiring on repopulate())
+        if not hasattr(self, "recents"):
+            self.recents = [
+                getattr(self.ui, "action_recent_" + str(x))
+                for x in range(self.__parent.prefs.MAX_RECENT_COUNT)
+            ]
+            for action in self.recents:
+                action.triggered.connect(self.loadRecent)
+
+        # Set up recent files menus
+        self.showRecents()
+
+    # Show recent files menus
+    def showRecents(self) -> None:
+        """Update recent files menu"""
+
+        # Set recents invisible
+        for action in self.recents:
+            action.setVisible(False)
+
+        # Set recents menu invisible as well
+        self.ui.menu_recent_files.menuAction().setVisible(False)
+
+        # Get file names from recents list
+        # and make items visible if there are files available.
+        i = 0
+        while i < self.__parent.prefs.MAX_RECENT_COUNT and i < len(self.__parent.prefs.recentFiles):
+            self.recents[i].setText(self.__parent.prefs.recentFiles[i])
+            self.recents[i].setVisible(True)
+            i += 1
+
+        # Set visible toplevel menu item if there are recent files available
+        if i > 0:
+            self.ui.menu_recent_files.menuAction().setVisible(True)
+
+    # Function is a recent menu click handler
+    # Load image from file
+    def loadRecent(self, _: QAction) -> None:
+        """Recent menu action click handler"""
+        filename = cast(QAction, self.sender()).text()
+        self.__parent.scene.ayabimage.load(filename)
 
     def depopulate(self) -> None:
         try:

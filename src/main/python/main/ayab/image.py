@@ -78,6 +78,12 @@ class AyabImage(SignalSender):
             self.filename_input.setText(selected_file)
             self.__load(str(selected_file))
 
+    def load(self, filename: str) -> None:
+        """Public wrapper for image loading functionality"""
+        self.filename = filename
+        self.filename_input.setText(filename)
+        self.__load(filename)
+
     def __load(self, filename: str) -> None:
         """Load an image into the graphics scene."""
         # TODO Check maximum width of image
@@ -99,6 +105,11 @@ class AyabImage(SignalSender):
             # self.emit_statusbar_updater(filename, True)
             self.__parent.scene.row_progress = 0
             self.__parent.engine.config.refresh()
+
+            # After successul file open add file to recents
+            self.__parent.prefs.addRecent(filename)
+            # and update menu
+            self.__parent.menu.showRecents()
 
     def __open(self, filename: str) -> None:
         # check for files that need conversion

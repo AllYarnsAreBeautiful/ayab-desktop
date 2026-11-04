@@ -19,10 +19,7 @@
 #    https://github.com/AllYarnsAreBeautiful/ayab-desktop
 
 from __future__ import annotations
-from typing import cast
 from bitarray import bitarray
-import numpy as np
-import numpy.typing as npt
 from PIL import Image
 from .options import Alignment, OptionsTab
 from .mode import Mode
@@ -73,7 +70,10 @@ class Pattern(object):
         # NB previously they were ordered lightest-first
         histogram = self.__pattern.histogram()
         if self.__mode != Mode.SINGLEBED:
-            dest_map = list(np.argsort(histogram[0 : self.__num_colors]))
+            dest_map = sorted(
+                range(self.__num_colors),
+                key=lambda color_index: histogram[color_index],
+            )
         else:
             # For single bed, leave the colors as is but
             # map them down to [0:__num_colors]
@@ -95,11 +95,13 @@ class Pattern(object):
             pass
 
         # get palette
-        rgb = self.__pattern.getpalette()[
-            slice(0, 3 * self.__num_colors)
-        ]  # type: ignore
-        col_array = cast(npt.NDArray[np.int_], np.reshape(rgb, (self.__num_colors, 3)))
-        self.palette = list(map(self.array2rgb, col_array))
+        rgb = self.__pattern.getpalette()
+        if rgb is None:
+            raise ValueError("Quantized pattern has no palette")
+        self.palette = [
+            self.array2rgb(rgb[offset : offset + 3])
+            for offset in range(0, 3 * self.__num_colors, 3)
+        ]
 
         # Make internal representations of pattern
         for row in range(self.__pat_height):
