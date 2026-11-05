@@ -107,7 +107,7 @@ class gui_fsm(object):
         self.CONFIGURING.entered.connect(parent.menu.add_image_actions)
         self.CONFIGURING.entered.connect(parent.progbar.reset)
         self.CHECKING.entered.connect(
-            lambda: parent.engine.knit_config(parent.scene.ayabimage.image)
+            lambda: parent.engine.knit_config(parent.scene.ayabimage)
         )
         self.KNITTING.entered.connect(parent.start_knitting)
         self.TESTING.entered.connect(parent.start_testing)
@@ -145,6 +145,7 @@ class gui_fsm(object):
         self.CONFIGURING.assignProperty(parent.ui.cancel_button, "enabled", "False")
         self.KNITTING.assignProperty(parent.ui.cancel_button, "enabled", "True")
         self.TESTING.assignProperty(parent.ui.cancel_button, "enabled", "False")
+
         # Cancel Knitting menu action
         self.NO_IMAGE.assignProperty(parent.menu.ui.action_cancel, "enabled", "False")
         self.CONFIGURING.assignProperty(

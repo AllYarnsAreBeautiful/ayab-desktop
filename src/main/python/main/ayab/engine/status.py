@@ -119,6 +119,7 @@ class Status(object):
     current_row: int
     firmware_state: int
     line_number: int
+    memo: str
     repeats: int
     total_rows: int
     # carriage info
@@ -145,6 +146,7 @@ class Status(object):
         self.current_row = -1
         self.firmware_state = -1
         self.line_number = -1
+        self.memo = '0'
         self.repeats = -1
         self.total_rows = -1
         # carriage info
@@ -159,6 +161,7 @@ class Status(object):
         self.firmware_state = status.firmware_state
         self.current_row = status.current_row
         self.line_number = status.line_number
+        self.memo = status.memo
         self.repeats = status.repeats
         self.color_symbol = status.color_symbol
         self.color = status.color

@@ -26,7 +26,7 @@ from PySide6.QtWidgets import QDialog
 from .mirrors_gui import Ui_Mirrors
 
 
-class Transform(Image.Image):
+class ImageTransform(Image.Image):
     """
     Image transforms for AYAB GUI called by `AyabImage.apply_transform()`
 
@@ -96,14 +96,14 @@ class Transform(Image.Image):
         h1 = 1 + h0 + h_
         if w1 > 1:
             im = image
-            image = Transform.hflip(image)
-            image = Transform.repeat(image, (1, w1))
+            image = ImageTransform.hflip(image)
+            image = ImageTransform.repeat(image, (1, w1))
             for i in range(w0, w1, 2):
                 image.paste(im, (i * w, 0))
         if h1 > 1:
             im = image
-            image = Transform.vflip(image)
-            image = Transform.repeat(image, (h1, 1))
+            image = ImageTransform.vflip(image)
+            image = ImageTransform.repeat(image, (h1, 1))
             for i in range(h0, h1, 2):
                 image.paste(im, (0, i * h))
         return image
