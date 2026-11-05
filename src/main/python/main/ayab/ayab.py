@@ -24,7 +24,9 @@ import sys
 import logging
 
 from PySide6.QtWidgets import QMainWindow
-from PySide6.QtCore import QCoreApplication
+from PySide6.QtCore import QCoreApplication, QUrl
+from PySide6.QtGui import QDesktopServices
+from PySide6.QtWidgets import QMessageBox
 
 
 from .main_gui import Ui_MainWindow
@@ -121,6 +123,7 @@ class GuiMain(QMainWindow):
         self.menu.ui.action_cancel.triggered.connect(self.engine.cancel)
         self.menu.ui.action_set_preferences.triggered.connect(self.__set_prefs)
         self.menu.ui.action_about.triggered.connect(self.about.show)
+        self.menu.ui.action_open_manual.triggered.connect(self.open_manual)
         # get names of image actions from Transform methods
         transforms = filter(lambda x: x[0] != "_", Transform.__dict__.keys())
         for t in transforms:
@@ -194,3 +197,15 @@ class GuiMain(QMainWindow):
         if log:
             logging.info("Notification: " + text)
         self.ui.label_notifications.setText(text)
+
+    def open_manual(self, checked=False) -> None:
+        MANUAL_URL = "https://manual.ayab-knitting.com"
+        if not QDesktopServices.openUrl(QUrl(MANUAL_URL)):
+            QMessageBox.warning(
+                self,
+                "AYAB",
+                QCoreApplication.translate(
+                    "MenuBar",
+                    "Unable to open the AYAB manual in your web browser. Please visit " + MANUAL_URL,
+                ),
+            )
