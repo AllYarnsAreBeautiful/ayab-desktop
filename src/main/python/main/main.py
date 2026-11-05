@@ -5,6 +5,7 @@ import sys
 from os import path
 import logging
 from distutils.dir_util import copy_tree
+import argparse
 
 from PySide6.QtCore import QCoreApplication, QTranslator, QLocale, QSettings
 
@@ -33,11 +34,18 @@ else:
 class AppContext(ApplicationContext):  # type: ignore # 1. Subclass ApplicationContext
     _version_checker: VersionChecker
 
-    def run(self) -> int:  # 2. Implement run()
+#    def run(self) -> int:  # 2. Implement run()
+    def run(self, initial_pattern: str | None = None) -> int:
         self.make_user_directory()
         self.configure_logger()
         self.install_translator()
         self.main_window.show()
+
+        if initial_pattern:
+            print("PARAMS YAY")
+            print(initial_pattern)
+            self.main_window.scene.ayabimage.load(initial_pattern)
+
         self._version_checker = VersionChecker(
             current_version=utils.package_version(self)
         )
@@ -63,6 +71,7 @@ class AppContext(ApplicationContext):  # type: ignore # 1. Subclass ApplicationC
             logging.Formatter("%(asctime)s %(name)-8s %(levelname)-8s %(message)s")
         )
         logging.getLogger().addHandler(console)
+
 
     def install_translator(self) -> None:
         # set constants for QSettings
@@ -103,8 +112,21 @@ class AppContext(ApplicationContext):  # type: ignore # 1. Subclass ApplicationC
     def main_window(self) -> GuiMain:
         return GuiMain(self)
 
+def parse_arguments() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="AYAB Desktop"
+    )
+    parser.add_argument(
+        "pattern_file",
+        nargs="?",
+#        metavar="PATH",
+        help="Open a supported pattern file on startup.",
+    )
+    return parser.parse_args()
 
 if __name__ == "__main__":
     appctxt = AppContext()  # 4. Instantiate the subclass
-    exit_code = appctxt.run()  # 5. Invoke run()
+    _ = appctxt.app
+    args = parse_arguments()
+    exit_code = appctxt.run(args.pattern_file)  # 5. Invoke run()
     sys.exit(exit_code)
