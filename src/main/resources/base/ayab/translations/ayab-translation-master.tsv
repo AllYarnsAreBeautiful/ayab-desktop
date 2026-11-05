@@ -54,7 +54,7 @@ MenuBar	Test AYAB Device	Test AYAB Device	AYAB-Gerät testen	Prófa AYAB tæki	T
 MenuBar	Knit	Knit	Stricken	Prjónið	Lavora	Вязание	В'язання	Tricoter	Tejer	니트!	編む	编织	Plést
 MenuBar	Cancel Knitting	Cancel Knitting	Stricken abbrechen	Hætta við prjón	Annulla lavorazione	Отменить вязание	Скасувати в'язання	Annuler le tricot	Anular tejido	니팅 취소	編みをキャンセル	取消编织	Zrušit pletení
 MenuBar	Quit	Quit	Beenden	Hætta	Chiudi	Выход	Вихід	Quitter	Salir	끝내기	やめる	退出	Ukončit
-MenuBar	Help – About	Help – About	Hilfe – Über	Hjálp – Um	Aiuto – Informazioni	Помощь - о программе	Допомога – Про	Aide – À propos	Ayuda – Sobre	도움 - 관하여	ヘルプ - について	帮助-关于	Nápověda – O programu
+MenuBar	About AYAB...	About AYAB...	Über AYAB...	Om AYAB...	Informazioni su AYAB...	О программе AYAB...	Про AYAB...	À propos d’AYAB...	Acerca de AYAB...	AYAB 정보...	AYAB について...	关于 AYAB...	O programu AYAB...
 MenuBar	Invert	Invert	Invertieren	Hvolfa	Inverti	Инвертировать	Інвертувати	Inverser	Invertir	뒤집기	反転する	反色	Invertovat
 MenuBar	Stretch	Stretch	Strecken	Teygja	Allunga	Растянуть	Розтягнути	Etirer	Tramo	늘리기	ストレッチする	拉伸	Roztáhnout
 MenuBar	Repeat	Repeat	Wiederholen	Endurtaka	Ripeti	Повторить	Повторити	Répéter	Repetir	반복	繰り返す	重复	Opakovat
@@ -66,7 +66,9 @@ MenuBar	Rotate Right	Rotate Right	Rechts drehen	Snúa til hægri	Ruota a destra	
 MenuBar	Set Preferences	Set Preferences	Einstellungen festlegen	Setjið forstillingar	Imposta preferenze	Установить персональные настройки	Встановити налаштування	Indiquez vos préférences	Cofigurar preferencias	기본 설정	環境設定を設定する	设置偏好	Nastavit předvolby
 MenuBar	Zoom in	Zoom in	Vergrößern	Stækka	Zoom in	Приблизить	Збільшити	Zoomer	Alejar	확대	ズームイン	放大	Přiblížit
 MenuBar	Zoom out	Zoom out	Verkleinern	Minnka	Zoom out	Отдалить	Зменшити	Dézoomer	Alejar	축소	ズームアウト	缩小	Oddálit
-MenuBar	Recent Files	Recent Files				Последние файлы							
+MenuBar	Recent Files	Recent Files	Zuletzt verwendete Dateien	Senaste filer	File recenti	Последние файлы	Останні файли	Fichiers récents	Archivos recientes	최근 파일	最近使用したファイル	最近的文件	Nedávné soubory
+MenuBar	Manual	Manual	Handbuch	Handbok	Manuale	Руководство	Посібник	Manuel	Manual	설명서	マニュアル	手册	Manuál
+MenuBar	Unable to open the AYAB manual in your web browser. Please visit 	Unable to open the AYAB manual in your web browser. Please visit 	Das AYAB-Handbuch konnte nicht in Ihrem Webbrowser geöffnet werden. Bitte besuchen Sie 	Det gick inte att öppna AYAB-handboken i din webbläsare. Besök 	Impossibile aprire il manuale AYAB nel browser. Visita 	Не удалось открыть руководство AYAB в веб-браузере. Пожалуйста, посетите 	Не вдалося відкрити посібник AYAB у веббраузері. Будь ласка, відвідайте 	Impossible d’ouvrir le manuel AYAB dans votre navigateur Web. Veuillez consulter 	No se pudo abrir el manual de AYAB en el navegador web. Visite 	웹 브라우저에서 AYAB 설명서를 열 수 없습니다. 다음을 방문하세요 	ウェブブラウザーで AYAB マニュアルを開けませんでした。こちらをご覧ください 	无法在网页浏览器中打开 AYAB 手册。请访问 	Manuál AYAB se ve vašem webovém prohlížeči nepodařilo otevřít. Navštivte prosím
 Mirrors	Reflect image	Reflect image	Muster spiegeln	Endurspegla mynd	Rifletti l'immagine	Отразить изображение	Відобразити зображення	Refléter l'image	Reflejar imagen	이미지 반영	イメージを反映する	倒映图像	Zrcadlit obrázek
 Mirrors	Add mirrors	Add mirrors	Spiegelungen hinzufügen	Spegla	Specchia	Добавить зеркальное отражение	Додати дзеркальне відображення	Miroirs	Agregar espejos	반영 추가	ミラーを追加するる	添加镜像	Přidat zrcadlení
 Mirrors	Left	Left	Links	Vinstri	Sinistra	Слева	Ліворуч	Gauche	Izquierda	왼쪽	左	左	Vlevo
