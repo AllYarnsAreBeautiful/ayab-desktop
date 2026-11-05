@@ -42,8 +42,6 @@ class AppContext(ApplicationContext):  # type: ignore # 1. Subclass ApplicationC
         self.main_window.show()
 
         if initial_pattern:
-            print("PARAMS YAY")
-            print(initial_pattern)
             self.main_window.scene.ayabimage.load(initial_pattern)
 
         self._version_checker = VersionChecker(
@@ -119,8 +117,7 @@ def parse_arguments() -> argparse.Namespace:
     parser.add_argument(
         "pattern_file",
         nargs="?",
-#        metavar="PATH",
-        help="Open a supported pattern file on startup.",
+        help="(optional) Open a supported pattern file on startup.",
     )
     return parser.parse_args()
 
