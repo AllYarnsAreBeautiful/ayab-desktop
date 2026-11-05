@@ -206,6 +206,6 @@ class GuiMain(QMainWindow):
                 "AYAB",
                 QCoreApplication.translate(
                     "MenuBar",
-                    "Unable to open the AYAB manual in your web browser. Please visit " + MANUAL_URL,
-                ),
+                    "Unable to open the AYAB manual in your web browser. Please visit "
+                ) + MANUAL_URL,
             )
