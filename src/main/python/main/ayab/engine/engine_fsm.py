@@ -31,6 +31,7 @@ from .hw_test_communication_mock import HardwareTestCommunicationMock
 from .output import Output
 from typing import TYPE_CHECKING, Callable, Any
 
+import os
 import time
 
 if TYPE_CHECKING:
@@ -171,7 +172,7 @@ class StateMachine(QStateMachine):
                 control.com.req_start_API6(
                     control.pattern.knit_start_needle,
                     control.pattern.knit_end_needle - 1,
-                    control.continuous_reporting,
+                    True if os.getenv("AYAB_DEBUG") else control.continuous_reporting,
                     control.prefs.value("disable_hardware_beep"),
                 )
                 control.state = State.CONFIRM_START
