@@ -142,7 +142,7 @@
   </action>
   <action name="action_about">
    <property name="text">
-    <string>About AYAB...</string>
+    <string>Help – About</string>
    </property>
    <property name="menuRole">
     <enum>QAction::AboutRole</enum>
