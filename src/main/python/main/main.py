@@ -53,7 +53,7 @@ class AppContext(ApplicationContext):  # type: ignore # 1. Subclass ApplicationC
         logfile = path.join(self.userdata_path, "ayab_log.txt")
         logging.basicConfig(
             filename=logfile,
-            level=logging.DEBUG,
+            level=logging.INFO,
             format="%(asctime)s %(name)-8s %(levelname)-8s %(message)s",
             datefmt="%y-%m-%d %H:%M:%S",
         )
