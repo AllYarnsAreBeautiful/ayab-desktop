@@ -8,6 +8,7 @@
    </property>
    <addaction name="action_open_image_file"/>
    <addaction name="menu_recent_files"/>
+   <addaction name="action_openpatternsfolder"/>
    <addaction name="separator"/>
    <addaction name="action_quit"/>
   </widget>
@@ -25,7 +26,6 @@
    <property name="title">
     <string>Help</string>
    </property>
-   <addaction name="action_openpatternsfolder"/>
    <addaction name="action_about"/>
   </widget>
   <widget class="QMenu" name="menu_tools">
