@@ -42,7 +42,11 @@ class AppContext(ApplicationContext):  # type: ignore # 1. Subclass ApplicationC
         self.main_window.show()
 
         if initial_pattern:
-            self.main_window.scene.ayabimage.load(initial_pattern)
+            initial_pattern = path.abspath(path.expanduser(initial_pattern)) #because we don't store relative paths in recent files
+            self.main_window.fsm.machine.started.connect( # we wait for the main window fsm to init before loading
+                lambda: self.main_window.scene.ayabimage.load(initial_pattern)
+            )
+            #self.main_window.scene.ayabimage.load(initial_pattern)
 
         self._version_checker = VersionChecker(
             current_version=utils.package_version(self)
