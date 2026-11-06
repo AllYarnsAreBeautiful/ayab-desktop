@@ -2,7 +2,7 @@ from __future__ import annotations
 from fbs_runtime.application_context.PySide6 import ApplicationContext
 
 import sys
-from os import path
+from os import getcwd, path
 import logging
 from distutils.dir_util import copy_tree
 import argparse
@@ -42,11 +42,10 @@ class AppContext(ApplicationContext):  # type: ignore # 1. Subclass ApplicationC
         self.main_window.show()
 
         if initial_pattern:
-            initial_pattern = path.abspath(path.expanduser(initial_pattern)) #because we don't store relative paths in recent files
+            initial_pattern = initial_pattern if path.isabs(initial_pattern) else path.join(getcwd(), initial_pattern) #makes pathes absolute while retaining symlinks
             self.main_window.fsm.machine.started.connect( # we wait for the main window fsm to init before loading
                 lambda: self.main_window.scene.ayabimage.load(initial_pattern)
             )
-            #self.main_window.scene.ayabimage.load(initial_pattern)
 
         self._version_checker = VersionChecker(
             current_version=utils.package_version(self)
@@ -126,8 +125,8 @@ def parse_arguments() -> argparse.Namespace:
     return parser.parse_args()
 
 if __name__ == "__main__":
+    args = parse_arguments()
     appctxt = AppContext()  # 4. Instantiate the subclass
     _ = appctxt.app
-    args = parse_arguments()
     exit_code = appctxt.run(args.pattern_file)  # 5. Invoke run()
     sys.exit(exit_code)
