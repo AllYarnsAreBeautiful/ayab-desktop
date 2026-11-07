@@ -10,5 +10,6 @@ export TCL_LIBRARY="${APPDIR}/usr/share/tcltk/tcl8.5"
 export TK_LIBRARY="${APPDIR}/usr/share/tcltk/tk8.5"
 export TKPATH="${TK_LIBRARY}"
 
-cd $APPDIR
-opt/python3.11/bin/fbs run
+#cd $APPDIR #removed to preserve relative paths when passing cli args
+#opt/python3.11/bin/fbs run "$@"
+exec "$APPDIR/opt/ayab/ayab" "$@"
