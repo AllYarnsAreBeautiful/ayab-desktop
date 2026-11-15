@@ -21,9 +21,7 @@
 
 from __future__ import annotations
 import logging
-from typing import Any, Callable, Literal, Optional, TypeAlias, cast
-import numpy as np
-import numpy.typing as npt
+from typing import Any, Callable, Literal, Optional, TypeAlias
 import serial.tools.list_ports
 
 from PySide6.QtWidgets import QMessageBox, QComboBox
@@ -85,21 +83,6 @@ def populate_ports(
 def get_serial_ports() -> list[str]:
     """Return a list of all USB serial ports."""
     return list(serial.tools.list_ports.grep("USB"))  # type: ignore
-
-
-# Color functions
-
-
-def rgb2array(color: int) -> npt.NDArray[np.int_]:
-    return np.array([color // 0x1000, (color // 0x100) & 0xFF, color & 0xFF])
-
-
-def greyscale(rgb: npt.NDArray[np.int_]) -> int:
-    return cast(int, np.dot([0.299, 0.587, 0.114], rgb))
-
-
-def contrast_color(color: int) -> int:
-    return [0x000000, 0xFFFFFF][greyscale(rgb2array(color)) < 0x80]
 
 
 # Version

@@ -28,6 +28,7 @@ jobs:
         with:
           submodules: recursive
           fetch-depth: 0 # necessary for `git describe`
+          persist-credentials: false
 
       - name: Initialize common build environment
         uses: ./.github/actions/init-environment
@@ -37,6 +38,7 @@ jobs:
         shell: pwsh
         run: |
           choco install vcredist2010 # fixes dependency on msvcr100.dll
+          choco install vcredist2012 # fixes dependency on msvcr110.dll
           python -m pip install --upgrade pip
           python -m pip install -r requirements.build.txt
           python -m pip install -r windows-build\windows_build_requirements.txt
@@ -115,7 +117,7 @@ jobs:
 
   build-macos:
     name: Create and upload Mac OSX build
-    runs-on: macos-14
+    runs-on: macos-15
     env:
       APPLE_CERTIFICATE_NAME: ${{ secrets.APPLE_CERTIFICATE_NAME }}
       APPLE_STORE_CONNECT_KEY_ID: ${{ secrets.APPLE_STORE_CONNECT_KEY_ID }}
@@ -125,6 +127,7 @@ jobs:
         with:
           submodules: recursive
           fetch-depth: 0 # necessary for `git describe`
+          persist-credentials: false
 
       - name: Initialize common build environment
         uses: ./.github/actions/init-environment
@@ -134,12 +137,6 @@ jobs:
         run: |
           mkdir tmp-wheel/
           python -m pip install delocate==0.11.0
-
-          # Find platform values on e.g. https://pypi.org/project/numpy/1.26.4/#files
-
-          python -m pip download --only-binary=:all: --platform macosx_10_09_x86_64 "$(grep numpy requirements.build.txt)"
-          python -m pip download --only-binary=:all: --platform macosx_11_0_arm64 "$(grep numpy requirements.build.txt)"
-          delocate-fuse numpy*arm* numpy*x86* -w tmp-wheel/
 
           python -m pip download --only-binary=:all: --platform macosx_10_10_x86_64 "$(grep Pillow requirements.build.txt)"
           python -m pip download --only-binary=:all: --platform macosx_11_0_arm64 "$(grep Pillow requirements.build.txt)"
@@ -256,14 +253,18 @@ jobs:
     name: Create and upload Linux AppImage release
     runs-on: ubuntu-22.04
     env:
-      # Using a specific Python version for Linux builds due to python-appimage availability
-      PYTHON_VERSION: 3.11.13
+      # Using a specific Python version for Linux builds due to
+      # python-appimage availability (we can't use the same version
+      # for other platforms because there's no official binary for
+      # 3.11 after 3.11.9)
+      PYTHON_VERSION: 3.11.16
     steps:
       - name: Checkout repo into AppDir
         uses: actions/checkout@v4
         with:
           submodules: recursive
           fetch-depth: 0 # necessary for `git describe`
+          persist-credentials: false
 
       - name: Initialize common build environment
         uses: ./.github/actions/init-environment
@@ -287,8 +288,14 @@ jobs:
           cp -r !(git) git
           shopt -u dotglob
 
-      - name: Download AppImage of Python designed for manylinux
-        run: wget -c https://github.com/niess/python-appimage/releases/download/python${{steps.vars.outputs.python-minor}}/${{steps.vars.outputs.python-appimage}}
+      # Pinning python-appimage to avoid surprise changes
+      # and using a specific tag of the manylinux image to
+      # get it to output an AppImage including the expected
+      # Python version.
+      - name: Build AppImage of Python designed for manylinux
+        run: |
+          python -m pip install --only-binary :all: python-appimage==1.4.6
+          python -m python_appimage build manylinux 2_28_x86_64:2026.09.14-1 cp311-cp311
 
       - name: Extract the AppImage
         run: |
@@ -302,9 +309,6 @@ jobs:
         run: |
           cd squashfs-root
           sudo apt-get install -y avrdude libasound2-dev
-          ./AppRun -m pip install --upgrade pip
-          # hack to fix setup.py script with faulty include
-          ./AppRun -m pip install --global-option=build_ext --global-option="-I$(pwd)/opt/${{steps.vars.outputs.python-minor}}/include/${{steps.vars.outputs.python-minor}}" simpleaudio
           ./AppRun -m pip install -r requirements.build.txt
 
       - name: Add AppDir subdirectories to PATH
