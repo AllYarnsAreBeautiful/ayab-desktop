@@ -150,7 +150,7 @@ class OptionsTab(SignalSender, QWidget):
         self.mode = Mode(self.prefs.value("default_knitting_mode"))
         self.num_colors = 2
         self.start_row = 0
-        self.inf_repeat = self.prefs.value("default_infinite_repeat")
+        self.inf_repeat = self.prefs.value("default_infinite_vertical_repeat")
         self.start_needle = 0
         self.stop_needle = self.machine.width
         self.alignment = Alignment(self.prefs.value("default_alignment"))

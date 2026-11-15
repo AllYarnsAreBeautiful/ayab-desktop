@@ -114,7 +114,7 @@
        </sizepolicy>
       </property>
       <property name="text">
-       <string>Infinite Repeat</string>
+       <string>Infinite Vertical Repeat</string>
       </property>
      </widget>
     </item>

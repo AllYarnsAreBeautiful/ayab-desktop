@@ -29,6 +29,7 @@ from typing import TYPE_CHECKING, cast
 if TYPE_CHECKING:
     from .ayab import GuiMain
 
+
 class Menu(QMenuBar):
     """
     Menu bar object and associated methods.
@@ -83,7 +84,9 @@ class Menu(QMenuBar):
         # Get file names from recents list
         # and make items visible if there are files available.
         i = 0
-        while i < self.__parent.prefs.MAX_RECENT_COUNT and i < len(self.__parent.prefs.recentFiles):
+        while i < self.__parent.prefs.MAX_RECENT_COUNT and i < len(
+            self.__parent.prefs.recentFiles
+        ):
             self.recents[i].setText(self.__parent.prefs.recentFiles[i])
             self.recents[i].setVisible(True)
             i += 1

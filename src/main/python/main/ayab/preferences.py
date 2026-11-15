@@ -63,6 +63,7 @@ if TYPE_CHECKING:
 
 T = TypeVar("T")
 
+
 def str2bool(qvariant: str | bool) -> bool:
     if type(qvariant) is str:
         return qvariant.lower() == "true"
@@ -71,7 +72,7 @@ def str2bool(qvariant: str | bool) -> bool:
 
 
 PreferencesDictBoolKeys: TypeAlias = Literal[
-    "default_infinite_repeat",
+    "default_infinite_vertical_repeat",
     "default_knit_side_image",
     "quiet_mode",
     "disable_hardware_beep",
@@ -89,7 +90,7 @@ PreferencesDict = TypedDict(
     {
         "machine": type[Machine],
         "default_knitting_mode": type[Mode],
-        "default_infinite_repeat": type[bool],
+        "default_infinite_vertical_repeat": type[bool],
         "default_alignment": type[Alignment],
         "default_knit_side_image": type[bool],
         "aspect_ratio": type[AspectRatio],
@@ -119,7 +120,7 @@ class Preferences(SignalSender):
     variables: PreferencesDict = {
         "machine": Machine,
         "default_knitting_mode": Mode,
-        "default_infinite_repeat": bool,
+        "default_infinite_vertical_repeat": bool,
         "default_alignment": Alignment,
         "default_knit_side_image": bool,
         "aspect_ratio": AspectRatio,
@@ -139,10 +140,28 @@ class Preferences(SignalSender):
         self.languages = Language(self.parent.app_context)
         self.settings: QSettings = QSettings()
         self.settings.setFallbacksEnabled(False)
+        self.__migrate_infinite_repeat_setting()
 
         """Recent files list"""
         self.recentFiles: list[str] = []
         self.refresh()
+
+    def __migrate_infinite_repeat_setting(self) -> None:
+        old_key = "default_infinite_repeat"
+        new_key = "default_infinite_vertical_repeat"
+        keys = self.settings.allKeys()
+
+        if old_key in keys and new_key not in keys:
+            try:
+                migrated_value = str2bool(
+                    cast(str | bool, self.settings.value(old_key))
+                )
+            except ValueError:
+                migrated_value = False
+            self.settings.setValue(new_key, migrated_value)
+
+        if old_key in keys:
+            self.settings.remove(old_key)
 
     def refresh(self) -> None:
         """Sync variables and recent files list with saved configuration"""
@@ -153,7 +172,11 @@ class Preferences(SignalSender):
         # and check if files are still available
         for i in range(self.MAX_RECENT_COUNT):
             filename = self.settings.value("Recent/" + str(i))
-            if filename is not None and os.path.exists(str(filename)) and (filename not in self.recentFiles):
+            if (
+                filename is not None
+                and os.path.exists(str(filename))
+                and (filename not in self.recentFiles)
+            ):
                 self.recentFiles.append(str(filename))
 
         # Prune deleted paths before persisting recents
@@ -162,7 +185,7 @@ class Preferences(SignalSender):
         ]
 
         # Restrict recentFiles size
-        del self.recentFiles[self.MAX_RECENT_COUNT:]
+        del self.recentFiles[self.MAX_RECENT_COUNT :]
 
         # Remove Recent section since it is possible
         # there are no available files
