@@ -198,7 +198,7 @@ class GuiMain(QMainWindow):
             logging.info("Notification: " + text)
         self.ui.label_notifications.setText(text)
 
-    def open_manual(self, checked=False) -> None:
+    def open_manual(self) -> None:
         MANUAL_URL = "https://manual.ayab-knitting.com"
         if not QDesktopServices.openUrl(QUrl(MANUAL_URL)):
             QMessageBox.warning(
