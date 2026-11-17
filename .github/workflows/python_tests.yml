@@ -1,39 +1,21 @@
-# This workflow will install Python dependencies, run tests and lint with a single version of Python
-# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+# Lint, test and type check the Python code.
+# The steps are defined as mise tasks in mise.toml: run `mise run ci` locally
+# to reproduce this workflow.
 
 name: Python Tests
 
 on: [push, pull_request]
-
-env:
-  PYTHON_VERSION: 3.11.9
 
 jobs:
   run-pytest:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
-      - name: Set up Python ${{ env.PYTHON_VERSION }}
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-          cache: "pip"
-      - name: Install dependencies
+      - name: Install system dependencies
         run: |
           sudo apt update
           sudo apt install -y libasound2-dev qt6-base-dev qt6-tools-dev-tools
-          pip install --upgrade pip
-          pip install --upgrade setuptools
-          pip install flake8 pytest
-          pip install --ignore-installed -r requirements.txt
-          bash setup-environment.ps1
-      - name: Lint with flake8
-        run: |
-          # stop the build if there are Python syntax errors or undefined names
-          flake8 src/ --count --select=E9,F63,F7,F82 --show-source --statistics
-          # exit-zero treats all errors as warnings.
-          flake8 src/ --count --exit-zero --statistics
-      - name: Test with pytest
-        run: pytest -v
-      - name: Typecheck with mypy
-        run: mypy src/main/python/main
+      - name: Install Python and uv with mise
+        uses: jdx/mise-action@b44d12e7d0d8ee7461bb893e1b1993500433185b # v5.2.7
+      - name: Lint, test and type check
+        run: mise run ci

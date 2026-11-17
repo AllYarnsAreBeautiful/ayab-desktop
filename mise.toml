@@ -1,0 +1,105 @@
+# Development toolchain, managed by mise (https://mise.jdx.dev)
+#
+#   mise install      # installs Python and uv
+#   uv sync           # creates .venv and installs all dependencies
+#
+# Note (macOS): the Python installed by mise is not universal2, so a local
+# `fbs freeze` cannot produce a universal2 app. Release builds are done in CI.
+
+[tools]
+python = "3.11.16"
+uv = "0.13.8"
+
+[env]
+# Make uv use the Python provided by mise instead of downloading its own
+UV_PYTHON_PREFERENCE = "only-system"
+UV_PYTHON_DOWNLOADS = "never"
+# Activate the project virtual environment when entering the directory
+_.python.venv = { path = ".venv", create = false }
+
+# ---------------------------------------------------------------------------
+# Tasks (`mise tasks` to list them, `mise run <task>` to run one).
+# The "Python Tests" GitHub workflow runs `mise run ci`.
+# Tasks use `uv run` explicitly so they work even before .venv exists.
+# ---------------------------------------------------------------------------
+
+[tasks.sync]
+description = "Create/update .venv from uv.lock (fails if uv.lock is out of date)"
+run = "uv sync --locked"
+
+[tasks.generate]
+description = "Generate Qt UI/resource modules and translation files"
+depends = ["sync"]
+run = "uv run bash ./setup-environment.ps1"
+# Skipped when every output is newer than every source (`mise run --force
+# generate` to regenerate anyway). uv.lock and pyvenv.cfg: a PySide6 upgrade
+# or a recreated .venv needs pyside6-uic/genpyi to run again.
+sources = [
+    "setup-environment.ps1",
+    "uv.lock",
+    ".venv/pyvenv.cfg",
+    "src/main/python/main/ayab/**/*.ui",
+    "src/main/python/main/ayab/**/*.qrc",
+    "src/main/python/main/ayab/**/*.jpg",
+    "src/main/python/main/ayab/**/*.png",
+    "src/main/resources/base/ayab/translations/ayab_trans.pl",
+    "src/main/resources/base/ayab/translations/*.tsv",
+]
+outputs = [
+    "src/main/python/main/ayab/**/*_gui.py",
+    "src/main/python/main/ayab/**/*_rc.py",
+    "src/main/resources/base/ayab/translations/*.qm",
+]
+
+[tasks.setup]
+description = "Set up the development environment (.venv, generated files, git hooks)"
+depends = ["generate"] # generate depends on sync
+run = "uv run pre-commit install"
+
+[tasks.start]
+description = "Run AYAB from source"
+depends = ["generate"]
+run = "uv run fbs run"
+
+[tasks.lint]
+description = "Lint with flake8 (fails only on syntax errors and undefined names)"
+depends = ["sync"]
+run = [
+    "uv run flake8 src/ --count --select=E9,F63,F7,F82 --show-source --statistics",
+    # exit-zero treats all other errors as warnings
+    "uv run flake8 src/ --count --exit-zero --statistics",
+]
+
+[tasks.test]
+description = "Run the test suite"
+depends = ["generate"]
+run = "uv run pytest -v"
+
+[tasks.typecheck]
+description = "Type check with mypy"
+depends = ["generate"]
+run = "uv run mypy src/main/python/main"
+
+[tasks.ci]
+description = "Everything the Python Tests workflow checks"
+depends = ["lint", "test", "typecheck"]
+
+# Build tasks: no `depends`, so that CI can insert its own steps between them
+# (e.g. removing the Qt OpenSSL backend on Windows, signing on macOS).
+# Locally, `mise run build` chains them.
+
+[tasks."build:freeze"]
+description = "Freeze the application with fbs/PyInstaller (output in target/)"
+run = "uv run fbs freeze"
+
+[tasks."build:installer"]
+description = "Create the installer (Windows: NSIS .exe, macOS: .dmg) from the frozen app"
+run = "uv run fbs installer"
+
+[tasks.build]
+description = "Generate UI files, freeze the app and create the installer"
+run = [
+    "mise run generate",
+    "mise run build:freeze",
+    "mise run build:installer",
+]

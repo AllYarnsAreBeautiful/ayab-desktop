@@ -2,8 +2,8 @@ ayab_log.txt
 # Python
 *.pyc
 *.pyo
-docs/_build/
 venv*/
+.venv/
 ayab.egg-info
 dist
 __pycache__
@@ -36,3 +36,5 @@ patterns/
 *.swp
 # work in progress
 .github/workflows/wip/
+# Exported from uv.lock by CI (.github/actions/init-environment)
+requirements.build.txt
