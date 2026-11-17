@@ -200,12 +200,12 @@ class GuiMain(QMainWindow):
 
     def open_manual(self) -> None:
         MANUAL_URL = "https://manual.ayab-knitting.com"
-        if not QDesktopServices.openUrl(QUrl(MANUAL_URL)):
+        if not QDesktopServices.openUrl(QUrl(utils.ayab_manual_url())):
             QMessageBox.warning(
                 self,
                 "AYAB",
                 QCoreApplication.translate(
                     "MenuBar",
                     "Unable to open the AYAB manual in your web browser. Please visit "
-                ) + MANUAL_URL,
+                ) + utils.ayab_manual_url(),
             )

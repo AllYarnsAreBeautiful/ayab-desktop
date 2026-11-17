@@ -35,7 +35,7 @@ StatusTab	Center	Centre	Zentriert	Miðja	Centra	По центру	Центр	Cen
 StatusTab	Left	Left	Links	Vinstri	Sinistra	Слева	Ліворуч	Gauche	Izquierda	왼쪽	左	左	Vlevo
 StatusTab	Right	Right	Rechts	Hægri	Destra	Справа	Праворуч	Droite	Derecha	오른쪽	右	右	Vpravo
 MainWindow	Website	Website	Webseite	Vefsíða	Sito web	Интернет сайт	Веб-сайт	Site Internet	Sitio web	웹사이트	Web サイト	网页	Web
-MainWindow	Manual	Manual	Anleitung	Handbók	Manuale	Справочник	Посібник	Manuel	Manual	매뉴얼	マニュアル	手册	Návod
+MainWindow	Manual	Manual	Handbuch	Handbók	Manuale	Справочник	Посібник	Manuel	Manual	매뉴얼	マニュアル	手册	Návod
 MainWindow	Assistant	Assistant	Assistent	Aðstoð	Assistente	Помощник	Помічник	Assistant	Asistente	어시스턴트	アシスタント	助手	Průvodce
 MainWindow	1. Open Image File	1. Open Image File	1. Muster öffnen	1. Hlaðið myndskrá	1. Carica l'immagine	1. Загрузить изображение	1. Завантажити зображення	1. Charger une image	1. Cargar archivo de imagen	1. 이미지 파일 부르기	イメージファイルの読み込み	1.读取图像文件	1. Otevřít obrázek
 MainWindow	Knitting Options	Knitting Options	Strickeinstellungen	Prjóna valkostir	Opzioni Lavorazione	Варианты вязания	Варіанти в'язання	Options de tricot	Opciones de tejido	니팅 옵션	編み設定	编织选项	Možnosti pletení
@@ -54,7 +54,7 @@ MenuBar	Test AYAB Device	Test AYAB Device	AYAB-Gerät testen	Prófa AYAB tæki	T
 MenuBar	Knit	Knit	Stricken	Prjónið	Lavora	Вязание	В'язання	Tricoter	Tejer	니트!	編む	编织	Plést
 MenuBar	Cancel Knitting	Cancel Knitting	Stricken abbrechen	Hætta við prjón	Annulla lavorazione	Отменить вязание	Скасувати в'язання	Annuler le tricot	Anular tejido	니팅 취소	編みをキャンセル	取消编织	Zrušit pletení
 MenuBar	Quit	Quit	Beenden	Hætta	Chiudi	Выход	Вихід	Quitter	Salir	끝내기	やめる	退出	Ukončit
-MenuBar	About AYAB...	About AYAB...	Über AYAB...	Om AYAB...	Informazioni su AYAB...	О программе AYAB...	Про AYAB...	À propos d’AYAB...	Acerca de AYAB...	AYAB 정보...	AYAB について...	关于 AYAB...	O programu AYAB...
+MenuBar	About AYAB	About AYAB	Über AYAB	Om AYAB	Informazioni su AYAB	О программе AYAB	Про AYAB	À propos d’AYAB	Acerca de AYAB	AYAB 정보	AYAB について	关于 AYAB	O programu AYAB
 MenuBar	Invert	Invert	Invertieren	Hvolfa	Inverti	Инвертировать	Інвертувати	Inverser	Invertir	뒤집기	反転する	反色	Invertovat
 MenuBar	Stretch	Stretch	Strecken	Teygja	Allunga	Растянуть	Розтягнути	Etirer	Tramo	늘리기	ストレッチする	拉伸	Roztáhnout
 MenuBar	Repeat	Repeat	Wiederholen	Endurtaka	Ripeti	Повторить	Повторити	Répéter	Repetir	반복	繰り返す	重复	Opakovat

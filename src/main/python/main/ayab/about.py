@@ -52,8 +52,8 @@ class About(QFrame):
         self.__ui.link_label.setOpenExternalLinks(True)
         self.__ui.manual_label.setText(
             QCoreApplication.translate("MainWindow", "Manual")
-            + ": <a href='https://manual.ayab-knitting.com'>"
-            + "https://manual.ayab-knitting.com</a>"
+            + ": <a href='" + utils.ayab_manual_url() + "'>"
+            + utils.ayab_manual_url() + "</a>"
         )
         self.__ui.manual_label.setTextFormat(Qt.TextFormat.RichText)
         self.__ui.manual_label.setTextInteractionFlags(
