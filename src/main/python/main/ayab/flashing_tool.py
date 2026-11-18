@@ -22,11 +22,15 @@
 
 from __future__ import annotations
 from abc import ABC, abstractmethod
+from subprocess import check_output, CalledProcessError, STDOUT
 from typing import TYPE_CHECKING, Optional, Any
-from subprocess import run, PIPE
-import re
+import logging
 import os
 import platform
+import shutil
+import time
+
+import serial
 
 if TYPE_CHECKING:
     from typing import Protocol
@@ -38,8 +42,25 @@ else:
     AppContext = Any
 
 
+class FlashingError(Exception):
+    """Raised when flashing a firmware fails."""
+
+
 class FlashingTool(ABC):
-    """Abstract base class for all flashing tools (avrdude, esptool, bossac, etc.)."""
+    """Abstract base class for flashing tools running an external executable.
+
+    The executables are bundled in `ayab/firmware/` as `<name>.exe` (Windows),
+    `<name>_mac` (macOS) and `<name>_linux` (Linux x86_64). On other Linux
+    architectures, the executable is looked up in PATH.
+    """
+
+    # Base name of the executable
+    name: str
+    # Timeout of the flashing command, in seconds
+    timeout: float = 10
+
+    def __init__(self) -> None:
+        self._logger = logging.getLogger(type(self).__name__)
 
     @abstractmethod
     def generate_command(
@@ -49,7 +70,20 @@ class FlashingTool(ABC):
         firmware_path: str,
         app_context: AppContext,
     ) -> Optional[str]:
-        """Generate the flashing command for this tool.
+        """Build the flashing command line, or None if it cannot be run."""
+
+    @abstractmethod
+    def get_display_name(self) -> str:
+        """Get user-friendly name of the tool."""
+
+    def flash(
+        self,
+        os_name: str,
+        port: str,
+        firmware_path: str,
+        app_context: AppContext,
+    ) -> None:
+        """Flash the firmware to the controller connected to the port.
 
         Args:
             os_name: The operating system name ('Windows', 'Linux', 'Darwin')
@@ -57,15 +91,26 @@ class FlashingTool(ABC):
             firmware_path: Full path to the firmware file
             app_context: The application context for resource access
 
-        Returns:
-            The complete command string to execute, or None if error
+        Raises:
+            FlashingError: if flashing failed (details are logged)
         """
-        pass
+        command = self.generate_command(os_name, port, firmware_path, app_context)
+        if command is None:
+            raise FlashingError(f"{self.name} not found or invalid firmware file")
+        self._run(command)
 
-    @abstractmethod
-    def get_display_name(self) -> str:
-        """Get user-friendly name of the tool."""
-        pass
+    def _run(self, command: str) -> None:
+        self._logger.debug("Running: %s", command)
+        try:
+            output = check_output(
+                command, stderr=STDOUT, timeout=self.timeout, shell=True
+            )
+        except CalledProcessError as e:
+            self._logger.error("%s output: %r", self.name, e.output)
+            raise FlashingError(f"{self.name} failed: {e}") from e
+        except Exception as e:
+            raise FlashingError(f"{self.name} failed: {e!r}") from e
+        self._logger.debug("%s output: %r", self.name, output)
 
     def verify_firmware_path(self, firmware_path: str) -> bool:
         """Verify that the firmware file exists and is valid."""
@@ -73,17 +118,35 @@ class FlashingTool(ABC):
             return False
         return True
 
-    def get_tool_path(self, os_name: str, app_context: AppContext) -> Optional[str]:
-        """Get the path to the tool executable.
+    @staticmethod
+    def is_bundled(os_name: str) -> bool:
+        """Whether a bundled executable is used on this machine."""
+        if os_name == "Linux":
+            return platform.machine() in ("x86_64", "AMD64")
+        return os_name in ("Windows", "Darwin")
 
-        This base implementation tries to find the tool from app resources.
-        Child classes should override this for tool-specific paths.
-        """
-        return None
+    def _get_tool_path(self, os_name: str, app_context: AppContext) -> Optional[str]:
+        """Get the quoted path to the executable, or None if not found."""
+        suffixes = {"Windows": ".exe", "Darwin": "_mac", "Linux": "_linux"}
+        if self.is_bundled(os_name):
+            path = app_context.get_resource(
+                f"ayab/firmware/{self.name}{suffixes[os_name]}"
+            )
+        elif os_name == "Linux":
+            # No bundled executable for this architecture: look in PATH
+            found = shutil.which(self.name)
+            if found is None:
+                return None
+            path = found
+        else:
+            return None
+        return '"' + path + '"'
 
 
 class AvrDudeTool(FlashingTool):
     """Flashing tool for AVR microcontrollers (Arduino Uno, etc.)."""
+
+    name = "avrdude"
 
     def __init__(self, device: str, programmer: str):
         """Initialize AVRDUDE tool.
@@ -92,6 +155,7 @@ class AvrDudeTool(FlashingTool):
             device: The AVR device name (e.g., 'atmega328p')
             programmer: The programmer type (e.g., 'arduino')
         """
+        super().__init__()
         self.device = device
         self.programmer = programmer
 
@@ -109,7 +173,6 @@ class AvrDudeTool(FlashingTool):
         if not self.verify_firmware_path(firmware_path):
             return None
 
-        # Build avrdude command
         exec_command = (
             f"{tool_path} -p {self.device} -c {self.programmer} -P {port} -b115200"
             + f' -D -Uflash:w:"{firmware_path}":i '
@@ -117,56 +180,37 @@ class AvrDudeTool(FlashingTool):
 
         # The bundled binaries (all the same avrdude version) share one config
         # file; a system avrdude found in PATH uses its own.
-        if os_name in ("Windows", "Darwin") or (
-            os_name == "Linux" and self._linux_bundled_supported()
-        ):
+        if self.is_bundled(os_name):
             conf_path = app_context.get_resource("ayab/firmware/avrdude.conf")
             exec_command += f' -C "{conf_path}"'
 
         return exec_command
 
-    @staticmethod
-    def _linux_bundled_supported() -> bool:
-        """Whether the bundled Linux avrdude binary runs on this machine."""
-        return platform.machine() in ("x86_64", "AMD64")
-
     def get_display_name(self) -> str:
         return "AVRDUDE"
 
-    def _get_tool_path(self, os_name: str, app_context: AppContext) -> Optional[str]:
-        """Get the path to avrdude executable."""
-        if os_name == "Windows":
-            path = app_context.get_resource("ayab/firmware/avrdude.exe")
-            return '"' + path + '"'
-        elif os_name == "Darwin":
-            path = app_context.get_resource("ayab/firmware/avrdude_mac")
-            return '"' + path + '"'
-        elif os_name == "Linux":
-            if self._linux_bundled_supported():
-                path = app_context.get_resource("ayab/firmware/avrdude_linux")
-                return '"' + path + '"'
-            # No bundled binary for this architecture: look in PATH
-            try:
-                result = run(["which", "avrdude"], stdout=PIPE, stderr=PIPE)
-                path = re.sub(r"\n$", r"", result.stdout.decode("ascii"))
-                return path
-            except Exception:
-                return None
-        return None
 
+class BossacTool(FlashingTool):
+    """Flashing tool for the Renesas RA4M1 of the Arduino UNO R4 WiFi.
 
-class EspTool(FlashingTool):
-    """Flashing tool for ESP32-based microcontrollers (Arduino R4 WiFi, etc.)."""
+    Same procedure as the Arduino IDE (ArduinoCore-renesas, `unor4wifi`): a
+    "1200 bps touch" on the serial port makes the ESP32-S3 USB bridge reset
+    the RA4M1 into its bootloader, then bossac (Arduino fork) writes the
+    `.bin` firmware through the bridge. The port does not change.
+    """
 
-    def __init__(self, chip: str = "esp32s3", baud: int = 460800):
-        """Initialize ESPTOOL.
+    name = "bossac"
+    timeout = 60
+
+    def __init__(self, bootloader_delay: float = 1.0):
+        """Initialize BOSSAC tool.
 
         Args:
-            chip: The ESP32 chip type (e.g., 'esp32s3')
-            baud: The baud rate for flashing
+            bootloader_delay: Seconds to wait after the 1200 bps touch for
+                the bootloader to start
         """
-        self.chip = chip
-        self.baud = baud
+        super().__init__()
+        self.bootloader_delay = bootloader_delay
 
     def generate_command(
         self,
@@ -182,36 +226,33 @@ class EspTool(FlashingTool):
         if not self.verify_firmware_path(firmware_path):
             return None
 
-        cmd = (
-            f"{tool_path} --chip {self.chip} --port {port} --baud {self.baud} "
-            "--before default_reset --after hard_reset "
-            f'write_flash 0x0 "{firmware_path}"'
-        )
-        return cmd
+        return f'{tool_path} --port="{port}" -U -e -w "{firmware_path}" -R'
+
+    def flash(
+        self,
+        os_name: str,
+        port: str,
+        firmware_path: str,
+        app_context: AppContext,
+    ) -> None:
+        command = self.generate_command(os_name, port, firmware_path, app_context)
+        if command is None:
+            raise FlashingError("bossac not found or invalid firmware file")
+        self.touch_1200bps(port)
+        time.sleep(self.bootloader_delay)
+        self._run(command)
+
+    def touch_1200bps(self, port: str) -> None:
+        """Open and close the port at 1200 bps to enter the bootloader."""
+        self._logger.debug("1200 bps touch on %s", port)
+        try:
+            with serial.Serial(port, 1200) as s:
+                s.dtr = False
+        except serial.SerialException as e:
+            raise FlashingError(f"1200 bps touch on {port} failed: {e}") from e
 
     def get_display_name(self) -> str:
-        return "ESPTOOL"
-
-    def _get_tool_path(self, os_name: str, app_context: AppContext) -> Optional[str]:
-        """Get the path to esptool executable."""
-        if os_name == "Windows":
-            path = app_context.get_resource("ayab/firmware/esptool.exe")
-            return '"' + path + '"'
-        elif os_name == "Darwin":
-            path = app_context.get_resource("ayab/firmware/esptool_mac")
-            return '"' + path + '"'
-        elif os_name == "Linux":
-            # Try to find esptool in PATH (usually esptool.py)
-            for tool in ["esptool.py", "esptool"]:
-                try:
-                    result = run(["which", tool], stdout=PIPE, stderr=PIPE)
-                    path = re.sub(r"\n$", r"", result.stdout.decode("ascii"))
-                    if path:
-                        return path
-                except Exception:
-                    continue
-            return None
-        return None
+        return "BOSSAC"
 
 
 class FlashingToolFactory:
@@ -229,6 +270,6 @@ class FlashingToolFactory:
         """
         controllers = {
             "uno": AvrDudeTool(device="atmega328p", programmer="arduino"),
-            "r4_wifi": EspTool(chip="esp32s3", baud=460800),
+            "r4_wifi": BossacTool(),
         }
         return controllers.get(controller_type)

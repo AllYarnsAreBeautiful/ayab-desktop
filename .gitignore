@@ -16,6 +16,9 @@ package_version
 # Binaries
 *.o
 *.hex
+# Firmwares downloaded by `mise run firmware`
+/src/main/resources/base/ayab/firmware/brother/
+/src/main/resources/base/ayab/firmware/silverreed/
 # Obsolete Directories
 documents/
 patterns/

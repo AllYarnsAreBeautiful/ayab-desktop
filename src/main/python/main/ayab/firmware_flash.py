@@ -26,12 +26,11 @@ import json
 import logging
 import os
 import platform
-from subprocess import check_output, CalledProcessError, STDOUT
 
 from .firmware_flash_gui import Ui_Firmware
-from .flashing_tool import FlashingToolFactory
+from .flashing_tool import FlashingError, FlashingToolFactory
 from . import utils
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from .ayab import GuiMain
@@ -52,8 +51,8 @@ class FirmwareFlash(QDialog):
 
     # User-friendly names for controllers
     controller_display_names = {
-        "uno": "Arduino Uno (R3)",
-        "r4_wifi": "Arduino R4 WiFi",
+        "uno": "Arduino Uno R3",
+        "r4_wifi": "Arduino Uno R4 WiFi",
     }
 
     def __init__(self, parent: GuiMain):
@@ -207,36 +206,18 @@ class FirmwareFlash(QDialog):
                 firmware_name = firmware.get("file")
                 break
 
-        command = self._generate_flash_command(os_name, controller_name, firmware_name)
-        if command is None:
+        if not self._flash(os_name, controller_name, firmware_name):
+            self.ui.flash_firmware.setEnabled(True)
             return False
-        # else
-        try:
-            check_output(command, stderr=STDOUT, timeout=10, shell=True)
-        except Exception as e:
-            self.__logger.error("Error flashing firmware: %r", e)
-            if isinstance(e, CalledProcessError):
-                self.__logger.error("Command output: %r", e.output)
-            utils.display_blocking_popup(
-                QCoreApplication.translate(
-                    "Firmware",
-                    "Error flashing firmware. Check the AYAB log for details.",
-                ),
-                "error",
-            )
-            return False
-        else:
-            self.__logger.info("Flashing done!")
-            utils.display_blocking_popup(
-                QCoreApplication.translate("Firmware", "Flashing done!")
-            )
-            self.close()
-            return True
+        self.__logger.info("Flashing done!")
+        utils.display_blocking_popup(
+            QCoreApplication.translate("Firmware", "Flashing done!")
+        )
+        self.close()
+        return True
 
-    def _generate_flash_command(
-        self, os_name: str, controller_name: str, firmware_name: str
-    ) -> Optional[str]:
-        """Generate flash command using the flashing tool factory."""
+    def _flash(self, os_name: str, controller_name: str, firmware_name: str) -> bool:
+        """Flash the firmware with the tool matching the controller."""
         tool = FlashingToolFactory.create_tool(controller_name)
         if tool is None:
             self.__logger.error("Unknown controller: %s", controller_name)
@@ -247,7 +228,7 @@ class FirmwareFlash(QDialog):
                 ),
                 "error",
             )
-            return None
+            return False
 
         firmware_path = os.path.join(
             self.__app_context.get_resource("ayab/firmware"), firmware_name
@@ -262,8 +243,18 @@ class FirmwareFlash(QDialog):
                 ),
                 "error",
             )
-            return None
+            return False
 
-        return tool.generate_command(
-            os_name, self.port, firmware_path, self.__app_context
-        )
+        try:
+            tool.flash(os_name, self.port, firmware_path, self.__app_context)
+        except FlashingError as e:
+            self.__logger.error("Error flashing firmware: %s", e)
+            utils.display_blocking_popup(
+                QCoreApplication.translate(
+                    "Firmware",
+                    "Error flashing firmware. Check the AYAB log for details.",
+                ),
+                "error",
+            )
+            return False
+        return True
