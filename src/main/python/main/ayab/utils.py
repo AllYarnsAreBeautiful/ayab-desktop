@@ -34,6 +34,8 @@ def even(x: int) -> bool:
 def odd(x: int) -> bool:
     return x % 2 == 1
 
+def ayab_manual_url() -> str:
+    return "https://manual.ayab-knitting.com/"
 
 MessageTypes: TypeAlias = Literal["error", "info", "question", "warning"]
 QMessageBoxFunc: TypeAlias = Callable[..., QMessageBox.StandardButton]
