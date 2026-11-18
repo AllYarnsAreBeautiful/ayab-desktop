@@ -43,6 +43,12 @@ runs:
           echo "Error: firmware directory or manifest.txt not found" >&2
           exit 1
         fi
+        
+        # Create machine-specific subdirectories
+        mkdir -p "$firmware_dir/brother"
+        mkdir -p "$firmware_dir/silverreed"
+        
+        # Download Brother firmwares from ayab-firmware
         manifest=$(<"$firmware_dir/manifest.txt")
         echo "manifest=$manifest"
         available=$(curl -s https://github.com/AllYarnsAreBeautiful/ayab-firmware/releases | grep -oE '/tag/[^\"]+' | sed -E 's/\/tag\///')
@@ -51,18 +57,39 @@ runs:
         echo "match=$match"
         if [[ -z "$match" ]]
         then
-          echo "Error: could not find matching firmware release for manifest"
+          echo "Error: could not find matching firmware release for manifest" >&2
           exit 1
         fi
 
-        cd "$firmware_dir"
+        # No `cd`: files are written with `-o` so that all paths stay
+        # relative to the repository root
         firmware_file=ayab_monolithic_uno.hex
         url=https://github.com/AllYarnsAreBeautiful/ayab-firmware/releases/download/$match/$firmware_file
-        curl --fail --silent --show-error --location -O "$url"
-        if [[ ! -s "$firmware_file" ]]; then
-          echo "Error: could not download firmware release matching manifest"
+        curl --proto '=https' --fail --silent --show-error --location \
+          -o "$firmware_dir/brother/$firmware_file" "$url"
+        if [[ ! -s "$firmware_dir/brother/$firmware_file" ]]; then
+          echo "Error: could not download Brother firmware release matching manifest" >&2
           exit 1
         fi
+
+        # Download Silverreed firmwares from MathKnitting/silverreed-firmware (latest release)
+        silverreed_tag=$(curl -s https://api.github.com/repos/MathKnitting/silverreed-firmware/releases/latest | grep '"tag_name"' | sed -E 's/.*"([^"]+)".*/\1/')
+        echo "silverreed_tag=$silverreed_tag"
+        if [[ -z "$silverreed_tag" ]]; then
+          echo "Error: could not find the latest Silverreed firmware release" >&2
+          exit 1
+        fi
+
+        # Download both Uno and R4 WiFi firmwares for Silverreed
+        for silverreed_firmware in firmware-uno.hex firmware-uno-r4-wifi.bin; do
+          silverreed_url=https://github.com/MathKnitting/silverreed-firmware/releases/download/$silverreed_tag/$silverreed_firmware
+          curl --proto '=https' --fail --silent --show-error --location \
+            -o "$firmware_dir/silverreed/$silverreed_firmware" "$silverreed_url"
+          if [[ ! -s "$firmware_dir/silverreed/$silverreed_firmware" ]]; then
+            echo "Error: could not download Silverreed firmware: $silverreed_firmware" >&2
+            exit 1
+          fi
+        done
 
     - name: Set PACKAGE_VERSION
       shell: bash

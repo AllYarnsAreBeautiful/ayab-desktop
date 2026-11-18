@@ -1,11 +1,30 @@
 {
-    "controller": {
-        "uno":[
-            {
-                "url":"/",
-                "version":"1.0.0",
-                "file":"ayab_monolithic_uno.hex"
+    "machine_type": {
+        "brother": {
+            "controllers": {
+                "uno": [
+                    {
+                        "version": "1.0.0",
+                        "file": "brother/ayab_monolithic_uno.hex"
+                    }
+                ]
             }
-        ]
+        },
+        "silverreed": {
+            "controllers": {
+                "uno": [
+                    {
+                        "version": "1.4.4",
+                        "file": "silverreed/firmware-uno.hex"
+                    }
+                ],
+                "r4_wifi": [
+                    {
+                        "version": "1.4.4",
+                        "file": "silverreed/firmware-uno-r4-wifi.bin"
+                    }
+                ]
+            }
+        }
     }
 }

@@ -63,6 +63,7 @@ if TYPE_CHECKING:
 
 T = TypeVar("T")
 
+
 def str2bool(qvariant: str | bool) -> bool:
     if type(qvariant) is str:
         return qvariant.lower() == "true"
@@ -153,7 +154,11 @@ class Preferences(SignalSender):
         # and check if files are still available
         for i in range(self.MAX_RECENT_COUNT):
             filename = self.settings.value("Recent/" + str(i))
-            if filename is not None and os.path.exists(str(filename)) and (filename not in self.recentFiles):
+            if (
+                filename is not None
+                and os.path.exists(str(filename))
+                and (filename not in self.recentFiles)
+            ):
                 self.recentFiles.append(str(filename))
 
         # Prune deleted paths before persisting recents
@@ -162,7 +167,7 @@ class Preferences(SignalSender):
         ]
 
         # Restrict recentFiles size
-        del self.recentFiles[self.MAX_RECENT_COUNT:]
+        del self.recentFiles[self.MAX_RECENT_COUNT :]
 
         # Remove Recent section since it is possible
         # there are no available files

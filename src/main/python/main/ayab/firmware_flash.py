@@ -26,12 +26,11 @@ import json
 import logging
 import os
 import platform
-import re
-from subprocess import run, STDOUT, PIPE, check_output, CalledProcessError
 
 from .firmware_flash_gui import Ui_Firmware
+from .flashing_tool import FlashingError, FlashingToolFactory
 from . import utils
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from .ayab import GuiMain
@@ -41,16 +40,20 @@ if TYPE_CHECKING:
 
 
 class FirmwareFlash(QDialog):
-    # Arduino devices and their `avrdude` names
-    device_dict = {
-        "uno": "atmega328p",
-    }
-    # Arduino programmers and their `avrdude` names
-    programmer_dict = {
-        "uno": "arduino",
+    port: str
+    machine_type: str = ""
+
+    # User-friendly names for machines
+    machine_display_names = {
+        "brother": "Brother",
+        "silverreed": "Silverreed",
     }
 
-    port: str
+    # User-friendly names for controllers
+    controller_display_names = {
+        "uno": "Arduino Uno R3",
+        "r4_wifi": "Arduino Uno R4 WiFi",
+    }
 
     def __init__(self, parent: GuiMain):
         # TODO: add creator that does not depend from super to ease testing.
@@ -65,6 +68,7 @@ class FirmwareFlash(QDialog):
         self.load_json()
 
         self.ui.port_combo_box.currentIndexChanged.connect(self.port_selected)
+        self.ui.machine_combo_box.currentIndexChanged.connect(self.machine_selected)
         self.ui.controller_list.itemClicked.connect(self.controller_item_activated)
         self.ui.firmware_list.itemClicked.connect(self.firmware_item_activated)
         self.ui.flash_firmware.clicked.connect(self.execute_flash_command)
@@ -92,28 +96,54 @@ class FirmwareFlash(QDialog):
         return data
 
     def add_items_from_json_object(self) -> None:
-        self.load_controllers()
+        self.load_machines()
+        self.clean_controller_list()
         self.clean_firmware_list()
 
-    def load_controllers(self) -> None:
-        self.clean_controller_list()
+    def load_machines(self) -> None:
+        self.ui.machine_combo_box.clear()
         repo = self.json_object
-        for controller in repo.get("controller", []):
-            self.add_controller_to_list(controller)
+        machine_types = repo.get("machine_type", {})
+        for machine_key in machine_types:
+            display_name = self.machine_display_names.get(machine_key, machine_key)
+            self.ui.machine_combo_box.addItem(display_name, machine_key)
+
+    def machine_selected(self) -> None:
+        """Signal on machine_combo_box index changed.
+
+        Triggers loading of controllers.
+        """
+        machine_key = self.ui.machine_combo_box.currentData()
+        self.machine_type = machine_key
+        self.clean_controller_list()
+        if machine_key:
+            self.load_controllers(str(machine_key))
+        self.clean_firmware_list()
+        self.ui.flash_firmware.setEnabled(False)
+
+    def load_controllers(self, machine_type: str) -> None:
+        repo = self.json_object
+        machine_types = repo.get("machine_type", {})
+        controllers = machine_types.get(machine_type, {}).get("controllers", {})
+        for controller_key in controllers:
+            self.add_controller_to_list(controller_key)
 
     def controller_item_activated(self, control_qitem: QListWidgetItem) -> None:
         """
         Signal on controller_list activated.
         Triggers loading of firmwares.
         """
-        self.load_firmware(control_qitem.text())
+        controller_key = control_qitem.data(32)  # Get controller key from user role
+        self.load_firmware(self.machine_type, controller_key)
         self.ui.flash_firmware.setEnabled(False)
 
-    def load_firmware(self, controller_qstring: str) -> None:
+    def load_firmware(self, machine_type: str, controller_key: str) -> None:
         self.clean_firmware_list()
-        controller_key = str(controller_qstring)
         repo = self.json_object
-        for firmware in repo["controller"][controller_key]:
+        machine_types = repo.get("machine_type", {})
+        controllers = machine_types.get(machine_type, {}).get("controllers", {})
+        firmwares = controllers.get(controller_key, [])
+        for firmware in firmwares:
             self.add_firmware_dict_to_list(firmware)
 
     def firmware_item_activated(self, firmware_qitem: QListWidgetItem) -> None:
@@ -135,8 +165,11 @@ class FirmwareFlash(QDialog):
     def __clean_QListWidget(self, qlistw: QListWidget) -> None:
         qlistw.clear()
 
-    def add_controller_to_list(self, controller: QListWidgetItem) -> None:
-        self.ui.controller_list.addItem(controller)
+    def add_controller_to_list(self, controller_key: str) -> None:
+        display_name = self.controller_display_names.get(controller_key, controller_key)
+        item = QListWidgetItem(display_name)
+        item.setData(32, controller_key)  # Store controller key in user role
+        self.ui.controller_list.addItem(item)
 
     def add_firmware_dict_to_list(self, firmware: dict[str, str]) -> None:
         # Could add more info to display, such as date.
@@ -147,26 +180,75 @@ class FirmwareFlash(QDialog):
         self.ui.flash_firmware.setEnabled(False)
         self.__logger.debug("port " + str(self.port))
         os_name = platform.system()
-        base_dir = os.path.dirname(__file__)
-        controller_name = str(self.ui.controller_list.currentItem().text())
+
+        # Get selected machine and controller
+        machine_key = self.ui.machine_combo_box.currentData()
+        if not machine_key:
+            utils.display_blocking_popup(
+                QCoreApplication.translate("Firmware", "Please select a machine type."),
+                "error",
+            )
+            self.ui.flash_firmware.setEnabled(True)
+            return False
+
+        machine_type = str(machine_key)
+        controller_item = self.ui.controller_list.currentItem()
+        controller_name = controller_item.data(32)  # Get controller key from user role
         firmware_key = str(self.ui.firmware_list.currentItem().text())
+
+        # Find the firmware file for this machine, controller, and version
         firmware_name = "firmware.hex"
-        for firmware in self.json_object["controller"][controller_name]:
+        machine_types = self.json_object.get("machine_type", {})
+        controllers = machine_types.get(machine_type, {}).get("controllers", {})
+        firmwares = controllers.get(controller_name, [])
+        for firmware in firmwares:
             if firmware.get("version") == firmware_key:
                 firmware_name = firmware.get("file")
+                break
 
-        command = self.generate_command(
-            base_dir, os_name, controller_name, firmware_name
-        )
-        if command is None:
+        if not self._flash(os_name, controller_name, firmware_name):
+            self.ui.flash_firmware.setEnabled(True)
             return False
-        # else
+        self.__logger.info("Flashing done!")
+        utils.display_blocking_popup(
+            QCoreApplication.translate("Firmware", "Flashing done!")
+        )
+        self.close()
+        return True
+
+    def _flash(self, os_name: str, controller_name: str, firmware_name: str) -> bool:
+        """Flash the firmware with the tool matching the controller."""
+        tool = FlashingToolFactory.create_tool(controller_name)
+        if tool is None:
+            self.__logger.error("Unknown controller: %s", controller_name)
+            utils.display_blocking_popup(
+                QCoreApplication.translate(
+                    "Firmware",
+                    f"Error: Unknown controller '{controller_name}'.",
+                ),
+                "error",
+            )
+            return False
+
+        firmware_path = os.path.join(
+            self.__app_context.get_resource("ayab/firmware"), firmware_name
+        )
+
+        if not tool.verify_firmware_path(firmware_path):
+            self.__logger.error("Firmware file not found or empty: %s", firmware_path)
+            utils.display_blocking_popup(
+                QCoreApplication.translate(
+                    "Firmware",
+                    "Error flashing firmware: firmware file not found or empty.",
+                ),
+                "error",
+            )
+            return False
+
         try:
-            check_output(command, stderr=STDOUT, timeout=10, shell=True)
-        except Exception as e:
-            self.__logger.error("Error flashing firmware: %r", e)
-            if isinstance(e, CalledProcessError):
-                self.__logger.error("Command output: %r", e.output)
+            tool.flash(os_name, self.port, firmware_path, self.__app_context)
+        except FlashingError as e:
+            self.__logger.error("Error flashing firmware: %s", e)
             utils.display_blocking_popup(
                 QCoreApplication.translate(
                     "Firmware",
@@ -175,79 +257,4 @@ class FirmwareFlash(QDialog):
                 "error",
             )
             return False
-        else:
-            self.__logger.info("Flashing done!")
-            utils.display_blocking_popup(
-                QCoreApplication.translate("Firmware", "Flashing done!")
-            )
-            self.close()
-            return True
-
-    def generate_command(
-        self, base_dir: str, os_name: str, controller_name: str, firmware_name: str
-    ) -> Optional[str]:
-        if os_name == "Windows":
-            exe_route = self.__app_context.get_resource("ayab/firmware/avrdude.exe")
-            exe_route = '"' + exe_route + '"'
-        elif os_name == "Linux":
-            # We assume avrdude is available in path
-            try:
-                # run subprocess
-                result = run(["which", "avrdude"], stdout=PIPE, stderr=PIPE)
-                print(result)
-            except Exception:
-                self.__logger.error("`avrdude` not found in path")
-                utils.display_blocking_popup(
-                    QCoreApplication.translate(
-                        "Firmware", "Error flashing firmware: `avrdude` not found."
-                    ),
-                    "error",
-                )
-                return None
-            exe_route = re.sub(r"\n$", r"", result.stdout.decode("ascii"))
-        elif os_name == "Darwin":  # macOS
-            exe_route = (
-                '"' + self.__app_context.get_resource("ayab/firmware/avrdude_mac") + '"'
-            )
-
-        binary_file = os.path.join(
-            self.__app_context.get_resource("ayab/firmware"), firmware_name
-        )
-
-        if not os.path.exists(binary_file) or os.path.getsize(binary_file) <= 0:
-            self.__logger.error("Firmware file not found or empty: %s", binary_file)
-            utils.display_blocking_popup(
-                QCoreApplication.translate(
-                    "Firmware",
-                    "Error flashing firmware: firmware file not found or empty.",
-                ),
-                "error",
-            )
-            return None
-
-        device = self.device_dict.get(controller_name)
-        programmer = self.programmer_dict.get(controller_name, "wiring")
-
-        # avrdude command.
-        # http://www.ladyada.net/learn/avr/avrdude.html
-        # http://sharats.me/the-ever-useful-and-neat-subprocess-module.html
-        exec_command = (
-            f"{exe_route} -p {device} -c {programmer} -P {self.port} -b115200"
-            + f' -D -Uflash:w:"{binary_file}":i '
-        )
-
-        if os_name == "Windows":
-            exec_command += (
-                ' -C "'
-                + self.__app_context.get_resource("ayab/firmware/avrdude.conf")
-                + '"'
-            )
-        elif os_name == "Darwin":
-            exec_command += (
-                ' -C "'
-                + self.__app_context.get_resource("ayab/firmware/avrdude_mac.conf")
-                + '"'
-            )
-
-        self.__logger.debug(exec_command)
-        return exec_command
+        return True

@@ -23,7 +23,8 @@ After cloning the repo and installing the development dependencies, you should r
         Linux
     </summary>
 
-For flashing the firmware, avrdude has to be available on your system.
+avrdude, used to flash the firmware, is bundled for x86_64; on other architectures
+(e.g. ARM), it has to be available on your system.
 To build or run the application, you will also need the system libraries required by Qt 6; installing the Qt 6 development tools is a concise (if heavy-handed) way of bringing in these dependencies.
 
 #### Debian/Ubuntu
@@ -31,12 +32,12 @@ To build or run the application, you will also need the system libraries require
     sudo add-apt-repository -y ppa:deadsnakes/ppa
     sudo apt update
     sudo apt install python3.11 python3.11-dev python3.11-venv
-    sudo apt install libasound2-dev avrdude qt6-tools-dev-tools build-essential
+    sudo apt install libasound2-dev qt6-tools-dev-tools build-essential
 ```
 #### openSUSE
 ```bash
     sudo zypper install python311 python311-pip python311-virtualenv python311-devel
-    sudo zypper install libasound2 alsa-devel avrdude qt6-tools-dev-tools build-essential
+    sudo zypper install libasound2 alsa-devel qt6-tools-dev-tools build-essential
 ```
 #### All Distributions
 
