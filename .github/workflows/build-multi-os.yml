@@ -272,7 +272,7 @@ jobs:
 
       - name: Install Python modules
         run: |
-          sudo apt-get install -y avrdude libasound2-dev
+          sudo apt-get install -y libasound2-dev
           python -m pip install --upgrade pip
           python -m pip install --upgrade setuptools
           python -m pip install -r requirements.build.txt
@@ -308,7 +308,7 @@ jobs:
       - name: Install dependencies
         run: |
           cd squashfs-root
-          sudo apt-get install -y avrdude libasound2-dev
+          sudo apt-get install -y libasound2-dev
           ./AppRun -m pip install -r requirements.build.txt
 
       - name: Add AppDir subdirectories to PATH

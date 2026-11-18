@@ -26,6 +26,7 @@ from typing import TYPE_CHECKING, Optional, Any
 from subprocess import run, PIPE
 import re
 import os
+import platform
 
 if TYPE_CHECKING:
     from typing import Protocol
@@ -114,15 +115,20 @@ class AvrDudeTool(FlashingTool):
             + f' -D -Uflash:w:"{firmware_path}":i '
         )
 
-        # Add config file if needed
-        if os_name == "Windows":
+        # The bundled binaries (all the same avrdude version) share one config
+        # file; a system avrdude found in PATH uses its own.
+        if os_name in ("Windows", "Darwin") or (
+            os_name == "Linux" and self._linux_bundled_supported()
+        ):
             conf_path = app_context.get_resource("ayab/firmware/avrdude.conf")
-            exec_command += f' -C "{conf_path}"'
-        elif os_name == "Darwin":
-            conf_path = app_context.get_resource("ayab/firmware/avrdude_mac.conf")
             exec_command += f' -C "{conf_path}"'
 
         return exec_command
+
+    @staticmethod
+    def _linux_bundled_supported() -> bool:
+        """Whether the bundled Linux avrdude binary runs on this machine."""
+        return platform.machine() in ("x86_64", "AMD64")
 
     def get_display_name(self) -> str:
         return "AVRDUDE"
@@ -136,7 +142,10 @@ class AvrDudeTool(FlashingTool):
             path = app_context.get_resource("ayab/firmware/avrdude_mac")
             return '"' + path + '"'
         elif os_name == "Linux":
-            # Try to find avrdude in PATH
+            if self._linux_bundled_supported():
+                path = app_context.get_resource("ayab/firmware/avrdude_linux")
+                return '"' + path + '"'
+            # No bundled binary for this architecture: look in PATH
             try:
                 result = run(["which", "avrdude"], stdout=PIPE, stderr=PIPE)
                 path = re.sub(r"\n$", r"", result.stdout.decode("ascii"))
