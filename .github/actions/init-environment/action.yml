@@ -22,6 +22,17 @@ runs:
       with:
         python-version: ${{ env.PYTHON_VERSION }}
 
+    # uv.lock is the single source of truth for dependency versions: export
+    # it to the (unversioned) requirements.build.txt used by the build jobs
+    - name: Install uv
+      uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
+      with:
+        version: "0.13.8" # keep in sync with mise.toml
+
+    - name: Export locked requirements
+      shell: bash
+      run: uv export --frozen --no-hashes --no-annotate --no-dev -o requirements.build.txt
+
     - name: Set variables
       id: vars
       shell: bash

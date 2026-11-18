@@ -11,12 +11,17 @@ For information on how to install the release version of the software, see
 
 ## Running from Source & Development
 
-The AYAB desktop software runs using Python 3.11.  
-The Python module dependencies are split across **runtime dependencies**, which are in *requirements.build.txt* and **development dependencies**, found in *requirements.txt*.
+The AYAB desktop software runs using Python 3.11.
 
-This repository uses [pre-commit](https://pre-commit.com/) hooks.
-After cloning the repo and installing the development dependencies, you should run
-`pre-commit install` to set up the git hook scripts.
+The development toolchain (Python and [uv](https://docs.astral.sh/uv/)) is managed by
+[mise](https://mise.jdx.dev), and the Python dependencies are managed by uv:
+
+* `mise.toml` pins the Python and uv versions.
+* `pyproject.toml` declares the dependencies: the application dependencies, plus a `build`
+  group (PyInstaller) and a `dev` group (pytest, mypy, pre-commit…).
+* `uv.lock` pins the exact version of every package, including indirect dependencies. It is
+  the single source of truth for dependency versions, locally and in CI.
+
 ### Platform-Specific Setup
 <details>
     <summary>
@@ -28,14 +33,10 @@ To build or run the application, you will also need the system libraries require
 
 #### Debian/Ubuntu
 ```bash
-    sudo add-apt-repository -y ppa:deadsnakes/ppa
-    sudo apt update
-    sudo apt install python3.11 python3.11-dev python3.11-venv
     sudo apt install libasound2-dev avrdude qt6-tools-dev-tools build-essential
 ```
 #### openSUSE
 ```bash
-    sudo zypper install python311 python311-pip python311-virtualenv python311-devel
     sudo zypper install libasound2 alsa-devel avrdude qt6-tools-dev-tools build-essential
 ```
 #### All Distributions
@@ -55,25 +56,8 @@ rights for USB communication by adding your user to some groups.
 
 AYAB requires Windows version 10 or later.
 
-Run Anaconda Powershell as administrator and install git.
-```ps
-    conda install git
-```
-Now you can download the git repository with:
-```ps
-    git clone https://github.com/AllYarnsAreBeautiful/ayab-desktop
-    cd ayab-desktop
-```
-Next, create a virtual environment for AYAB:
-```ps
-    conda create --name ayab -c conda-forge python=3.11 pip
-```
-Activate the virtual environment. The command prompt should now display
-`(ayab)` at the beginning of each line.
-```ps
-    conda activate ayab
-```
-(You may skip the virtual environment setup below.)
+Install [Git for Windows](https://git-scm.com/download/win), which also provides the
+`bash` shell needed by `setup-environment.ps1`.
 
 You will also need to download and install Perl from [https://www.perl.org/get.html](https://www.perl.org/get.html).
 </details>
@@ -100,36 +84,53 @@ If you encounter the pip `SSL:TLSV1_ALERT_PROTOCOL_VERSION` problem:
 </details>
 
 ### Universal Setup Steps
-Once platform-specific setup is complete, download the git repository:
+Once platform-specific setup is complete, [install mise](https://mise.jdx.dev/getting-started.html)
+and, optionally, [activate it in your shell](https://mise.jdx.dev/getting-started.html#activate-mise)
+so that the right Python and the project virtual environment are picked up automatically
+when you enter the repository.
+
+Download the git repository:
 ```bash
     git clone https://github.com/AllYarnsAreBeautiful/ayab-desktop
     cd ayab-desktop
 ```
-Create a virtual environment for AYAB:
+Install Python and uv, then set up the development environment:
 ```bash
-    python3.11 -m venv .venv 
+    mise trust
+    mise install
+    mise run setup
 ```
-Now activate the virtual environment. The command prompt should now display
-`(.venv)` at the beginning of each line.
-```bash
-    source .venv/bin/activate
-```
-Install the remaining prerequisites with:
-```bash
-    python -m pip install --upgrade pip
-    pip install --upgrade setuptools
-    pip install -r requirements.txt
-```
+`mise run setup` creates the virtual environment (`.venv`) with all dependencies from
+`uv.lock`, converts the PySide6 `.ui` files, generates the translation files and installs
+the [pre-commit](https://pre-commit.com/) git hooks.
 
-Next, convert the PySide6 `.ui` files and generate the translation files:
-```bash
-    bash ./setup-environment.ps1
-```
+Re-run `mise run generate` whenever a `.ui`, `.qrc` or translation file changes (e.g. after
+a `git pull`).
 
 Finally, you can start AYAB with
 ```bash
-    fbs run
+    mise exec -- uv run fbs run
 ```
+
+If mise is activated in your shell, the `mise exec --` prefix is not needed (e.g. `uv sync`,
+`uv run fbs run`).
+
+Common tasks are defined in `mise.toml` (`mise tasks` lists them):
+```bash
+    mise run start    # run AYAB (regenerates the UI files first if needed)
+    mise run ci       # lint, tests and type checking, as in the "Python Tests" workflow
+    mise run build    # generate UI files, freeze the app and create the installer
+```
+
+### Managing dependencies
+
+Edit dependencies with uv rather than by hand, so that `uv.lock` stays up to date:
+```bash
+    uv add <package>==<version>             # application dependency
+    uv add --group dev <package>==<version> # development tool
+    uv lock --upgrade-package <package>     # upgrade a single package
+```
+A pre-commit hook checks that `uv.lock` is up to date with `pyproject.toml` when you commit.
 
 ## CI/CD on GitHub
 

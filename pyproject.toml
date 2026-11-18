@@ -1,0 +1,68 @@
+[project]
+name = "ayab"
+# The released version is derived from the git tag by CI
+# (see .github/actions/init-environment), not from this field.
+version = "0.0.0"
+description = "All Yarns Are Beautiful - desktop software for AYAB knitting machines"
+readme = "README.md"
+license = { file = "LICENSE.txt" }
+requires-python = "==3.11.*"
+dependencies = [
+    # fbs provides fbs_runtime, which is imported by the application at runtime
+    "fbs",
+    "PySide6==6.6.2",
+    "Pillow==10",
+    "pyserial==3.5",
+    "sliplib==0.6.2",
+    "bitarray==2.9.2",
+    "simpleaudio-patched==1.0.5",
+    # charset-normalizer 3 has no universal2 build; the macOS CI build installs
+    # it from source (--no-binary charset_normalizer)
+    "charset-normalizer<3.0.0",
+    "semver==3.0.2",
+    "wakepy==0.10.1",
+    "zeroconf==0.147.0",
+    "websockets==15.0.1",
+    "setuptools==75.8.0",
+    "pywin32; sys_platform == 'win32'",
+]
+
+[dependency-groups]
+build = [
+    "PyInstaller==6.17.0",
+    "pyinstaller-hooks-contrib==2026.7",
+]
+dev = [
+    "pytest==7.4.2",
+    "mock==3.0.5",
+    "pre-commit==3.6.2",
+    "mypy==1.9.0",
+    "types-pyserial==3.5.0",
+    "types-mock",
+    "types-Pillow==10",
+    "flake8==7.0.0",
+]
+
+[tool.uv]
+# This is an application, not a library: do not build/install it into the venv
+package = false
+default-groups = ["build", "dev"]
+
+[tool.uv.sources]
+fbs = { git = "https://github.com/AllYarnsAreBeautiful/fbs", rev = "21d7cee4ef4d5fddc35173b5f00d9dc16820bfcc" }
+
+[tool.mypy]
+strict = true
+check_untyped_defs = true
+follow_imports = "silent"
+exclude = [
+    '_gui\.py$',   # auto-generated GUI files
+    '_rc\.py$',    # auto-generated resource files
+    '_mock\.py$',  # mocks break type expectations
+    '_test\.py$',  # ditto tests
+    'test_.*\.py$',
+]
+
+[[tool.mypy.overrides]]
+module = ["simpleaudio", "sliplib", "fbs_runtime.*"]
+ignore_missing_imports = true
