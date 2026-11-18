@@ -84,12 +84,13 @@ def test_avrdude_linux_other_arch_uses_path(firmware: str) -> None:
 
 def test_avrdude_linux_other_arch_missing(firmware: str) -> None:
     tool = AvrDudeTool(device="atmega328p", programmer="arduino")
+    app_context = FakeAppContext()
     with (
         mock.patch("platform.machine", return_value="aarch64"),
         mock.patch("shutil.which", return_value=None),
     ):
         with pytest.raises(FlashingError):
-            tool.flash("Linux", "PORT", firmware, FakeAppContext())
+            tool.flash("Linux", "PORT", firmware, app_context)
 
 
 @pytest.mark.parametrize(
@@ -134,12 +135,14 @@ def test_bossac_flash_touches_then_runs(firmware: str) -> None:
 
 
 def test_bossac_missing_firmware() -> None:
+    tool = BossacTool()
+    app_context = FakeAppContext()
     with pytest.raises(FlashingError):
-        BossacTool().flash("Darwin", "PORT", "/nonexistent.bin", FakeAppContext())
+        tool.flash("Darwin", "PORT", "/nonexistent.bin", app_context)
 
 
 def test_bossac_bad_port_raises_flashing_error(firmware: str) -> None:
+    tool = BossacTool(bootloader_delay=0)
+    app_context = FakeAppContext()
     with pytest.raises(FlashingError):
-        BossacTool(bootloader_delay=0).flash(
-            "Darwin", "/dev/nonexistent-ayab-port", firmware, FakeAppContext()
-        )
+        tool.flash("Darwin", "/dev/nonexistent-ayab-port", firmware, app_context)
