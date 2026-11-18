@@ -43,6 +43,12 @@ runs:
           echo "Error: firmware directory or manifest.txt not found" >&2
           exit 1
         fi
+        
+        # Create machine-specific subdirectories
+        mkdir -p "$firmware_dir/brother"
+        mkdir -p "$firmware_dir/silverreed"
+        
+        # Download Brother firmwares from ayab-firmware
         manifest=$(<"$firmware_dir/manifest.txt")
         echo "manifest=$manifest"
         available=$(curl -s https://github.com/AllYarnsAreBeautiful/ayab-firmware/releases | grep -oE '/tag/[^\"]+' | sed -E 's/\/tag\///')
@@ -55,14 +61,29 @@ runs:
           exit 1
         fi
 
-        cd "$firmware_dir"
+        cd "$firmware_dir/brother"
         firmware_file=ayab_monolithic_uno.hex
         url=https://github.com/AllYarnsAreBeautiful/ayab-firmware/releases/download/$match/$firmware_file
         curl --fail --silent --show-error --location -O "$url"
         if [[ ! -s "$firmware_file" ]]; then
-          echo "Error: could not download firmware release matching manifest"
+          echo "Error: could not download Brother firmware release matching manifest"
           exit 1
         fi
+        
+        # Download Silverreed firmwares from MathKnitting/silverreed-firmware (latest release)
+        cd "$firmware_dir/silverreed"
+        silverreed_tag=$(curl -s https://api.github.com/repos/MathKnitting/silverreed-firmware/releases/latest | grep '"tag_name"' | sed -E 's/.*"([^"]+)".*/\1/')
+        echo "silverreed_tag=$silverreed_tag"
+        
+        # Download both Uno and R4 WiFi firmwares for Silverreed
+        for silverreed_firmware in firmware-uno.hex firmware-uno-r4-wifi.bin; do
+          silverreed_url=https://github.com/MathKnitting/silverreed-firmware/releases/download/$silverreed_tag/$silverreed_firmware
+          curl --fail --silent --show-error --location -O "$silverreed_url"
+          if [[ ! -s "$silverreed_firmware" ]]; then
+            echo "Error: could not download Silverreed firmware: $silverreed_firmware"
+            exit 1
+          fi
+        done
 
     - name: Set PACKAGE_VERSION
       shell: bash
