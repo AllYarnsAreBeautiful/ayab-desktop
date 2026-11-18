@@ -120,7 +120,6 @@ Common tasks are defined in `mise.toml` (`mise tasks` lists them):
     mise run start    # run AYAB (regenerates the UI files first if needed)
     mise run ci       # lint, tests and type checking, as in the "Python Tests" workflow
     mise run build    # generate UI files, freeze the app and create the installer
-    mise run clean    # remove generated files, target/ and .venv (`mise run setup` to rebuild)
 ```
 
 ### Managing dependencies
